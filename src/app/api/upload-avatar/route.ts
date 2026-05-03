@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    return new Promise((resolve) => {
+    return new Promise<Response>((resolve) => {
       cloudinary.uploader.upload_stream({
         upload_preset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
       }, (error, result) => {
