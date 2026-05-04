@@ -10,8 +10,9 @@ import { stateDistricts } from "@/data/stateDistricts";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ChevronRight, ChevronLeft, GraduationCap, Sparkles, MapPin, Award, BookOpen, Wallet, Users } from "lucide-react";
-import { db, auth } from "@/lib/firebase"; // Using my existing lib/firebase
+import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { College, StudentProfile } from "@/types";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -74,15 +75,35 @@ export default function InterviewPage() {
       if (!res.ok) throw new Error("Groq API call failed");
       const collegesData = await res.json();
 
+      // Save to Firestore from frontend as requested
+      const auth = getAuth();
       const uid = auth.currentUser?.uid;
-      if (uid) {
+
+      if (uid && Array.isArray(collegesData) && collegesData.length > 0) {
         await addDoc(collection(db, "interviews", uid, "sessions"), {
           timestamp: serverTimestamp(),
-          studentProfile: formData,
-          results: collegesData,
           createdAt: new Date().toISOString(),
+          studentProfile: {
+            level: formData.courseLevel,           // UG or PG
+            stream: formData.stream,
+            state: formData.state,
+            district: formData.district,
+            marks10: formData.marks10th,
+            marks12: formData.marks12th,
+            cutoffMark: formData.cutoffMark,
+            cutoffRange: formData.cutoffRange,
+            budget: formData.budget,
+            quota: formData.quota,
+          },
+          results: collegesData,
+          topCollege: collegesData[0]?.name ?? 'Unknown',
+          totalResults: collegesData.length,
         });
       }
+
+      // Store results in sessionStorage as requested
+      sessionStorage.setItem('eduanalytics_results', JSON.stringify(collegesData));
+      sessionStorage.setItem('eduanalytics_profile', JSON.stringify(formData));
 
       setColleges(collegesData);
       setStep(10); // Show results step
