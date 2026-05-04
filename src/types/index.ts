@@ -49,6 +49,7 @@ export interface InterviewSession {
   id: string;
   uid: string;
   timestamp: any;
+  createdAt?: string;
   studentProfile: Partial<StudentProfile>;
   results: College[];
 }
