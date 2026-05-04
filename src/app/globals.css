@@ -1,41 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --primary: #0F6E56;
-  --primary-foreground: #ffffff;
+@layer base {
+  :root {
+    --background: 40 14% 97%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 245 42% 51%; /* #534AB7 */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 161 69% 37%; /* #1D9E75 */
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 161 69% 37%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 245 42% 90%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 245 42% 51%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
 }
 
-body {
-  font-family: 'Plus Jakarta Sans', 'Sora', sans-serif;
-  color: #1f2937;
-  background-color: #f9fafb;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
 }
 
-.bg-primary {
-  background-color: var(--primary);
+.college-card-glow {
+  position: relative;
 }
 
-.text-primary {
-  color: var(--primary);
+.college-card-glow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10%;
+  bottom: 10%;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(to bottom, #534AB7, #1D9E75);
+  opacity: 0.8;
 }
 
-.border-primary {
-  border-color: var(--primary);
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-::-webkit-scrollbar-thumb {
-  background: #0f6e56;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #0d5c48;
+.text-gradient {
+  background: linear-gradient(135deg, #534AB7 0%, #1D9E75 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

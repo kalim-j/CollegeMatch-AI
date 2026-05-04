@@ -1,102 +1,129 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { Button } from "./ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { useRouter } from "next/navigation";
-import { LogOut, User, Menu, X, LayoutDashboard, History, MessageSquare, Phone } from "lucide-react";
+import { GraduationCap, LayoutDashboard, History, User, Phone, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-export default function Navbar() {
+export function Navbar() {
   const { user, profile } = useAuth();
-  const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleLogout = async () => {
+  const handleSignOut = async () => {
     await signOut(auth);
-    router.push("/");
   };
 
-  return (
-    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-primary tracking-tight">
-                EduAnalytics<span className="text-gray-900">-AI</span>
-              </span>
-            </Link>
-          </div>
+  const navLinks = [
+    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, protected: true },
+    { name: "History", href: "/history", icon: History, protected: true },
+    { name: "Contact", href: "/contact", icon: Phone, protected: false },
+    { name: "Profile", href: "/profile", icon: User, protected: true },
+  ];
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-600 hover:text-primary font-medium transition-colors">Home</Link>
-            <Link href="/contact" className="text-gray-600 hover:text-primary font-medium transition-colors">Contact</Link>
-            
+  const filteredLinks = navLinks.filter(link => !link.protected || (link.protected && user));
+
+  return (
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <Link href="/" className="flex items-center space-x-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-lg">
+            <GraduationCap className="h-6 w-6" />
+          </div>
+          <span className="text-xl font-bold tracking-tight text-primary">EduAnalytics-AI</span>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex md:items-center md:space-x-6">
+          {filteredLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary flex items-center gap-2",
+                pathname === link.href ? "text-primary" : "text-muted-foreground"
+              )}
+            >
+              <link.icon className="h-4 w-4" />
+              {link.name}
+            </Link>
+          ))}
+          {user ? (
+            <div className="flex items-center gap-4">
+              <Link href="/profile">
+                <Avatar className="h-9 w-9 border-2 border-primary/20">
+                  <AvatarImage src={profile?.avatarUrl} />
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    {profile?.fullName?.charAt(0) || user.email?.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+              <Button variant="ghost" size="sm" onClick={handleSignOut} className="text-muted-foreground hover:text-destructive">
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link href="/login">
+                <Button variant="ghost" size="sm">Login</Button>
+              </Link>
+              <Link href="/register">
+                <Button size="sm" className="bg-primary shadow-md hover:shadow-lg transition-all">Sign Up</Button>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden p-2 rounded-md hover:bg-accent"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
+      </div>
+
+      {/* Mobile Navigation */}
+      {isOpen && (
+        <div className="md:hidden border-t bg-background animate-in slide-in-from-top duration-300">
+          <div className="container mx-auto px-4 py-4 space-y-4">
+            {filteredLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setIsOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 py-2 text-base font-medium transition-colors hover:text-primary",
+                  pathname === link.href ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                <link.icon className="h-5 w-5" />
+                {link.name}
+              </Link>
+            ))}
             {user ? (
-              <>
-                <Link href="/dashboard" className="text-gray-600 hover:text-primary font-medium transition-colors">Dashboard</Link>
-                <div className="flex items-center space-x-4">
-                  <Link href="/profile">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20">
-                      {profile?.photoURL ? (
-                        <img src={profile.photoURL} alt="Avatar" className="h-full w-full object-cover" />
-                      ) : (
-                        <User className="h-5 w-5 text-primary" />
-                      )}
-                    </div>
-                  </Link>
-                  <button 
-                    onClick={handleLogout}
-                    className="flex items-center text-gray-600 hover:text-red-600 font-medium transition-colors"
-                  >
-                    <LogOut className="h-4 w-4 mr-1" />
-                    Logout
-                  </button>
-                </div>
-              </>
+              <Button variant="destructive" size="sm" onClick={handleSignOut} className="w-full">
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
             ) : (
-              <div className="flex items-center space-x-4">
-                <Link href="/login" className="text-gray-600 hover:text-primary font-medium">Login</Link>
-                <Link 
-                  href="/register" 
-                  className="bg-primary text-white px-5 py-2 rounded-full font-medium hover:bg-opacity-90 transition-all shadow-sm"
-                >
-                  Register
+              <div className="flex flex-col gap-2 pt-2">
+                <Link href="/login" onClick={() => setIsOpen(false)} className="w-full">
+                  <Button variant="outline" className="w-full">Login</Button>
+                </Link>
+                <Link href="/register" onClick={() => setIsOpen(false)} className="w-full">
+                  <Button className="w-full">Sign Up</Button>
                 </Link>
               </div>
             )}
           </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button onClick={() => setIsOpen(!isOpen)} className="text-gray-600 p-2">
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-white border-b border-gray-100 py-4 px-4 space-y-4">
-          <Link href="/" className="block text-gray-600 font-medium" onClick={() => setIsOpen(false)}>Home</Link>
-          <Link href="/contact" className="block text-gray-600 font-medium" onClick={() => setIsOpen(false)}>Contact</Link>
-          {user ? (
-            <>
-              <Link href="/dashboard" className="block text-gray-600 font-medium" onClick={() => setIsOpen(false)}>Dashboard</Link>
-              <Link href="/history" className="block text-gray-600 font-medium" onClick={() => setIsOpen(false)}>History</Link>
-              <Link href="/profile" className="block text-gray-600 font-medium" onClick={() => setIsOpen(false)}>Profile</Link>
-              <button onClick={handleLogout} className="block text-red-600 font-medium">Logout</button>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="block text-gray-600 font-medium" onClick={() => setIsOpen(false)}>Login</Link>
-              <Link href="/register" className="block bg-primary text-white text-center py-2 rounded-lg" onClick={() => setIsOpen(false)}>Register</Link>
-            </>
-          )}
         </div>
       )}
     </nav>

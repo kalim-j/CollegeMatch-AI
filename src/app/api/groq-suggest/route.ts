@@ -1,68 +1,73 @@
-import { Groq } from "groq-sdk";
+import { groq } from "@/lib/groq";
 import { NextResponse } from "next/server";
-
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
 
 export async function POST(req: Request) {
   try {
-    const { marks10th, marks12th, stream, budget, statePreference } = await req.json();
+    const { studentProfile } = await req.json();
 
-    const systemPrompt = `You are EduAnalytics-AI, an expert Indian college admission counsellor.
-Based on student data, suggest 5 best-fit colleges in India.
-Provide details for each: name, location, type (govt/private), expected cutoff, course recommendation, and why it fits.
-Return the response as a JSON array of objects with these keys: name, location, type, expectedCutoff, courseRecommendation, whyFits, matchScore (0-100).
-Ensure the JSON is valid and only return the array.`;
+    const systemPrompt = `You are EduAnalytics-AI, an expert Indian college admission counsellor. 
+    Given a student's profile, suggest exactly 8 best-fit colleges.
 
-    const userPrompt = `Student Data:
-- 10th Marks: ${marks10th}
-- 12th Marks: ${marks12th}
-- Stream: ${stream}
-- Budget: ${budget}
-- Preferred States: ${statePreference}
+    Return only a JSON array of 8 objects. No markdown, no extra text.
+    
+    Structure:
+    {
+      "name": string,
+      "location": string (city, district),
+      "state": string,
+      "type": "Government" | "Private" | "Deemed" | "Autonomous",
+      "level": "UG" | "PG",
+      "courses": string[] (list all relevant UG or PG courses offered),
+      "cutoff_mark": number (expected cutoff for this student's community),
+      "match_score": number (0-100),
+      "why_fit": string (2 sentences, inspiring tone),
+      "ranking": string (NIRF rank or state rank if known),
+      "naac_grade": string,
+      "contact_url": string (official website)
+    }
 
-Suggest the 5 best-fit colleges.`;
+    District-aware: Prefer colleges in or near the student's district (${studentProfile.district}, ${studentProfile.state}).
+    Range-aware: If cutoffRange is '-10', include safer colleges. If '+10', include aspirational ones.
+    Current Range Selection: ${studentProfile.cutoffRange}. Student Cutoff: ${studentProfile.cutoffMark}.
+    
+    Student Profile:
+    - Level: ${studentProfile.courseLevel}
+    - Stream: ${studentProfile.stream}
+    - State: ${studentProfile.state}
+    - District: ${studentProfile.district}
+    - 10th%: ${studentProfile.percentage10th}%
+    - 12th%: ${studentProfile.percentage12th}%
+    - Cutoff: ${studentProfile.cutoffMark}
+    - Budget: ${studentProfile.budget}
+    - Quota: ${studentProfile.quota}
+    `;
 
     const completion = await groq.chat.completions.create({
       messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: "Suggest 8 colleges based on my profile.",
+        },
       ],
       model: "llama-3.3-70b-versatile",
+      temperature: 0.7,
+      max_tokens: 4000,
       response_format: { type: "json_object" },
     });
 
-    const content = completion.choices[0]?.message?.content || "{}";
-    let parsedContent;
-    try {
-      parsedContent = JSON.parse(content);
-    } catch (e) {
-      console.error("JSON Parse Error:", content);
-      return NextResponse.json({ error: "Invalid response format from AI" }, { status: 500 });
-    }
+    const responseText = completion.choices[0]?.message?.content || "{}";
+    const data = JSON.parse(responseText);
     
-    // Extract array from various possible keys or direct array
-    let colleges = [];
-    if (Array.isArray(parsedContent)) {
-      colleges = parsedContent;
-    } else if (parsedContent.colleges && Array.isArray(parsedContent.colleges)) {
-      colleges = parsedContent.colleges;
-    } else if (parsedContent.suggestions && Array.isArray(parsedContent.suggestions)) {
-      colleges = parsedContent.suggestions;
-    } else {
-      // Fallback: search for any array in the object
-      const arrays = Object.values(parsedContent).filter(val => Array.isArray(val));
-      if (arrays.length > 0) colleges = arrays[0] as any[];
-    }
+    // The model might wrap it in a root object like { "colleges": [...] }
+    const colleges = Array.isArray(data) ? data : (data.colleges || data.results || []);
 
-    if (colleges.length === 0) {
-      return NextResponse.json({ error: "No college suggestions found" }, { status: 500 });
-    }
-
-    return NextResponse.json({ colleges });
-  } catch (error) {
-    console.error("Groq API Error:", error);
-    return NextResponse.json({ error: "Failed to fetch suggestions" }, { status: 500 });
+    return NextResponse.json(colleges.slice(0, 8));
+  } catch (error: any) {
+    console.error("GROQ API Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

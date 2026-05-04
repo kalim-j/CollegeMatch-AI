@@ -1,123 +1,164 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowRight, CheckCircle, GraduationCap, BarChart3, ShieldCheck, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { GraduationCap, Search, Sparkles, History, Phone, ArrowRight, CheckCircle2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Home() {
-  return (
-    <div className="overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-32 lg:pt-32 lg:pb-52 bg-white">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full overflow-hidden pointer-events-none -z-10">
-          <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        </div>
+  const features = [
+    {
+      title: "AI Analysis",
+      description: "Our advanced Llama-3 model analyzes your marks and preferences to find perfect matches.",
+      icon: Sparkles,
+      color: "bg-purple-500",
+    },
+    {
+      title: "Deep Insights",
+      description: "Get NIRF rankings, NAAC grades, and detailed cutoff data for over 500+ Indian colleges.",
+      icon: Search,
+      color: "bg-blue-500",
+    },
+    {
+      title: "Smart Budgeting",
+      description: "Filter by Government, Private, or Deemed universities to match your financial goals.",
+      icon: GraduationCap,
+      color: "bg-teal-500",
+    },
+  ];
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 text-primary font-semibold text-sm mb-8 animate-bounce">
-            <Zap className="w-4 h-4 mr-2" />
-            AI-Powered College Predictions
-          </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-8 tracking-tight">
-            Navigate Your Future with <span className="text-primary italic">Precision.</span>
-          </h1>
-          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Stop guessing and start planning. Our AI analyzes your scores and preferences to suggest the best-fit colleges in India with unmatched accuracy.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link 
-              href="/register" 
-              className="bg-primary text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-opacity-90 transition-all shadow-xl shadow-primary/20 flex items-center justify-center"
-            >
-              Start AI Interview <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-            <Link 
-              href="/contact" 
-              className="bg-white text-gray-900 border-2 border-gray-100 px-8 py-4 rounded-xl text-lg font-bold hover:border-primary/30 transition-all flex items-center justify-center"
-            >
-              Talk to Expert
-            </Link>
-          </div>
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1 },
+  };
+
+  return (
+    <div className="flex flex-col min-h-[calc(100vh-4rem)]">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-background py-20 md:py-32">
+        {/* Background blobs */}
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 -right-4 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />
+        
+        <div className="container px-4 mx-auto relative z-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="inline-flex items-center rounded-full border px-4 py-1.5 mb-6 text-sm font-medium bg-white/50 backdrop-blur-sm shadow-sm">
+              <span className="flex h-2 w-2 rounded-full bg-secondary mr-2" />
+              <span className="text-secondary font-bold mr-1">New:</span> 
+              <span className="text-muted-foreground">Llama-3.3 Powered Admissions Counselling</span>
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
+              Your <span className="text-primary italic">dream college</span> is <br />
+              closer than you think.
+            </h1>
+            
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+              Let AI find the best fit for your marks, state, and budget. 
+              Our intelligent system analyzes thousands of data points to guide your future.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/register">
+                <Button size="lg" className="h-14 px-10 text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all gap-2">
+                  Get Started Free <ArrowRight className="h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button variant="outline" size="lg" className="h-14 px-10 text-lg rounded-2xl">
+                  Talk to an Expert
+                </Button>
+              </Link>
+            </div>
+            
+            <p className="mt-8 text-sm font-medium text-muted-foreground flex items-center justify-center gap-4">
+              <span className="flex items-center gap-1"><CheckCircle2 className="h-4 w-4 text-secondary" /> No credit card required</span>
+              <span className="flex items-center gap-1"><CheckCircle2 className="h-4 w-4 text-secondary" /> 500+ Colleges</span>
+            </p>
+          </motion.div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">Why Choose EduAnalytics-AI?</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">We combine advanced AI models with deep industry knowledge to give you the edge in college admissions.</p>
+      <section className="py-20 bg-muted/30">
+        <div className="container px-4 mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">Why Choose EduAnalytics-AI?</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              We combine data with inspiration to provide a roadmap for your academic journey.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <GraduationCap className="h-8 w-8 text-primary" />,
-                title: "Personalized Suggestions",
-                desc: "Get college recommendations tailored to your stream, marks, and budget constraints."
-              },
-              {
-                icon: <BarChart3 className="h-8 w-8 text-primary" />,
-                title: "Data-Driven Insights",
-                desc: "We analyze cutoffs and placement data to ensure your choices are realistic and beneficial."
-              },
-              {
-                icon: <ShieldCheck className="h-8 w-8 text-primary" />,
-                title: "Verified Information",
-                desc: "Our database is constantly updated with the latest info from top Indian universities."
-              }
-            ].map((feature, idx) => (
-              <div key={idx} className="bg-white p-10 rounded-3xl border border-gray-100 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 transform hover:-translate-y-2">
-                <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center mb-8">
-                  {feature.icon}
+          <motion.div 
+            variants={container}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
+            {features.map((feature, index) => (
+              <motion.div key={index} variants={item} className="bg-white p-8 rounded-3xl border border-primary/10 shadow-sm hover:shadow-md transition-all">
+                <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg", feature.color)}>
+                  <feature.icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">{feature.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{feature.desc}</p>
-              </div>
+                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 bg-primary overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">50k+</div>
-              <div className="text-primary-foreground/80 font-medium">Students Helped</div>
+      {/* Testimonial Section */}
+      <section className="py-20">
+        <div className="container px-4 mx-auto text-center">
+          <div className="bg-primary/5 rounded-[3rem] p-12 md:p-20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 text-primary/10">
+              <Sparkles className="h-32 w-32" />
             </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">2000+</div>
-              <div className="text-primary-foreground/80 font-medium">Colleges Listed</div>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">98%</div>
-              <div className="text-primary-foreground/80 font-medium">Accuracy Rate</div>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">24/7</div>
-              <div className="text-primary-foreground/80 font-medium">AI Support</div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 italic">
+              "Every rank has a college. Let's find yours."
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto italic mb-8">
+              "I thought my marks weren't good enough for a top engineering college in TN. EduAnalytics-AI found me an autonomous college with a great placement record that I hadn't even considered. Forever grateful!"
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-primary/20" />
+              <div className="text-left">
+                <p className="font-bold">Rahul Krishnan</p>
+                <p className="text-sm text-muted-foreground">Engineering Student, Chennai</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gray-900 rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-50"></div>
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 relative z-10">Ready to find your dream college?</h2>
-            <p className="text-gray-400 text-lg mb-10 max-w-2xl mx-auto relative z-10">Join thousands of students who have simplified their admission journey with EduAnalytics-AI.</p>
-            <div className="relative z-10">
-              <Link 
-                href="/register" 
-                className="bg-primary text-white px-10 py-5 rounded-2xl text-xl font-bold hover:scale-105 transition-transform inline-block shadow-2xl shadow-primary/40"
-              >
-                Create Free Account
-              </Link>
-            </div>
-          </div>
+      <section className="py-20 bg-background">
+        <div className="container px-4 mx-auto text-center">
+          <h2 className="text-4xl font-bold mb-6">Ready to find your match?</h2>
+          <p className="text-xl text-muted-foreground mb-10">Join 5,000+ students who found their future through EduAnalytics-AI.</p>
+          <Link href="/register">
+            <Button size="lg" className="h-14 px-10 text-lg rounded-2xl bg-[#1D9E75] hover:bg-[#1D9E75]/90">
+              Start Free Assessment Now
+            </Button>
+          </Link>
         </div>
       </section>
     </div>

@@ -1,91 +1,109 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Building2, MapPin, CheckCircle, Phone, Globe, ShieldCheck, GraduationCap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { GraduationCap, MapPin, Award, BookOpen, Globe, Phone, ChevronLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 
-export default function CollegeDetail() {
-  const { id } = useParams();
+export default function CollegeDetailPage() {
+  const params = useParams();
   const router = useRouter();
-
-  // In a real app, we'd fetch this college by ID from a global directory
-  // For this demo, we'll show a generic but high-quality template
+  
+  // In a real app, we would fetch college details by ID from Firestore or a database.
+  // For this demo, we'll show a placeholder that looks premium.
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-20">
-      <button 
-        onClick={() => router.back()}
-        className="flex items-center text-gray-500 hover:text-primary font-bold mb-12 transition-colors"
-      >
-        <ArrowLeft className="h-5 w-5 mr-2" /> Back to Suggestions
-      </button>
+    <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <Button variant="ghost" onClick={() => router.back()} className="mb-8 rounded-xl">
+        <ChevronLeft className="h-4 w-4 mr-2" /> Back to Results
+      </Button>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-[3rem] overflow-hidden border border-gray-100 shadow-xl shadow-gray-200/50">
-            <div className="h-64 bg-primary relative">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')] bg-cover bg-center mix-blend-overlay opacity-40"></div>
-              <div className="absolute -bottom-12 left-10 w-24 h-24 bg-white rounded-3xl shadow-xl flex items-center justify-center">
-                <Building2 className="h-12 w-12 text-primary" />
+        <div className="lg:col-span-2 space-y-8">
+          <div className="relative h-64 w-full rounded-[3rem] overflow-hidden shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary opacity-90" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8 text-center">
+              <div className="h-20 w-20 rounded-3xl bg-white/20 flex items-center justify-center mb-4 backdrop-blur-md">
+                <GraduationCap className="h-10 w-10" />
               </div>
+              <h1 className="text-4xl font-bold">College of Academic Excellence</h1>
+              <p className="text-xl opacity-90 mt-2">Nurturing Leaders for Tomorrow</p>
             </div>
-            
-            <div className="pt-20 px-10 pb-12">
-              <div className="flex flex-wrap items-center gap-3 mb-4">
-                <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Top Ranked</span>
-                <span className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-full">Govt Institute</span>
-              </div>
-              <h1 className="text-4xl font-extrabold text-gray-900 mb-4">Indian Institute of Technology (IIT)</h1>
-              <div className="flex items-center text-gray-500 font-medium mb-10">
-                <MapPin className="h-5 w-5 mr-2 text-primary" /> New Delhi, India
-              </div>
+          </div>
 
-              <div className="prose prose-lg text-gray-600 max-w-none">
-                <p className="mb-6">
-                  One of the most prestigious engineering institutions in India, known for its academic excellence and world-class faculty. It offers a wide range of undergraduate and postgraduate programs in engineering, science, and management.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
-                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-                    <h4 className="font-bold text-gray-900 mb-2 flex items-center"><GraduationCap className="h-5 w-5 mr-2 text-primary" /> Key Highlights</h4>
-                    <ul className="text-sm space-y-2">
-                      <li>• 100% Placement Record</li>
-                      <li>• Global Research Labs</li>
-                      <li>• Innovation & Startup Hub</li>
-                    </ul>
-                  </div>
-                  <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-                    <h4 className="font-bold text-gray-900 mb-2 flex items-center"><ShieldCheck className="h-5 w-5 mr-2 text-primary" /> Accreditation</h4>
-                    <ul className="text-sm space-y-2">
-                      <li>• NIRF Rank 1-5 Range</li>
-                      <li>• NAAC A++ Grade</li>
-                      <li>• AICTE Approved</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">About this College</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              This institution is renowned for its state-of-the-art facilities and world-class faculty. With a focus on research and innovation, it provides students with the tools they need to succeed in a competitive global landscape.
+            </p>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card className="rounded-2xl p-4 text-center bg-muted/30 border-none">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">NIRF Rank</p>
+                <p className="text-2xl font-bold text-primary">#42</p>
+              </Card>
+              <Card className="rounded-2xl p-4 text-center bg-muted/30 border-none">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">NAAC</p>
+                <p className="text-2xl font-bold text-secondary">A++</p>
+              </Card>
+              <Card className="rounded-2xl p-4 text-center bg-muted/30 border-none">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Type</p>
+                <p className="text-sm font-bold uppercase">Autonomous</p>
+              </Card>
+              <Card className="rounded-2xl p-4 text-center bg-muted/30 border-none">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Placement</p>
+                <p className="text-sm font-bold uppercase">95%</p>
+              </Card>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">Offered Courses</h2>
+            <div className="flex flex-wrap gap-3">
+              {["Computer Science", "Artificial Intelligence", "Information Technology", "Cyber Security", "Data Science"].map(course => (
+                <span key={course} className="px-4 py-2 rounded-2xl bg-white border border-primary/10 shadow-sm text-sm font-medium">
+                  {course}
+                </span>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-1 space-y-8">
-          <div className="bg-white p-10 rounded-[3rem] shadow-xl shadow-gray-200/50 border border-gray-100">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h3>
-            <div className="space-y-4">
-              <Link href="/contact" className="w-full bg-primary text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:scale-[1.02] transition-all">
-                <Phone className="h-5 w-5" /> Book Consultation
-              </Link>
-              <button className="w-full bg-white text-gray-900 border-2 border-gray-100 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:border-primary/20 transition-all">
-                <Globe className="h-5 w-5" /> Visit Website
-              </button>
-            </div>
-          </div>
+        <div className="space-y-8">
+          <Card className="rounded-[2rem] border-primary/10 shadow-xl overflow-hidden">
+            <CardHeader className="bg-primary/5 p-8">
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" /> AI Suggestion Panel
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 space-y-6">
+              <p className="text-sm italic text-muted-foreground">
+                "Based on your 185.5 cutoff and BC quota, this college is an 88% match for your profile. It's located within 50km of your hometown."
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm font-bold">
+                  <span>Match Score</span>
+                  <span className="text-primary">88%</span>
+                </div>
+                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-primary w-[88%]" />
+                </div>
+              </div>
 
-          <div className="bg-primary/5 p-8 rounded-[2.5rem] border border-primary/10">
-            <h4 className="text-sm font-bold text-primary uppercase tracking-widest mb-4">Admissions Note</h4>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Admission to this institute is strictly based on national level entrance exams and merit scores. Ensure you have your documents ready for the counseling process.
-            </p>
-          </div>
+              <div className="pt-4 space-y-3">
+                <Button className="w-full rounded-xl gap-2 h-12">
+                  <Globe className="h-4 w-4" /> Official Website
+                </Button>
+                <Link href="/contact" className="w-full">
+                  <Button variant="outline" className="w-full rounded-xl gap-2 h-12">
+                    <Phone className="h-4 w-4" /> Admission Enquiry
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

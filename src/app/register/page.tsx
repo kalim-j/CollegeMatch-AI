@@ -1,153 +1,191 @@
 "use client";
 
 import { useState } from "react";
-import { createUserWithEmailAndPassword, updateProfile, signInWithPopup } from "firebase/auth";
-import { auth, db, googleProvider } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Chrome, User, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
+import { GraduationCap, Mail, Lock, User, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
-export default function Register() {
+export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName: name });
+      const user = userCredential.user;
       
-      // Initial profile save handled by AuthContext or manually here for safety
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        uid: userCredential.user.uid,
-        displayName: name,
+      await updateProfile(user, { displayName: name });
+      
+      // Initialize profile in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        fullName: name,
         email: email,
-        photoURL: null,
         createdAt: new Date(),
       });
 
+      toast.success("Account created successfully!");
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to register");
+    } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
+    const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Initialize profile in Firestore if new
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        fullName: user.displayName || "",
+        email: user.email || "",
+        avatarUrl: user.photoURL || "",
+        createdAt: new Date(),
+      }, { merge: true });
+
+      toast.success("Welcome to EduAnalytics-AI!");
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message);
-      setLoading(false);
+    } catch (error: any) {
+      toast.error(error.message || "Google registration failed");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100">
-        <div>
-          <h2 className="mt-6 text-center text-4xl font-extrabold text-gray-900 tracking-tight">
-            Create Account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Already have an account?{" "}
-            <Link href="/login" className="font-semibold text-primary hover:underline">
-              Sign in here
-            </Link>
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleRegister}>
-          <div className="space-y-4">
-            <div className="relative">
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block ml-1">Full Name</label>
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  required
-                  className="appearance-none relative block w-full px-12 py-4 border border-gray-200 placeholder-gray-400 text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all sm:text-sm"
-                  placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="relative">
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block ml-1">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="email"
-                  required
-                  className="appearance-none relative block w-full px-12 py-4 border border-gray-200 placeholder-gray-400 text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all sm:text-sm"
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="relative">
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block ml-1">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="password"
-                  required
-                  className="appearance-none relative block w-full px-12 py-4 border border-gray-200 placeholder-gray-400 text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all sm:text-sm"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-            </div>
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 bg-muted/30">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className="w-full max-w-md"
+      >
+        <div className="text-center mb-8">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-lg mb-4">
+            <GraduationCap className="h-7 w-7" />
           </div>
-
-          {error && <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg border border-red-100">{error}</p>}
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-2xl text-white bg-primary hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all shadow-lg shadow-primary/20"
-            >
-              {loading ? <Loader2 className="animate-spin h-5 w-5" /> : (
-                <>
-                  Get Started <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white text-gray-500 font-medium">Or join with</span>
-          </div>
+          <h1 className="text-3xl font-bold tracking-tight">Create an account</h1>
+          <p className="text-muted-foreground mt-2">Join us to find your perfect college match</p>
         </div>
 
-        <div>
-          <button
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            className="w-full flex items-center justify-center py-4 px-4 border-2 border-gray-100 rounded-2xl text-sm font-bold text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-200 transition-all"
-          >
-            <Chrome className="h-5 w-5 mr-3 text-red-500" />
-            Google Account
-          </button>
-        </div>
-      </div>
+        <Card className="border-primary/10 shadow-xl rounded-3xl overflow-hidden">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl">Sign Up</CardTitle>
+            <CardDescription>
+              Create your profile to start the admission interview
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <Button variant="outline" onClick={handleGoogleLogin} className="w-full h-12 rounded-xl gap-3">
+              <svg className="h-5 w-5" viewBox="0 0 24 24">
+                <path
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  fill="#34A853"
+                />
+                <path
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  fill="#EA4335"
+                />
+              </svg>
+              Sign up with Google
+            </Button>
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or create account with email</span>
+              </div>
+            </div>
+            <form onSubmit={handleRegister} className="grid gap-4">
+              <div className="grid gap-2">
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="name"
+                    placeholder="Full Name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="pl-10 h-11"
+                    disabled={loading}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    placeholder="name@example.com"
+                    type="email"
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    autoCorrect="off"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 h-11"
+                    disabled={loading}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    placeholder="Create a password"
+                    type="password"
+                    autoCapitalize="none"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 h-11"
+                    disabled={loading}
+                    required
+                  />
+                </div>
+              </div>
+              <Button disabled={loading} className="h-11 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                {loading ? "Creating account..." : "Sign Up"}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter>
+            <p className="text-sm text-muted-foreground text-center w-full">
+              Already have an account?{" "}
+              <Link href="/login" className="text-primary font-semibold hover:underline">
+                Login
+              </Link>
+            </p>
+          </CardFooter>
+        </Card>
+      </motion.div>
     </div>
   );
 }
