@@ -10,7 +10,7 @@ import { stateDistricts } from "@/data/stateDistricts";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, ChevronRight, ChevronLeft, GraduationCap, Sparkles, MapPin, Award, BookOpen, Wallet, Users } from "lucide-react";
-import { db } from "@/lib/firebase";
+import { db, auth } from "@/lib/firebase"; // Using my existing lib/firebase
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { College, StudentProfile } from "@/types";
 import { Progress } from "@/components/ui/progress";
@@ -65,31 +65,31 @@ export default function InterviewPage() {
   const handleFinish = async () => {
     setAnalyzing(true);
     try {
-      const response = await fetch("/api/groq-suggest", {
+      const res = await fetch("/api/groq-suggest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentProfile: formData }),
       });
-      const data = await response.json();
       
-      if (data.error) throw new Error(data.error);
+      if (!res.ok) throw new Error("Groq API call failed");
+      const collegesData = await res.json();
 
-      setColleges(data);
-      
-      // Save to Firestore
-      if (user) {
-        await addDoc(collection(db, "interviews"), {
-          uid: user.uid,
+      const uid = auth.currentUser?.uid;
+      if (uid) {
+        await addDoc(collection(db, "interviews", uid, "sessions"), {
           timestamp: serverTimestamp(),
           studentProfile: formData,
-          results: data,
+          results: collegesData,
+          createdAt: new Date().toISOString(),
         });
       }
-      
+
+      setColleges(collegesData);
       setStep(10); // Show results step
       toast.success("AI Analysis Complete!");
     } catch (error: any) {
-      toast.error("Analysis failed: " + error.message);
+      console.error("EduAnalytics error:", error);
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setAnalyzing(false);
     }

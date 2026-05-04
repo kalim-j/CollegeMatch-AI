@@ -28,15 +28,19 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchRecent = async () => {
       if (user) {
-        const q = query(
-          collection(db, "interviews"),
-          where("uid", "==", user.uid),
-          orderBy("timestamp", "desc"),
-          limit(1)
-        );
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          setLastInterview({ id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as InterviewSession);
+        try {
+          // New Path: interviews/{userId}/sessions
+          const q = query(
+            collection(db, "interviews", user.uid, "sessions"),
+            orderBy("timestamp", "desc"),
+            limit(1)
+          );
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            setLastInterview({ id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as InterviewSession);
+          }
+        } catch (error) {
+          console.error("Error fetching dashboard stats:", error);
         }
       }
       setFetching(false);

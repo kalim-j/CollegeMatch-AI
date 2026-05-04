@@ -8,7 +8,7 @@ import { InterviewSession } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, GraduationCap, MapPin, ChevronRight, BookOpen, Clock, Sparkles } from "lucide-react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -23,9 +23,9 @@ export default function HistoryPage() {
     const fetchSessions = async () => {
       if (user) {
         try {
+          // New Path: interviews/{userId}/sessions
           const q = query(
-            collection(db, "interviews"),
-            where("uid", "==", user.uid),
+            collection(db, "interviews", user.uid, "sessions"),
             orderBy("timestamp", "desc")
           );
           const querySnapshot = await getDocs(q);
@@ -80,7 +80,8 @@ export default function HistoryPage() {
                     </div>
                     <div>
                       <h3 className="text-xl font-bold">
-                        {session.timestamp ? format(session.timestamp.toDate(), "PPP") : "Recent Session"}
+                        {session.timestamp ? format(session.timestamp.toDate(), "PPP") : 
+                         session.createdAt ? format(parseISO(session.createdAt), "PPP") : "Recent Session"}
                       </h3>
                       <div className="flex flex-wrap gap-3 mt-1 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1"><BookOpen className="h-3 w-3" /> {session.studentProfile.courseLevel} {session.studentProfile.stream}</span>
@@ -92,7 +93,7 @@ export default function HistoryPage() {
                   <div className="flex items-center gap-6">
                     <div className="text-right hidden sm:block">
                       <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Top Match</p>
-                      <p className="font-bold text-primary">{session.results[0]?.name.split(' ')[0]}...</p>
+                      <p className="font-bold text-primary">{(session.results && session.results[0]?.name.split(' ')[0]) || "Loading"}...</p>
                     </div>
                     <Button variant="outline" className="rounded-xl gap-2">
                       {expandedSession === session.id ? "Hide Results" : "View 8 Matches"}
@@ -112,7 +113,7 @@ export default function HistoryPage() {
                   >
                     <div className="p-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {session.results.map((college, idx) => (
+                        {session.results && session.results.map((college, idx) => (
                           <Card key={idx} className="rounded-2xl border-none shadow-sm bg-white p-4">
                             <div className="flex justify-between items-start mb-2">
                               <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">

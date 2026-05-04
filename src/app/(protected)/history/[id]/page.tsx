@@ -24,20 +24,11 @@ export default function SessionDetail() {
   useEffect(() => {
     const fetchSession = async () => {
       if (!user || !id) return;
-      // Note: My implementation saves to /interviews/{id} at root collection 
-      // or /interviews/{uid}/{sessionId}. 
-      // Based on my InterviewPage: collection(db, "interviews")
-      const docRef = doc(db, "interviews", id as string);
+      // New Path: interviews/{userId}/sessions/{id}
+      const docRef = doc(db, "interviews", user.uid, "sessions", id as string);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setSession({ id: docSnap.id, ...docSnap.data() } as InterviewSession);
-      } else {
-        // Fallback for different path if needed
-        const subDocRef = doc(db, "interviews", user.uid, "sessions", id as string);
-        const subDocSnap = await getDoc(subDocRef);
-        if (subDocSnap.exists()) {
-          setSession({ id: subDocSnap.id, ...subDocSnap.data() } as InterviewSession);
-        }
       }
       setLoading(false);
     };
@@ -65,14 +56,14 @@ export default function SessionDetail() {
           <Badge variant="teal" className="mb-6 px-4 py-1">Interview Results</Badge>
           <h1 className="text-4xl md:text-5xl font-extrabold mb-6">Your Dream Matches</h1>
           <p className="text-xl text-primary-foreground/80 max-w-2xl leading-relaxed">
-            Based on your {session.studentProfile.courseLevel} marks ({session.studentProfile.percentage12th}%) and {session.studentProfile.stream} focus, 
+            Based on your {session.studentProfile?.courseLevel || 'UG'} marks ({session.studentProfile?.percentage12th || 'N/A'}%) and {session.studentProfile?.stream || 'N/A'} focus, 
             we've identified 8 colleges that represent your best path forward.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-12">
-        {session.results.map((college, idx) => (
+        {session.results && session.results.map((college, idx) => (
           <div 
             key={idx} 
             className="bg-white rounded-[2.5rem] border border-primary/5 shadow-xl hover:border-primary/20 transition-all duration-300 flex flex-col lg:flex-row overflow-hidden"
@@ -110,7 +101,7 @@ export default function SessionDetail() {
                     <BookOpen className="h-4 w-4 mr-2 text-primary" /> Top Courses
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {college.courses.slice(0, 3).map(c => (
+                    {college.courses && college.courses.slice(0, 3).map(c => (
                       <Badge key={c} variant="outline" className="rounded-lg">{c}</Badge>
                     ))}
                   </div>
