@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/request';
+import { NextResponse, type NextRequest } from 'next/server';
 
 // This is a simple middleware to redirect unauthenticated users
 // Note: In production, you'd verify the Firebase token here.

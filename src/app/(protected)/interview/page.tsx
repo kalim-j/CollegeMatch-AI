@@ -15,6 +15,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { College, StudentProfile } from "@/types";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const UG_STREAMS = ["Engineering", "Medical", "Arts & Science", "Commerce", "Law", "Agriculture", "Architecture", "Pharmacy", "Nursing", "Education", "Hotel Management", "Design", "MBA (Integrated)", "Other"];
 const PG_STREAMS = ["ME/MTech", "MD/MS", "MSc", "MA", "MBA", "MCA", "LLM", "MPharm", "MEd", "Other"];

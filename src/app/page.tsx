@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Search, Sparkles, History, Phone, ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const features = [
