@@ -1,105 +1,138 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from "react";
+import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { collection, query, orderBy, onSnapshot, getDocs } from "firebase/firestore";
 import { InterviewSession } from "@/types";
-import { History, Calendar, MapPin, ChevronRight, Loader2, Search, Filter } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Calendar, GraduationCap, MapPin, ChevronRight, BookOpen, Clock, Sparkles } from "lucide-react";
+import { format } from "date-fns";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 export default function HistoryPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [sessions, setSessions] = useState<InterviewSession[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedSession, setExpandedSession] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) return;
-
-    const q = query(
-      collection(db, "interviews", user.uid, "sessions"),
-      orderBy("timestamp", "desc")
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as InterviewSession[];
-      setSessions(docs);
+    const fetchSessions = async () => {
+      if (user) {
+        try {
+          const q = query(
+            collection(db, "interviews"),
+            where("uid", "==", user.uid),
+            orderBy("timestamp", "desc")
+          );
+          const querySnapshot = await getDocs(q);
+          const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as InterviewSession[];
+          setSessions(data);
+        } catch (error) {
+          console.error("Error fetching history:", error);
+        }
+      }
       setLoading(false);
-    });
-
-    return () => unsubscribe();
+    };
+    fetchSessions();
   }, [user]);
 
-  if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-20 flex justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      </div>
-    );
-  }
+  if (authLoading || loading) return <div className="flex items-center justify-center h-[80vh]">Loading history...</div>;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
+    <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <div className="flex justify-between items-center mb-12">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Interview History</h1>
-          <p className="text-gray-500 mt-1">Review your past college recommendations and match scores.</p>
+          <h1 className="text-4xl font-bold mb-2">Interview History</h1>
+          <p className="text-muted-foreground">Review your past college suggestion sessions</p>
         </div>
-        <div className="flex gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input type="text" placeholder="Search sessions..." className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-sm" />
-          </div>
-          <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 text-sm font-bold text-gray-600 transition-colors">
-            <Filter className="h-4 w-4" /> Filter
-          </button>
-        </div>
+        <Link href="/interview">
+          <Button className="rounded-2xl gap-2 shadow-lg">
+            <Sparkles className="h-4 w-4" /> New Session
+          </Button>
+        </Link>
       </div>
 
       {sessions.length === 0 ? (
-        <div className="bg-white rounded-[2.5rem] border border-gray-100 p-20 text-center shadow-sm">
-          <div className="bg-gray-50 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6">
-            <History className="h-10 w-10 text-gray-300" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Sessions Yet</h2>
-          <p className="text-gray-500 mb-8 max-w-sm mx-auto">You haven't completed any AI interviews yet. Start one now to see suggestions!</p>
-          <Link href="/interview" className="inline-flex items-center bg-primary text-white font-bold px-8 py-4 rounded-2xl hover:scale-105 transition-transform shadow-lg shadow-primary/20">
-            Start First Interview
+        <Card className="rounded-[2rem] border-dashed p-20 text-center">
+          <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">No sessions found</h2>
+          <p className="text-muted-foreground mb-8">You haven't completed any admission interviews yet.</p>
+          <Link href="/interview">
+            <Button className="rounded-xl">Start Your First Interview</Button>
           </Link>
-        </div>
+        </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-6">
+        <div className="space-y-6">
           {sessions.map((session) => (
-            <Link key={session.id} href={`/history/${session.id}`} className="group">
-              <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all flex flex-col md:flex-row items-start md:items-center gap-6">
-                <div className="bg-primary/5 w-16 h-16 rounded-2xl flex flex-col items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                  <Calendar className="h-6 w-6" />
-                </div>
-                <div className="flex-grow">
-                  <div className="flex flex-wrap items-center gap-3 mb-2">
-                    <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">
-                      {session.timestamp?.toDate ? session.timestamp.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Date Unknown'}
-                    </span>
-                    <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-full">Completed</span>
+            <Card key={session.id} className="rounded-3xl border-primary/10 shadow-sm overflow-hidden overflow-visible">
+              <div 
+                className="p-6 cursor-pointer hover:bg-muted/30 transition-colors"
+                onClick={() => setExpandedSession(expandedSession === session.id ? null : session.id)}
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                      <Calendar className="h-7 w-7" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold">
+                        {session.timestamp ? format(session.timestamp.toDate(), "PPP") : "Recent Session"}
+                      </h3>
+                      <div className="flex flex-wrap gap-3 mt-1 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1"><BookOpen className="h-3 w-3" /> {session.studentProfile.courseLevel} {session.studentProfile.stream}</span>
+                        <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {session.studentProfile.district}, {session.studentProfile.state}</span>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary transition-colors">
-                    Top Match: {session.suggestions[0]?.name}
-                  </h3>
-                  <div className="flex items-center gap-4 mt-3 text-gray-500 text-sm">
-                    <span className="flex items-center"><MapPin className="h-4 w-4 mr-1 text-primary/50" /> {session.suggestions[0]?.location}</span>
-                    <span className="flex items-center font-semibold text-primary">Score: {session.suggestions[0]?.matchScore}%</span>
-                  </div>
-                </div>
-                <div className="self-end md:self-center">
-                  <div className="flex items-center text-primary font-bold">
-                    View Details <ChevronRight className="ml-1 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  
+                  <div className="flex items-center gap-6">
+                    <div className="text-right hidden sm:block">
+                      <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Top Match</p>
+                      <p className="font-bold text-primary">{session.results[0]?.name.split(' ')[0]}...</p>
+                    </div>
+                    <Button variant="outline" className="rounded-xl gap-2">
+                      {expandedSession === session.id ? "Hide Results" : "View 8 Matches"}
+                      <ChevronRight className={cn("h-4 w-4 transition-transform", expandedSession === session.id && "rotate-90")} />
+                    </Button>
                   </div>
                 </div>
               </div>
-            </Link>
+
+              <AnimatePresence>
+                {expandedSession === session.id && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden bg-muted/20 border-t"
+                  >
+                    <div className="p-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {session.results.map((college, idx) => (
+                          <Card key={idx} className="rounded-2xl border-none shadow-sm bg-white p-4">
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                                <GraduationCap className="h-4 w-4" />
+                              </div>
+                              <span className="text-xs font-bold text-secondary">{college.match_score}%</span>
+                            </div>
+                            <h4 className="font-bold text-sm line-clamp-2 mb-1">{college.name}</h4>
+                            <p className="text-[10px] text-muted-foreground mb-3">{college.location}</p>
+                            <Link href="/contact">
+                              <Button size="sm" variant="ghost" className="w-full text-[10px] h-7 rounded-lg">Contact</Button>
+                            </Link>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Card>
           ))}
         </div>
       )}

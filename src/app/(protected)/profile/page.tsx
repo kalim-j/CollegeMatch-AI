@@ -1,164 +1,206 @@
 "use client";
 
-import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { db } from "@/lib/firebase";
 import { doc, updateDoc } from "firebase/firestore";
-import { Camera, Save, User, MapPin, BookOpen, Loader2, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
+import { Camera, Save, User, MapPin, Award, BookOpen } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
-export default function Profile() {
-  const { user, profile } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [success, setSuccess] = useState(false);
+export default function ProfilePage() {
+  const { user, profile, loading, refreshProfile } = useAuth();
+  const router = useRouter();
   const [formData, setFormData] = useState({
-    displayName: profile?.displayName || "",
-    bio: profile?.bio || "",
-    city: profile?.city || "",
-    preferredStream: profile?.preferredStream || "",
+    fullName: "",
+    bio: "",
+    state: "",
+    district: "",
+    stream: "",
+    courseLevel: "UG" as "UG" | "PG",
   });
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+      return;
+    }
+    if (profile) {
+      setFormData({
+        fullName: profile.fullName || "",
+        bio: profile.bio || "",
+        state: profile.state || "",
+        district: profile.district || "",
+        stream: profile.stream || "",
+        courseLevel: (profile.courseLevel as "UG" | "PG") || "UG",
+      });
+    }
+  }, [profile, user, loading, router]);
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setSaving(true);
+    try {
+      await updateDoc(doc(db, "users", user.uid), {
+        ...formData,
+        updatedAt: new Date(),
+      });
+      await refreshProfile();
+      toast.success("Profile updated successfully!");
+    } catch (error: any) {
+      toast.error("Failed to update profile.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file || !user) return;
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "eduanalytics_avatars");
+    data.append("cloud_name", process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "");
 
     try {
-      const res = await fetch("/api/upload-avatar", {
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
         method: "POST",
-        body: formData,
+        body: data,
       });
-      const data = await res.json();
-      
-      if (data.url) {
-        await updateDoc(doc(db, "users", user!.uid), {
-          photoURL: data.url,
-        });
-        window.location.reload(); // Refresh to update context
-      }
-    } catch (err) {
-      console.error("Upload error:", err);
-      alert("Failed to upload image.");
+      const fileData = await res.json();
+      const url = fileData.secure_url;
+
+      await updateDoc(doc(db, "users", user.uid), {
+        avatarUrl: url,
+      });
+      await refreshProfile();
+      toast.success("Avatar updated!");
+    } catch (error) {
+      toast.error("Avatar upload failed.");
     } finally {
       setUploading(false);
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await updateDoc(doc(db, "users", user!.uid), {
-        ...formData,
-      });
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
-    } catch (err) {
-      console.error("Save error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (loading || !user) return <div className="flex items-center justify-center h-[80vh]">Loading profile...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <div className="flex flex-col md:flex-row items-start gap-12">
-        {/* Left: Avatar Upload */}
-        <div className="w-full md:w-1/3 flex flex-col items-center bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm">
-          <div className="relative group">
-            <div className="h-40 w-40 rounded-[2.5rem] bg-gray-50 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">
-              {profile?.photoURL ? (
-                <img src={profile.photoURL} alt="Avatar" className="h-full w-full object-cover" />
-              ) : (
-                <User className="h-20 w-20 text-gray-200" />
-              )}
-            </div>
-            <label className="absolute bottom-2 right-2 p-3 bg-primary text-white rounded-2xl cursor-pointer hover:scale-110 transition-transform shadow-lg shadow-primary/30">
-              {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
-              <input type="file" className="hidden" onChange={handleAvatarUpload} accept="image/*" />
-            </label>
-          </div>
-          <h2 className="text-2xl font-bold mt-8 text-gray-900">{profile?.displayName}</h2>
-          <p className="text-gray-500 text-sm mt-1">{profile?.email}</p>
+    <div className="container mx-auto px-4 py-12 max-w-4xl">
+      <div className="mb-12 text-center">
+        <h1 className="text-4xl font-bold mb-2">Your Profile</h1>
+        <p className="text-muted-foreground">Manage your personal and academic information</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+        {/* Left Column: Avatar & Quick Info */}
+        <div className="md:col-span-4 space-y-8">
+          <Card className="rounded-[2rem] border-primary/10 shadow-lg overflow-hidden text-center">
+            <CardContent className="pt-8 pb-8">
+              <div className="relative inline-block group mb-6">
+                <Avatar className="h-32 w-32 border-4 border-white shadow-xl">
+                  <AvatarImage src={profile?.avatarUrl} />
+                  <AvatarFallback className="text-4xl bg-primary/10 text-primary">
+                    {profile?.fullName?.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <label className="absolute bottom-0 right-0 h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center cursor-pointer shadow-lg hover:scale-110 transition-all">
+                  <Camera className="h-5 w-5" />
+                  <input type="file" className="hidden" onChange={handleAvatarUpload} disabled={uploading} accept="image/*" />
+                </label>
+                {uploading && (
+                  <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
+                    <div className="h-8 w-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
+              </div>
+              <h2 className="text-2xl font-bold">{profile?.fullName}</h2>
+              <p className="text-sm text-muted-foreground mb-6 italic">"{profile?.bio || "No bio set yet"}"</p>
+              
+              <div className="space-y-3 text-left">
+                <div className="flex items-center gap-3 text-sm p-3 rounded-2xl bg-muted/50 border border-primary/5">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  <span className="font-medium">{profile?.state ? `${profile.district}, ${profile.state}` : "Location not set"}</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm p-3 rounded-2xl bg-muted/50 border border-primary/5">
+                  <Award className="h-4 w-4 text-primary" />
+                  <span className="font-medium">{profile?.courseLevel} - {profile?.stream || "Stream not set"}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Right: Form */}
-        <div className="flex-grow w-full">
-          <div className="bg-white p-10 md:p-12 rounded-[2.5rem] border border-gray-100 shadow-sm">
-            <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-              Personal Information
-              {success && <span className="text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full flex items-center gap-1 animate-in fade-in slide-in-from-right-4"><CheckCircle className="h-3 w-3" /> Saved</span>}
-            </h3>
-            
-            <form onSubmit={handleSave} className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="relative">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 block ml-1">Full Name</label>
-                  <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <input 
-                      type="text" 
-                      className="w-full pl-12 pr-4 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-primary/20 focus:bg-white outline-none transition-all font-medium"
-                      value={formData.displayName}
-                      onChange={(e) => setFormData({...formData, displayName: e.target.value})}
+        {/* Right Column: Form */}
+        <div className="md:col-span-8">
+          <Card className="rounded-[2rem] border-primary/10 shadow-xl overflow-hidden bg-white">
+            <CardHeader className="bg-primary/5 p-8">
+              <CardTitle>Edit Details</CardTitle>
+              <CardDescription>Keep your profile updated for better AI matches</CardDescription>
+            </CardHeader>
+            <CardContent className="p-8">
+              <form onSubmit={handleUpdateProfile} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                      <User className="h-4 w-4" /> Full Name
+                    </label>
+                    <Input
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      className="h-12 rounded-xl bg-muted/30 border-none"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                      <BookOpen className="h-4 w-4" /> Bio / Motto
+                    </label>
+                    <Input
+                      placeholder="My ambition is to..."
+                      value={formData.bio}
+                      onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                      className="h-12 rounded-xl bg-muted/30 border-none"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                      <MapPin className="h-4 w-4" /> State
+                    </label>
+                    <Input
+                      value={formData.state}
+                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                      className="h-12 rounded-xl bg-muted/30 border-none"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                      <MapPin className="h-4 w-4" /> District
+                    </label>
+                    <Input
+                      value={formData.district}
+                      onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                      className="h-12 rounded-xl bg-muted/30 border-none"
                     />
                   </div>
                 </div>
-                <div className="relative">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 block ml-1">Current City</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <input 
-                      type="text" 
-                      className="w-full pl-12 pr-4 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-primary/20 focus:bg-white outline-none transition-all font-medium"
-                      value={formData.city}
-                      onChange={(e) => setFormData({...formData, city: e.target.value})}
-                    />
-                  </div>
+
+                <div className="pt-4 border-t border-muted">
+                  <Button disabled={saving} className="w-full h-14 rounded-xl shadow-lg hover:shadow-xl transition-all text-lg font-bold gap-2">
+                    {saving ? "Saving..." : "Save Profile"} <Save className="h-5 w-5" />
+                  </Button>
                 </div>
-              </div>
-
-              <div className="relative">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 block ml-1">Preferred Stream</label>
-                <div className="relative">
-                  <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <select 
-                    className="w-full pl-12 pr-4 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-primary/20 focus:bg-white outline-none transition-all font-medium appearance-none cursor-pointer"
-                    value={formData.preferredStream}
-                    onChange={(e) => setFormData({...formData, preferredStream: e.target.value})}
-                  >
-                    <option value="">Select a stream</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Medical">Medical</option>
-                    <option value="Commerce">Commerce</option>
-                    <option value="Arts">Arts</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="relative">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 block ml-1">Short Bio</label>
-                <textarea 
-                  rows={4}
-                  className="w-full p-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-primary/20 focus:bg-white outline-none transition-all font-medium"
-                  placeholder="Tell us about your career goals..."
-                  value={formData.bio}
-                  onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                />
-              </div>
-
-              <button 
-                type="submit"
-                disabled={loading}
-                className="w-full md:w-auto bg-primary text-white font-bold px-10 py-4 rounded-2xl hover:scale-105 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
-              >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Save className="h-5 w-5" /> Save Changes</>}
-              </button>
-            </form>
-          </div>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
