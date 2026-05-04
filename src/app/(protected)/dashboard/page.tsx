@@ -153,12 +153,12 @@ export default function Dashboard() {
                         <GraduationCap className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <p className="font-bold text-lg">{lastInterview.results[0].name}</p>
-                        <p className="text-sm text-muted-foreground">{lastInterview.results[0].location}, {lastInterview.results[0].state}</p>
+                        <p className="font-bold text-lg">{lastInterview.results?.[0]?.name || "N/A"}</p>
+                        <p className="text-sm text-muted-foreground">{lastInterview.results?.[0]?.location || "Unknown"}, {lastInterview.results?.[0]?.state || ""}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-primary">{lastInterview.results[0].match_score}%</div>
+                      <div className="text-2xl font-bold text-primary">{lastInterview.results?.[0]?.match_score || 0}%</div>
                       <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Match Score</p>
                     </div>
                   </div>

@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, []); // Run on mount only
 
   return (
     <AuthContext.Provider value={{ user, profile, loading, refreshProfile }}>
