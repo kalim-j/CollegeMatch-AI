@@ -19,6 +19,7 @@ export interface StudentProfile {
   stream?: string;
   state?: string;
   district?: string;
+  marks10thBoard?: string;
   marks10th?: number;
   percentage10th?: number;
   marks12th?: number;

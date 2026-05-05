@@ -33,6 +33,7 @@ export default function InterviewPage() {
     stream: "",
     state: "Tamil Nadu",
     district: "",
+    marks10thBoard: "",
     marks10th: 0,
     percentage10th: 0,
     marks12th: 0,
@@ -192,23 +193,43 @@ export default function InterviewPage() {
           </div>
         );
       case 5:
+        const max10 = formData.marks10thBoard === "state" ? 1200 : 500;
         return (
           <div className="space-y-6 max-w-md mx-auto">
             <h2 className="text-2xl font-bold text-center mb-4">10th Standard Marks</h2>
-            <div className="space-y-4">
-              <label className="text-sm font-bold text-muted-foreground uppercase">Total Marks (Out of 500)</label>
-              <Input 
-                type="number" 
-                className="h-14 rounded-2xl text-xl" 
-                value={formData.marks10th || ""} 
-                onChange={(e) => {
-                  const val = Number(e.target.value);
-                  updateForm({ marks10th: val, percentage10th: (val / 500) * 100 });
-                }} 
-              />
-              <p className="text-center font-bold text-primary">Percentage: {formData.percentage10th?.toFixed(2)}%</p>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-muted-foreground uppercase">Select Board</label>
+              <select 
+                className="w-full p-4 rounded-2xl border bg-white shadow-sm focus:ring-2 focus:ring-primary outline-none"
+                value={formData.marks10thBoard || ""}
+                onChange={(e) => updateForm({ marks10thBoard: e.target.value, marks10th: 0, percentage10th: 0 })}
+              >
+                <option value="">-- Select Board --</option>
+                <option value="cbse">CBSE / ICSE (Out of 500)</option>
+                <option value="state">State Board - TN/AP/etc (Out of 1200)</option>
+              </select>
             </div>
-            <Button className="w-full rounded-xl h-12" onClick={handleNext} disabled={!formData.marks10th}>Next</Button>
+
+            {formData.marks10thBoard && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                <label className="text-sm font-bold text-muted-foreground uppercase">Total Marks (Out of {max10})</label>
+                <Input 
+                  type="number" 
+                  min={0}
+                  max={max10}
+                  className="h-14 rounded-2xl text-xl" 
+                  value={formData.marks10th || ""} 
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    if (val > max10) return;
+                    updateForm({ marks10th: val, percentage10th: (val / max10) * 100 });
+                  }} 
+                />
+                <p className="text-center font-bold text-primary">Percentage: {formData.percentage10th?.toFixed(2)}%</p>
+                <Button className="w-full rounded-xl h-12" onClick={handleNext} disabled={!formData.marks10th}>Next</Button>
+              </div>
+            )}
           </div>
         );
       case 6:
