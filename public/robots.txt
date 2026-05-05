@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /history
+Disallow: /interview
+
+Sitemap: https://eduanalytics-ai.vercel.app/sitemap.xml

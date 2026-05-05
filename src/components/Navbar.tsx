@@ -14,15 +14,28 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 export function Navbar() {
   const { user, profile } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut(auth);
   };
 
+  const handleNavClick = (sectionId: string) => {
+    if (pathname !== "/") {
+      router.push(`/#${sectionId}`);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    setIsOpen(false);
+  };
+
   const navLinks = [
-    { name: "How it works", href: "/#how-it-works", icon: Sparkles, protected: false },
-    { name: "Features", href: "/#features", icon: Zap, protected: false },
+    { name: "How it works", id: "how-it-works", icon: Sparkles, protected: false },
+    { name: "Features", id: "features", icon: Zap, protected: false },
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, protected: true },
     { name: "History", href: "/history", icon: History, protected: true },
     { name: "Contact", href: "/contact", icon: Phone, protected: false },
@@ -47,17 +60,30 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <div className="hidden md:flex md:items-center md:space-x-6">
           {filteredLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary flex items-center gap-2",
-                pathname === link.href ? "text-primary" : "text-muted-foreground"
-              )}
-            >
-              <link.icon className="h-4 w-4" />
-              {link.name}
-            </Link>
+            link.id ? (
+              <button
+                key={link.id}
+                onClick={() => handleNavClick(link.id!)}
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary flex items-center gap-2 text-muted-foreground"
+                )}
+              >
+                <link.icon className="h-4 w-4" />
+                {link.name}
+              </button>
+            ) : (
+              <Link
+                key={link.href}
+                href={link.href!}
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary flex items-center gap-2",
+                  pathname === link.href ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                <link.icon className="h-4 w-4" />
+                {link.name}
+              </Link>
+            )
           ))}
           {user ? (
             <div className="flex items-center gap-4">
@@ -100,18 +126,31 @@ export function Navbar() {
         <div className="md:hidden border-t border-white/10 bg-white/60 backdrop-blur-xl animate-in slide-in-from-top duration-300">
           <div className="container mx-auto px-4 py-4 space-y-4">
             {filteredLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 py-2 text-base font-medium transition-colors hover:text-primary",
-                  pathname === link.href ? "text-primary" : "text-muted-foreground"
-                )}
-              >
-                <link.icon className="h-5 w-5" />
-                {link.name}
-              </Link>
+              link.id ? (
+                <button
+                  key={link.id}
+                  onClick={() => handleNavClick(link.id!)}
+                  className={cn(
+                    "flex items-center gap-3 py-2 text-base font-medium transition-colors hover:text-primary w-full text-left text-muted-foreground"
+                  )}
+                >
+                  <link.icon className="h-5 w-5" />
+                  {link.name}
+                </button>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href!}
+                  onClick={() => setIsOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 py-2 text-base font-medium transition-colors hover:text-primary",
+                    pathname === link.href ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
+                  <link.icon className="h-5 w-5" />
+                  {link.name}
+                </Link>
+              )
             ))}
             {user ? (
               <Button variant="destructive" size="sm" onClick={handleSignOut} className="w-full">

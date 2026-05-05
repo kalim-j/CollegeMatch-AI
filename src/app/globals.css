@@ -79,6 +79,21 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Remove default button styles for nav links */
+nav button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  padding: 0;
+}
+
 .college-card-glow {
   position: relative;
 }

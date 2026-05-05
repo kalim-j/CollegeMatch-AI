@@ -112,12 +112,21 @@ export default function Home() {
     }
   ];
 
+  useEffect(() => {
+    const hash = window.location.hash?.replace('#', '');
+    if (hash) {
+      setTimeout(() => {
+        document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
+      }, 400);
+    }
+  }, []);
+
   if (loading) return null;
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-transparent">
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 lg:py-32">
+      <section id="home" className="relative overflow-hidden py-20 lg:py-32">
         <div className="container px-4 mx-auto relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div

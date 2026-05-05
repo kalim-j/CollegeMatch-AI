@@ -13,8 +13,25 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "EduAnalytics-AI | Your Dream College is Closer Than You Think",
-  description: "AI-powered Indian college admission advisory. Let AI find the best fit for your marks, state, and budget.",
+  title: 'EduAnalytics-AI | Your Dream College Awaits',
+  description: 'AI-powered education analytics to help Indian students find their dream college based on marks, stream, and interests.',
+  keywords: 'EduAnalytics AI, college predictor India, AI college finder, Tamil Nadu college, CBSE college match, education analytics',
+  openGraph: {
+    title: 'EduAnalytics-AI | Your Dream College Awaits',
+    description: 'Find your perfect college match using AI. Supports CBSE, ICSE, and State Board students.',
+    url: 'https://eduanalytics-ai.vercel.app',
+    siteName: 'EduAnalytics-AI',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'EduAnalytics-AI | Your Dream College Awaits',
+    description: 'AI-powered college finder for Indian students.',
+  },
+  metadataBase: new URL('https://eduanalytics-ai.vercel.app'),
+  alternates: {
+    canonical: 'https://eduanalytics-ai.vercel.app',
+  },
 };
 
 export default function RootLayout({
