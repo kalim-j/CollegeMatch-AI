@@ -73,7 +73,8 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    background: transparent;
+    @apply text-foreground;
     font-family: 'Plus Jakarta Sans', sans-serif;
   }
 }

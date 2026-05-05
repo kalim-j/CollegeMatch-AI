@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={cn(jakarta.variable, "min-h-screen font-sans antialiased bg-background")}>
+      <body className={cn(jakarta.variable, "min-h-screen font-sans antialiased")}>
         <Providers>
           <div className="relative flex min-h-screen flex-col">
             <Navbar />

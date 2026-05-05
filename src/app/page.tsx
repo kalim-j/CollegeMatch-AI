@@ -58,21 +58,17 @@ export default function Home() {
   if (loading) return null;
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-4rem)]">
+    <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-transparent">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-background py-20 md:py-32">
-        {/* Background blobs */}
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 -right-4 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />
-        
+      <section className="relative overflow-hidden py-20 md:py-32">
         <div className="container px-4 mx-auto relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="inline-flex items-center rounded-full border px-4 py-1.5 mb-6 text-sm font-medium bg-white/50 backdrop-blur-sm shadow-sm">
-              <span className="flex h-2 w-2 rounded-full bg-secondary mr-2" />
+            <div className="inline-flex items-center rounded-full border border-primary/20 px-4 py-1.5 mb-6 text-sm font-medium bg-white/40 backdrop-blur-md shadow-sm">
+              <span className="flex h-2 w-2 rounded-full bg-secondary animate-pulse mr-2" />
               <span className="text-secondary font-bold mr-1">New:</span> 
               <span className="text-muted-foreground">Llama-3.3 Powered Admissions Counselling</span>
             </div>
@@ -89,12 +85,12 @@ export default function Home() {
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/register">
-                <Button size="lg" className="h-14 px-10 text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all gap-2">
+                <Button size="lg" className="h-14 px-10 text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all gap-2 bg-primary">
                   Get Started Free <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>
               <Link href="/contact">
-                <Button variant="outline" size="lg" className="h-14 px-10 text-lg rounded-2xl">
+                <Button variant="outline" size="lg" className="h-14 px-10 text-lg rounded-2xl bg-white/20 backdrop-blur-sm border-primary/20">
                   Talk to an Expert
                 </Button>
               </Link>
@@ -109,7 +105,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-white/20 backdrop-blur-sm border-y border-primary/5">
         <div className="container px-4 mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">Why Choose EduAnalytics-AI?</h2>
@@ -126,7 +122,7 @@ export default function Home() {
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
             {features.map((feature, index) => (
-              <motion.div key={index} variants={item} className="bg-white p-8 rounded-3xl border border-primary/10 shadow-sm hover:shadow-md transition-all">
+              <motion.div key={index} variants={item} className="bg-white/60 backdrop-blur-md p-8 rounded-3xl border border-white/20 shadow-sm hover:shadow-md transition-all">
                 <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg", feature.color)}>
                   <feature.icon className="h-6 w-6" />
                 </div>
@@ -143,7 +139,7 @@ export default function Home() {
       {/* Testimonial Section */}
       <section className="py-20">
         <div className="container px-4 mx-auto text-center">
-          <div className="bg-primary/5 rounded-[3rem] p-12 md:p-20 relative overflow-hidden">
+          <div className="bg-white/30 backdrop-blur-xl border border-white/20 rounded-[3rem] p-12 md:p-20 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 text-primary/10">
               <Sparkles className="h-32 w-32" />
             </div>
@@ -165,12 +161,12 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-background">
+      <section className="py-20">
         <div className="container px-4 mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to find your match?</h2>
           <p className="text-xl text-muted-foreground mb-10">Join 5,000+ students who found their future through EduAnalytics-AI.</p>
           <Link href="/register">
-            <Button size="lg" className="h-14 px-10 text-lg rounded-2xl bg-[#1D9E75] hover:bg-[#1D9E75]/90">
+            <Button size="lg" className="h-14 px-10 text-lg rounded-2xl bg-[#1D9E75] hover:bg-[#1D9E75]/90 shadow-xl">
               Start Free Assessment Now
             </Button>
           </Link>

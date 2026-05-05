@@ -30,7 +30,7 @@ export function Navbar() {
   const filteredLinks = navLinks.filter(link => !link.protected || (link.protected && user));
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center space-x-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-lg">
@@ -92,7 +92,7 @@ export function Navbar() {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden border-t bg-background animate-in slide-in-from-top duration-300">
+        <div className="md:hidden border-t border-white/10 bg-white/60 backdrop-blur-xl animate-in slide-in-from-top duration-300">
           <div className="container mx-auto px-4 py-4 space-y-4">
             {filteredLinks.map((link) => (
               <Link
