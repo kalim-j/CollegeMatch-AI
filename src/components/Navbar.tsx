@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { GraduationCap, LayoutDashboard, History, User, Phone, LogOut, Menu, X } from "lucide-react";
+import { GraduationCap, LayoutDashboard, History, User, Phone, LogOut, Menu, X, Zap, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -21,13 +21,18 @@ export function Navbar() {
   };
 
   const navLinks = [
+    { name: "How it works", href: "/#how-it-works", icon: Sparkles, protected: false },
+    { name: "Features", href: "/#features", icon: Zap, protected: false },
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, protected: true },
     { name: "History", href: "/history", icon: History, protected: true },
     { name: "Contact", href: "/contact", icon: Phone, protected: false },
     { name: "Profile", href: "/profile", icon: User, protected: true },
   ];
 
-  const filteredLinks = navLinks.filter(link => !link.protected || (link.protected && user));
+  const filteredLinks = navLinks.filter(link => {
+    if (link.protected) return !!user;
+    return true;
+  });
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-md">

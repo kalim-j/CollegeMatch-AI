@@ -57,8 +57,9 @@ export default function Footer() {
           </div>
         </div>
         
-        <div className="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-gray-500 text-sm">
           <p>© {new Date().getFullYear()} EduAnalytics-AI. All rights reserved.</p>
+          <p className="font-medium text-primary/80">Inspiring ambition since 2024</p>
         </div>
       </div>
     </footer>
