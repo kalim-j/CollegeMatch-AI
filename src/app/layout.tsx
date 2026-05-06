@@ -14,29 +14,29 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: 'AdmissionIQ — AI College Predictor India',
-  description: 'AI-powered college predictor for Indian students',
-  keywords: 'AdmissionIQ, college predictor India, AI college finder, Tamil Nadu college, CBSE college match, education analytics',
+  description: 'AI-powered college predictor for Indian students. Get instant personalised college recommendations based on your marks.',
+  keywords: 'college predictor India, AI admission predictor, JEE college predictor, cutoff predictor, best colleges India',
+  verification: {
+    google: '3FzK2uEANXU1UxcCAAfgeX8axs3N4oSq-2slO34BnCU',
+  },
+  alternates: {
+    canonical: 'https://admissioniq-app.vercel.app',
+  },
   openGraph: {
     title: 'AdmissionIQ — AI College Predictor India',
-    description: 'Find your perfect college match using AI. Supports CBSE, ICSE, and State Board students.',
-    url: 'https://admissioniq.vercel.app',
+    description: 'Get AI-powered college recommendations based on your marks.',
+    url: 'https://admissioniq-app.vercel.app',
     siteName: 'AdmissionIQ',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'AdmissionIQ — AI College Predictor India',
-    description: 'AI-powered college finder for Indian students.',
+    description: 'Get AI-powered college recommendations based on your marks.',
   },
-  metadataBase: new URL('https://admissioniq.vercel.app'),
-  alternates: {
-    canonical: 'https://admissioniq.vercel.app',
-  },
-  verification: {
-    google: '3FzK2uEANXU1UxcCAAfgeX8axs3N4oSq-2slO34BnCU',
-    other: {
-      'msvalidate.01': 'PASTE_BING_CODE_HERE',
-    },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
