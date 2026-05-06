@@ -12,18 +12,23 @@ export async function POST(req: Request) {
     
     Structure:
     {
+      "id": number (unique random integer),
       "name": string,
-      "location": string (city, district),
+      "location": string,
       "state": string,
       "type": "Government" | "Private" | "Deemed" | "Autonomous",
-      "level": "UG" | "PG",
-      "courses": string[] (list all relevant UG or PG courses offered),
-      "cutoff_mark": number (expected cutoff for this student's community),
+      "course": string (primary recommended course),
+      "cutoff_general": number,
+      "cutoff_obc": number,
+      "cutoff_sc": number,
+      "cutoff_st": number,
+      "avg_package_lpa": number,
+      "max_package_lpa": number,
+      "seats": number,
+      "nirf_rank": number,
+      "website": string,
       "match_score": number (0-100),
-      "why_fit": string (2 sentences, inspiring tone),
-      "ranking": string (NIRF rank or state rank if known),
-      "naac_grade": string,
-      "contact_url": string (official website)
+      "why_fit": string (2 sentences)
     }
 
     District-aware: Prefer colleges in or near the student's district (${studentProfile.district}, ${studentProfile.state}).

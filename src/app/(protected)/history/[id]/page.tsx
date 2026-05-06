@@ -19,6 +19,7 @@ export default function SessionDetail() {
   const { user } = useAuth();
   const [session, setSession] = useState<InterviewSession | null>(null);
   const [loading, setLoading] = useState(true);
+  const [visitingId, setVisitingId] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -129,11 +130,40 @@ export default function SessionDetail() {
                     <Phone className="h-5 w-5" /> Admission Support
                   </Button>
                 </Link>
-                <Link href={college.contact_url} target="_blank" className="flex-1">
-                  <Button variant="outline" className="w-full h-14 rounded-xl font-bold gap-2 text-lg">
-                    Official Website <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </Link>
+                <a
+                  href={college.website || `https://www.google.com/search?q=${encodeURIComponent(college.name + ' official website')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setVisitingId(college.id);
+                    setTimeout(() => setVisitingId(null), 3000);
+                  }}
+                  className={cn(
+                    "flex-1 inline-flex items-center justify-center gap-2 h-14 rounded-xl font-bold text-lg transition-all duration-200",
+                    college.website 
+                      ? "bg-purple-500/15 text-purple-400 border border-purple-500/20 hover:bg-purple-500/25" 
+                      : "bg-gray-500/15 text-gray-400 border border-gray-500/20 hover:bg-gray-500/25"
+                  )}
+                >
+                  {visitingId === college.id ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                      </svg>
+                      Opening...
+                    </>
+                  ) : college.website ? (
+                    <>
+                      Official Website <ExternalLink className="h-4 w-4" />
+                    </>
+                  ) : (
+                    <>
+                      Search Online <ExternalLink className="h-4 w-4" />
+                    </>
+                  )}
+                </a>
               </div>
             </div>
           </div>

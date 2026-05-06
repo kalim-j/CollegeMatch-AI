@@ -13,6 +13,7 @@ export default function CollegeDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [college, setCollege] = useState<College | null>(null);
+  const [visitingId, setVisitingId] = useState<number | null>(null);
   
   useEffect(() => {
     // Get results from session storage
@@ -70,34 +71,32 @@ export default function CollegeDetailPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Card className="rounded-2xl p-4 text-center bg-white/40 backdrop-blur-md border border-primary/5 shadow-sm">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">NIRF Rank</p>
-                <p className="text-2xl font-black text-primary">{college.ranking}</p>
+                <p className="text-2xl font-black text-primary">#{college.nirf_rank}</p>
               </Card>
               <Card className="rounded-2xl p-4 text-center bg-white/40 backdrop-blur-md border border-primary/5 shadow-sm">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">NAAC</p>
-                <p className="text-2xl font-black text-secondary">{college.naac_grade}</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Avg Package</p>
+                <p className="text-2xl font-black text-secondary">{college.avg_package_lpa}L</p>
               </Card>
               <Card className="rounded-2xl p-4 text-center bg-white/40 backdrop-blur-md border border-primary/5 shadow-sm">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Type</p>
-                <p className="text-sm font-black uppercase text-primary/80">{college.type}</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Max Package</p>
+                <p className="text-xl font-black text-primary/80">{college.max_package_lpa}L</p>
               </Card>
               <Card className="rounded-2xl p-4 text-center bg-white/40 backdrop-blur-md border border-primary/5 shadow-sm">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Level</p>
-                <p className="text-sm font-black uppercase text-primary/80">{college.level}</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Seats</p>
+                <p className="text-2xl font-black text-primary/80">{college.seats}</p>
               </Card>
             </div>
           </div>
 
           <div className="space-y-6">
             <h2 className="text-2xl font-black flex items-center gap-2">
-              <Award className="h-6 w-6 text-primary" /> Offered Courses
+              <Award className="h-6 w-6 text-primary" /> Primary Course
             </h2>
             <div className="flex flex-wrap gap-3">
-              {college.courses.map(course => (
-                <div key={course} className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-primary/10 shadow-sm text-sm font-bold text-primary/80">
-                  <CheckCircle2 className="h-4 w-4 text-green-500" />
-                  {course}
-                </div>
-              ))}
+              <div className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-primary/10 shadow-sm text-sm font-bold text-primary/80">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                {college.course || college.courses?.[0]}
+              </div>
             </div>
           </div>
         </div>
@@ -138,11 +137,38 @@ export default function CollegeDetailPage() {
               </div>
 
               <div className="pt-4 space-y-4">
-                <Link href={college.contact_url} target="_blank" className="w-full">
-                  <Button className="w-full rounded-2xl gap-3 h-16 text-xl font-bold bg-primary hover:bg-primary/90 shadow-xl shadow-primary/20">
-                    <Globe className="h-5 w-5" /> Visit Official Website →
-                  </Button>
-                </Link>
+                <a
+                  href={college.website || `https://www.google.com/search?q=${encodeURIComponent(college.name + ' official website')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    setVisitingId(college.id);
+                    setTimeout(() => setVisitingId(null), 3000);
+                  }}
+                  className="w-full inline-flex items-center justify-center gap-3 h-16 text-xl font-bold rounded-2xl bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/20 transition-all duration-200"
+                >
+                  {visitingId === college.id ? (
+                    <>
+                      <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                      </svg>
+                      Opening...
+                    </>
+                  ) : college.website ? (
+                    <>
+                      <Globe className="h-5 w-5" /> Visit Official Website →
+                    </>
+                  ) : (
+                    <>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                      </svg>
+                      Search Online
+                    </>
+                  )}
+                </a>
                 <Link href="/contact" className="w-full">
                   <Button variant="outline" className="w-full rounded-2xl gap-3 h-14 text-lg font-bold border-primary/20 hover:bg-primary/5">
                     <Phone className="h-5 w-5 text-primary" /> Admission Enquiry

@@ -33,19 +33,27 @@ export interface StudentProfile {
 }
 
 export interface College {
+  id: number;
   name: string;
   location: string;
   state: string;
   type: 'Government' | 'Private' | 'Deemed' | 'Autonomous';
-  level: 'UG' | 'PG';
-  courses: string[];
-  cutoff_mark: number;
-  match_score: number;
-  why_fit: string;
-  ranking: string;
-  naac_grade: string;
-  contact_url: string;
-  officialWebsite?: string;
+  course: string;
+  cutoff_general: number;
+  cutoff_obc: number;
+  cutoff_sc: number;
+  cutoff_st: number;
+  avg_package_lpa: number;
+  max_package_lpa: number;
+  seats: number;
+  nirf_rank: number;
+  website: string;
+  // Keep these for AI generated response compatibility
+  match_score?: number;
+  why_fit?: string;
+  level?: string;
+  courses?: string[];
+  naac_grade?: string;
 }
 
 export interface InterviewSession {
