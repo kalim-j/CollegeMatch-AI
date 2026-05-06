@@ -392,18 +392,19 @@ export default function InterviewPage() {
 
                       <div className="flex flex-wrap gap-2 mb-6">
                         <span className="px-2 py-1 rounded-md bg-muted text-[10px] font-bold uppercase">{college.type}</span>
-                        <span className="px-2 py-1 rounded-md bg-muted text-[10px] font-bold uppercase">{college.level}</span>
-                        <span className="px-2 py-1 rounded-md bg-primary/10 text-primary text-[10px] font-bold uppercase">NAAC: {college.naac_grade}</span>
-                        <span className="px-2 py-1 rounded-md bg-secondary/10 text-secondary text-[10px] font-bold uppercase">Rank: {college.ranking}</span>
+                        {college.level && <span className="px-2 py-1 rounded-md bg-muted text-[10px] font-bold uppercase">{college.level}</span>}
+                        {college.avg_package_lpa && <span className="px-2 py-1 rounded-md bg-green-500/10 text-green-600 text-[10px] font-bold uppercase">Avg: {college.avg_package_lpa}L</span>}
+                        <span className="px-2 py-1 rounded-md bg-secondary/10 text-secondary text-[10px] font-bold uppercase">NIRF: #{college.nirf_rank}</span>
                       </div>
 
                       <div className="mb-6">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-2">Available Courses</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-2">Recommended Course</p>
                         <div className="flex flex-wrap gap-1.5">
-                          {college.courses.slice(0, 4).map(c => (
+                          {college.course ? (
+                            <span className="px-2 py-1 rounded-lg bg-muted/50 text-[10px]">{college.course}</span>
+                          ) : college.courses && college.courses.slice(0, 4).map(c => (
                             <span key={c} className="px-2 py-1 rounded-lg bg-muted/50 text-[10px]">{c}</span>
                           ))}
-                          {college.courses.length > 4 && <span className="text-[10px] text-muted-foreground">+{college.courses.length - 4} more</span>}
                         </div>
                       </div>
 
