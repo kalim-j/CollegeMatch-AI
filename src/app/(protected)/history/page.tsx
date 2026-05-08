@@ -189,16 +189,29 @@ export default function HistoryPage() {
                   <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                     <Button
                       variant="outline"
-                      onClick={() => generatePDFReport({
-                        studentName: profile?.fullName || 'Student',
-                        marks: session.studentProfile?.cutoffMark || 0,
-                        category: session.studentProfile?.quota || 'General',
-                        course: session.studentProfile?.stream || 'Any',
-                        aiSummary: `Based on your academic profile with ${session.studentProfile?.cutoffMark} marks in ${session.studentProfile?.stream}, we have analyzed ${session.results.length} colleges that best match your preferences. We recommend focusing on colleges with higher match scores for better admission probability.`,
-                        safeColleges: session.results.filter(c => (c.match_score || 0) > 80),
-                        moderateColleges: session.results.filter(c => (c.match_score || 0) > 60 && (c.match_score || 0) <= 80),
-                        reachColleges: session.results.filter(c => (c.match_score || 0) <= 60),
-                      })}
+                      onClick={() => {
+                        const mappedResults = session.results.map(r => ({
+                          name: r.name,
+                          location: r.location,
+                          state: r.state || r.location.split(',').pop()?.trim() || 'India',
+                          cutoff_general: r.cutoff_mark,
+                          match_score: r.match_score,
+                          why_fit: r.why_fit,
+                          naac_grade: r.naac_grade,
+                          nirf_rank: r.nirf_rank
+                        }));
+
+                        generatePDFReport({
+                          studentName: profile?.fullName || 'Student',
+                          marks: session.studentProfile?.cutoffMark || 0,
+                          category: session.studentProfile?.quota || 'General',
+                          course: session.studentProfile?.stream || 'Any',
+                          aiSummary: `Based on your academic profile with ${session.studentProfile?.cutoffMark} marks in ${session.studentProfile?.stream}, we have analyzed ${session.results.length} colleges that best match your preferences. We recommend focusing on colleges with higher match scores for better admission probability.`,
+                          safeColleges: mappedResults.filter(c => (c.match_score || 0) > 80),
+                          moderateColleges: mappedResults.filter(c => (c.match_score || 0) > 60 && (c.match_score || 0) <= 80),
+                          reachColleges: mappedResults.filter(c => (c.match_score || 0) <= 60),
+                        });
+                      }}
                       className="h-12 px-6 rounded-xl font-bold border-primary/20 hover:bg-primary/5 text-primary"
                     >
                       <FileDown className="h-4 w-4 mr-2" /> Download PDF
