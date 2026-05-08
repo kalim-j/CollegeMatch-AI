@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
+
 
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -20,14 +21,15 @@ export async function POST(req: NextRequest) {
 
     // ── STORE OTP IN SUPABASE ──
     try {
-      console.log("Storing OTP in Supabase...");
-      const { error: dbError } = await supabase
+      console.log("Storing OTP in Supabase Admin...");
+      const { error: dbError } = await supabaseAdmin
         .from('otps')
         .upsert({ 
           email, 
           code: otp, 
           expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString() 
         });
+
 
       if (dbError) throw dbError;
       console.log("Supabase storage successful");
