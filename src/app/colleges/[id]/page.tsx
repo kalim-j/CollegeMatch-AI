@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { GraduationCap, MapPin, Award, BookOpen, Globe, Phone, ChevronLeft, Sparkles, CheckCircle2, IndianRupee, Wallet, Briefcase, TrendingUp } from "lucide-react";
+import { GraduationCap, MapPin, Award, BookOpen, Globe, Phone, ChevronLeft, Sparkles, CheckCircle2, IndianRupee, Wallet, Briefcase, TrendingUp, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { College } from "@/types";
 import { cn } from "@/lib/utils";
