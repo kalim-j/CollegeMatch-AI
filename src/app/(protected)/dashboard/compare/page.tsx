@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Sparkles, GraduationCap, Globe, Info, BrainCircuit, Loader2 } from "lucide-react";
+import { Search, X, Sparkles, GraduationCap, Globe, Info, BrainCircuit, Loader2, Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
 
 const GROQ_KEY   = process.env.NEXT_PUBLIC_GROQ_API_KEY || "";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
@@ -35,12 +36,41 @@ function useDebounce<T>(val: T, ms: number = 400): T {
   return d;
 }
 
-// ── search colleges from free API ─────────────────────────────
+// ── search colleges from Supabase/API ─────────────────────────────
 async function searchColleges(query: string): Promise<College[]> {
   if (!query || query.trim().length < 2) return [];
   
+  // 1. Try Supabase first
+  try {
+    const { data: sbData, error } = await supabase
+      .from('colleges')
+      .select('*')
+      .ilike('name', `%${query}%`)
+      .limit(10);
+    
+    if (!error && sbData && sbData.length > 0) {
+      return sbData.map(c => ({
+        id:      c.id.toString(),
+        name:    c.name,
+        state:   c.state,
+        city:    c.location,
+        address: c.location,
+        website: c.website,
+        nirf_rank: c.nirf_rank,
+        cutoff_general: c.cutoff_general,
+        avg_package_lpa: c.avg_package_lpa,
+        max_package_lpa: c.max_package_lpa,
+        naac_grade: c.naac_grade,
+        type: c.type
+      }));
+    }
+  } catch (err) {
+    console.error("Supabase search error:", err);
+  }
+
+  // 2. Fallback to external API if Supabase fails or is empty
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
 
   try {
     const url = `${CLG_API}/colleges?search=${encodeURIComponent(query.trim())}&limit=20`;
@@ -58,10 +88,18 @@ async function searchColleges(query: string): Promise<College[]> {
       address: [c.Address_line1, c.Address_line2].filter(Boolean).join(", "),
     }));
   } catch (err) {
-    console.error("Search error:", err);
+    console.error("External search error:", err);
     return [];
   }
 }
+
+const POPULAR_COLLEGES: College[] = [
+    { id: "p1", name: "IIT Madras", city: "Chennai", state: "Tamil Nadu", address: "Chennai", nirf_rank: 1, type: "Government" },
+    { id: "p2", name: "IIT Delhi", city: "New Delhi", state: "Delhi", address: "New Delhi", nirf_rank: 2, type: "Government" },
+    { id: "p3", name: "IIT Bombay", city: "Mumbai", state: "Maharashtra", address: "Mumbai", nirf_rank: 3, type: "Government" },
+    { id: "p4", name: "VIT Vellore", city: "Vellore", state: "Tamil Nadu", address: "Vellore", nirf_rank: 11, type: "Private" },
+    { id: "p5", name: "NIT Trichy", city: "Trichy", state: "Tamil Nadu", address: "Trichy", nirf_rank: 9, type: "Government" },
+];
 
 // ── Groq AI comparison ─────────────────────────────────────────
 async function getAIComparison(colleges: College[]) {
@@ -195,14 +233,35 @@ export default function ComparePage() {
           </div>
 
           <AnimatePresence>
-            {showDrop && query.length >= 2 && (
+            {showDrop && (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 className="absolute top-full left-0 right-0 mt-2 bg-white/80 backdrop-blur-xl border border-primary/10 rounded-2xl shadow-2xl overflow-hidden z-50 max-h-[400px] overflow-y-auto"
               >
-                {searching ? (
+                {query.length < 2 ? (
+                  <div className="p-2">
+                    <div className="p-3 text-[10px] font-black text-primary/60 uppercase tracking-widest flex items-center gap-2">
+                        <Star className="h-3 w-3" /> Popular Choices
+                    </div>
+                    {POPULAR_COLLEGES.map(c => (
+                        <button
+                          key={c.id}
+                          className="w-full p-4 text-left hover:bg-primary/5 rounded-xl transition-colors flex justify-between items-center"
+                          onMouseDown={() => addCollege(c)}
+                        >
+                          <div>
+                            <div className="font-bold text-primary">{c.name}</div>
+                            <div className="text-[10px] text-muted-foreground mt-0.5">
+                                {[c.city, c.state].filter(Boolean).join(", ")}
+                            </div>
+                          </div>
+                          <div className="text-[10px] font-black text-secondary/60">TOP {c.nirf_rank}</div>
+                        </button>
+                    ))}
+                  </div>
+                ) : searching ? (
                   <div className="p-8 text-center text-muted-foreground flex items-center justify-center gap-3">
                     <Loader2 className="h-5 w-5 animate-spin" />
                     Searching database...

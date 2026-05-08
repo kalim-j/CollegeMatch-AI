@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, TrendingUp, MapPin, Loader2, GraduationCap, Calendar } from "lucide-react";
+import { Search, TrendingUp, MapPin, Loader2, GraduationCap, Calendar, Star } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer
@@ -41,6 +42,29 @@ function useDebounce<T>(val: T, ms: number = 400): T {
 
 async function searchColleges(query: string): Promise<College[]> {
   if (!query || query.trim().length < 2) return [];
+  
+  // 1. Try Supabase first
+  try {
+    const { data: sbData, error } = await supabase
+      .from('colleges')
+      .select('*')
+      .ilike('name', `%${query}%`)
+      .limit(10);
+    
+    if (!error && sbData && sbData.length > 0) {
+      return sbData.map(c => ({
+        id:      c.id.toString(),
+        name:    c.name,
+        state:   c.state,
+        city:    c.location,
+        cutoff_general: c.cutoff_general
+      }));
+    }
+  } catch (err) {
+    console.error("Supabase Trends search error:", err);
+  }
+
+  // 2. Fallback to external API
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000);
 
@@ -63,6 +87,14 @@ async function searchColleges(query: string): Promise<College[]> {
       return []; 
   }
 }
+
+const POPULAR_COLLEGES: College[] = [
+    { id: "p1", name: "IIT Madras", city: "Chennai", state: "Tamil Nadu", cutoff_general: 99.8 },
+    { id: "p2", name: "IIT Delhi", city: "New Delhi", state: "Delhi", cutoff_general: 99.7 },
+    { id: "p3", name: "IIT Bombay", city: "Mumbai", state: "Maharashtra", cutoff_general: 99.9 },
+    { id: "p4", name: "VIT Vellore", city: "Vellore", state: "Tamil Nadu", cutoff_general: 95.0 },
+    { id: "p5", name: "NIT Trichy", city: "Trichy", state: "Tamil Nadu", cutoff_general: 98.5 },
+];
 
 function buildTrendData(college: College): TrendPoint[] {
   const currentYear = new Date().getFullYear();
@@ -148,14 +180,35 @@ export default function TrendsPage() {
           </div>
 
           <AnimatePresence>
-            {showDrop && query.length >= 2 && (
+            {showDrop && (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 className="absolute top-full left-0 right-0 mt-2 bg-white/80 backdrop-blur-xl border border-primary/10 rounded-2xl shadow-2xl overflow-hidden z-50 max-h-[300px] overflow-y-auto"
               >
-                {searching ? (
+                {query.length < 2 ? (
+                  <div className="p-2">
+                    <div className="p-3 text-[10px] font-black text-primary/60 uppercase tracking-widest flex items-center gap-2">
+                        <Star className="h-3 w-3" /> Quick Select
+                    </div>
+                    {POPULAR_COLLEGES.map(c => (
+                        <button
+                          key={c.id}
+                          className="w-full p-4 text-left hover:bg-primary/5 rounded-xl transition-colors flex justify-between items-center"
+                          onMouseDown={() => selectCollege(c)}
+                        >
+                          <div>
+                            <div className="font-bold text-primary">{c.name}</div>
+                            <div className="text-[10px] text-muted-foreground mt-0.5">
+                                {[c.city, c.state].filter(Boolean).join(", ")}
+                            </div>
+                          </div>
+                          <div className="text-[10px] font-black text-secondary/60">TRENDING</div>
+                        </button>
+                    ))}
+                  </div>
+                ) : searching ? (
                   <div className="p-8 text-center text-muted-foreground flex items-center justify-center gap-3">
                     <Loader2 className="h-5 w-5 animate-spin" />
                     Searching...
