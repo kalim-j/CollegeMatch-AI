@@ -65,7 +65,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Profile Card */}
-        <Card className="lg:col-span-1 rounded-3xl border-primary/10 shadow-lg overflow-hidden h-fit">
+        <Card className="lg:col-span-1 rounded-2xl md:rounded-3xl border-primary/10 shadow-lg overflow-hidden h-fit">
           <div className="h-24 bg-gradient-to-r from-[#534AB7] to-[#1D9E75]" />
           <CardContent className="relative pt-0 px-6 pb-6">
             <div className="flex justify-center">
@@ -105,7 +105,7 @@ export default function Dashboard() {
         {/* Quick Stats & CTA */}
         <div className="lg:col-span-2 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="rounded-3xl border-primary/10 bg-primary text-white shadow-xl hover:shadow-2xl transition-all cursor-pointer group" asChild>
+            <Card className="rounded-2xl md:rounded-3xl border-primary/10 bg-primary text-white shadow-xl hover:shadow-2xl transition-all cursor-pointer group" asChild>
               <Link href="/interview">
                 <CardContent className="p-8">
                   <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -120,7 +120,7 @@ export default function Dashboard() {
               </Link>
             </Card>
 
-            <Card className="rounded-3xl border-primary/10 bg-white shadow-xl hover:shadow-2xl transition-all cursor-pointer group" asChild>
+            <Card className="rounded-2xl md:rounded-3xl border-primary/10 bg-white shadow-xl hover:shadow-2xl transition-all cursor-pointer group" asChild>
               <Link href="/history">
                 <CardContent className="p-8">
                   <div className="h-12 w-12 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -137,7 +137,7 @@ export default function Dashboard() {
           </div>
 
           {/* Recent Activity */}
-          <Card className="rounded-3xl border-primary/10 shadow-lg">
+          <Card className="rounded-2xl md:rounded-3xl border-primary/10 shadow-lg">
             <CardHeader>
               <CardTitle>Recent Match</CardTitle>
               <CardDescription>Your last AI-powered college suggestion</CardDescription>

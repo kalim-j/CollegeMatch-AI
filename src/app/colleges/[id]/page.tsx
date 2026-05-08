@@ -47,13 +47,13 @@ export default function CollegeDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-8">
-          <div className="relative h-64 md:h-80 w-full rounded-[3rem] overflow-hidden shadow-2xl">
+          <div className="relative h-64 md:h-80 w-full rounded-3xl md:rounded-[3rem] overflow-hidden shadow-2xl">
             <div className="absolute inset-0 bg-gradient-to-br from-primary via-[#7F77DD] to-secondary opacity-90" />
             <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8 text-center">
               <div className="h-20 w-20 rounded-3xl bg-white/20 flex items-center justify-center mb-6 backdrop-blur-md border border-white/30">
                 <GraduationCap className="h-10 w-10" />
               </div>
-              <h1 className="text-4xl md:text-5xl font-black">{college.name}</h1>
+              <h1 className="text-3xl md:text-5xl font-black">{college.name}</h1>
               <p className="text-xl opacity-90 mt-3 font-medium flex items-center gap-2">
                 <MapPin className="h-5 w-5" /> {college.location}, {college.state}
               </p>
@@ -102,7 +102,7 @@ export default function CollegeDetailPage() {
         </div>
 
         <div className="space-y-8">
-          <Card className="rounded-[3rem] border-primary/10 shadow-2xl overflow-hidden bg-white/60 backdrop-blur-xl">
+          <Card className="rounded-3xl md:rounded-[3rem] border-primary/10 shadow-2xl overflow-hidden bg-white/60 backdrop-blur-xl">
             <CardHeader className="bg-primary/10 p-8">
               <CardTitle className="flex items-center gap-3 text-2xl font-black">
                 <Sparkles className="h-6 w-6 text-primary animate-pulse" /> AI Match Analysis

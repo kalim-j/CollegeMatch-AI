@@ -392,7 +392,7 @@ export default function InterviewPage() {
                   onClick={() => handleCollegeClick(college)}
                   className="cursor-pointer group"
                 >
-                  <Card className="college-card-glow rounded-3xl border-primary/10 shadow-lg group-hover:shadow-2xl group-hover:border-primary/30 transition-all h-full overflow-hidden flex flex-col bg-white/40 backdrop-blur-md">
+                  <Card className="college-card-glow rounded-2xl md:rounded-3xl border-primary/10 shadow-lg group-hover:shadow-2xl group-hover:border-primary/30 transition-all h-full overflow-hidden flex flex-col bg-white/40 backdrop-blur-md">
                     <CardContent className="p-6 flex-1">
                       <div className="flex justify-between items-start mb-4">
                         <div>

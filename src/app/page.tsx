@@ -140,7 +140,7 @@ export default function Home() {
                 <span className="text-muted-foreground">Llama-3.3 Powered Predictions</span>
               </div>
               
-              <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[1.1]">
+              <h1 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[1.1]">
                 AI College Predictor for <span className="text-primary italic">India</span> — <br />
                 Find Your Dream College.
               </h1>
@@ -152,14 +152,14 @@ export default function Home() {
               </p>
 
               
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <Link href="/interview">
-                  <Button size="lg" className="h-16 px-12 text-xl rounded-[2rem] shadow-2xl hover:shadow-primary/30 transition-all gap-3 bg-primary hover:scale-105 active:scale-95">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+                <Link href="/interview" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto h-16 px-8 sm:px-12 text-lg sm:text-xl rounded-[2rem] shadow-2xl hover:shadow-primary/30 transition-all gap-3 bg-primary hover:scale-105 active:scale-95">
                     Start Your Free Analysis <ArrowRight className="h-6 w-6" />
                   </Button>
                 </Link>
-                <Link href="/contact">
-                  <Button variant="outline" size="lg" className="h-16 px-10 text-xl rounded-[2rem] bg-white/20 backdrop-blur-md border-primary/20 hover:bg-white/40 transition-all gap-2">
+                <Link href="/contact" className="w-full sm:w-auto">
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto h-16 px-8 sm:px-10 text-lg sm:text-xl rounded-[2rem] bg-white/20 backdrop-blur-md border-primary/20 hover:bg-white/40 transition-all gap-2">
                     <Play className="h-5 w-5 fill-primary text-primary" /> Watch How It Works
                   </Button>
                 </Link>
@@ -320,7 +320,7 @@ export default function Home() {
             initial={{ scale: 0.95, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true }}
-            className="bg-gradient-to-br from-[#5b3ee8] to-[#3b2cb7] rounded-[3.5rem] p-12 md:p-24 text-center text-white shadow-2xl relative overflow-hidden"
+            className="bg-gradient-to-br from-[#5b3ee8] to-[#3b2cb7] rounded-3xl md:rounded-[3.5rem] p-8 md:p-24 text-center text-white shadow-2xl relative overflow-hidden"
           >
             <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none" />
             <h2 className="text-4xl md:text-6xl font-black mb-8">Your Future Starts with One Click</h2>
