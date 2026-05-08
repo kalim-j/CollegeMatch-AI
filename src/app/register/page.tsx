@@ -20,16 +20,66 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const [showOTP, setShowOTP] = useState(false);
+  const [otpInput, setOtpInput] = useState("");
+
+  const [verifying, setVerifying] = useState(false);
+
+  const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
+      const res = await fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setShowOTP(true);
+        toast.success("Verification code sent to your email!");
+      } else {
+        throw new Error(data.error || "Failed to send code");
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyAndRegister = async () => {
+    setVerifying(true);
+    try {
+      // Fetch OTP from Firestore
+      const { getDoc, doc } = await import("firebase/firestore");
+      const otpDoc = await getDoc(doc(db, "otps", email));
+      
+      if (!otpDoc.exists()) {
+        toast.error("No code found. Please resend.");
+        return;
+      }
+
+      const data = otpDoc.data();
+      const now = new Date();
+      const expiresAt = data.expiresAt.toDate();
+
+      if (otpInput !== data.code) {
+        toast.error("Invalid verification code!");
+        return;
+      }
+
+      if (now > expiresAt) {
+        toast.error("Code expired. Please resend.");
+        return;
+      }
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
       const user = userCredential.user;
       
       await updateProfile(user, { displayName: name });
       
-      // Initialize profile in Firestore
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
         fullName: name,
@@ -37,14 +87,15 @@ export default function RegisterPage() {
         createdAt: new Date(),
       });
 
-      toast.success("Account created successfully!");
+      toast.success("Account verified and created!");
       router.push("/dashboard");
     } catch (error: any) {
       toast.error(error.message || "Failed to register");
     } finally {
-      setLoading(false);
+      setVerifying(false);
     }
   };
+
 
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
@@ -137,100 +188,154 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <form onSubmit={handleRegister} className="grid gap-4">
-              <div className="grid gap-2">
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-white/40" />
+            {!showOTP ? (
+              <form onSubmit={handleSendOTP} className="grid gap-4">
+                <div className="grid gap-2">
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-white/40" />
+                    <input
+                      id="name"
+                      placeholder="Full Name"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: 'white',
+                        borderRadius: '10px',
+                        padding: '10px 14px 10px 40px',
+                        width: '100%',
+                        outline: 'none',
+                        transition: 'border-color 0.3s ease'
+                      }}
+                      className="placeholder:text-white/40 focus:border-white/30"
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-white/40" />
+                    <input
+                      id="email"
+                      placeholder="Email address"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: 'white',
+                        borderRadius: '10px',
+                        padding: '10px 14px 10px 40px',
+                        width: '100%',
+                        outline: 'none',
+                        transition: 'border-color 0.3s ease'
+                      }}
+                      className="placeholder:text-white/40 focus:border-white/30"
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-white/40" />
+                    <input
+                      id="password"
+                      placeholder="Password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        color: 'white',
+                        borderRadius: '10px',
+                        padding: '10px 14px 10px 40px',
+                        width: '100%',
+                        outline: 'none',
+                        transition: 'border-color 0.3s ease'
+                      }}
+                      className="placeholder:text-white/40 focus:border-white/30"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{
+                    background: 'linear-gradient(135deg, #7F77DD, #534AB7)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '12px',
+                    fontWeight: 500,
+                    width: '100%',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(83, 74, 183, 0.3)',
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                  {loading ? "Sending Code..." : "Send Verification Code"}
+                </button>
+              </form>
+            ) : (
+              <div className="grid gap-4">
+                <div className="p-4 bg-primary/10 border border-primary/20 rounded-xl text-center">
+                  <p className="text-white text-sm font-medium">Verify your email</p>
+                  <p className="text-white/60 text-xs mt-1">We've sent a 6-digit code to {email}</p>
+                </div>
+                <div className="grid gap-2">
                   <input
-                    id="name"
-                    placeholder="Full Name"
+                    placeholder="Enter 6-digit code"
                     type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
+                    maxLength={6}
+                    value={otpInput}
+                    onChange={(e) => setOtpInput(e.target.value)}
                     style={{
                       background: 'rgba(255, 255, 255, 0.08)',
                       border: '1px solid rgba(255, 255, 255, 0.15)',
                       color: 'white',
                       borderRadius: '10px',
-                      padding: '10px 14px 10px 40px',
+                      padding: '12px',
                       width: '100%',
-                      outline: 'none',
-                      transition: 'border-color 0.3s ease'
+                      textAlign: 'center',
+                      fontSize: '24px',
+                      letterSpacing: '8px',
+                      fontWeight: 'bold',
+                      outline: 'none'
                     }}
-                    className="placeholder:text-white/40 focus:border-white/30"
                   />
                 </div>
+                <button
+                  onClick={handleVerifyAndRegister}
+                  disabled={verifying}
+                  style={{
+                    background: 'linear-gradient(135deg, #22C55E, #16A34A)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '12px',
+                    fontWeight: 600,
+                    width: '100%',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {verifying ? "Verifying..." : "Verify & Create Account"}
+                </button>
+                <button 
+                  onClick={() => setShowOTP(false)}
+                  className="text-white/40 text-xs hover:text-white transition-colors"
+                >
+                  Change email or details
+                </button>
               </div>
-              <div className="grid gap-2">
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-white/40" />
-                  <input
-                    id="email"
-                    placeholder="Email address"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.08)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: 'white',
-                      borderRadius: '10px',
-                      padding: '10px 14px 10px 40px',
-                      width: '100%',
-                      outline: 'none',
-                      transition: 'border-color 0.3s ease'
-                    }}
-                    className="placeholder:text-white/40 focus:border-white/30"
-                  />
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-white/40" />
-                  <input
-                    id="password"
-                    placeholder="Password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.08)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: 'white',
-                      borderRadius: '10px',
-                      padding: '10px 14px 10px 40px',
-                      width: '100%',
-                      outline: 'none',
-                      transition: 'border-color 0.3s ease'
-                    }}
-                    className="placeholder:text-white/40 focus:border-white/30"
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  background: 'linear-gradient(135deg, #7F77DD, #534AB7)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '10px',
-                  padding: '12px',
-                  fontWeight: 500,
-                  width: '100%',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(83, 74, 183, 0.3)',
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-              >
-                {loading ? "Creating Account..." : "Create Account"}
-              </button>
-            </form>
+            )}
+
 
             <p className="text-sm text-white/60 text-center mt-4">
               Already have an account?{" "}
