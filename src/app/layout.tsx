@@ -15,7 +15,14 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "CollegeMatch — AI College Predictor India",
   description: "Free AI-powered college predictor for Indian students.",
+  verification: {
+    google: "3FzK2uEANXU1UxcCAAfgeX8axs3N4oSq-2slO34BnCU",
+    other: {
+      "msvalidate.01": "71B17ABD2ACAF429A09CAD3993991A6C",
+    },
+  },
 };
+
 
 export default function RootLayout({
   children,
