@@ -141,13 +141,16 @@ export default function Home() {
               </div>
               
               <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[1.1]">
-                Your <span className="text-primary italic">Dream College</span> <br />
-                is Within Reach.
+                AI College Predictor for <span className="text-primary italic">India</span> — <br />
+                Find Your Dream College.
               </h1>
               
               <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
-                Empowering Indian students with AI-driven insights to find the perfect college match based on marks, state, and budget.
+                Free AI-powered admission predictor. Enter your JEE / board marks, 
+                state, and budget — get instant college recommendations from 43,000+ 
+                Indian colleges including IITs, NITs, IIITs and private colleges.
               </p>
+
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Link href="/interview">
