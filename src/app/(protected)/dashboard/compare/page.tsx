@@ -6,6 +6,7 @@ import { Search, X, Sparkles, GraduationCap, Globe, Info, BrainCircuit, Loader2,
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
+import { cn } from "@/lib/utils";
 
 const GROQ_KEY   = process.env.NEXT_PUBLIC_GROQ_API_KEY || "";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
