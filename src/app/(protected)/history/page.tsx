@@ -11,9 +11,10 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from "framer-motion";
-import { GraduationCap, MapPin, Sparkles, ChevronRight, History, Calendar, Award, BookOpen, Search, X } from "lucide-react";
+import { GraduationCap, MapPin, Sparkles, ChevronRight, History, Calendar, Award, BookOpen, Search, X, FileDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { generatePDFReport } from '@/lib/generateReport';
 
 interface CollegeResult {
   name: string;
@@ -185,17 +186,35 @@ export default function HistoryPage() {
                     </div>
                   </div>
 
-                  <Button
-                    variant={expandedId === session.id ? "outline" : "default"}
-                    onClick={() => setExpandedId(expandedId === session.id ? null : session.id)}
-                    className="w-full md:w-auto h-12 px-8 rounded-xl font-bold shadow-md"
-                  >
-                    {expandedId === session.id ? (
-                        <><X className="h-4 w-4 mr-2" /> Close</>
-                    ) : (
-                        <><Search className="h-4 w-4 mr-2" /> View Results</>
-                    )}
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <Button
+                      variant="outline"
+                      onClick={() => generatePDFReport({
+                        studentName: profile?.fullName || 'Student',
+                        marks: session.studentProfile?.cutoffMark || 0,
+                        category: session.studentProfile?.quota || 'General',
+                        course: session.studentProfile?.stream || 'Any',
+                        aiSummary: `Based on your academic profile with ${session.studentProfile?.cutoffMark} marks in ${session.studentProfile?.stream}, we have analyzed ${session.results.length} colleges that best match your preferences. We recommend focusing on colleges with higher match scores for better admission probability.`,
+                        safeColleges: session.results.filter(c => (c.match_score || 0) > 80),
+                        moderateColleges: session.results.filter(c => (c.match_score || 0) > 60 && (c.match_score || 0) <= 80),
+                        reachColleges: session.results.filter(c => (c.match_score || 0) <= 60),
+                      })}
+                      className="h-12 px-6 rounded-xl font-bold border-primary/20 hover:bg-primary/5 text-primary"
+                    >
+                      <FileDown className="h-4 w-4 mr-2" /> Download PDF
+                    </Button>
+                    <Button
+                      variant={expandedId === session.id ? "outline" : "default"}
+                      onClick={() => setExpandedId(expandedId === session.id ? null : session.id)}
+                      className="h-12 px-8 rounded-xl font-bold shadow-md"
+                    >
+                      {expandedId === session.id ? (
+                          <><X className="h-4 w-4 mr-2" /> Close</>
+                      ) : (
+                          <><Search className="h-4 w-4 mr-2" /> View Results</>
+                      )}
+                    </Button>
+                  </div>
                 </div>
 
                 <AnimatePresence>
