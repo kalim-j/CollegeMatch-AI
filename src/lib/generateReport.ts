@@ -1,5 +1,5 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+// Dynamic imports will be used inside the function to avoid SSR issues
+
 
 type College = {
   name: string;
@@ -25,9 +25,14 @@ type ReportData = {
   reachColleges: College[];
 };
 
-export const generatePDFReport = (data: ReportData) => {
+export const generatePDFReport = async (data: ReportData) => {
+  // Dynamically import jsPDF and autoTable only when the function is called (Client-side)
+  const { default: jsPDF } = await import('jspdf');
+  const { default: autoTable } = await import('jspdf-autotable');
+
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
+
 
   doc.setFillColor(7, 9, 26);
   doc.rect(0, 0, pageWidth, 50, 'F');
