@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"]
   },
   verification: {
-    google: "ADD_YOUR_GOOGLE_SEARCH_CONSOLE_CODE_HERE",
+    google: "3FzK2uEANXU1UxcCAAfgeX8axs3N4oSq-2slO34BnCU",
     yandex: "ADD_YOUR_YANDEX_CODE_HERE"
   },
   alternates: {
