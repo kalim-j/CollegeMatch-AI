@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const baseUrl = "https://admissioniq-ai.vercel.app";
+  const baseUrl = "https://collegematch-ai.vercel.app";
   return [
     { url: baseUrl,                          lastModified: new Date(), changeFrequency: "daily",   priority: 1.0 },
     { url: `${baseUrl}/dashboard`,           lastModified: new Date(), changeFrequency: "daily",   priority: 0.9 },

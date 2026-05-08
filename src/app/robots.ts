@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "DuckDuckBot", allow: "/" },
       { userAgent: "Slurp", allow: "/" },
     ],
-    sitemap: "https://admissioniq-ai.vercel.app/sitemap.xml",
-    host: "https://admissioniq-ai.vercel.app"
+    sitemap: "https://collegematch-ai.vercel.app/sitemap.xml",
+    host: "https://collegematch-ai.vercel.app"
   };
 }

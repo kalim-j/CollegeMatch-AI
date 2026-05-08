@@ -117,7 +117,7 @@ export default function RegisterPage() {
         createdAt: new Date(),
       }, { merge: true });
 
-      toast.success("Welcome to AdmissionIQ!");
+      toast.success("Welcome to CollegeMatch!");
       router.push("/dashboard");
     } catch (error: any) {
       toast.error(error.message || "Google registration failed");

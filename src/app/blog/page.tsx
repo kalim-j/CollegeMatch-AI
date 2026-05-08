@@ -27,7 +27,7 @@ export default function BlogPage() {
               AI
             </div>
             <div>
-              <p className="font-bold text-white">AdmissionIQ Editorial</p>
+              <p className="font-bold text-white">CollegeMatch Editorial</p>
               <p className="text-sm">Updated May 2024 • 5 min read</p>
             </div>
           </div>
@@ -47,7 +47,7 @@ export default function BlogPage() {
               </h2>
               <p>
                 Traditional search methods often rely on outdated rankings or biased opinions. 
-                An **admission ai india** platform like AdmissionIQ uses real-time data to match your 
+                An **admission ai india** platform like CollegeMatch uses real-time data to match your 
                 JEE, TNEA, or State Board marks with the colleges where you have the highest probability of admission. 
                 It takes into account your category, home state quota, and even your preferred branch of engineering.
               </p>

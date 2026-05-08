@@ -93,7 +93,7 @@ export default function Home() {
 
   const testimonials = [
     {
-      quote: "I thought my marks weren't good enough for a top engineering college. AdmissionIQ found me an autonomous college that I hadn't even considered. Forever grateful!",
+      quote: "I thought my marks weren't good enough for a top engineering college. CollegeMatch found me an autonomous college that I hadn't even considered. Forever grateful!",
       author: "Rahul Krishnan",
       info: "Engineering Student, Chennai",
       initials: "RK"
@@ -211,7 +211,7 @@ export default function Home() {
       <section id="features" className="py-24 lg:py-32">
         <div className="container px-4 mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-black mb-6">Why Choose AdmissionIQ?</h2>
+            <h2 className="text-4xl md:text-5xl font-black mb-6">Why Choose CollegeMatch?</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               We combine deep data with cutting-edge AI to provide you with the most accurate college roadmaps in India.
             </p>
@@ -279,7 +279,7 @@ export default function Home() {
         <div className="container px-4 mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-black mb-6">Student Stories</h2>
-            <p className="text-xl text-muted-foreground">Hear from students who found their future through AdmissionIQ.</p>
+            <p className="text-xl text-muted-foreground">Hear from students who found their future through CollegeMatch.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

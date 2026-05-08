@@ -50,12 +50,12 @@ export async function POST(req: NextRequest) {
       });
 
       await transporter.sendMail({
-        from: `"AdmissionIQ Verification" <${process.env.EMAIL_USER}>`,
+        from: `"CollegeMatch Verification" <${process.env.EMAIL_USER}>`,
         to: email,
-        subject: `🛡️ ${otp} is your AdmissionIQ Verification Code`,
+        subject: `🛡️ ${otp} is your CollegeMatch Verification Code`,
         html: `
           <div style="font-family:sans-serif;max-width:400px;margin:auto;padding:30px;border:1px solid #eee;border-radius:20px;text-align:center">
-            <h2 style="color:#5b3ee8;margin-bottom:10px">AdmissionIQ</h2>
+            <h2 style="color:#5b3ee8;margin-bottom:10px">CollegeMatch</h2>
             <p style="color:#666">Verify your email to secure your account.</p>
             <div style="background:#f4f3ff;padding:20px;border-radius:15px;margin:25px 0">
               <span style="font-size:32px;font-weight:900;letter-spacing:10px;color:#5b3ee8">${otp}</span>
