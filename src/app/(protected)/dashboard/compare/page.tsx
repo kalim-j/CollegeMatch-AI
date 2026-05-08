@@ -38,9 +38,15 @@ function useDebounce<T>(val: T, ms: number = 400): T {
 // ── search colleges from free API ─────────────────────────────
 async function searchColleges(query: string): Promise<College[]> {
   if (!query || query.trim().length < 2) return [];
+  
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
   try {
     const url = `${CLG_API}/colleges?search=${encodeURIComponent(query.trim())}&limit=20`;
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    
     if (!res.ok) return [];
     const data = await res.json();
     const list = Array.isArray(data) ? data : (data.colleges || []);
@@ -51,7 +57,8 @@ async function searchColleges(query: string): Promise<College[]> {
       city:    c.City    || c.city    || "",
       address: [c.Address_line1, c.Address_line2].filter(Boolean).join(", "),
     }));
-  } catch {
+  } catch (err) {
+    console.error("Search error:", err);
     return [];
   }
 }
@@ -118,11 +125,15 @@ export default function ComparePage() {
   useEffect(() => {
     if (debouncedQ.trim().length < 2) { setResults([]); return; }
     setSearching(true);
-    searchColleges(debouncedQ).then(r => { 
-      setResults(r); 
-      setSearching(false); 
-      setShowDrop(true); 
-    });
+    searchColleges(debouncedQ)
+      .then(r => { 
+        setResults(r); 
+        setSearching(false); 
+        setShowDrop(true); 
+      })
+      .catch(() => {
+        setSearching(false);
+      });
   }, [debouncedQ]);
 
   useEffect(() => {

@@ -41,8 +41,14 @@ function useDebounce<T>(val: T, ms: number = 400): T {
 
 async function searchColleges(query: string): Promise<College[]> {
   if (!query || query.trim().length < 2) return [];
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
   try {
-    const res = await fetch(`${CLG_API}/colleges?search=${encodeURIComponent(query.trim())}&limit=15`);
+    const res = await fetch(`${CLG_API}/colleges?search=${encodeURIComponent(query.trim())}&limit=15`, {
+        signal: controller.signal
+    });
+    clearTimeout(timeoutId);
     if (!res.ok) return [];
     const data = await res.json();
     const list = Array.isArray(data) ? data : (data.colleges || []);
@@ -52,7 +58,10 @@ async function searchColleges(query: string): Promise<College[]> {
       state: c.State || c.state || "",
       city:  c.City  || c.city  || "",
     }));
-  } catch { return []; }
+  } catch (err) { 
+      console.error("Trends search error:", err);
+      return []; 
+  }
 }
 
 function buildTrendData(college: College): TrendPoint[] {
@@ -99,11 +108,15 @@ export default function TrendsPage() {
   useEffect(() => {
     if (debouncedQ.trim().length < 2) { setResults([]); return; }
     setSearching(true);
-    searchColleges(debouncedQ).then(r => { 
-        setResults(r); 
-        setSearching(false); 
-        setShowDrop(true); 
-    });
+    searchColleges(debouncedQ)
+        .then(r => { 
+            setResults(r); 
+            setSearching(false); 
+            setShowDrop(true); 
+        })
+        .catch(() => {
+            setSearching(false);
+        });
   }, [debouncedQ]);
 
   const selectCollege = (c: College) => {
