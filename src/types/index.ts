@@ -54,6 +54,7 @@ export interface College {
   level?: string;
   courses?: string[];
   naac_grade?: string;
+  fees_approx?: string;
 }
 
 export interface InterviewSession {

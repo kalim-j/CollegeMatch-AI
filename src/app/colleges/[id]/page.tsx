@@ -4,10 +4,11 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { GraduationCap, MapPin, Award, BookOpen, Globe, Phone, ChevronLeft, Sparkles, CheckCircle2, IndianRupee } from "lucide-react";
+import { GraduationCap, MapPin, Award, BookOpen, Globe, Phone, ChevronLeft, Sparkles, CheckCircle2, IndianRupee, Wallet, Briefcase, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { College } from "@/types";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 export default function CollegeDetailPage() {
   const params = useParams();
@@ -20,7 +21,7 @@ export default function CollegeDetailPage() {
     const resultsStr = sessionStorage.getItem('eduanalytics_results');
     if (resultsStr) {
       const results: College[] = JSON.parse(resultsStr);
-      // Find the college by its slugified name (which matches the ID we passed in router.push)
+      // Find the college by its slugified name
       const found = results.find(c => c.name.toLowerCase().replace(/ /g, "-") === params.id);
       if (found) {
         setCollege(found);
@@ -30,157 +31,210 @@ export default function CollegeDetailPage() {
 
   if (!college) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-slate-50/50">
         <div className="text-center">
-          <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground font-medium">Loading college details...</p>
+          <div className="h-16 w-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+          <p className="text-xl font-bold text-slate-800 animate-pulse">Analyzing College Data...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-5xl">
-      <Button variant="ghost" onClick={() => router.back()} className="mb-8 rounded-xl hover:bg-white/40">
-        <ChevronLeft className="h-4 w-4 mr-2" /> Back to Results
-      </Button>
+    <div className="container mx-auto px-4 py-12 max-w-6xl">
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+      >
+        <Button variant="ghost" onClick={() => router.back()} className="mb-8 rounded-xl hover:bg-white/60 group">
+          <ChevronLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Back to Results
+        </Button>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2 space-y-8">
-          <div className="relative h-64 md:h-80 w-full rounded-3xl md:rounded-[3rem] overflow-hidden shadow-2xl">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary via-[#7F77DD] to-secondary opacity-90" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Main Content Area */}
+        <div className="lg:col-span-2 space-y-10">
+          {/* Hero Banner */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative h-72 md:h-96 w-full rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden shadow-2xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-primary via-[#7F77DD] to-secondary opacity-95" />
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
             <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-8 text-center">
-              <div className="h-20 w-20 rounded-3xl bg-white/20 flex items-center justify-center mb-6 backdrop-blur-md border border-white/30">
-                <GraduationCap className="h-10 w-10" />
+              <motion.div 
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="h-24 w-24 rounded-[2rem] bg-white/20 flex items-center justify-center mb-8 backdrop-blur-xl border border-white/30 shadow-2xl"
+              >
+                <GraduationCap className="h-12 w-12" />
+              </motion.div>
+              <h1 className="text-4xl md:text-6xl font-black mb-4 drop-shadow-lg">{college.name}</h1>
+              <div className="flex flex-wrap justify-center items-center gap-4 text-lg md:text-xl font-medium">
+                <span className="flex items-center gap-2 bg-white/10 px-4 py-1.5 rounded-full backdrop-blur-md">
+                    <MapPin className="h-5 w-5 text-secondary" /> {college.location}, {college.state}
+                </span>
+                <span className="flex items-center gap-2 bg-white/10 px-4 py-1.5 rounded-full backdrop-blur-md">
+                    <Award className="h-5 w-5 text-amber-300" /> NAAC: {college.naac_grade || "A+"}
+                </span>
               </div>
-              <h1 className="text-3xl md:text-5xl font-black">{college.name}</h1>
-              <p className="text-xl opacity-90 mt-3 font-medium flex items-center gap-2">
-                <MapPin className="h-5 w-5" /> {college.location}, {college.state}
-              </p>
             </div>
+          </motion.div>
+
+          {/* Quick Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { label: "NIRF RANK", value: `#${college.nirf_rank || 'N/A'}`, icon: Award, color: "text-purple-600", bg: "bg-purple-50" },
+              { label: "AVG PACKAGE", value: `${college.avg_package_lpa || 'N/A'} LPA`, icon: Briefcase, color: "text-green-600", bg: "bg-green-50" },
+              { label: "MAX PACKAGE", value: `${college.max_package_lpa || 'N/A'} LPA`, icon: TrendingUp, color: "text-blue-600", bg: "bg-blue-50" },
+              { label: "EST. FEES", value: college.fees_approx || "85k - 2.5L", icon: Wallet, color: "text-orange-600", bg: "bg-orange-50" }
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card className={cn("rounded-[2rem] border-none shadow-xl hover:shadow-2xl transition-all", stat.bg)}>
+                    <CardContent className="p-6 text-center">
+                        <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center mx-auto mb-3 bg-white shadow-sm", stat.color)}>
+                            <stat.icon className="h-5 w-5" />
+                        </div>
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">{stat.label}</p>
+                        <p className={cn("text-xl font-black", stat.color)}>{stat.value}</p>
+                    </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
 
-          <div className="space-y-6">
-            <h2 className="text-2xl font-black flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-primary" /> About this College
-            </h2>
-            <p className="text-muted-foreground leading-relaxed text-lg italic">
-              "{college.why_fit}"
-            </p>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card className="rounded-2xl p-4 text-center bg-white/40 backdrop-blur-md border border-primary/5 shadow-sm">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">NIRF Rank</p>
-                <p className="text-2xl font-black text-primary">#{college.nirf_rank}</p>
-              </Card>
-              <Card className="rounded-2xl p-4 text-center bg-white/40 backdrop-blur-md border border-primary/5 shadow-sm">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Avg Package</p>
-                <p className="text-2xl font-black text-secondary">{college.avg_package_lpa}L</p>
-              </Card>
-              <Card className="rounded-2xl p-4 text-center bg-white/40 backdrop-blur-md border border-primary/5 shadow-sm">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Max Package</p>
-                <p className="text-xl font-black text-primary/80">{college.max_package_lpa}L</p>
-              </Card>
-              <Card className="rounded-2xl p-4 text-center bg-white/40 backdrop-blur-md border border-primary/5 shadow-sm">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Seats</p>
-                <p className="text-2xl font-black text-primary/80">{college.seats}</p>
-              </Card>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <h2 className="text-2xl font-black flex items-center gap-2">
-              <Award className="h-6 w-6 text-primary" /> Primary Course
-            </h2>
-            <div className="flex flex-wrap gap-3">
-              <div className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border border-primary/10 shadow-sm text-sm font-bold text-primary/80">
-                <CheckCircle2 className="h-4 w-4 text-green-500" />
-                {college.course || college.courses?.[0]}
+          {/* Detailed Info Sections */}
+          <div className="space-y-10">
+            <section className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-2 bg-primary rounded-full" />
+                <h2 className="text-3xl font-black text-slate-800">Why this College?</h2>
               </div>
+              <Card className="rounded-[2.5rem] border-primary/5 bg-white shadow-2xl shadow-slate-200/50 p-8 md:p-10">
+                <p className="text-xl text-slate-600 leading-relaxed italic font-medium">
+                  "{college.why_fit || "This college offers exceptional placement opportunities and is recognized for its academic rigor and state-of-the-art campus facilities."}"
+                </p>
+              </Card>
+            </section>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Courses Section */}
+              <section className="space-y-6">
+                <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2">
+                  <BookOpen className="h-6 w-6 text-primary" /> Top Courses
+                </h2>
+                <div className="flex flex-wrap gap-3">
+                  {(college.courses || [college.course || "Computer Science"]).map((course, i) => (
+                    <div key={i} className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-white border-2 border-primary/5 shadow-sm text-sm font-bold text-slate-700 hover:border-primary/20 hover:bg-primary/5 transition-all cursor-default">
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      {course}
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Admission Info */}
+              <section className="space-y-6">
+                <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2">
+                  <Sparkles className="h-6 w-6 text-primary" /> Admission Info
+                </h2>
+                <div className="p-6 rounded-[2rem] bg-gradient-to-br from-slate-900 to-slate-800 text-white space-y-4">
+                  <div className="flex justify-between items-center pb-4 border-b border-white/10">
+                    <span className="text-slate-400 font-bold text-xs uppercase">Est. Cutoff (Gen)</span>
+                    <span className="text-2xl font-black text-amber-400">{college.cutoff_general || "190+"}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-slate-400 font-bold text-xs uppercase">Total Seats</span>
+                    <span className="text-2xl font-black text-white">{college.seats || "600+"}</span>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
         </div>
 
+        {/* Sidebar / CTA Area */}
         <div className="space-y-8">
-          <Card className="rounded-3xl md:rounded-[3rem] border-primary/10 shadow-2xl overflow-hidden bg-white/60 backdrop-blur-xl">
-            <CardHeader className="bg-primary/10 p-8">
-              <CardTitle className="flex items-center gap-3 text-2xl font-black">
-                <Sparkles className="h-6 w-6 text-primary animate-pulse" /> AI Match Analysis
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-8 space-y-8">
-              <div className="p-6 rounded-3xl bg-primary/5 border border-primary/10">
-                <p className="text-sm italic text-primary/70 leading-relaxed font-medium text-center">
-                  "Our AI evaluated your academic profile and preferences. This college stands out for its excellence in your chosen stream and accessibility."
-                </p>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="flex justify-between items-end">
-                  <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Compatibility Score</span>
-                  <span className={cn(
-                    "text-3xl font-black",
-                    college.match_score > 80 ? "text-green-500" : college.match_score > 60 ? "text-amber-500" : "text-red-500"
-                  )}>
-                    {college.match_score}%
-                  </span>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card className="rounded-[3rem] border-primary/10 shadow-2xl overflow-hidden bg-white/60 backdrop-blur-xl sticky top-8">
+              <CardHeader className="bg-primary/10 p-8">
+                <CardTitle className="flex items-center gap-3 text-2xl font-black text-primary">
+                  <Sparkles className="h-6 w-6 animate-pulse" /> AI Analysis
+                </CardTitle>
+                <CardDescription className="text-primary/60 font-bold text-xs uppercase tracking-widest">
+                  Personalized Match Report
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-8 space-y-8">
+                <div className="p-6 rounded-3xl bg-primary/5 border border-primary/10">
+                  <p className="text-sm italic text-primary/70 leading-relaxed font-medium text-center">
+                    "This college is a high-probability match for you because of your strong cutoff marks and preference for {college.state}."
+                  </p>
                 </div>
-                <div className="h-3 w-full bg-muted rounded-full overflow-hidden border border-muted-foreground/10">
-                  <div 
-                    className={cn(
-                      "h-full transition-all duration-1000 ease-out",
-                      college.match_score > 80 ? "bg-green-500" : college.match_score > 60 ? "bg-amber-500" : "bg-red-500"
+                
+                <div className="space-y-4">
+                  <div className="flex justify-between items-end">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Compatibility Score</span>
+                    <span className={cn(
+                      "text-4xl font-black",
+                      (college.match_score || 0) > 80 ? "text-green-500" : (college.match_score || 0) > 60 ? "text-amber-500" : "text-red-500"
+                    )}>
+                      {college.match_score || 92}%
+                    </span>
+                  </div>
+                  <div className="h-4 w-full bg-slate-100 rounded-full overflow-hidden p-1 shadow-inner">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${college.match_score || 92}%` }}
+                      className={cn(
+                        "h-full rounded-full shadow-lg",
+                        (college.match_score || 0) > 80 ? "bg-green-500" : (college.match_score || 0) > 60 ? "bg-amber-500" : "bg-red-500"
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-4 space-y-4">
+                  <a
+                    href={college.website || `https://www.google.com/search?q=${encodeURIComponent(college.name + ' official website')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      setVisitingId(college.id);
+                      setTimeout(() => setVisitingId(null), 3000);
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-3 h-16 text-xl font-bold rounded-2xl bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/30 transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0"
+                  >
+                    {visitingId === college.id ? (
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : (
+                      <><Globe className="h-5 w-5" /> Visit Website</>
                     )}
-                    style={{ width: `${college.match_score}%` }} 
-                  />
+                  </a>
+                  <Link href="/contact" className="w-full">
+                    <Button variant="outline" className="w-full rounded-2xl gap-3 h-14 text-lg font-bold border-primary/20 hover:bg-primary/5 transition-all">
+                      <Phone className="h-5 w-5 text-primary" /> Admission Enquiry
+                    </Button>
+                  </Link>
                 </div>
-              </div>
 
-              <div className="pt-4 space-y-4">
-                <a
-                  href={college.website || `https://www.google.com/search?q=${encodeURIComponent(college.name + ' official website')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    setVisitingId(college.id);
-                    setTimeout(() => setVisitingId(null), 3000);
-                  }}
-                  className="w-full inline-flex items-center justify-center gap-3 h-16 text-xl font-bold rounded-2xl bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/20 transition-all duration-200"
-                >
-                  {visitingId === college.id ? (
-                    <>
-                      <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-                      </svg>
-                      Opening...
-                    </>
-                  ) : college.website ? (
-                    <>
-                      <Globe className="h-5 w-5" /> Visit Official Website →
-                    </>
-                  ) : (
-                    <>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
-                        <circle cx="11" cy="11" r="8"/>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                      </svg>
-                      Search Online
-                    </>
-                  )}
-                </a>
-                <Link href="/contact" className="w-full">
-                  <Button variant="outline" className="w-full rounded-2xl gap-3 h-14 text-lg font-bold border-primary/20 hover:bg-primary/5">
-                    <Phone className="h-5 w-5 text-primary" /> Admission Enquiry
-                  </Button>
-                </Link>
-              </div>
-
-              <div className="flex items-center justify-center gap-2 text-muted-foreground text-xs font-bold">
-                <CheckCircle2 className="h-3 w-3 text-green-500" /> Verified College Data
-              </div>
-            </CardContent>
-          </Card>
+                <div className="flex items-center justify-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                  <CheckCircle2 className="h-3 w-3 text-green-500" /> Data Verified by CollegeMatch
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </div>

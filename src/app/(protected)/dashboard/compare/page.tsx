@@ -24,6 +24,7 @@ type College = {
   max_package_lpa?: number;
   naac_grade?: string;
   type?: string;
+  fees_approx?: string;
 };
 
 // ── tiny debounce hook ─────────────────────────────────────────
@@ -61,7 +62,8 @@ async function searchColleges(query: string): Promise<College[]> {
         avg_package_lpa: c.avg_package_lpa,
         max_package_lpa: c.max_package_lpa,
         naac_grade: c.naac_grade,
-        type: c.type
+        type: c.type,
+        fees_approx: c.fees_approx
       }));
     }
   } catch (err) {
@@ -363,11 +365,12 @@ export default function ComparePage() {
                         { label: "NIRF Rank", value: c.nirf_rank ? `#${c.nirf_rank}` : "N/A", color: "text-purple-500" },
                         { label: "Cutoff %", value: c.cutoff_general ? `${c.cutoff_general}%` : "N/A", color: "text-orange-500" },
                         { label: "Avg Package", value: c.avg_package_lpa ? `${c.avg_package_lpa}L` : "N/A", color: "text-green-500" },
-                        { label: "NAAC", value: c.naac_grade || "N/A", color: "text-blue-500" }
+                        { label: "NAAC", value: c.naac_grade || "N/A", color: "text-blue-500" },
+                        { label: "Est. Fees", value: c.fees_approx || "N/A", color: "text-slate-600", full: true }
                       ].map((stat, i) => (
-                        <div key={i} className="p-3 bg-white/50 rounded-2xl border border-primary/5">
+                        <div key={i} className={cn("p-3 bg-white/50 rounded-2xl border border-primary/5", stat.full && "col-span-2")}>
                           <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-1">{stat.label}</p>
-                          <p className={`text-lg font-black ${stat.color}`}>{stat.value}</p>
+                          <p className={cn("text-lg font-black", stat.color)}>{stat.value}</p>
                         </div>
                       ))}
                     </div>
