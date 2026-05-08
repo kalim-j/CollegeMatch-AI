@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
 import {
@@ -7,13 +8,17 @@ import {
   orderBy,
   query
 } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from "framer-motion";
+import { GraduationCap, MapPin, Sparkles, ChevronRight, History, Calendar, Award, BookOpen, Search, X } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface CollegeResult {
   name: string;
   location: string;
+  state?: string;
   type: string;
   level: string;
   courses: string[];
@@ -43,7 +48,7 @@ interface Session {
 }
 
 export default function HistoryPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, profile } = useAuth();
   const router = useRouter();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [fetching, setFetching] = useState(true);
@@ -78,151 +83,176 @@ export default function HistoryPage() {
     fetchHistory();
   }, [user]);
 
+  const handleCollegeClick = (college: CollegeResult) => {
+    // Store current results in sessionStorage so the detail page can find it
+    // This is how we handle navigation to colleges that aren't in a global DB
+    const resultsToStore = sessions.find(s => s.results.some(r => r.name === college.name))?.results;
+    if (resultsToStore) {
+        sessionStorage.setItem('eduanalytics_results', JSON.stringify(resultsToStore));
+    }
+    
+    const slug = college.name.toLowerCase().replace(/ /g, "-");
+    router.push(`/colleges/${slug}`);
+  };
+
   if (loading || fetching) {
     return (
-      <div style={{ padding: '3rem', textAlign: 'center' }}>
-        <p>Loading your history...</p>
+      <div className="flex flex-col items-center justify-center h-[80vh] gap-4">
+        <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-muted-foreground font-medium animate-pulse">Retrieving your analysis history...</p>
       </div>
     );
   }
 
   if (sessions.length === 0) {
     return (
-      <div style={{ padding: '3rem', textAlign: 'center' }}>
-        <h2>No past sessions yet</h2>
-        <p>Complete an interview to see your college matches here.</p>
-        <button 
-          onClick={() => router.push('/interview')}
-          style={{
-            marginTop: '1rem',
-            padding: '10px 20px',
-            borderRadius: '8px',
-            background: '#534AB7',
-            color: 'white',
-            border: 'none',
-            cursor: 'pointer'
-          }}
-        >
-          Start Interview
-        </button>
+      <div className="container mx-auto px-4 py-20 text-center">
+        <div className="max-w-md mx-auto">
+          <div className="h-20 w-20 bg-primary/10 rounded-[2rem] flex items-center justify-center mx-auto mb-8">
+            <History className="h-10 w-10 text-primary" />
+          </div>
+          <h2 className="text-3xl font-black text-primary mb-4">No History Yet</h2>
+          <p className="text-muted-foreground text-lg mb-10">Start your first AI analysis to see your personalized college matches here.</p>
+          <Button onClick={() => router.push('/interview')} size="lg" className="h-16 px-10 rounded-2xl text-xl font-bold shadow-xl shadow-primary/20">
+            Start New Interview
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem 1rem' }}>
-      <h1 style={{ marginBottom: '1.5rem', fontWeight: 800 }}>Your Interview History</h1>
-
-      {sessions.map((session) => (
-        <div
-          key={session.id}
-          style={{
-            border: '0.5px solid #E5E7EB',
-            borderRadius: '12px',
-            padding: '1rem 1.25rem',
-            marginBottom: '1rem',
-            background: 'white',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
-          }}
-        >
-          {/* Session Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <p style={{ fontWeight: 600, fontSize: '15px', marginBottom: '4px', color: '#534AB7' }}>
-                {session.topCollege}
-              </p>
-              <p style={{ fontSize: '13px', color: '#6B7280' }}>
-                {session.studentProfile?.level} · {session.studentProfile?.stream} ·{' '}
-                {session.studentProfile?.state}
-                {session.studentProfile?.district
-                  ? `, ${session.studentProfile.district}`
-                  : ''}
-              </p>
-              <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '4px' }}>
-                Cutoff: {session.studentProfile?.cutoffMark} ({session.studentProfile?.cutoffRange}) ·{' '}
-                {session.studentProfile?.budget} · Quota: {session.studentProfile?.quota}
-              </p>
-              <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>
-                {session.createdAt
-                  ? new Date(session.createdAt).toLocaleDateString('en-IN', {
-                      day: 'numeric', month: 'short', year: 'numeric',
-                      hour: '2-digit', minute: '2-digit',
-                    })
-                  : 'Date unknown'}
-                {' · '}{session.totalResults} colleges matched
-              </p>
-            </div>
-            <button
-              onClick={() =>
-                setExpandedId(expandedId === session.id ? null : session.id)
-              }
-              style={{ 
-                fontSize: '13px', 
-                padding: '6px 14px', 
-                borderRadius: '8px', 
-                cursor: 'pointer',
-                border: '1px solid #E5E7EB',
-                background: 'white'
-              }}
-            >
-              {expandedId === session.id ? 'Close' : 'View Results'}
-            </button>
-          </div>
-
-          {/* Expanded College Results */}
-          {expandedId === session.id && session.results && (
-            <div style={{ marginTop: '1rem', borderTop: '0.5px solid #E5E7EB', paddingTop: '1rem' }}>
-              {session.results.map((college, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    padding: '0.85rem 1rem',
-                    borderRadius: '10px',
-                    background: '#F9FAFB',
-                    marginBottom: '0.75rem',
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <p style={{ fontWeight: 600, fontSize: '14px' }}>
-                      {idx + 1}. {college.name}
-                    </p>
-                    <span style={{
-                      fontSize: '12px', fontWeight: 600,
-                      background: college.match_score >= 80 ? '#E1F5EE' : college.match_score >= 60 ? '#FAEEDA' : '#FCEBEB',
-                      color: college.match_score >= 80 ? '#0F6E56' : college.match_score >= 60 ? '#633806' : '#791F1F',
-                      padding: '2px 10px', borderRadius: '20px',
-                    }}>
-                      {Math.round(college.match_score)}% match
-                    </span>
-                  </div>
-                  <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>
-                    {college.location} · {college.type} · NAAC: {college.naac_grade}
-                  </p>
-                  <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>
-                    Cutoff: {college.cutoff_mark} · Rank: {college.nirf_rank}
-                  </p>
-                  <p style={{ fontSize: '12px', fontStyle: 'italic', color: '#6B7280', marginBottom: '6px' }}>
-                    "{college.why_fit}"
-                  </p>
-                  {college.courses && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                      {college.courses.map((course, i) => (
-                        <span key={i} style={{
-                          fontSize: '11px', padding: '2px 8px',
-                          borderRadius: '12px',
-                          background: '#EEEDFE', color: '#3C3489',
-                        }}>
-                          {course}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+    <div className="container mx-auto px-4 py-12 max-w-4xl min-h-screen">
+      <div className="flex items-center gap-4 mb-12">
+        <div className="h-12 w-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg">
+          <History className="h-6 w-6" />
         </div>
-      ))}
+        <div>
+          <h1 className="text-4xl font-black text-primary">Analysis History</h1>
+          <p className="text-muted-foreground font-medium">Revisit your previous AI college recommendations</p>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        {sessions.map((session, idx) => (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.05 }}
+            key={session.id}
+          >
+            <Card className="rounded-[2rem] border-primary/10 shadow-lg overflow-hidden bg-white/40 backdrop-blur-md hover:shadow-xl transition-all">
+              <div className="p-6 md:p-8">
+                <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+                  <div className="space-y-3 flex-1">
+                    <div className="flex items-center gap-2">
+                        <div className="px-3 py-1 bg-primary/10 rounded-lg text-[10px] font-black text-primary uppercase tracking-widest">
+                            {session.studentProfile?.level || "UG"}
+                        </div>
+                        <div className="px-3 py-1 bg-secondary/10 rounded-lg text-[10px] font-black text-secondary uppercase tracking-widest">
+                            {session.studentProfile?.stream || "Engineering"}
+                        </div>
+                    </div>
+                    
+                    <h3 className="text-2xl font-black text-primary leading-tight">
+                        {session.topCollege}
+                    </h3>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
+                        <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
+                            <MapPin className="h-4 w-4 text-primary/60" />
+                            {session.studentProfile?.district}, {session.studentProfile?.state}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
+                            <Calendar className="h-4 w-4 text-primary/60" />
+                            {session.createdAt ? new Date(session.createdAt).toLocaleDateString('en-IN', {
+                                day: 'numeric', month: 'short', year: 'numeric',
+                                hour: '2-digit', minute: '2-digit'
+                            }) : 'N/A'}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-4 pt-2">
+                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                            Cutoff: <span className="text-primary">{session.studentProfile?.cutoffMark}</span>
+                        </div>
+                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                            Quota: <span className="text-primary">{session.studentProfile?.quota}</span>
+                        </div>
+                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                            Matches: <span className="text-primary">{session.totalResults}</span>
+                        </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant={expandedId === session.id ? "outline" : "default"}
+                    onClick={() => setExpandedId(expandedId === session.id ? null : session.id)}
+                    className="w-full md:w-auto h-12 px-8 rounded-xl font-bold shadow-md"
+                  >
+                    {expandedId === session.id ? (
+                        <><X className="h-4 w-4 mr-2" /> Close</>
+                    ) : (
+                        <><Search className="h-4 w-4 mr-2" /> View Results</>
+                    )}
+                  </Button>
+                </div>
+
+                <AnimatePresence>
+                  {expandedId === session.id && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pt-8 space-y-4">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                            <p className="text-sm font-black text-primary uppercase tracking-widest">Recommended Colleges</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 gap-4">
+                          {session.results.map((college, idx) => (
+                            <motion.div
+                              initial={{ x: -10, opacity: 0 }}
+                              animate={{ x: 0, opacity: 1 }}
+                              transition={{ delay: idx * 0.05 }}
+                              key={idx}
+                              onClick={() => handleCollegeClick(college)}
+                              className="group p-5 rounded-2xl bg-white/50 border border-primary/5 hover:border-primary/20 hover:bg-white hover:shadow-md transition-all cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                            >
+                              <div className="flex gap-4 items-center">
+                                <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center font-black text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                    {idx + 1}
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-slate-800 group-hover:text-primary transition-colors">{college.name}</h4>
+                                    <p className="text-xs text-muted-foreground font-medium">{college.location} · NAAC: {college.naac_grade}</p>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-sm font-black text-primary">{Math.round(college.match_score)}%</div>
+                                    <div className="text-[9px] font-bold text-muted-foreground uppercase">Match</div>
+                                </div>
+                                <div className="px-3 py-1.5 rounded-lg bg-primary/5 group-hover:bg-primary/10 text-primary transition-colors">
+                                    <ChevronRight className="h-4 w-4" />
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }
