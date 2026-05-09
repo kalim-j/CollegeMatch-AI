@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { stateDistricts } from "@/data/stateDistricts";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronRight, ChevronLeft, GraduationCap, Sparkles, MapPin, Award, BookOpen, Wallet, Users } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, GraduationCap, Sparkles, MapPin, Award, BookOpen, Wallet, Users, Loader2 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
