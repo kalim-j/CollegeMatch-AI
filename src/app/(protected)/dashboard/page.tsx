@@ -86,9 +86,7 @@ export default function Dashboard() {
                         Start Full AI Analysis
                     </button>
                 </div>
-                    )}
-                </AnimatePresence>
-             </div>
+              </div>
         </div>
       </section>
 
