@@ -22,8 +22,9 @@ export default function LoginPage() {
   const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showOTP, setShowOTP] = useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [mounted, setMounted] = useState(false);
-  const [showOTP, setShowOTP] = useState(false); // Kept for UI but logic changed to direct sign in/up
   
   const router = useRouter();
 
@@ -94,6 +95,20 @@ export default function LoginPage() {
     } catch (error: any) {
       toast.error(error.message || "Google login failed");
     }
+  };
+
+  const handleOtpChange = (element: any, index: number) => {
+    if (isNaN(element.value)) return false;
+    setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
+    if (element.nextSibling && element.value) {
+      element.nextSibling.focus();
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    // This is a placeholder for the UI
+    toast.success("Verified!");
+    router.push("/dashboard");
   };
 
   return (
