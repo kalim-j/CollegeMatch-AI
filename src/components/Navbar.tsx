@@ -56,6 +56,10 @@ export function Navbar() {
     return !link.protected;
   });
 
+  const isPageHidden = pathname === "/admin";
+
+  if (isPageHidden) return null;
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">

@@ -173,20 +173,20 @@ export default function AdminPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-64 min-h-screen">
-        <div className="p-8 md:p-12 space-y-12">
-            <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 border-b border-white/5 pb-12">
-              <div className="space-y-2">
-                <h1 className="text-4xl md:text-6xl font-black text-white font-syne capitalize tracking-tight">{activeTab}</h1>
-                <p className="text-slate-500 font-bold text-sm uppercase tracking-[0.3em] mt-2">CollegeMatch-AI Intelligence Panel</p>
+      <main className="flex-1 ml-64 min-h-screen bg-[#0a0d14]">
+        <div className="max-w-[1600px] mx-auto p-12 lg:p-16 space-y-16">
+            <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 border-b border-white/5 pb-16">
+              <div className="space-y-4">
+                <h1 className="text-5xl md:text-7xl font-black text-white font-syne capitalize tracking-tighter leading-none">{activeTab}</h1>
+                <p className="text-slate-500 font-bold text-sm uppercase tracking-[0.4em] ml-1">Intelligence Control Center</p>
               </div>
-              <div className="flex items-center gap-4 w-full lg:w-auto">
-                <div className="relative w-full lg:w-96">
-                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
+              <div className="flex items-center gap-6 w-full lg:w-auto">
+                <div className="relative w-full lg:w-[450px]">
+                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500" size={22} />
                   <input 
                     type="text" 
-                    placeholder="Global search across intelligence..." 
-                    className="w-full h-16 bg-white/[0.03] border border-white/10 rounded-2xl pl-16 pr-8 text-white outline-none focus:border-purple-500 transition-all font-bold shadow-2xl"
+                    placeholder="Search intelligence system..." 
+                    className="w-full h-20 bg-white/[0.03] border border-white/10 rounded-3xl pl-16 pr-8 text-lg text-white outline-none focus:border-purple-500 transition-all font-bold shadow-2xl"
                   />
                 </div>
               </div>
@@ -202,19 +202,24 @@ export default function AdminPage() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-8"
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {[
-                  { label: "Total Users", val: stats?.total_users || 0, icon: Users, color: "text-blue-400" },
-                  { label: "This Week", val: stats?.users_week || 0, icon: Clock, color: "text-purple-400" },
-                  { label: "Total Searches", val: stats?.total_searches || 0, icon: Search, color: "text-amber-400" },
-                  { label: "Active Today", val: stats?.active_today || 0, icon: Activity, color: "text-emerald-400" },
+                  { label: "Total Users", val: stats?.total_users || 0, icon: Users, color: "text-blue-400", bg: "bg-blue-500/10" },
+                  { label: "New This Week", val: stats?.users_week || 0, icon: Clock, color: "text-purple-400", bg: "bg-purple-500/10" },
+                  { label: "AI Searches", val: stats?.total_searches || 0, icon: Search, color: "text-amber-400", bg: "bg-amber-500/10" },
+                  { label: "Active Today", val: stats?.active_today || 0, icon: Activity, color: "text-emerald-400", bg: "bg-emerald-500/10" },
                 ].map((stat, i) => (
-                  <div key={i} className="bg-[#111520] border border-white/5 rounded-3xl p-6 shadow-xl relative overflow-hidden group">
-                    <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-all ${stat.color}`}>
-                        <stat.icon size={80} />
+                  <div key={i} className="bg-[#111520] border border-white/5 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group hover:border-white/10 transition-all">
+                    <div className={`absolute -top-4 -right-4 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-all rotate-12 ${stat.color}`}>
+                        <stat.icon size={120} />
+                    </div>
+                    <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center mb-6", stat.bg, stat.color)}>
+                        <stat.icon size={28} />
                     </div>
                     <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">{stat.label}</p>
-                    <div className="text-4xl font-black text-white">{stat.val}</div>
+                    <div className="text-5xl font-black text-white tabular-nums tracking-tighter">
+                        {stat.val === 0 && usersList.length > 0 && stat.label === "Total Users" ? usersList.length : stat.val}
+                    </div>
                   </div>
                 ))}
               </div>
