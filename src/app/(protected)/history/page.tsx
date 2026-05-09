@@ -15,6 +15,7 @@ import { GraduationCap, MapPin, Sparkles, ChevronRight, History, Calendar, Award
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { generatePDFReport } from '@/lib/generateReport';
+import { cn } from "@/lib/utils";
 
 interface CollegeResult {
   name: string;
