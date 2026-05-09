@@ -27,8 +27,8 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL("https://collegematch-ai.vercel.app"),
   title: {
-    default: "CollegeMatch — AI College Predictor India",
-    template: "%s | CollegeMatch"
+    default: "CollegeMatch-AI — AI College Predictor India",
+    template: "%s | CollegeMatch-AI"
   },
   description: "Free AI-powered college predictor for Indian students. Find best engineering colleges by marks, state, cutoff and budget. Instant AI predictions for JEE, TNEA, KEAM, EAMCET and more.",
   keywords: [
@@ -39,17 +39,17 @@ export const metadata: Metadata = {
     "jee college predictor ai",
     "best college for my marks india",
     "college finder india ai",
+    "collegematch-ai",
     "collegematch",
-    "admission iq",
     "college search ai india",
     "tnea college predictor",
     "eamcet college predictor",
     "free college predictor india",
     "ai college recommendation india"
   ],
-  authors: [{ name: "CollegeMatch" }],
-  creator: "CollegeMatch",
-  publisher: "CollegeMatch",
+  authors: [{ name: "CollegeMatch-AI" }],
+  creator: "CollegeMatch-AI",
+  publisher: "CollegeMatch-AI",
   robots: {
     index: true,
     follow: true,
@@ -59,14 +59,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_IN",
     url: "https://collegematch-ai.vercel.app",
-    siteName: "CollegeMatch",
-    title: "CollegeMatch — AI College Predictor India",
+    siteName: "CollegeMatch-AI",
+    title: "CollegeMatch-AI — AI College Predictor India",
     description: "Find your dream college with AI. Free predictor for Indian students based on marks, state and budget.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "CollegeMatch AI College Predictor" }]
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "CollegeMatch-AI College Predictor" }]
   },
   twitter: {
     card: "summary_large_image",
-    title: "CollegeMatch — AI College Predictor India",
+    title: "CollegeMatch-AI — AI College Predictor India",
     description: "Free AI college predictor for Indian students",
     images: ["/og-image.png"]
   },
@@ -89,7 +89,7 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "CollegeMatch",
+    "name": "CollegeMatch-AI",
     "url": "https://collegematch-ai.vercel.app",
     "description": "AI-powered college predictor for Indian engineering students",
     "applicationCategory": "EducationApplication",
@@ -118,7 +118,7 @@ export default function RootLayout({
             <footer className="border-t py-6 md:py-0">
               <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row px-4">
                 <p className="text-sm text-muted-foreground">
-                  &copy; {new Date().getFullYear()} CollegeMatch. All rights reserved.
+                  &copy; {new Date().getFullYear()} CollegeMatch-AI. All rights reserved.
                 </p>
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="font-medium text-primary">Inspiring ambition since 2024</span>

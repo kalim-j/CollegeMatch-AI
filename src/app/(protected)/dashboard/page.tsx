@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   GraduationCap, Sparkles, User, MapPin, Award, 
   ArrowRight, Search, Zap, Loader2, Star, 
-  ChevronRight, BrainCircuit, Wallet
+  ChevronRight, BrainCircuit, Wallet, TrendingUp
 } from "lucide-react";
 import Link from "next/link";
 
@@ -20,7 +20,6 @@ export default function Dashboard() {
   const [predicting, setPredicting] = useState(false);
   
   const router = useRouter();
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -74,7 +73,7 @@ export default function Dashboard() {
             <h1 className="text-4xl md:text-6xl font-black text-white font-syne">
                 Hello, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">{profile?.full_name?.split(' ')[0] || "Student"}</span>
             </h1>
-            <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Your AI-Powered Admission Command Center</p>
+            <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Your CollegeMatch-AI Command Center</p>
         </div>
         <div className="flex items-center gap-4">
              <div className="text-right">

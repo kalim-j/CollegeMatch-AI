@@ -182,7 +182,7 @@ export default function TrendsPage() {
                 onClick={() => setCompareMode(true)}
                 className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${compareMode ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30' : 'text-slate-500 hover:text-slate-300'}`}
              >
-                Compare Colleges
+                Compare via AI
              </button>
           </div>
         </header>

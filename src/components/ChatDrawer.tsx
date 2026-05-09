@@ -7,7 +7,7 @@ import { MessageCircle, X, Send, Bot, User, Loader2 } from "lucide-react";
 export default function ChatDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hi! I'm your AdmissionIQ AI counselor. How can I help you with your college search today?" }
+    { role: "assistant", content: "Hi! I'm your CollegeMatch-AI counselor. How can I help you with your college search today?" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,7 +39,7 @@ export default function ChatDrawer() {
                 messages: [
                     { 
                         role: "system", 
-                        content: "You are AdmissionIQ AI counselor for Indian students. Help with college selection, JEE cutoffs, IIT NIT IIIT admissions, state exams TNEA KEAM WBJEE. Be concise, under 100 words." 
+                        content: "You are CollegeMatch-AI counselor for Indian students. Help with college selection, JEE cutoffs, IIT NIT IIIT admissions, state exams TNEA KEAM WBJEE. Be concise, under 100 words." 
                     },
                     ...messages,
                     userMsg

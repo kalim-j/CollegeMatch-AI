@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   LayoutDashboard, Users, TrendingUp, MessageSquare, Settings, 
@@ -25,7 +25,6 @@ export default function AdminPage() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const router = useRouter();
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -131,7 +130,7 @@ export default function AdminPage() {
         <header className="flex justify-between items-center mb-10">
           <div>
             <h1 className="text-4xl font-black text-white font-syne capitalize">{activeTab}</h1>
-            <p className="text-slate-500 font-bold text-sm uppercase tracking-widest mt-1">AdmissionIQ Intelligence Panel</p>
+            <p className="text-slate-500 font-bold text-sm uppercase tracking-widest mt-1">CollegeMatch-AI Intelligence Panel</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="relative">

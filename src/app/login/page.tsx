@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Eye, EyeOff, LayoutDashboard, Database, TrendingUp, Award, Star, Loader2 } from "lucide-react";
@@ -19,7 +19,6 @@ export default function LoginPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   
   const router = useRouter();
-  const supabase = createClientComponentClient();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,7 +140,7 @@ export default function LoginPage() {
               <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#7c5cfc] to-[#6d28d9] flex items-center justify-center font-black text-2xl text-white shadow-lg shadow-purple-500/20">
                 IQ
               </div>
-              <span className="text-3xl font-black tracking-tight text-white font-syne">AdmissionIQ</span>
+              <span className="text-3xl font-black tracking-tight text-white font-syne">CollegeMatch-AI</span>
             </div>
             <h1 className="text-6xl font-black text-white leading-tight font-syne">
               Your Dream College is <br />

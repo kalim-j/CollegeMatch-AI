@@ -60,7 +60,7 @@ export function Navbar() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-lg font-bold text-lg">
             CM
           </div>
-          <span className="text-xl font-bold tracking-tight text-primary">CollegeMatch</span>
+          <span className="text-xl font-bold tracking-tight text-primary">CollegeMatch-AI</span>
         </Link>
 
         {/* Desktop Navigation */}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { History, Search, Trash2, Calendar, MapPin, ChevronRight, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -9,7 +9,6 @@ import { toast } from "sonner";
 export default function HistoryPage() {
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     fetchHistory();
@@ -112,7 +111,7 @@ export default function HistoryPage() {
                                         {new Date(item.created_at).toLocaleDateString()}
                                     </div>
                                     <div className="flex items-center gap-1.5 text-xs font-black text-emerald-400 uppercase tracking-widest">
-                                        {item.results_count} Results found
+                                        Explored via CollegeMatch-AI
                                     </div>
                                 </div>
                             </div>

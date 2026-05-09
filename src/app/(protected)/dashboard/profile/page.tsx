@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { User, Mail, Phone, MapPin, Award, BookOpen, Save, Loader2 } from "lucide-react";
@@ -19,7 +19,6 @@ export default function ProfilePage() {
     preferred_course: "Computer Science"
   });
 
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     const fetchProfile = async () => {

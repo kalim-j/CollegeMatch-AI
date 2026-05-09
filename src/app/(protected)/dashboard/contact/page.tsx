@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, MessageSquare, Send, CheckCircle2, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -15,7 +15,6 @@ export default function ContactPage() {
     message: ""
   });
 
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -165,9 +164,9 @@ export default function ContactPage() {
                 </div>
                 
                 <div className="space-y-4">
-                    <h2 className="text-5xl font-black text-white font-syne">Message Sent!</h2>
+                    <h2 className="text-5xl font-black text-white font-syne">Inquiry Sent!</h2>
                     <p className="text-slate-500 font-bold text-lg max-w-sm mx-auto leading-relaxed">
-                        Thank you for reaching out. Our expert counselor will contact you within <span className="text-purple-400">24 hours</span>.
+                        Thank you for reaching out. Our CollegeMatch-AI expert will contact you within <span className="text-purple-400">24 hours</span>.
                     </p>
                 </div>
 

@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Sparkles, GraduationCap, Globe, Info, BrainCircuit, Loader2, Star, Filter, ChevronDown } from "lucide-react";
+import { Search, X, Sparkles, GraduationCap, Globe, Info, BrainCircuit, Loader2, Star, Filter, ChevronDown, Plus as PlusIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const GROQ_KEY   = process.env.NEXT_PUBLIC_GROQ_API_KEY || "";
 const GROQ_MODEL = "llama-3.3-70b-versatile";
@@ -332,7 +333,7 @@ Be specific, practical, and use numbers.`;
             {selected.length < 3 && (
                 <div className="border-2 border-dashed border-white/5 rounded-[2.5rem] flex flex-col items-center justify-center p-12 text-center">
                     <div className="h-16 w-16 bg-white/5 rounded-full flex items-center justify-center text-slate-600 mb-4">
-                        <Plus size={32} />
+                        <PlusIcon size={32} />
                     </div>
                     <p className="text-slate-600 font-bold uppercase tracking-widest text-xs">Add up to 3 colleges</p>
                 </div>
@@ -366,7 +367,7 @@ Be specific, practical, and use numbers.`;
                             <BrainCircuit size={40} />
                         </div>
                         <div>
-                            <h2 className="text-4xl font-black text-white font-syne">AI Counselor Report</h2>
+                            <h2 className="text-4xl font-black text-white font-syne">CollegeMatch-AI Report</h2>
                             <p className="text-slate-500 font-bold uppercase tracking-widest text-sm mt-1">Intelligent Side-by-Side Analysis</p>
                         </div>
                     </div>
@@ -382,8 +383,4 @@ Be specific, practical, and use numbers.`;
   );
 }
 
-function Plus({ size }: { size: number }) {
-    return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-    )
-}
+
