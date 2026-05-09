@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "./ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
-import { GraduationCap, LayoutDashboard, History, User, Phone, LogOut, Menu, X, Zap, Sparkles, ArrowLeftRight, TrendingUp } from "lucide-react";
+import { GraduationCap, LayoutDashboard, History, User, Phone, LogOut, Menu, X, Zap, Sparkles, ArrowLeftRight, TrendingUp, Settings } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
