@@ -19,11 +19,15 @@ export interface StudentProfile {
   stream?: string;
   state?: string;
   district?: string;
+  city?: string;
   marks10thBoard?: string;
   marks10th?: number;
   percentage10th?: number;
   marks12th?: number;
   percentage12th?: number;
+  jeePercentile?: string;
+  boardPercentage?: string;
+  preferredCourse?: string;
   cutoffMark?: number;
   cutoffRange?: '-10' | 'exact' | '+10';
   budget?: 'Government' | 'Private' | 'Both';
