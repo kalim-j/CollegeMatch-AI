@@ -41,15 +41,18 @@ export function Navbar() {
     { name: "Trends", href: "/dashboard/trends", icon: TrendingUp, protected: true },
     { name: "History", href: "/history", icon: History, protected: true },
     { name: "Contact", href: "/contact", icon: Phone, protected: false },
+    { name: "Admin", href: "/admin", icon: Settings, protected: true, adminOnly: true },
     { name: "Profile", href: "/profile", icon: User, protected: true },
   ];
 
   const filteredLinks = navLinks.filter(link => {
     if (user) {
       // Logged in: Hide 'How it works' and 'Features'
+      if (link.adminOnly && user.email !== "kalimdon07@gmail.com") return false;
       return link.protected || link.name === "Contact";
     }
     // Logged out: Hide protected links (Dashboard, History, Profile)
+    if (link.adminOnly) return false;
     return !link.protected;
   });
 

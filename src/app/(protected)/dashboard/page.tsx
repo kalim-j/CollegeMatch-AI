@@ -120,18 +120,30 @@ export default function Dashboard() {
                     </div>
                 </Link>
 
-                <Link href="/history" className="group md:col-span-2">
-                    <div className="bg-[#111520] border border-white/5 rounded-[2.5rem] p-8 hover:border-purple-500/30 transition-all flex flex-col md:flex-row items-center gap-8">
-                         <div className="h-20 w-20 bg-purple-500/10 rounded-3xl flex items-center justify-center text-purple-400">
-                            <History size={32} />
+                <Link href="/history" className="group">
+                    <div className="h-full bg-[#111520] border border-white/5 rounded-[2.5rem] p-8 hover:border-purple-500/30 transition-all flex flex-col items-center justify-center text-center gap-4">
+                         <div className="h-16 w-16 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400">
+                            <History size={28} />
                          </div>
-                         <div className="flex-1 text-center md:text-left">
-                            <h3 className="text-2xl font-black text-white mb-2 font-syne">Analysis History</h3>
-                            <p className="text-slate-500 font-bold text-sm">Review your saved colleges and previous AI prediction results.</p>
-                         </div>
-                         <ArrowRight size={32} className="text-slate-700 group-hover:text-purple-400 group-hover:translate-x-4 transition-all" />
+                         <h3 className="text-xl font-black text-white font-syne">Analysis History</h3>
+                         <ArrowRight size={24} className="text-slate-700 group-hover:text-purple-400 group-hover:translate-x-2 transition-all" />
                     </div>
                 </Link>
+
+                {user?.email === "kalimdon07@gmail.com" && (
+                    <Link href="/admin" className="group">
+                        <div className="h-full bg-gradient-to-br from-emerald-500/5 to-emerald-500/10 border border-emerald-500/20 rounded-[2.5rem] p-8 hover:border-emerald-500/40 transition-all flex flex-col items-center justify-center text-center gap-4 shadow-2xl shadow-emerald-500/5">
+                            <div className="h-16 w-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400">
+                                <Settings size={28} />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-black text-white font-syne">Admin Panel</h3>
+                                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mt-1">Management Console</p>
+                            </div>
+                            <ArrowRight size={24} className="text-emerald-900 group-hover:text-emerald-400 group-hover:translate-x-2 transition-all" />
+                        </div>
+                    </Link>
+                )}
            </div>
 
            {/* Sidebar Section */}
