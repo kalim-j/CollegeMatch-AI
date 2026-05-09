@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   GraduationCap, Sparkles, User, MapPin, Award, 
   ArrowRight, Search, Zap, Loader2, Star, 
-  ChevronRight, BrainCircuit, Wallet, TrendingUp
+  ChevronRight, BrainCircuit, Wallet, TrendingUp, History
 } from "lucide-react";
 import Link from "next/link";
 
