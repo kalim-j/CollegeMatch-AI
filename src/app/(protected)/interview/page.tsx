@@ -693,6 +693,7 @@ export default function InterviewPage() {
           {renderStep()}
         </motion.div>
       </AnimatePresence>
+      </div>
     </div>
   );
 }
