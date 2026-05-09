@@ -43,42 +43,46 @@ export default function AdminPage() {
 
   const fetchData = async () => {
     try {
+      console.log("Fetching admin data from Firestore...");
       // 1. Fetch Users from Firestore
       const usersSnap = await getDocs(collection(db, "users"));
+      console.log("Users found in Firestore:", usersSnap.size);
+      
       const usersData = usersSnap.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
       setUsersList(usersData);
 
-      // 2. Fetch Contact Submissions (Messages) from Supabase (assuming they are there)
-      const { data: submissions } = await supabase
+      // 2. Fetch Contact Submissions (Messages) from Supabase
+      const { data: submissions, error: subError } = await supabase
         .from('contact_submissions')
         .select('*')
         .order('created_at', { ascending: false });
+      
+      if (subError) console.error("Supabase Error:", subError);
       setMessages(submissions || []);
 
       // 3. Calculate Stats
       const now = new Date();
       const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const todayStart = new Date(now.setHours(0,0,0,0));
+      const todayStart = new Date();
+      todayStart.setHours(0,0,0,0);
 
       const usersWeek = usersData.filter((u: any) => {
-        const createdAt = u.createdAt?.seconds ? new Date(u.createdAt.seconds * 1000) : new Date(u.createdAt);
+        const createdAt = u.createdAt?.seconds ? new Date(u.createdAt.seconds * 1000) : new Date(u.createdAt || Date.now());
         return createdAt >= oneWeekAgo;
       }).length;
 
       const activeToday = usersData.filter((u: any) => {
-        const lastActive = u.updatedAt?.seconds ? new Date(u.updatedAt.seconds * 1000) : new Date(u.updatedAt);
+        const lastActive = u.updatedAt?.seconds ? new Date(u.updatedAt.seconds * 1000) : new Date(u.updatedAt || Date.now());
         return lastActive >= todayStart;
       }).length;
 
-      // Mock searches for now or calculate from a dedicated collection if exists
-      // For now let's set a placeholder or fetch from a sessions collection if available
       setStats({
         total_users: usersData.length,
         users_week: usersWeek,
-        total_searches: 124, // Mocked for now
+        total_searches: 124, 
         active_today: activeToday,
         signups: [
           { date: 'Mon', count: 2 },
@@ -108,7 +112,7 @@ export default function AdminPage() {
     router.push("/login");
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-[#0a0d14] flex items-center justify-center">
         <Loader2 className="h-10 w-10 text-purple-500 animate-spin" />
@@ -123,7 +127,7 @@ export default function AdminPage() {
         <div className="p-6">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center font-black text-white shadow-lg shadow-purple-500/20">
-              IQ
+              CM
             </div>
             <span className="text-xl font-black text-white font-syne">Admin</span>
           </div>
@@ -169,23 +173,24 @@ export default function AdminPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-64 p-8 min-h-screen">
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-black text-white font-syne capitalize">{activeTab}</h1>
-            <p className="text-slate-500 font-bold text-sm uppercase tracking-widest mt-2">CollegeMatch-AI Intelligence Panel</p>
-          </div>
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="relative w-full md:w-80">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-              <input 
-                type="text" 
-                placeholder="Global search..." 
-                className="bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-6 outline-none focus:border-purple-500 transition-all w-full text-sm font-bold"
-              />
-            </div>
-          </div>
-        </header>
+      <main className="flex-1 ml-64 min-h-screen">
+        <div className="p-8 md:p-12 space-y-12">
+            <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 border-b border-white/5 pb-12">
+              <div className="space-y-2">
+                <h1 className="text-4xl md:text-6xl font-black text-white font-syne capitalize tracking-tight">{activeTab}</h1>
+                <p className="text-slate-500 font-bold text-sm uppercase tracking-[0.3em] mt-2">CollegeMatch-AI Intelligence Panel</p>
+              </div>
+              <div className="flex items-center gap-4 w-full lg:w-auto">
+                <div className="relative w-full lg:w-96">
+                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
+                  <input 
+                    type="text" 
+                    placeholder="Global search across intelligence..." 
+                    className="w-full h-16 bg-white/[0.03] border border-white/10 rounded-2xl pl-16 pr-8 text-white outline-none focus:border-purple-500 transition-all font-bold shadow-2xl"
+                  />
+                </div>
+              </div>
+            </header>
 
         {/* Tab Content */}
         <AnimatePresence mode="wait">
@@ -460,6 +465,7 @@ export default function AdminPage() {
                 </>
             )}
         </AnimatePresence>
+        </div>
       </main>
     </div>
   );
