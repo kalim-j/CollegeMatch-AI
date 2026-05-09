@@ -23,8 +23,10 @@ export interface StudentProfile {
   marks10thBoard?: string;
   marks10th?: number;
   percentage10th?: number;
+  marks12thBoard?: string;
   marks12th?: number;
   percentage12th?: number;
+  ugCgpa?: number;
   jeePercentile?: string;
   boardPercentage?: string;
   preferredCourse?: string;
@@ -32,6 +34,7 @@ export interface StudentProfile {
   cutoffRange?: '-10' | 'exact' | '+10';
   budget?: 'Government' | 'Private' | 'Both';
   quota?: string;
+  religion?: string;
   phone?: string;
   createdAt: any;
 }
