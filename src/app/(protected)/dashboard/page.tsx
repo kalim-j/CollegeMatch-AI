@@ -15,10 +15,6 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Dashboard() {
   const { user, profile, loading: authLoading } = useAuth();
-  const [predictions, setPredictions] = useState<any[]>([]);
-  const [predicting, setPredicting] = useState(false);
-  const [percentile, setPercentile] = useState("");
-  const [state, setState] = useState("All States");
   
   const router = useRouter();
 
@@ -35,26 +31,6 @@ export default function Dashboard() {
       </div>
     );
   }
-
-  const handlePredict = async () => {
-    if (!percentile) return;
-    setPredicting(true);
-    try {
-        let q = supabase.from("colleges").select("*");
-        q = q.lte("cutoff_general", parseFloat(percentile));
-        if (state !== "All States") q = q.eq("state", state);
-        q = q.order("nirf_rank", { ascending: true, nullsFirst: false });
-        
-        const { data } = await q.limit(5);
-        setPredictions(data || []);
-    } catch (err) {
-        console.error(err);
-    } finally {
-        setPredicting(false);
-    }
-  };
-
-
 
   return (
     <div className="min-h-screen bg-[#0a0d14] p-4 md:p-8 space-y-12 pb-24">
@@ -96,72 +72,20 @@ export default function Dashboard() {
                     <h2 className="text-3xl font-black text-white font-syne">Quick College Predictor</h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">JEE / State Percentile</label>
-                        <input 
-                            type="number" 
-                            step="0.01"
-                            value={percentile}
-                            onChange={(e) => setPercentile(e.target.value)}
-                            placeholder="e.g. 98.5"
-                            className="w-full h-16 bg-white/5 border border-white/10 rounded-2xl px-6 text-white text-xl font-bold outline-none focus:border-purple-500 transition-all"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">State Preference</label>
-                        <select 
-                            value={state}
-                            onChange={(e) => setState(e.target.value)}
-                            className="w-full h-16 bg-white/5 border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-purple-500 appearance-none cursor-pointer"
-                        >
-                            <option>All States</option>
-                            <option>Tamil Nadu</option>
-                            <option>Maharashtra</option>
-                            <option>Delhi</option>
-                            <option>Karnataka</option>
-                        </select>
-                    </div>
-                    <div className="flex items-end">
-                        <button 
-                            onClick={() => router.push("/interview")}
-                            className="w-full h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl text-white font-black text-lg shadow-xl shadow-purple-500/20 hover:shadow-purple-500/40 hover:-translate-y-1 active:translate-y-0 transition-all flex items-center justify-center gap-3"
-                        >
-                            <Sparkles size={20} />
-                            Start Full Analysis
-                        </button>
-                    </div>
+                <div className="flex flex-col items-center justify-center space-y-6">
+                    <p className="text-slate-500 font-bold text-center max-w-md">
+                        Get a comprehensive AI-driven analysis of your college options based on your academic profile and preferences.
+                    </p>
+                    <button 
+                        onClick={() => router.push("/interview")}
+                        className="w-full max-w-md h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-[2rem] text-white font-black text-xl shadow-2xl shadow-purple-500/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 group"
+                    >
+                        <div className="h-10 w-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform">
+                            <Sparkles size={24} />
+                        </div>
+                        Start Full AI Analysis
+                    </button>
                 </div>
-
-                {/* Predictor Results */}
-                <AnimatePresence>
-                    {predictions.length > 0 && (
-                        <motion.div 
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="grid grid-cols-1 md:grid-cols-5 gap-4 pt-6"
-                        >
-                            {predictions.map((c, i) => (
-                                <motion.div 
-                                    key={c.id}
-                                    initial={{ scale: 0.9, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    transition={{ delay: i * 0.1 }}
-                                    className="bg-white/5 border border-white/5 rounded-2xl p-4 group hover:bg-white/10 transition-all cursor-pointer"
-                                >
-                                    <div className="h-10 w-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-400 mb-3 group-hover:scale-110 transition-transform">
-                                        <GraduationCap size={20} />
-                                    </div>
-                                    <h4 className="text-sm font-black text-white line-clamp-2 mb-1">{c.name}</h4>
-                                    <p className="text-[10px] font-bold text-slate-500 uppercase">{c.location}</p>
-                                    <div className="mt-4 flex justify-between items-center">
-                                        <span className="text-xs font-black text-emerald-400">Rank #{c.nirf_rank}</span>
-                                        <ChevronRight size={14} className="text-slate-600" />
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </motion.div>
                     )}
                 </AnimatePresence>
              </div>
