@@ -220,7 +220,7 @@ export default function HistoryPage() {
                           reachColleges: mappedResults.filter(c => (c.match_score || 0) <= 60),
                         });
                       }}
-                      className="h-14 px-8 rounded-2xl font-black text-xs uppercase tracking-widest border-white/10 hover:bg-white/5 text-slate-300"
+                      className="h-14 px-8 rounded-2xl font-black text-xs uppercase tracking-widest bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all shadow-lg shadow-emerald-500/10"
                     >
                       <FileDown className="h-4 w-4 mr-2" /> Download PDF
                     </Button>
