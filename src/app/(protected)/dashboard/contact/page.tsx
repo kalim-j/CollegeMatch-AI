@@ -6,8 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, MessageSquare, Send, CheckCircle2, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function ContactPage() {
-  const [profile, setProfile] = useState<any>(null);
+  const { user, profile, loading: authLoading } = useAuth();
   const [sending, setSending] = useState(false);
   const [success, setSuccess] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -21,16 +23,7 @@ export default function ContactPage() {
   }, []);
 
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-        setProfile(data);
-      }
-    };
-    fetchProfile();
-  }, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,8 +34,8 @@ export default function ContactPage() {
       const { error } = await supabase
         .from('contact_submissions')
         .insert({
-          name: profile.full_name,
-          email: profile.email,
+          name: profile?.fullName || "Anonymous",
+          email: profile?.email || user?.email,
           subject: formData.subject,
           message: formData.message
         });
@@ -88,7 +81,7 @@ export default function ContactPage() {
                         <input 
                             type="text" 
                             disabled 
-                            value={profile?.full_name || ""}
+                            value={profile?.fullName || ""}
                             className="w-full h-14 bg-white/[0.03] border border-white/5 rounded-xl px-6 text-slate-400 font-bold"
                         />
                     </div>

@@ -1,51 +1,69 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { History, Search, Trash2, Calendar, MapPin, ChevronRight, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
+import { db } from "@/lib/firebase";
+import { collection, query, where, getDocs, deleteDoc, doc, orderBy } from "firebase/firestore";
 
 export default function HistoryPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchHistory();
-  }, []);
+    if (!authLoading) {
+        if (!user) {
+            router.push("/login");
+        } else {
+            fetchHistory();
+        }
+    }
+  }, [user, authLoading]);
 
   const fetchHistory = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data, error } = await supabase
-        .from('search_history')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-      
-      if (data) setHistory(data);
+    if (!user) return;
+    try {
+        const q = query(
+            collection(db, "search_history"),
+            where("userId", "==", user.uid),
+            orderBy("createdAt", "desc")
+        );
+        const querySnapshot = await getDocs(q);
+        const docs = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        setHistory(docs);
+    } catch (error) {
+        console.error("Error fetching history:", error);
+    } finally {
+        setLoading(false);
     }
-    setLoading(false);
   };
 
   const clearHistory = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-
-    const { error } = await supabase
-      .from('search_history')
-      .delete()
-      .eq('user_id', user.id);
-
-    if (error) {
-      toast.error("Failed to clear history");
-    } else {
-      setHistory([]);
-      toast.success("History cleared!");
+    try {
+        const q = query(
+            collection(db, "search_history"),
+            where("userId", "==", user.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const deletePromises = querySnapshot.docs.map(d => deleteDoc(doc(db, "search_history", d.id)));
+        await Promise.all(deletePromises);
+        setHistory([]);
+        toast.success("History cleared!");
+    } catch (error) {
+        toast.error("Failed to clear history");
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-[#0a0d14] flex items-center justify-center">
         <Loader2 className="h-10 w-10 text-purple-500 animate-spin" />
@@ -108,7 +126,7 @@ export default function HistoryPage() {
                                 <div className="flex flex-wrap items-center gap-4 mt-1">
                                     <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
                                         <Calendar size={14} />
-                                        {new Date(item.created_at).toLocaleDateString()}
+                                        {item.createdAt ? new Date(item.createdAt.seconds * 1000).toLocaleDateString() : 'Recently'}
                                     </div>
                                     <div className="flex items-center gap-1.5 text-xs font-black text-emerald-400 uppercase tracking-widest">
                                         Explored via CollegeMatch-AI

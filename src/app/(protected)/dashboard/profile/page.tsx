@@ -1,70 +1,54 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { User, Mail, Phone, MapPin, Award, BookOpen, Save, Loader2 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function ProfilePage() {
-  const [loading, setLoading] = useState(true);
+  const { user, profile: authProfile, loading: authLoading, refreshProfile } = useAuth();
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<any>({
-    full_name: "",
+    fullName: "",
     phone: "",
     state: "",
     city: "",
-    jee_percentile: "",
-    board_percentage: "",
-    preferred_course: "Computer Science"
+    jeePercentile: "",
+    boardPercentage: "",
+    preferredCourse: "Computer Science"
   });
 
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-        
-        if (data) {
-          setProfile({
-            ...data,
-            jee_percentile: data.jee_percentile || "",
-            board_percentage: data.board_percentage || ""
-          });
-        }
-      }
-      setLoading(false);
-    };
-    fetchProfile();
-  }, []);
+    if (authProfile) {
+      setProfile({
+        ...authProfile,
+        fullName: authProfile.fullName || "",
+        phone: authProfile.phone || "",
+        state: authProfile.state || "",
+        city: authProfile.city || "",
+        jeePercentile: authProfile.jeePercentile || "",
+        boardPercentage: authProfile.boardPercentage || "",
+        preferredCourse: authProfile.preferredCourse || "Computer Science"
+      });
+    }
+  }, [authProfile]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
     setSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
+      const docRef = doc(db, "users", user.uid);
+      await updateDoc(docRef, {
+        ...profile,
+        updatedAt: new Date()
+      });
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: profile.full_name,
-          phone: profile.phone,
-          state: profile.state,
-          city: profile.city,
-          jee_percentile: profile.jee_percentile || null,
-          board_percentage: profile.board_percentage || null,
-          preferred_course: profile.preferred_course,
-          last_active: new Date().toISOString()
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
+      await refreshProfile();
       toast.success("Profile updated successfully!");
     } catch (error: any) {
       toast.error(error.message || "Failed to update profile");
@@ -73,7 +57,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-[#0a0d14] flex items-center justify-center">
         <Loader2 className="h-10 w-10 text-purple-500 animate-spin" />
@@ -90,14 +74,14 @@ export default function ProfilePage() {
                 animate={{ scale: 1, opacity: 1 }}
                 className="h-32 w-32 rounded-[2.5rem] bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-4xl font-black text-white shadow-2xl shadow-purple-500/40"
             >
-                {profile.full_name?.[0] || 'U'}
+                {profile.fullName?.[0] || 'U'}
             </motion.div>
             <div className="text-center md:text-left">
-                <h1 className="text-4xl md:text-5xl font-black text-white font-syne">{profile.full_name || 'Your Name'}</h1>
+                <h1 className="text-4xl md:text-5xl font-black text-white font-syne">{profile.fullName || 'Your Name'}</h1>
                 <p className="text-purple-400 font-bold flex items-center justify-center md:justify-start gap-2 mt-2">
                     <Mail size={18} /> {profile.email}
                 </p>
-                <p className="text-slate-500 text-xs font-black uppercase tracking-widest mt-2">Member since {new Date(profile.created_at).toLocaleDateString()}</p>
+                <p className="text-slate-500 text-xs font-black uppercase tracking-widest mt-2">Member since {profile.createdAt ? new Date(profile.createdAt.seconds * 1000).toLocaleDateString() : 'Recently'}</p>
             </div>
         </header>
 
@@ -109,8 +93,8 @@ export default function ProfilePage() {
                         <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                         <input 
                             type="text" 
-                            value={profile.full_name}
-                            onChange={(e) => setProfile({...profile, full_name: e.target.value})}
+                            value={profile.fullName}
+                            onChange={(e) => setProfile({...profile, fullName: e.target.value})}
                             className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white outline-none focus:border-purple-500 transition-all font-bold"
                             placeholder="John Doe"
                         />
@@ -165,8 +149,8 @@ export default function ProfilePage() {
                         <input 
                             type="number" 
                             step="0.01"
-                            value={profile.jee_percentile}
-                            onChange={(e) => setProfile({...profile, jee_percentile: e.target.value})}
+                            value={profile.jeePercentile}
+                            onChange={(e) => setProfile({...profile, jeePercentile: e.target.value})}
                             className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white outline-none focus:border-purple-500 transition-all font-bold"
                             placeholder="99.5"
                         />
@@ -179,8 +163,8 @@ export default function ProfilePage() {
                         <input 
                             type="number" 
                             step="0.1"
-                            value={profile.board_percentage}
-                            onChange={(e) => setProfile({...profile, board_percentage: e.target.value})}
+                            value={profile.boardPercentage}
+                            onChange={(e) => setProfile({...profile, boardPercentage: e.target.value})}
                             className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white outline-none focus:border-purple-500 transition-all font-bold"
                             placeholder="95.2"
                         />
@@ -191,8 +175,8 @@ export default function ProfilePage() {
                     <div className="relative">
                         <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                         <select 
-                            value={profile.preferred_course}
-                            onChange={(e) => setProfile({...profile, preferred_course: e.target.value})}
+                            value={profile.preferredCourse}
+                            onChange={(e) => setProfile({...profile, preferredCourse: e.target.value})}
                             className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white outline-none focus:border-purple-500 transition-all font-bold appearance-none cursor-pointer"
                         >
                             <option value="Computer Science">Computer Science (CSE)</option>

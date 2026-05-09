@@ -2,11 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Eye, EyeOff, LayoutDashboard, Database, TrendingUp, Award, Star, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signInWithPopup, 
+  GoogleAuthProvider
+} from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export default function LoginPage() {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -15,9 +22,9 @@ export default function LoginPage() {
   const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showOTP, setShowOTP] = useState(false);
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [mounted, setMounted] = useState(false);
+  const [showOTP, setShowOTP] = useState(false); // Kept for UI but logic changed to direct sign in/up
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -30,30 +37,27 @@ export default function LoginPage() {
 
     try {
       if (isSignIn) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-        
-        toast.success("Signed in successfully!");
+        const { user } = await signInWithEmailAndPassword(auth, email, password);
+        toast.success("Welcome back!");
         if (email === "kalimdon07@gmail.com") {
           router.push("/admin");
         } else {
           router.push("/dashboard");
         }
       } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { full_name: fullName },
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-          },
+        const { user } = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Create Firestore profile
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          fullName: fullName,
+          email: email,
+          createdAt: new Date(),
+          preferredCourse: "Computer Science"
         });
-        if (error) throw error;
-        setShowOTP(true);
-        toast.success("Account created! Please verify your email.");
+
+        toast.success("Account created successfully!");
+        router.push("/dashboard");
       }
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
@@ -64,42 +68,31 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
+      const provider = new GoogleAuthProvider();
+      const { user } = await signInWithPopup(auth, provider);
+      
+      // Check if profile exists
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        await setDoc(docRef, {
+          uid: user.uid,
+          fullName: user.displayName || "New Student",
+          email: user.email,
+          createdAt: new Date(),
+          preferredCourse: "Computer Science"
+        });
+      }
+
+      toast.success("Signed in with Google!");
+      if (user.email === "kalimdon07@gmail.com") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error: any) {
       toast.error(error.message || "Google login failed");
-    }
-  };
-
-  const handleOtpChange = (element: any, index: number) => {
-    if (isNaN(element.value)) return false;
-    setOtp([...otp.map((d, idx) => (idx === index ? element.value : d))]);
-    if (element.nextSibling) {
-      element.nextSibling.focus();
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    setLoading(true);
-    try {
-        const token = otp.join("");
-        const { error } = await supabase.auth.verifyOtp({
-            email,
-            token,
-            type: 'signup'
-        });
-        if (error) throw error;
-        toast.success("Email verified!");
-        router.push("/dashboard");
-    } catch (error: any) {
-        toast.error(error.message || "OTP Verification failed");
-    } finally {
-        setLoading(false);
     }
   };
 

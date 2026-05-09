@@ -11,29 +11,30 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function Dashboard() {
-  const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [percentile, setPercentile] = useState("");
-  const [state, setState] = useState("All States");
+  const { user, profile, loading: authLoading } = useAuth();
   const [predictions, setPredictions] = useState<any[]>([]);
   const [predicting, setPredicting] = useState(false);
+  const [percentile, setPercentile] = useState("");
+  const [state, setState] = useState("All States");
   
   const router = useRouter();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/login");
-        return;
-      }
-      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-      setProfile(data);
-      setLoading(false);
-    };
-    fetchProfile();
-  }, []);
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#0a0d14] flex items-center justify-center">
+        <Loader2 className="h-10 w-10 text-purple-500 animate-spin" />
+      </div>
+    );
+  }
 
   const handlePredict = async () => {
     if (!percentile) return;
@@ -53,13 +54,7 @@ export default function Dashboard() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0d14] flex items-center justify-center">
-        <Loader2 className="h-10 w-10 text-purple-500 animate-spin" />
-      </div>
-    );
-  }
+
 
   return (
     <div className="min-h-screen bg-[#0a0d14] p-4 md:p-8 space-y-12 pb-24">
@@ -71,17 +66,17 @@ export default function Dashboard() {
       >
         <div className="space-y-2">
             <h1 className="text-4xl md:text-6xl font-black text-white font-syne">
-                Hello, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">{profile?.full_name?.split(' ')[0] || "Student"}</span>
+                Hello, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">{profile?.fullName?.split(' ')[0] || "Student"}</span>
             </h1>
             <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Your CollegeMatch-AI Command Center</p>
         </div>
         <div className="flex items-center gap-4">
              <div className="text-right">
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Preferred Course</p>
-                <p className="text-sm font-bold text-white">{profile?.preferred_course || "Computer Science"}</p>
+                <p className="text-sm font-bold text-white">{profile?.preferredCourse || "Computer Science"}</p>
              </div>
              <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center font-black text-purple-400">
-                {profile?.full_name?.[0]}
+                {profile?.fullName?.[0]}
              </div>
         </div>
       </motion.div>
