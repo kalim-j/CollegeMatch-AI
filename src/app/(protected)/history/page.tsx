@@ -123,16 +123,23 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-4xl min-h-screen">
-      <div className="flex items-center gap-4 mb-12">
-        <div className="h-12 w-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg">
-          <History className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="text-4xl font-black text-primary">Analysis History</h1>
-          <p className="text-muted-foreground font-medium">Revisit your previous AI college recommendations</p>
-        </div>
+    <div className="min-h-screen bg-[#0a0d14] text-white overflow-hidden relative selection:bg-purple-500/30">
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/10 blur-[120px] rounded-full animate-pulse" />
+          <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-600/10 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
+
+      <div className="container mx-auto px-4 py-12 max-w-4xl relative z-10">
+        <div className="flex items-center gap-4 mb-12">
+          <div className="h-12 w-12 bg-purple-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-purple-500/30">
+            <History className="h-6 w-6" />
+          </div>
+          <div>
+            <h1 className="text-4xl font-black text-white font-syne">Analysis History</h1>
+            <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Revisit your previous AI college recommendations</p>
+          </div>
+        </div>
 
       <div className="space-y-6">
         {sessions.map((session, idx) => (
@@ -142,8 +149,8 @@ export default function HistoryPage() {
             transition={{ delay: idx * 0.05 }}
             key={session.id}
           >
-            <Card className="rounded-[2rem] border-primary/10 shadow-lg overflow-hidden bg-white/40 backdrop-blur-md hover:shadow-xl transition-all">
-              <div className="p-6 md:p-8">
+            <Card className="rounded-[2.5rem] border-white/5 shadow-2xl overflow-hidden bg-white/5 backdrop-blur-xl hover:border-purple-500/30 transition-all group">
+              <div className="p-8">
                 <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                   <div className="space-y-3 flex-1">
                     <div className="flex items-center gap-2">
@@ -155,17 +162,17 @@ export default function HistoryPage() {
                         </div>
                     </div>
                     
-                    <h3 className="text-2xl font-black text-primary leading-tight">
+                    <h3 className="text-3xl font-black text-white leading-tight group-hover:text-purple-400 transition-colors">
                         {session.topCollege}
                     </h3>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
-                        <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
-                            <MapPin className="h-4 w-4 text-primary/60" />
+                        <div className="flex items-center gap-2 text-sm text-slate-400 font-bold">
+                            <MapPin className="h-4 w-4 text-purple-400/60" />
                             {session.studentProfile?.district}, {session.studentProfile?.state}
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
-                            <Calendar className="h-4 w-4 text-primary/60" />
+                        <div className="flex items-center gap-2 text-sm text-slate-400 font-bold">
+                            <Calendar className="h-4 w-4 text-purple-400/60" />
                             {session.createdAt ? new Date(session.createdAt).toLocaleDateString('en-IN', {
                                 day: 'numeric', month: 'short', year: 'numeric',
                                 hour: '2-digit', minute: '2-digit'
@@ -174,14 +181,14 @@ export default function HistoryPage() {
                     </div>
 
                     <div className="flex flex-wrap gap-4 pt-2">
-                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                            Cutoff: <span className="text-primary">{session.studentProfile?.cutoffMark}</span>
+                        <div className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+                            Cutoff: <span className="text-white">{session.studentProfile?.cutoffMark}</span>
                         </div>
-                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                            Quota: <span className="text-primary">{session.studentProfile?.quota}</span>
+                        <div className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+                            Quota: <span className="text-white">{session.studentProfile?.quota}</span>
                         </div>
-                        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                            Matches: <span className="text-primary">{session.totalResults}</span>
+                        <div className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+                            Matches: <span className="text-emerald-400">{session.totalResults}</span>
                         </div>
                     </div>
                   </div>
@@ -212,14 +219,19 @@ export default function HistoryPage() {
                           reachColleges: mappedResults.filter(c => (c.match_score || 0) <= 60),
                         });
                       }}
-                      className="h-12 px-6 rounded-xl font-bold border-primary/20 hover:bg-primary/5 text-primary"
+                      className="h-14 px-8 rounded-2xl font-black text-xs uppercase tracking-widest border-white/10 hover:bg-white/5 text-slate-300"
                     >
                       <FileDown className="h-4 w-4 mr-2" /> Download PDF
                     </Button>
                     <Button
-                      variant={expandedId === session.id ? "outline" : "default"}
+                      variant="default"
                       onClick={() => setExpandedId(expandedId === session.id ? null : session.id)}
-                      className="h-12 px-8 rounded-xl font-bold shadow-md"
+                      className={cn(
+                        "h-14 px-10 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl transition-all",
+                        expandedId === session.id 
+                            ? "bg-white text-slate-900" 
+                            : "bg-purple-600 hover:bg-purple-500 text-white shadow-purple-500/20"
+                      )}
                     >
                       {expandedId === session.id ? (
                           <><X className="h-4 w-4 mr-2" /> Close</>
@@ -252,25 +264,25 @@ export default function HistoryPage() {
                               transition={{ delay: idx * 0.05 }}
                               key={idx}
                               onClick={() => handleCollegeClick(college)}
-                              className="group p-5 rounded-2xl bg-white/50 border border-primary/5 hover:border-primary/20 hover:bg-white hover:shadow-md transition-all cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+                              className="group p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-500/30 hover:bg-white/10 transition-all cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
                             >
                               <div className="flex gap-4 items-center">
-                                <div className="h-10 w-10 rounded-xl bg-primary/5 flex items-center justify-center font-black text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center font-black text-slate-400 group-hover:bg-purple-500 group-hover:text-white transition-colors">
                                     {idx + 1}
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-800 group-hover:text-primary transition-colors">{college.name}</h4>
-                                    <p className="text-xs text-muted-foreground font-medium">{college.location} · NAAC: {college.naac_grade}</p>
+                                    <h4 className="font-black text-white group-hover:text-purple-400 transition-colors">{college.name}</h4>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{college.location} · NAAC: {college.naac_grade}</p>
                                 </div>
                               </div>
                               
                               <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
                                 <div className="text-right hidden sm:block">
-                                    <div className="text-sm font-black text-primary">{Math.round(college.match_score)}%</div>
-                                    <div className="text-[9px] font-bold text-muted-foreground uppercase">Match</div>
+                                    <div className="text-lg font-black text-emerald-400">{Math.round(college.match_score)}%</div>
+                                    <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Match Score</div>
                                 </div>
-                                <div className="px-3 py-1.5 rounded-lg bg-primary/5 group-hover:bg-primary/10 text-primary transition-colors">
-                                    <ChevronRight className="h-4 w-4" />
+                                <div className="h-10 w-10 rounded-xl bg-white/5 group-hover:bg-purple-500/20 text-slate-600 group-hover:text-purple-400 flex items-center justify-center transition-all">
+                                    <ChevronRight className="h-5 w-5" />
                                 </div>
                               </div>
                             </motion.div>
