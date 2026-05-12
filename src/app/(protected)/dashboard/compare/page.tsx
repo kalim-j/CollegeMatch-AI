@@ -7,7 +7,8 @@ import {
   Globe, Info, BrainCircuit, Loader2, 
   Star, Filter, ChevronDown, Plus as PlusIcon,
   Zap, ArrowRight, Activity, ShieldCheck,
-  Target, BarChart3, Award, Briefcase, Wallet
+  Target, BarChart3, Award, Briefcase, Wallet,
+  MapPin
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";

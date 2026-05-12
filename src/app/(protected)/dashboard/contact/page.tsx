@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Mail, MessageSquare, Send, CheckCircle2, 
   Loader2, Sparkles, ShieldCheck, Zap,
-  ArrowRight, Phone, Target
+  ArrowRight, Phone, Target, ChevronDown
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";

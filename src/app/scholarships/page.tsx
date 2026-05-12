@@ -9,7 +9,7 @@ import {
   Search, GraduationCap, Building, Banknote, 
   Calendar, ExternalLink, Info, Loader2, ChevronDown, ChevronUp,
   MapPin, Users, BookOpen, Wallet, Activity, Zap,
-  ShieldCheck, Sparkles, ArrowRight
+  ShieldCheck, Sparkles, ArrowRight, Award
 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
