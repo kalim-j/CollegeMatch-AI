@@ -18,95 +18,77 @@ export default function AppBackground() {
 
     let t = 0;
 
-    // Soft floating blobs
+    // Dark ambient blobs
     const blobs = [
-      { x: W * 0.1, y: H * 0.2, r: 300, hue: 250, speed: 0.0008 },
-      { x: W * 0.8, y: H * 0.1, r: 250, hue: 170, speed: 0.0006 },
-      { x: W * 0.5, y: H * 0.7, r: 280, hue: 220, speed: 0.0010 },
-      { x: W * 0.9, y: H * 0.8, r: 200, hue: 260, speed: 0.0007 },
+      { x: W * 0.1, y: H * 0.2, r: 600, hue: 250, speed: 0.0004 }, // Indigo
+      { x: W * 0.8, y: H * 0.1, r: 500, hue: 170, speed: 0.0003 }, // Teal
+      { x: W * 0.5, y: H * 0.7, r: 550, hue: 230, speed: 0.0005 }, // Purpleish
+      { x: W * 0.9, y: H * 0.8, r: 400, hue: 260, speed: 0.0002 }, // Violet
     ];
 
-    // Small floating dots
-    const dots = Array.from({ length: 40 }, () => ({
+    // Cinematic particles
+    const dots = Array.from({ length: 60 }, () => ({
       x: Math.random() * W,
       y: Math.random() * H,
       baseY: 0,
-      r: 1.5 + Math.random() * 2.5,
-      speed: 0.0005 + Math.random() * 0.001,
+      r: 0.5 + Math.random() * 1.5,
+      speed: 0.0002 + Math.random() * 0.0005,
       offset: Math.random() * Math.PI * 2,
-      alpha: 0.15 + Math.random() * 0.25,
+      alpha: 0.1 + Math.random() * 0.3,
       hue: Math.random() > 0.5 ? 250 : 170,
     })).map(d => ({ ...d, baseY: d.y }));
-
-    // Curved wave lines
-    const waves = Array.from({ length: 3 }, (_, i) => ({
-      amplitude: 30 + i * 20,
-      frequency: 0.003 + i * 0.001,
-      speed: 0.0008 + i * 0.0003,
-      yBase: H * (0.3 + i * 0.2),
-      alpha: 0.04 - i * 0.01,
-      hue: 250 + i * 20,
-    }));
 
     const draw = () => {
       ctx.clearRect(0, 0, W, H);
       t++;
 
-      // Light warm base
-      const bg = ctx.createLinearGradient(0, 0, W, H);
-      bg.addColorStop(0, '#f8f7ff');
-      bg.addColorStop(0.5, '#f3f1fe');
-      bg.addColorStop(1, '#eef8f4');
-      ctx.fillStyle = bg;
+      // Deep Space Base
+      ctx.fillStyle = '#05071a';
       ctx.fillRect(0, 0, W, H);
 
-      // Soft blobs
+      // Ambient Glows
       blobs.forEach((blob, i) => {
-        const bx = blob.x + Math.sin(t * blob.speed + i) * 80;
-        const by = blob.y + Math.cos(t * blob.speed * 0.7 + i) * 60;
+        const bx = blob.x + Math.sin(t * blob.speed + i) * 120;
+        const by = blob.y + Math.cos(t * blob.speed * 0.8 + i) * 90;
 
         const grad = ctx.createRadialGradient(bx, by, 0, bx, by, blob.r);
-        grad.addColorStop(0, `hsla(${blob.hue}, 70%, 75%, 0.18)`);
-        grad.addColorStop(1, `hsla(${blob.hue}, 70%, 75%, 0)`);
+        grad.addColorStop(0, `hsla(${blob.hue}, 60%, 40%, 0.08)`);
+        grad.addColorStop(1, `hsla(${blob.hue}, 60%, 40%, 0)`);
+        
+        ctx.globalCompositeOperation = 'screen';
         ctx.beginPath();
         ctx.arc(bx, by, blob.r, 0, Math.PI * 2);
         ctx.fillStyle = grad;
         ctx.fill();
       });
 
-      // Wave lines
-      waves.forEach(wave => {
-        ctx.beginPath();
-        ctx.moveTo(0, wave.yBase);
-        for (let x = 0; x <= W; x += 4) {
-          const y = wave.yBase +
-            Math.sin(x * wave.frequency + t * wave.speed) * wave.amplitude;
-          ctx.lineTo(x, y);
-        }
-        ctx.strokeStyle = `hsla(${wave.hue}, 60%, 60%, ${wave.alpha})`;
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-      });
+      // Reset composite for particles
+      ctx.globalCompositeOperation = 'source-over';
 
-      // Floating dots
+      // Floating particles
       dots.forEach(dot => {
-        const y = dot.baseY + Math.sin(t * dot.speed + dot.offset) * 15;
+        const y = dot.baseY + Math.sin(t * dot.speed + dot.offset) * 20;
         ctx.beginPath();
         ctx.arc(dot.x, y, dot.r, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${dot.hue}, 60%, 55%, ${dot.alpha})`;
+        ctx.fillStyle = `hsla(${dot.hue}, 70%, 70%, ${dot.alpha})`;
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = `hsla(${dot.hue}, 70%, 70%, 0.5)`;
         ctx.fill();
+        ctx.shadowBlur = 0;
       });
 
-      // Subtle grid
-      ctx.strokeStyle = 'rgba(127, 119, 221, 0.04)';
+      // Subtle Cyber Grid
+      ctx.strokeStyle = 'rgba(127, 119, 221, 0.03)';
       ctx.lineWidth = 0.5;
-      for (let x = 0; x < W; x += 60) {
+      const gridSize = 80;
+      
+      for (let x = 0; x < W; x += gridSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, H);
         ctx.stroke();
       }
-      for (let y = 0; y < H; y += 60) {
+      for (let y = 0; y < H; y += gridSize) {
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(W, y);
@@ -135,14 +117,7 @@ export default function AppBackground() {
   return (
     <canvas
       ref={canvasRef}
-      style={{
-        position: 'fixed',
-        top: 0, left: 0,
-        width: '100vw',
-        height: '100vh',
-        zIndex: 0,
-        pointerEvents: 'none',
-      }}
+      className="fixed inset-0 w-screen h-screen -z-10 pointer-events-none"
     />
   );
 }
