@@ -114,8 +114,7 @@ export default function AdminDashboard() {
       {/* Sidebar */}
       <aside className="w-72 border-r border-white/5 bg-white/[0.02] backdrop-blur-xl flex flex-col sticky top-16 h-[calc(100vh-64px)] z-30 flex-shrink-0">
         <div className="p-8 border-b border-white/5">
-          <Logo />
-          <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] mt-3 ml-1">Admin Console</p>
+          <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] ml-1">Admin Command Center</p>
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-2">

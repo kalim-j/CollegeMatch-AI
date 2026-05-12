@@ -251,7 +251,7 @@ export default function InterviewPage() {
                     </select>
                 </div>
                 <button 
-                    className="btn-primary w-full h-16 text-lg mt-4 group"
+                    className="btn-primary w-full h-16 text-lg mt-4 group flex items-center justify-center gap-3"
                     onClick={handleNext} 
                     disabled={!formData.district}
                 >
@@ -317,7 +317,7 @@ export default function InterviewPage() {
                     </div>
                 </div>
                 <button 
-                    className="btn-primary w-full h-16 text-lg mt-4"
+                    className="btn-primary w-full h-16 text-lg mt-4 flex items-center justify-center gap-3"
                     onClick={handleNext} 
                     disabled={!formData[`marks${levelKey}`] || !formData[`percentage${levelKey}`]}
                 >
@@ -389,7 +389,7 @@ export default function InterviewPage() {
                 </div>
 
                 <button 
-                    className="btn-primary w-full h-16 text-lg mt-4"
+                    className="btn-primary w-full h-16 text-lg mt-4 flex items-center justify-center gap-3"
                     onClick={handleNext} 
                 >
                     Continue <ChevronRight size={20} />
@@ -448,7 +448,7 @@ export default function InterviewPage() {
                     </div>
                 </div>
                 <button 
-                    className="btn-primary w-full h-16 text-lg mt-4"
+                    className="btn-primary w-full h-16 text-lg mt-4 flex items-center justify-center gap-3"
                     onClick={handleNext} 
                 >
                     Continue <ChevronRight size={20} />
@@ -509,7 +509,7 @@ export default function InterviewPage() {
                     </p>
                 </div>
                 <button 
-                    className="btn-primary w-full h-20 text-2xl group" 
+                    className="btn-primary w-full h-20 text-2xl group flex items-center justify-center gap-4" 
                     onClick={handleFinish}
                     disabled={analyzing}
                 >
@@ -518,7 +518,7 @@ export default function InterviewPage() {
                     ) : (
                       <Zap size={28} className="group-hover:rotate-12 transition-transform" />
                     )}
-                    {analyzing ? "AI is Analyzing Profile..." : "Execute AI Search"}
+                    <span>{analyzing ? "AI is Analyzing Profile..." : "Execute AI Search"}</span>
                 </button>
             </div>
           </div>
