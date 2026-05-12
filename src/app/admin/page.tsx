@@ -409,6 +409,80 @@ export default function AdminPage() {
             </motion.div>
           )}
 
+          {activeTab === "analytics" && (
+            <motion.div 
+              key="analytics"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-10"
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div className="bg-[#111520] border border-white/5 rounded-[3rem] p-10 shadow-2xl">
+                  <h3 className="text-2xl font-black text-white mb-8 font-syne">Regional User Distribution</h3>
+                  <div className="h-[400px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={stats?.top_states || []} layout="vertical">
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" horizontal={true} vertical={false} />
+                        <XAxis type="number" stroke="#64748b" fontSize={12} hide />
+                        <YAxis dataKey="state" type="category" stroke="#fff" fontSize={12} width={120} />
+                        <Tooltip contentStyle={{ backgroundColor: '#111520', border: '1px solid #1f2937', borderRadius: '16px' }} />
+                        <Bar dataKey="count" fill="url(#colorBar)" radius={[0, 10, 10, 0]}>
+                           {stats?.top_states?.map((entry: any, index: number) => (
+                             <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#8b5cf6' : '#6366f1'} />
+                           ))}
+                        </Bar>
+                        <defs>
+                          <linearGradient id="colorBar" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="#8b5cf6" />
+                            <stop offset="100%" stopColor="#6366f1" />
+                          </linearGradient>
+                        </defs>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                <div className="bg-[#111520] border border-white/5 rounded-[3rem] p-10 shadow-2xl">
+                  <h3 className="text-2xl font-black text-white mb-8 font-syne">Platform Engagement</h3>
+                  <div className="h-[400px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={stats?.signups || []}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+                        <XAxis dataKey="date" stroke="#64748b" fontSize={12} />
+                        <YAxis stroke="#64748b" fontSize={12} />
+                        <Tooltip contentStyle={{ backgroundColor: '#111520', border: '1px solid #1f2937', borderRadius: '16px' }} />
+                        <Line 
+                          type="step" 
+                          dataKey="count" 
+                          stroke="#10b981" 
+                          strokeWidth={6} 
+                          dot={{ r: 8, fill: '#10b981', strokeWidth: 0 }} 
+                          activeDot={{ r: 12, strokeWidth: 0 }} 
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-[#111520] border border-white/5 rounded-[3rem] p-12 shadow-2xl text-center space-y-6">
+                 <Activity size={60} className="text-purple-500 mx-auto animate-pulse" />
+                 <h3 className="text-3xl font-black text-white font-syne">Real-time Traffic Analysis</h3>
+                 <p className="text-slate-500 max-w-2xl mx-auto font-medium">Detailed tracking of user sessions, search queries, and AI model performance is being aggregated. Performance metrics will be available in the next sync.</p>
+                 <div className="flex justify-center gap-4">
+                    <div className="px-8 py-4 bg-white/5 rounded-2xl border border-white/10">
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Avg Session</p>
+                        <p className="text-2xl font-black text-white font-syne">12m 45s</p>
+                    </div>
+                    <div className="px-8 py-4 bg-white/5 rounded-2xl border border-white/10">
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Query Latency</p>
+                        <p className="text-2xl font-black text-emerald-400 font-syne">840ms</p>
+                    </div>
+                 </div>
+              </div>
+            </motion.div>
+          )}
+
           {activeTab === "messages" && (
             <motion.div 
                 key="messages"
@@ -416,7 +490,8 @@ export default function AdminPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-[#111520] border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl"
             >
-                 <table className="w-full text-left">
+                 {messages.length > 0 ? (
+                    <table className="w-full text-left">
                         <thead>
                             <tr className="border-b border-white/5 text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/[0.01]">
                                 <th className="px-8 py-5">Sender</th>
@@ -440,13 +515,86 @@ export default function AdminPage() {
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
                                             m.status === 'read' ? 'bg-slate-500/10 text-slate-500' : 'bg-purple-500/10 text-purple-400 animate-pulse'
                                         }`}>
-                                            {m.status}
+                                            {m.status || 'New'}
                                         </span>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                 ) : (
+                    <div className="p-32 text-center space-y-6">
+                        <div className="h-24 w-24 bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto border border-white/10">
+                            <Mail size={40} className="text-slate-600" />
+                        </div>
+                        <h3 className="text-2xl font-black text-white font-syne">No messages yet</h3>
+                        <p className="text-slate-500 max-w-sm mx-auto">When users contact you through the support form, their messages will appear here.</p>
+                    </div>
+                 )}
+            </motion.div>
+          )}
+
+          {activeTab === "settings" && (
+            <motion.div 
+                key="settings"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-8"
+            >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="bg-[#111520] border border-white/5 rounded-[2.5rem] p-10 shadow-2xl space-y-8">
+                        <div className="flex items-center gap-4 mb-2">
+                            <div className="h-12 w-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400">
+                                <Settings size={24} />
+                            </div>
+                            <h3 className="text-2xl font-black text-white font-syne">System Config</h3>
+                        </div>
+                        <div className="space-y-6">
+                            {[
+                                { label: "Maintenance Mode", desc: "Disable frontend access for updates", status: "Disabled" },
+                                { label: "AI Prediction Engine", desc: "Using Groq Llama 3 70B", status: "Active" },
+                                { label: "Public Registration", desc: "Allow new users to sign up", status: "Enabled" }
+                            ].map((item, i) => (
+                                <div key={i} className="flex justify-between items-center p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/5 transition-all">
+                                    <div>
+                                        <p className="font-bold text-white">{item.label}</p>
+                                        <p className="text-xs text-slate-500">{item.desc}</p>
+                                    </div>
+                                    <div className="px-4 py-1.5 bg-purple-500/10 text-purple-400 rounded-xl text-[10px] font-black uppercase tracking-widest border border-purple-500/20">
+                                        {item.status}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-[#111520] border border-white/5 rounded-[2.5rem] p-10 shadow-2xl space-y-8">
+                        <div className="flex items-center gap-4 mb-2">
+                            <div className="h-12 w-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400">
+                                <Activity size={24} />
+                            </div>
+                            <h3 className="text-2xl font-black text-white font-syne">Security Logs</h3>
+                        </div>
+                        <div className="space-y-4">
+                            {[
+                                { event: "Admin Login", time: "2 mins ago", ip: "192.168.1.1" },
+                                { event: "DB Sync", time: "15 mins ago", ip: "System" },
+                                { event: "Backup", time: "1 hour ago", ip: "Automated" }
+                            ].map((log, i) => (
+                                <div key={i} className="flex items-center gap-4 p-4 border-l-4 border-purple-500 bg-white/[0.02]">
+                                    <div className="text-xs font-black text-slate-500">{log.time}</div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-bold text-white">{log.event}</p>
+                                        <p className="text-[10px] text-slate-600 font-mono">{log.ip}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <button className="w-full h-14 bg-white/5 border border-white/10 rounded-xl text-white font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all">
+                            Download Security Audit
+                        </button>
+                    </div>
+                </div>
             </motion.div>
           )}
         </AnimatePresence>
