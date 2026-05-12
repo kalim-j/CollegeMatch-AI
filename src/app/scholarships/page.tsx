@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { 
   Search, GraduationCap, Building, Banknote, 
   Calendar, ExternalLink, Info, Loader2, ChevronDown, ChevronUp,
-  MapPin, Users, BookOpen, Wallet
+  MapPin, Users, BookOpen, Wallet, Activity
 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";

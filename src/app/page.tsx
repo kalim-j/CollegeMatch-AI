@@ -9,7 +9,7 @@ import {
   GraduationCap, Search, Sparkles, History, Phone, 
   ArrowRight, CheckCircle2, Award, ShieldCheck, 
   Zap, ChevronRight, Play, Star, Quote, 
-  Users, MapPin, Building, BookOpen
+  Users, MapPin, Building, BookOpen, MessageSquare
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
