@@ -16,16 +16,23 @@ export default function Footer() {
 
   if (isPageHidden) return null;
 
+  const footerLinks = {
+    platform: [
+      { name: "Home", href: "/" },
+      { name: "Dashboard", href: "/dashboard" },
+      { name: "Scholarship Finder", href: "/scholarships" },
+      { name: "Entrance Exams", href: "/exams" }
+    ],
     support: [
       { name: "Contact Support", href: "/contact" },
       { name: "Submit Testimonial", href: "/testimonial" },
       { name: "Privacy Policy", href: "#" },
-      { name: "Terms of Service", href: "#" },
+      { name: "Terms of Service", href: "#" }
     ],
     social: [
       { name: "Twitter", href: "#", icon: Twitter },
       { name: "Instagram", href: "#", icon: Instagram },
-      { name: "LinkedIn", href: "#", icon: Linkedin },
+      { name: "LinkedIn", href: "#", icon: Linkedin }
     ]
   };
 
