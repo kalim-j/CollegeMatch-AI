@@ -101,8 +101,8 @@ export default function Home() {
               className="flex flex-col sm:flex-row items-center justify-center gap-6"
             >
               <Link href="/register">
-                <button className="btn-primary flex items-center gap-3 group h-16 px-10 text-lg">
-                  Find my colleges <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                <button className="btn-primary flex items-center justify-center gap-3 group h-16 px-10 text-lg">
+                  <span>Find my colleges</span> <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>
               <button onClick={() => {

@@ -226,25 +226,26 @@ export default function CollegeDetailPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <a
-                    href={college.website || `https://www.google.com/search?q=${encodeURIComponent(college.name + ' official website')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => {
-                      setVisiting(true);
-                      setTimeout(() => setVisiting(false), 3000);
-                    }}
-                    className="w-full h-16 btn-primary text-sm font-black group flex items-center justify-center gap-3"
-                  >
-                    {visiting ? (
-                      <Loader2 size={20} className="animate-spin" />
-                    ) : (
-                      <>
-                        <Globe size={18} /> Official Portal
-                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                      </>
-                    )}
-                  </a>
+                    <a
+                      href={college.website || `https://www.google.com/search?q=${encodeURIComponent(college.name + ' official website')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => {
+                        setVisiting(true);
+                        setTimeout(() => setVisiting(false), 3000);
+                      }}
+                      className="w-full h-16 btn-primary text-sm font-black group flex items-center justify-center gap-3"
+                    >
+                      {visiting ? (
+                        <Loader2 size={20} className="animate-spin" />
+                      ) : (
+                        <div className="flex items-center justify-center gap-3">
+                          <Globe size={18} /> 
+                          <span>Official Portal</span>
+                          <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      )}
+                    </a>
                   <Link href="/dashboard/contact" className="block">
                     <button className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl text-white font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/[0.1] transition-all flex items-center justify-center gap-3">
                       <Phone size={16} className="text-teal-400" /> Secure Admission Enquiry

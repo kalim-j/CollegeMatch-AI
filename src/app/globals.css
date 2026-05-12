@@ -81,6 +81,10 @@
 
 /* Primary button */
 .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   background: linear-gradient(135deg, var(--indigo), var(--indigo-dark));
   color: #fff;
   border: none;
@@ -99,6 +103,10 @@
 
 /* Secondary (ghost) button */
 .btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   background: transparent;
   border: 1px solid var(--glass-border);
   color: var(--text-primary);
@@ -116,6 +124,10 @@
 
 /* Teal button */
 .btn-teal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   background: linear-gradient(135deg, var(--teal), var(--teal-light));
   color: #fff;
   border: none;

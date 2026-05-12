@@ -230,12 +230,10 @@ export default function RegisterPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="btn-primary w-full h-16 text-lg group relative overflow-hidden"
+                    className="btn-primary w-full h-16 text-lg group relative overflow-hidden flex items-center justify-center gap-3"
                   >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Verify Email"}
-                      {!loading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
-                    </span>
+                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <span>Verify Email</span>}
+                    {!loading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
                   </button>
                 </form>
               </div>

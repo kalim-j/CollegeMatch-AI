@@ -138,10 +138,10 @@ export default function Dashboard() {
             </div>
             <button
               onClick={() => router.push("/interview")}
-              className="btn-primary h-16 px-10 text-base whitespace-nowrap group flex-shrink-0"
+              className="btn-primary h-16 px-10 text-base whitespace-nowrap group flex-shrink-0 flex items-center justify-center gap-3"
             >
               <Sparkles size={18} className="group-hover:rotate-12 transition-transform" />
-              Start Full AI Analysis
+              <span>Start Full AI Analysis</span>
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
@@ -168,8 +168,8 @@ export default function Dashboard() {
                       <h3 className="text-xl font-black text-white">{card.label}</h3>
                       <p className="text-white/40 text-sm font-medium leading-relaxed">{card.desc}</p>
                     </div>
-                    <div className={`flex items-center gap-2 ${card.color} font-black text-[10px] uppercase tracking-widest`}>
-                      {card.cta} <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                    <div className={`flex items-center justify-start gap-2 ${card.color} font-black text-[10px] uppercase tracking-widest`}>
+                      <span>{card.cta}</span> <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </Link>
@@ -187,8 +187,8 @@ export default function Dashboard() {
                       <h3 className="text-xl font-black text-white">Admin Panel</h3>
                       <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Management Console</p>
                     </div>
-                    <div className="flex items-center gap-2 text-emerald-400 font-black text-[10px] uppercase tracking-widest">
-                      Open Console <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                    <div className="flex items-center justify-start gap-2 text-emerald-400 font-black text-[10px] uppercase tracking-widest">
+                      <span>Open Console</span> <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </Link>

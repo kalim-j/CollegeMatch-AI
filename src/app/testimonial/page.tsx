@@ -222,10 +222,10 @@ export default function SubmitTestimonial() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full md:w-auto h-20 px-12 text-lg font-black group shadow-[0_20px_50px_rgba(20,184,166,0.2)]"
+                className="btn-primary w-full md:w-auto h-20 px-12 text-lg font-black group shadow-[0_20px_50px_rgba(20,184,166,0.2)] flex items-center justify-center gap-3"
               >
                 {loading ? <Loader2 className="animate-spin" size={24} /> : <Send size={24} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
-                {loading ? "Transmitting..." : "Broadcast Success Story"}
+                <span>{loading ? "Transmitting..." : "Broadcast Success Story"}</span>
               </button>
               <div className="flex items-center gap-3 opacity-20">
                 <ShieldCheck size={16} />

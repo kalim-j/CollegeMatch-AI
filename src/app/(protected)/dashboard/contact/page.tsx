@@ -151,12 +151,13 @@ export default function ContactPage() {
                     />
                 </div>
 
-                <button 
-                    disabled={sending}
-                    className="btn-primary w-full h-20 text-xl font-black group"
+                <button
+                  type="submit"
+                  disabled={sending}
+                  className="btn-primary w-full h-16 text-lg font-black group flex items-center justify-center gap-3"
                 >
-                    {sending ? <Loader2 className="animate-spin" size={24} /> : <Send size={24} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
-                    {sending ? "Transmitting Intelligence…" : "Execute Submission"}
+                  {sending ? <Loader2 className="animate-spin" size={24} /> : <Send size={24} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                  <span>{sending ? "Transmitting..." : "Send Intelligence Request"}</span>
                 </button>
               </form>
             </motion.div>
