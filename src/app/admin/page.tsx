@@ -83,13 +83,15 @@ export default function AdminPage() {
       const todayStart = new Date();
       todayStart.setHours(0,0,0,0);
 
+      const onlineNowCount = usersData.filter((u: any) => u.isOnline === true).length;
+
       const usersWeek = usersData.filter((u: any) => {
         const createdAt = u.createdAt?.seconds ? new Date(u.createdAt.seconds * 1000) : new Date(u.createdAt || Date.now());
         return createdAt >= oneWeekAgo;
       }).length;
 
       const activeToday = usersData.filter((u: any) => {
-        const lastActive = u.updatedAt?.seconds ? new Date(u.updatedAt.seconds * 1000) : new Date(u.updatedAt || Date.now());
+        const lastActive = u.lastActive?.seconds ? new Date(u.lastActive.seconds * 1000) : new Date(u.lastActive || Date.now());
         return lastActive >= todayStart;
       }).length;
 
@@ -98,6 +100,7 @@ export default function AdminPage() {
         users_week: usersWeek,
         total_searches: 124, 
         active_today: activeToday,
+        online_now: onlineNowCount,
         signups: [
           { date: 'Mon', count: 2 },
           { date: 'Tue', count: 5 },
@@ -259,7 +262,7 @@ export default function AdminPage() {
                   { label: "Total Users", val: stats?.total_users || 0, icon: Users, color: "text-blue-400", bg: "bg-blue-500/10" },
                   { label: "New This Week", val: stats?.users_week || 0, icon: Clock, color: "text-purple-400", bg: "bg-purple-500/10" },
                   { label: "AI Searches", val: stats?.total_searches || 0, icon: Search, color: "text-amber-400", bg: "bg-amber-500/10" },
-                  { label: "Active Today", val: stats?.active_today || 0, icon: Activity, color: "text-emerald-400", bg: "bg-emerald-500/10" },
+                  { label: "Online Now", val: stats?.online_now || 0, icon: Activity, color: "text-emerald-400", bg: "bg-emerald-500/10" },
                 ].map((stat, i) => (
                   <div key={i} className="bg-[#111520] border border-white/5 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group hover:border-white/10 transition-all">
                     <div className={`absolute -top-4 -right-4 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-all rotate-12 ${stat.color}`}>
@@ -380,11 +383,14 @@ export default function AdminPage() {
                                         <td className="px-8 py-5 text-sm">{joinDate.toLocaleDateString()}</td>
                                         <td className="px-8 py-5 text-sm">{lastActiveDate.toLocaleDateString()}</td>
                                         <td className="px-8 py-5">
-                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                                isActive ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-500/10 text-slate-500'
-                                            }`}>
-                                                {isActive ? 'Active' : 'Inactive'}
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <div className={`h-2 w-2 rounded-full ${u.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-500'}`} />
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                                                    u.isOnline ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-500/10 text-slate-500'
+                                                }`}>
+                                                    {u.isOnline ? 'Online' : 'Offline'}
+                                                </span>
+                                            </div>
                                         </td>
                                         <td className="px-8 py-5 text-right">
                                             <button 

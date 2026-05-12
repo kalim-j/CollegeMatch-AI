@@ -1,8 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { onAuthStateChanged, User, setPersistence, browserSessionPersistence } from 'firebase/auth';
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { StudentProfile } from '@/types';
 
@@ -30,14 +30,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const docRef = doc(db, 'users', uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setProfile(docSnap.data() as StudentProfile);
+        const data = docSnap.data();
+        setProfile(data as StudentProfile);
+        // Update online status
+        await updateDoc(docRef, {
+          isOnline: true,
+          lastActive: serverTimestamp()
+        });
       } else {
         // Create initial profile if it doesn't exist
-        const initialProfile: StudentProfile = {
+        const initialProfile: any = {
           uid,
           fullName: auth.currentUser?.displayName || '',
           email: auth.currentUser?.email || '',
-          createdAt: new Date(),
+          createdAt: serverTimestamp(),
+          isOnline: true,
+          lastActive: serverTimestamp()
         };
         await setDoc(docRef, initialProfile);
         setProfile(initialProfile);
@@ -54,6 +62,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
+    // Ensure session persistence is set on mount as well
+    setPersistence(auth, browserSessionPersistence);
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
@@ -64,7 +75,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    // Handle offline status when window closes
+    const handleUnload = () => {
+      if (auth.currentUser) {
+        const docRef = doc(db, 'users', auth.currentUser.uid);
+        // Using updateDoc might not finish on close, but we try
+        updateDoc(docRef, { isOnline: false, lastActive: serverTimestamp() });
+      }
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+    return () => {
+      unsubscribe();
+      window.removeEventListener('beforeunload', handleUnload);
+    };
   }, []);
 
   return (

@@ -10,7 +10,9 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signInWithPopup, 
-  GoogleAuthProvider
+  GoogleAuthProvider,
+  setPersistence,
+  browserSessionPersistence
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
@@ -37,6 +39,9 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // Set persistence to session (logout on window close)
+      await setPersistence(auth, browserSessionPersistence);
+      
       if (isSignIn) {
         const { user } = await signInWithEmailAndPassword(auth, email, password);
         toast.success("Welcome back!");
@@ -69,6 +74,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
+      await setPersistence(auth, browserSessionPersistence);
       const provider = new GoogleAuthProvider();
       const { user } = await signInWithPopup(auth, provider);
       
