@@ -1,687 +1,492 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-import { auth } from "@/lib/firebase";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  LayoutDashboard, Users, TrendingUp, MessageSquare, Settings, 
-  Search, Download, ExternalLink, Activity, Clock, MapPin, 
-  Calendar, Mail, User, LogOut, ChevronRight, Loader2
-} from "lucide-react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { collection, getDocs, getDoc, doc, query, orderBy, limit, where, Timestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { cn } from "@/lib/utils";
 import { 
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, 
-  CartesianGrid, Tooltip, ResponsiveContainer, Cell 
-} from "recharts";
+  LayoutDashboard, Users, MessageSquare, Star, 
+  Search, Filter, Calendar, MapPin, Phone, 
+  ExternalLink, CheckCircle2, XCircle, Clock, 
+  ChevronRight, Loader2, LogOut, MoreVertical,
+  Briefcase, GraduationCap, WhatsApp, MessageCircle,
+  FileText, Check, Trash2, BadgeAlert
+} from "lucide-react";
+import { db } from "@/lib/firebase";
+import { 
+  collection, getDocs, query, orderBy, where, 
+  updateDoc, doc, deleteDoc, serverTimestamp, 
+  onSnapshot 
+} from "firebase/firestore";
+import { cn } from "@/lib/utils";
 
-export default function AdminPage() {
+const ADMIN_EMAIL = "kalim.apoffi@gmail.com";
+
+export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState("overview");
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<any>(null);
-  const [usersList, setUsersList] = useState<any[]>([]);
-  const [messages, setMessages] = useState<any[]>([]);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState("leads");
+  const [loading, setLoading] = useState(true);
+  const [leads, setLeads] = useState<any[]>([]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [selectedLead, setSelectedLead] = useState<any>(null);
 
   useEffect(() => {
-    const init = async () => {
-      if (!authLoading) {
-        if (!user || user.email !== "kalimdon07@gmail.com") {
-          router.push("/dashboard");
-          return;
-        }
-        await fetchData();
-        setLoading(false);
+    if (!authLoading) {
+      if (!user || user.email !== ADMIN_EMAIL) {
+        router.push("/dashboard");
+        return;
       }
-    };
-    init();
-  }, [user, authLoading]);
+      
+      // Real-time listeners
+      const leadsUnsub = onSnapshot(
+        query(collection(db, "contacts"), orderBy("createdAt", "desc")),
+        (snapshot) => {
+          setLeads(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+          setLoading(false);
+        }
+      );
 
-  const fetchData = async () => {
+      const testUnsub = onSnapshot(
+        query(collection(db, "testimonials"), orderBy("createdAt", "desc")),
+        (snapshot) => {
+          setTestimonials(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+        }
+      );
+
+      return () => {
+        leadsUnsub();
+        testUnsub();
+      };
+    }
+  }, [user, authLoading, router]);
+
+  const updateLeadStatus = async (leadId: string, newStatus: string) => {
     try {
-      console.log("Fetching admin data from Firestore...");
-      // 1. Fetch Users from Firestore
-      console.log("Using DB instance:", db.app.name);
-      const usersSnap = await getDocs(collection(db, "users"));
-      console.log("Firestore Response size:", usersSnap.size);
-      console.log("Firestore Response empty:", usersSnap.empty);
-      
-      const usersData = usersSnap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      console.log("Mapped Users Data length:", usersData.length);
-      setUsersList(usersData);
-
-      // Verify connection by checking current user
-      if (user) {
-        const selfDoc = await getDoc(doc(db, "users", user.uid));
-        console.log("Admin self-check in Firestore:", selfDoc.exists(), selfDoc.data());
-      }
-
-      // 2. Fetch Contact Submissions (Messages) from Supabase
-      const { data: submissions, error: subError } = await supabase
-        .from('contact_submissions')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (subError) console.error("Supabase Error:", subError);
-      setMessages(submissions || []);
-
-      // 3. Calculate Stats
-      const now = new Date();
-      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const todayStart = new Date();
-      todayStart.setHours(0,0,0,0);
-
-      const onlineNowCount = usersData.filter((u: any) => u.isOnline === true).length;
-
-      const usersWeek = usersData.filter((u: any) => {
-        const createdAt = u.createdAt?.seconds ? new Date(u.createdAt.seconds * 1000) : new Date(u.createdAt || Date.now());
-        return createdAt >= oneWeekAgo;
-      }).length;
-
-      const activeToday = usersData.filter((u: any) => {
-        const lastActive = u.lastActive?.seconds ? new Date(u.lastActive.seconds * 1000) : new Date(u.lastActive || Date.now());
-        return lastActive >= todayStart;
-      }).length;
-
-      setStats({
-        total_users: usersData.length,
-        users_week: usersWeek,
-        total_searches: 124, 
-        active_today: activeToday,
-        online_now: onlineNowCount,
-        signups: [
-          { date: 'Mon', count: 2 },
-          { date: 'Tue', count: 5 },
-          { date: 'Wed', count: 3 },
-          { date: 'Thu', count: 8 },
-          { date: 'Fri', count: 6 },
-          { date: 'Sat', count: 4 },
-          { date: 'Sun', count: 2 },
-        ],
-        top_states: [
-          { state: 'Tamil Nadu', count: 45 },
-          { state: 'Maharashtra', count: 32 },
-          { state: 'Karnataka', count: 28 },
-          { state: 'Delhi', count: 20 },
-          { state: 'Gujarat', count: 15 },
-        ]
+      await updateDoc(doc(db, "contacts", leadId), {
+        status: newStatus,
+        updatedAt: serverTimestamp()
       });
-
-      if (usersData.length === 0) {
-        console.warn("No users found in Firestore 'users' collection. Checking Supabase 'profiles'...");
-        // Fallback to Supabase users if Firestore is empty (during migration)
-        try {
-          const { data: supabaseUsers, error: sbError } = await supabase
-            .from('profiles')
-            .select('*');
-          
-          if (!sbError && supabaseUsers && supabaseUsers.length > 0) {
-            console.log("Found users in Supabase profiles table:", supabaseUsers.length);
-            const mappedSupabaseUsers = supabaseUsers.map(u => ({
-              id: u.id || u.uid,
-              fullName: u.full_name || u.fullName || "Supabase User",
-              email: u.email,
-              city: u.city || "Unknown",
-              state: u.state || "Unknown",
-              createdAt: u.created_at ? { seconds: Math.floor(new Date(u.created_at).getTime() / 1000) } : null,
-              updatedAt: u.updated_at ? { seconds: Math.floor(new Date(u.updated_at).getTime() / 1000) } : null
-            }));
-            setUsersList(mappedSupabaseUsers);
-            setStats((prev: any) => ({
-              ...prev,
-              total_users: mappedSupabaseUsers.length
-            }));
-            toast.info(`Note: Displaying ${mappedSupabaseUsers.length} users from Supabase legacy database.`);
-          } else if (sbError) {
-             console.error("Supabase Fallback Error:", sbError);
-          }
-        } catch (sbErr) {
-          console.error("Supabase Fallback Catch:", sbErr);
-        }
-      }
-
+      toast.success("Status updated to " + newStatus);
     } catch (error: any) {
-      console.error("Error fetching admin data:", error);
-      if (error.code === 'permission-denied') {
-        toast.error("Firestore Error: Permission Denied. You may need to update your Security Rules to allow 'list' on the users collection.");
-      } else {
-        toast.error(`Admin Fetch Error: ${error.message}`);
-      }
+      toast.error("Failed to update status");
     }
   };
 
-  const handleLogout = async () => {
-    await auth.signOut();
-    router.push("/login");
+  const updateLeadNotes = async (leadId: string, notes: string) => {
+    try {
+      await updateDoc(doc(db, "contacts", leadId), {
+        notes: notes,
+        updatedAt: serverTimestamp()
+      });
+      toast.success("Notes saved");
+    } catch (error: any) {
+      toast.error("Failed to save notes");
+    }
   };
 
-  if (loading || authLoading) {
-    return (
-      <div className="min-h-screen bg-[#0a0d14] flex items-center justify-center">
-        <Loader2 className="h-10 w-10 text-purple-500 animate-spin" />
-      </div>
-    );
-  }
+  const approveTestimonial = async (id: string) => {
+    try {
+      await updateDoc(doc(db, "testimonials", id), { approved: true });
+      toast.success("Testimonial approved!");
+    } catch (error: any) {
+      toast.error("Failed to approve");
+    }
+  };
+
+  const deleteTestimonial = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this testimonial?")) return;
+    try {
+      await deleteDoc(doc(db, "testimonials", id));
+      toast.success("Testimonial deleted");
+    } catch (error: any) {
+      toast.error("Failed to delete");
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const styles: any = {
+      new: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+      contacted: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+      interested: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+      admitted: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+      not_interested: "bg-red-500/10 text-red-400 border-red-500/20"
+    };
+    return cn("px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border", styles[status || "new"]);
+  };
+
+  const filteredLeads = leads.filter(l => {
+    const matchesSearch = l.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         l.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "All" || l.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const pendingTestimonials = testimonials.filter(t => !t.approved);
+
+  if (loading || authLoading) return <div className="min-h-screen flex items-center justify-center bg-[#0a0d14]"><Loader2 className="animate-spin text-purple-500" size={40} /></div>;
 
   return (
     <div className="min-h-screen bg-[#0a0d14] text-slate-300 flex">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-white/5 bg-[#111520] flex flex-col fixed h-full z-30">
-        <div className="p-6">
+      <aside className="w-72 border-r border-white/5 bg-[#111520] flex flex-col fixed h-full z-30">
+        <div className="p-8">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center font-black text-white shadow-lg shadow-purple-500/20">
-              CM
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-red-500 to-amber-600 flex items-center justify-center font-black text-white shadow-lg shadow-red-500/20">
+              EA
             </div>
-            <span className="text-xl font-black text-white font-syne">Admin</span>
+            <span className="text-2xl font-black text-white font-syne tracking-tight">Admin AI</span>
           </div>
         </div>
 
         <nav className="flex-1 px-4 space-y-2 py-4">
-          {[
-            { id: "overview", icon: LayoutDashboard, label: "Overview" },
-            { id: "users", icon: Users, label: "Users" },
-            { id: "analytics", icon: TrendingUp, label: "Analytics" },
-            { id: "messages", icon: MessageSquare, label: "Messages" },
-            { id: "settings", icon: Settings, label: "Settings" },
-          ].map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${
-                activeTab === item.id 
-                  ? "bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-[0_0_20px_rgba(168,85,247,0.1)]" 
-                  : "hover:bg-white/5 text-slate-500 hover:text-slate-300"
-              }`}
-            >
-              <item.icon size={20} />
-              <span>{item.label}</span>
-            </button>
-          ))}
+          <button
+            onClick={() => setActiveTab("leads")}
+            className={cn(
+              "w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all relative group",
+              activeTab === "leads" ? "bg-red-500/10 text-red-400 border border-red-500/20 shadow-lg" : "hover:bg-white/5 text-slate-500 hover:text-slate-300"
+            )}
+          >
+            <Users size={20} />
+            <span>Lead Management</span>
+            {leads.filter(l => l.status === "new").length > 0 && (
+              <span className="absolute right-4 px-2 py-0.5 bg-red-500 text-white text-[10px] font-black rounded-full animate-pulse">
+                {leads.filter(l => l.status === "new").length}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab("testimonials")}
+            className={cn(
+              "w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all relative group",
+              activeTab === "testimonials" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-lg" : "hover:bg-white/5 text-slate-500 hover:text-slate-300"
+            )}
+          >
+            <Star size={20} />
+            <span>Testimonials</span>
+            {pendingTestimonials.length > 0 && (
+              <span className="absolute right-4 px-2 py-0.5 bg-amber-500 text-white text-[10px] font-black rounded-full">
+                {pendingTestimonials.length}
+              </span>
+            )}
+          </button>
         </nav>
 
-        <div className="p-4 border-t border-white/5">
+        <div className="p-6 border-t border-white/5">
           <div className="bg-white/5 rounded-2xl p-4 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-purple-500 flex items-center justify-center font-black text-white">
-              K
-            </div>
+            <div className="h-10 w-10 rounded-full bg-red-500 flex items-center justify-center font-black text-white">K</div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-white truncate">Kalim Admin</p>
-              <p className="text-[10px] text-slate-500 truncate">kalimdon07@gmail.com</p>
+              <p className="text-[10px] text-slate-500 truncate">{ADMIN_EMAIL}</p>
             </div>
-            <button onClick={handleLogout} className="text-slate-500 hover:text-red-400 transition-colors">
-              <LogOut size={18} />
-            </button>
           </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-64 min-h-screen bg-[#0a0d14]">
-        <div className="max-w-[1600px] mx-auto p-12 lg:p-16 space-y-16">
-            <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 border-b border-white/5 pb-16">
-              <div className="space-y-4">
-                <h1 className="text-5xl md:text-7xl font-black text-white font-syne capitalize tracking-tighter leading-none">{activeTab}</h1>
-                <p className="text-slate-500 font-bold text-sm uppercase tracking-[0.4em] ml-1">Intelligence Control Center</p>
+      <main className="flex-1 ml-72 min-h-screen">
+        <div className="max-w-[1600px] mx-auto p-12 lg:p-16 space-y-12">
+          {/* Header */}
+          <header className="flex justify-between items-center border-b border-white/5 pb-10">
+            <div>
+              <h1 className="text-6xl font-black text-white font-syne tracking-tighter capitalize">{activeTab}</h1>
+              <p className="text-slate-500 font-bold text-sm uppercase tracking-[0.4em] mt-2">EduAnalytics AI Lead Intelligence</p>
+            </div>
+            <div className="flex gap-4">
+              <div className="relative">
+                <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input 
+                  type="text" 
+                  placeholder="Search leads..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-14 w-80 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white outline-none focus:border-red-500 transition-all font-bold"
+                />
               </div>
-              <div className="flex items-center gap-6 w-full lg:w-auto">
-                <div className="relative w-full lg:w-[450px]">
-                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500" size={22} />
-                  <input 
-                    type="text" 
-                    placeholder="Search intelligence system..." 
-                    className="w-full h-20 bg-white/[0.03] border border-white/10 rounded-3xl pl-16 pr-8 text-lg text-white outline-none focus:border-purple-500 transition-all font-bold shadow-2xl"
-                  />
-                </div>
-              </div>
-            </header>
+            </div>
+          </header>
 
-        {/* Tab Content */}
-        <AnimatePresence mode="wait">
-          {activeTab === "overview" && (
-            <motion.div 
-              key="overview"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-8"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {[
-                  { label: "Total Users", val: stats?.total_users || 0, icon: Users, color: "text-blue-400", bg: "bg-blue-500/10" },
-                  { label: "New This Week", val: stats?.users_week || 0, icon: Clock, color: "text-purple-400", bg: "bg-purple-500/10" },
-                  { label: "AI Searches", val: stats?.total_searches || 0, icon: Search, color: "text-amber-400", bg: "bg-amber-500/10" },
-                  { label: "Online Now", val: stats?.online_now || 0, icon: Activity, color: "text-emerald-400", bg: "bg-emerald-500/10" },
-                ].map((stat, i) => (
-                  <div key={i} className="bg-[#111520] border border-white/5 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group hover:border-white/10 transition-all">
-                    <div className={`absolute -top-4 -right-4 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-all rotate-12 ${stat.color}`}>
-                        <stat.icon size={120} />
-                    </div>
-                    <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center mb-6", stat.bg, stat.color)}>
-                        <stat.icon size={28} />
-                    </div>
-                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">{stat.label}</p>
-                    <div className="text-5xl font-black text-white tabular-nums tracking-tighter">
-                        {stat.val === 0 && usersList.length > 0 && stat.label === "Total Users" ? usersList.length : stat.val}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Charts Preview */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="bg-[#111520] border border-white/5 rounded-[2.5rem] p-8 shadow-2xl">
-                  <h3 className="text-xl font-black text-white mb-6">User Signups (7 Days)</h3>
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={stats?.signups || []}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-                        <XAxis dataKey="date" stroke="#64748b" fontSize={12} />
-                        <YAxis stroke="#64748b" fontSize={12} />
-                        <Tooltip contentStyle={{ backgroundColor: '#111520', border: '1px solid #1f2937', borderRadius: '12px' }} />
-                        <Line type="monotone" dataKey="count" stroke="#8b5cf6" strokeWidth={4} dot={{ r: 6, fill: '#8b5cf6' }} activeDot={{ r: 8 }} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-                <div className="bg-[#111520] border border-white/5 rounded-[2.5rem] p-8 shadow-2xl">
-                    <h3 className="text-xl font-black text-white mb-6">Top 5 States</h3>
-                    <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={stats?.top_states || []}>
-                            <XAxis dataKey="state" stroke="#64748b" fontSize={12} />
-                            <YAxis stroke="#64748b" fontSize={12} />
-                            <Tooltip contentStyle={{ backgroundColor: '#111520', border: '1px solid #1f2937', borderRadius: '12px' }} />
-                            <Bar dataKey="count" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
-                        </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === "users" && (
-            <motion.div 
-                key="users"
+          <AnimatePresence mode="wait">
+            {activeTab === "leads" && (
+              <motion.div
+                key="leads"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-[#111520] border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl"
-            >
-                <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
-                    <div className="flex items-center gap-4">
-                        <Search size={20} className="text-slate-500" />
-                        <input 
-                            type="text" 
-                            placeholder="Search users by name or email..." 
-                            className="bg-transparent outline-none w-96 text-white font-medium"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-10"
+              >
+                {/* Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {[
+                    { label: "Total Leads", val: leads.length, color: "text-blue-400", bg: "bg-blue-500/10" },
+                    { label: "New (Pending)", val: leads.filter(l => l.status === "new").length, color: "text-red-400", bg: "bg-red-500/10" },
+                    { label: "Contacted", val: leads.filter(l => l.status === "contacted").length, color: "text-amber-400", bg: "bg-amber-500/10" },
+                    { label: "Admitted", val: leads.filter(l => l.status === "admitted").length, color: "text-emerald-400", bg: "bg-emerald-500/10" }
+                  ].map((stat, i) => (
+                    <div key={i} className="bg-[#111520] border border-white/5 rounded-[2rem] p-8 shadow-xl">
+                      <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">{stat.label}</p>
+                      <p className={cn("text-4xl font-black tabular-nums", stat.color)}>{stat.val}</p>
                     </div>
-                    <button className="flex items-center gap-2 px-6 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold transition-all">
-                        <Download size={18} />
-                        Export CSV
-                    </button>
+                  ))}
                 </div>
-                <div className="overflow-x-auto">
+
+                {/* Table */}
+                <div className="bg-[#111520] border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                  <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead>
-                            <tr className="border-b border-white/5 text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/[0.01]">
-                                <th className="px-8 py-5">#</th>
-                                <th className="px-8 py-5">User</th>
-                                <th className="px-8 py-5">Location</th>
-                                <th className="px-8 py-5">Joined</th>
-                                <th className="px-8 py-5">Last Active</th>
-                                <th className="px-8 py-5">Status</th>
-                                <th className="px-8 py-5 text-right">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/5">
-                            {usersList.filter(u => {
-                                const search = searchQuery.toLowerCase();
-                                const name = (u.fullName || u.full_name || "").toLowerCase();
-                                const email = (u.email || "").toLowerCase();
-                                return name.includes(search) || email.includes(search);
-                            }).map((u, i) => {
-                                const lastActiveDate = u.updatedAt?.seconds ? new Date(u.updatedAt.seconds * 1000) : new Date(u.updatedAt || Date.now());
-                                const isActive = new Date().getTime() - lastActiveDate.getTime() < 7 * 24 * 60 * 60 * 1000;
-                                const joinDate = u.createdAt?.seconds ? new Date(u.createdAt.seconds * 1000) : new Date(u.createdAt || Date.now());
-                                return (
-                                    <tr key={u.id} className="hover:bg-white/[0.02] transition-colors group">
-                                        <td className="px-8 py-5 font-black text-slate-600">{i + 1}</td>
-                                        <td className="px-8 py-5">
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-10 w-10 rounded-full bg-purple-500/20 border border-purple-500/20 flex items-center justify-center font-black text-purple-400">
-                                                    {(u.fullName || u.full_name || 'U')[0]}
-                                                </div>
-                                                <div>
-                                                    <p className="font-bold text-white group-hover:text-purple-400 transition-colors">{u.fullName || u.full_name || "Unknown User"}</p>
-                                                    <p className="text-xs text-slate-500">{u.email}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-5">
-                                            <div className="flex items-center gap-2">
-                                                <MapPin size={14} className="text-slate-600" />
-                                                <span className="text-sm font-medium">
-                                                    {u.city || u.state ? `${u.city || ''}${u.city && u.state ? ', ' : ''}${u.state || ''}` : 'Not Set'}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-5 text-sm">{joinDate.toLocaleDateString()}</td>
-                                        <td className="px-8 py-5 text-sm">{lastActiveDate.toLocaleDateString()}</td>
-                                        <td className="px-8 py-5">
-                                            <div className="flex items-center gap-2">
-                                                <div className={`h-2 w-2 rounded-full ${u.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-slate-500'}`} />
-                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                                    u.isOnline ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-500/10 text-slate-500'
-                                                }`}>
-                                                    {u.isOnline ? 'Online' : 'Offline'}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-5 text-right">
-                                            <button 
-                                                onClick={() => setSelectedUser(u)}
-                                                className="h-10 w-10 bg-white/5 hover:bg-purple-500 hover:text-white rounded-xl transition-all inline-flex items-center justify-center group-hover:scale-110"
-                                            >
-                                                <ChevronRight size={20} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
+                      <thead>
+                        <tr className="border-b border-white/5 text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/[0.01]">
+                          <th className="px-8 py-6">Student Info</th>
+                          <th className="px-8 py-6">Stream & Level</th>
+                          <th className="px-8 py-6">Message Preview</th>
+                          <th className="px-8 py-6">Status</th>
+                          <th className="px-8 py-6 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {filteredLeads.map((lead) => (
+                          <tr key={lead.id} className="hover:bg-white/[0.02] transition-colors group">
+                            <td className="px-8 py-6">
+                              <div className="flex flex-col">
+                                <span className="text-lg font-black text-white leading-tight">{lead.name}</span>
+                                <span className="text-xs text-slate-500 font-bold">{lead.email}</span>
+                                <span className="text-[10px] text-slate-600 font-mono mt-1">{lead.phone}</span>
+                              </div>
+                            </td>
+                            <td className="px-8 py-6">
+                              <div className="flex flex-col gap-1">
+                                <span className="text-xs font-bold text-slate-400 flex items-center gap-1"><Briefcase size={12} /> {lead.stream}</span>
+                                <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{lead.level} | {lead.state}</span>
+                              </div>
+                            </td>
+                            <td className="px-8 py-6">
+                              <p className="text-xs text-slate-500 max-w-xs truncate italic">
+                                &quot;{lead.message}&quot;
+                              </p>
+                              <span className="text-[9px] text-slate-600 font-bold block mt-1">{lead.createdAt?.toDate()?.toLocaleString() || "No Date"}</span>
+                            </td>
+                            <td className="px-8 py-6">
+                               <select 
+                                 value={lead.status || "new"}
+                                 onChange={(e) => updateLeadStatus(lead.id, e.target.value)}
+                                 className={cn("bg-transparent outline-none font-black text-[10px] uppercase tracking-widest cursor-pointer", getStatusBadge(lead.status))}
+                               >
+                                 <option value="new" className="bg-[#111520]">New</option>
+                                 <option value="contacted" className="bg-[#111520]">Contacted</option>
+                                 <option value="interested" className="bg-[#111520]">Interested</option>
+                                 <option value="admitted" className="bg-[#111520]">Admitted</option>
+                                 <option value="not_interested" className="bg-[#111520]">Not Interested</option>
+                               </select>
+                            </td>
+                            <td className="px-8 py-6 text-right">
+                              <div className="flex justify-end gap-2">
+                                <a href={`tel:${lead.phone}`} className="h-10 w-10 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all shadow-lg"><Phone size={18} /></a>
+                                <a 
+                                  href={`https://wa.me/91${lead.phone}?text=Hi+${encodeURIComponent(lead.name)},+this+is+EduAnalytics-AI+admission+team.+We+received+your+enquiry+about+${encodeURIComponent(lead.stream)}+admissions.+How+can+we+help+you+today?`} 
+                                  target="_blank"
+                                  className="h-10 w-10 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all shadow-lg"
+                                >
+                                  <MessageCircle size={18} />
+                                </a>
+                                <button 
+                                  onClick={() => setSelectedLead(lead)}
+                                  className="h-10 w-10 bg-white/5 text-slate-400 rounded-xl flex items-center justify-center hover:bg-white/10 transition-all border border-white/10"
+                                >
+                                  <FileText size={18} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
                     </table>
-                </div>
-            </motion.div>
-          )}
-
-          {activeTab === "analytics" && (
-            <motion.div 
-              key="analytics"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-10"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <div className="bg-[#111520] border border-white/5 rounded-[3rem] p-10 shadow-2xl">
-                  <h3 className="text-2xl font-black text-white mb-8 font-syne">Regional User Distribution</h3>
-                  <div className="h-[400px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={stats?.top_states || []} layout="vertical">
-                        <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" horizontal={true} vertical={false} />
-                        <XAxis type="number" stroke="#64748b" fontSize={12} hide />
-                        <YAxis dataKey="state" type="category" stroke="#fff" fontSize={12} width={120} />
-                        <Tooltip contentStyle={{ backgroundColor: '#111520', border: '1px solid #1f2937', borderRadius: '16px' }} />
-                        <Bar dataKey="count" fill="url(#colorBar)" radius={[0, 10, 10, 0]}>
-                           {stats?.top_states?.map((entry: any, index: number) => (
-                             <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#8b5cf6' : '#6366f1'} />
-                           ))}
-                        </Bar>
-                        <defs>
-                          <linearGradient id="colorBar" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%" stopColor="#8b5cf6" />
-                            <stop offset="100%" stopColor="#6366f1" />
-                          </linearGradient>
-                        </defs>
-                      </BarChart>
-                    </ResponsiveContainer>
                   </div>
                 </div>
-
-                <div className="bg-[#111520] border border-white/5 rounded-[3rem] p-10 shadow-2xl">
-                  <h3 className="text-2xl font-black text-white mb-8 font-syne">Platform Engagement</h3>
-                  <div className="h-[400px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={stats?.signups || []}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-                        <XAxis dataKey="date" stroke="#64748b" fontSize={12} />
-                        <YAxis stroke="#64748b" fontSize={12} />
-                        <Tooltip contentStyle={{ backgroundColor: '#111520', border: '1px solid #1f2937', borderRadius: '16px' }} />
-                        <Line 
-                          type="step" 
-                          dataKey="count" 
-                          stroke="#10b981" 
-                          strokeWidth={6} 
-                          dot={{ r: 8, fill: '#10b981', strokeWidth: 0 }} 
-                          activeDot={{ r: 12, strokeWidth: 0 }} 
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-[#111520] border border-white/5 rounded-[3rem] p-12 shadow-2xl text-center space-y-6">
-                 <Activity size={60} className="text-purple-500 mx-auto animate-pulse" />
-                 <h3 className="text-3xl font-black text-white font-syne">Real-time Traffic Analysis</h3>
-                 <p className="text-slate-500 max-w-2xl mx-auto font-medium">Detailed tracking of user sessions, search queries, and AI model performance is being aggregated. Performance metrics will be available in the next sync.</p>
-                 <div className="flex justify-center gap-4">
-                    <div className="px-8 py-4 bg-white/5 rounded-2xl border border-white/10">
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Avg Session</p>
-                        <p className="text-2xl font-black text-white font-syne">12m 45s</p>
-                    </div>
-                    <div className="px-8 py-4 bg-white/5 rounded-2xl border border-white/10">
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Query Latency</p>
-                        <p className="text-2xl font-black text-emerald-400 font-syne">840ms</p>
-                    </div>
-                 </div>
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === "messages" && (
-            <motion.div 
-                key="messages"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-[#111520] border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl"
-            >
-                 {messages.length > 0 ? (
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="border-b border-white/5 text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/[0.01]">
-                                <th className="px-8 py-5">Sender</th>
-                                <th className="px-8 py-5">Subject</th>
-                                <th className="px-8 py-5">Message</th>
-                                <th className="px-8 py-5">Date</th>
-                                <th className="px-8 py-5">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/5">
-                            {messages.map((m) => (
-                                <tr key={m.id} className="hover:bg-white/[0.02] transition-colors">
-                                    <td className="px-8 py-5">
-                                        <p className="font-bold text-white">{m.name}</p>
-                                        <p className="text-xs text-slate-500">{m.email}</p>
-                                    </td>
-                                    <td className="px-8 py-5 font-bold text-purple-400">{m.subject}</td>
-                                    <td className="px-8 py-5 max-w-xs truncate text-sm">{m.message}</td>
-                                    <td className="px-8 py-5 text-sm">{new Date(m.created_at).toLocaleDateString()}</td>
-                                    <td className="px-8 py-5">
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                                            m.status === 'read' ? 'bg-slate-500/10 text-slate-500' : 'bg-purple-500/10 text-purple-400 animate-pulse'
-                                        }`}>
-                                            {m.status || 'New'}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                 ) : (
-                    <div className="p-32 text-center space-y-6">
-                        <div className="h-24 w-24 bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto border border-white/10">
-                            <Mail size={40} className="text-slate-600" />
-                        </div>
-                        <h3 className="text-2xl font-black text-white font-syne">No messages yet</h3>
-                        <p className="text-slate-500 max-w-sm mx-auto">When users contact you through the support form, their messages will appear here.</p>
-                    </div>
-                 )}
-            </motion.div>
-          )}
-
-          {activeTab === "settings" && (
-            <motion.div 
-                key="settings"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-8"
-            >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="bg-[#111520] border border-white/5 rounded-[2.5rem] p-10 shadow-2xl space-y-8">
-                        <div className="flex items-center gap-4 mb-2">
-                            <div className="h-12 w-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400">
-                                <Settings size={24} />
-                            </div>
-                            <h3 className="text-2xl font-black text-white font-syne">System Config</h3>
-                        </div>
-                        <div className="space-y-6">
-                            {[
-                                { label: "Maintenance Mode", desc: "Disable frontend access for updates", status: "Disabled" },
-                                { label: "AI Prediction Engine", desc: "Using Groq Llama 3 70B", status: "Active" },
-                                { label: "Public Registration", desc: "Allow new users to sign up", status: "Enabled" }
-                            ].map((item, i) => (
-                                <div key={i} className="flex justify-between items-center p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/5 transition-all">
-                                    <div>
-                                        <p className="font-bold text-white">{item.label}</p>
-                                        <p className="text-xs text-slate-500">{item.desc}</p>
-                                    </div>
-                                    <div className="px-4 py-1.5 bg-purple-500/10 text-purple-400 rounded-xl text-[10px] font-black uppercase tracking-widest border border-purple-500/20">
-                                        {item.status}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="bg-[#111520] border border-white/5 rounded-[2.5rem] p-10 shadow-2xl space-y-8">
-                        <div className="flex items-center gap-4 mb-2">
-                            <div className="h-12 w-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400">
-                                <Activity size={24} />
-                            </div>
-                            <h3 className="text-2xl font-black text-white font-syne">Security Logs</h3>
-                        </div>
-                        <div className="space-y-4">
-                            {[
-                                { event: "Admin Login", time: "2 mins ago", ip: "192.168.1.1" },
-                                { event: "DB Sync", time: "15 mins ago", ip: "System" },
-                                { event: "Backup", time: "1 hour ago", ip: "Automated" }
-                            ].map((log, i) => (
-                                <div key={i} className="flex items-center gap-4 p-4 border-l-4 border-purple-500 bg-white/[0.02]">
-                                    <div className="text-xs font-black text-slate-500">{log.time}</div>
-                                    <div className="flex-1">
-                                        <p className="text-sm font-bold text-white">{log.event}</p>
-                                        <p className="text-[10px] text-slate-600 font-mono">{log.ip}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <button className="w-full h-14 bg-white/5 border border-white/10 rounded-xl text-white font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all">
-                            Download Security Audit
-                        </button>
-                    </div>
-                </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* User Detail Drawer */}
-        <AnimatePresence>
-            {selectedUser && (
-                <>
-                    <motion.div 
-                        initial={{ opacity: 0 }} 
-                        animate={{ opacity: 1 }} 
-                        exit={{ opacity: 0 }}
-                        onClick={() => setSelectedUser(null)}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
-                    />
-                    <motion.div 
-                        initial={{ x: "100%" }}
-                        animate={{ x: 0 }}
-                        exit={{ x: "100%" }}
-                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                        className="fixed right-0 top-0 h-screen w-full max-w-md bg-[#111520] border-l border-white/10 z-50 p-10 overflow-y-auto"
-                    >
-                        <button 
-                            onClick={() => setSelectedUser(null)}
-                            className="absolute top-6 right-6 h-10 w-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-all"
-                        >
-                            <ChevronRight size={24} />
-                        </button>
-
-                        <div className="flex flex-col items-center text-center mb-10">
-                            <div className="h-24 w-24 rounded-[2rem] bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center font-black text-3xl text-white shadow-2xl shadow-purple-500/40 mb-6">
-                                { (selectedUser.fullName || selectedUser.full_name || "U")[0] }
-                            </div>
-                            <h2 className="text-3xl font-black text-white font-syne">{selectedUser.fullName || selectedUser.full_name || "Unknown User"}</h2>
-                            <p className="text-purple-400 font-bold">{selectedUser.email}</p>
-                            <div className="mt-4 px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-[10px] font-black text-emerald-400 uppercase tracking-widest">
-                                Profile Active
-                            </div>
-                        </div>
-
-                        <div className="space-y-8">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-white/5 rounded-2xl p-4">
-                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">State</p>
-                                    <p className="font-bold text-white">{selectedUser.state || 'N/A'}</p>
-                                </div>
-                                <div className="bg-white/5 rounded-2xl p-4">
-                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">City</p>
-                                    <p className="font-bold text-white">{selectedUser.city || 'N/A'}</p>
-                                </div>
-                                <div className="bg-white/5 rounded-2xl p-4">
-                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">JEE Percentile</p>
-                                    <p className="font-black text-purple-400 text-xl">{selectedUser.jeePercentile || '0'}%</p>
-                                </div>
-                                <div className="bg-white/5 rounded-2xl p-4">
-                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Board %</p>
-                                    <p className="font-black text-amber-400 text-xl">{selectedUser.boardPercentage || '0'}%</p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">User Details</h4>
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-3 text-sm">
-                                        <Mail size={16} className="text-purple-400" />
-                                        <span className="text-slate-400">Email:</span>
-                                        <span className="font-bold text-white">{selectedUser.email}</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 text-sm">
-                                        <Calendar size={16} className="text-purple-400" />
-                                        <span className="text-slate-400">Joined:</span>
-                                        <span className="font-bold text-white">{new Date(selectedUser.created_at).toLocaleDateString()}</span>
-                                    </div>
-                                    <div className="flex items-center gap-3 text-sm">
-                                        <User size={16} className="text-purple-400" />
-                                        <span className="text-slate-400">Course:</span>
-                                        <span className="font-bold text-white">{selectedUser.preferredCourse}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-                </>
+              </motion.div>
             )}
-        </AnimatePresence>
+
+            {activeTab === "testimonials" && (
+              <motion.div
+                key="testimonials"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-10"
+              >
+                <div className="bg-[#111520] border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-white/5 text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/[0.01]">
+                          <th className="px-8 py-6">Student</th>
+                          <th className="px-8 py-6">College & Review</th>
+                          <th className="px-8 py-6">Rating</th>
+                          <th className="px-8 py-6">Status</th>
+                          <th className="px-8 py-6 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {testimonials.map((t) => (
+                          <tr key={t.id} className="hover:bg-white/[0.02] transition-colors">
+                            <td className="px-8 py-6">
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-amber-500/20 border border-amber-500/20 flex items-center justify-center font-black text-amber-400">
+                                  {t.name?.[0] || "U"}
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-bold text-white">{t.name}</span>
+                                  <span className="text-[10px] text-slate-600 font-bold">{t.location}</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-8 py-6">
+                              <div className="space-y-1">
+                                <span className="text-xs font-black text-amber-400 uppercase tracking-widest">{t.college} | {t.stream} ({t.year})</span>
+                                <p className="text-sm text-slate-400 max-w-md leading-relaxed italic">&quot;{t.review}&quot;</p>
+                              </div>
+                            </td>
+                            <td className="px-8 py-6">
+                              <div className="flex gap-0.5">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star key={i} size={14} className={cn("fill-current", i < t.rating ? "text-amber-400" : "text-slate-800")} />
+                                ))}
+                              </div>
+                            </td>
+                            <td className="px-8 py-6">
+                               {t.approved ? (
+                                 <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[10px] font-black uppercase tracking-widest">Live</span>
+                               ) : (
+                                 <span className="px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-[10px] font-black uppercase tracking-widest">Pending</span>
+                               )}
+                            </td>
+                            <td className="px-8 py-6 text-right">
+                              <div className="flex justify-end gap-2">
+                                {!t.approved && (
+                                  <button 
+                                    onClick={() => approveTestimonial(t.id)}
+                                    className="h-10 px-4 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl hover:bg-emerald-500 hover:text-white transition-all text-xs font-black uppercase tracking-widest"
+                                  >
+                                    Approve
+                                  </button>
+                                )}
+                                <button 
+                                  onClick={() => deleteTestimonial(t.id)}
+                                  className="h-10 w-10 bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl hover:bg-red-500 hover:text-white transition-all"
+                                >
+                                  <Trash2 size={18} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </main>
+
+      {/* Lead Detail Drawer */}
+      <AnimatePresence>
+        {selectedLead && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedLead(null)}
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
+            />
+            <motion.div 
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed right-0 top-0 h-screen w-full max-w-xl bg-[#111520] border-l border-white/10 z-[101] flex flex-col shadow-2xl"
+            >
+              <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                 <h2 className="text-2xl font-black text-white font-syne uppercase tracking-widest">Lead Intelligence Profile</h2>
+                 <button onClick={() => setSelectedLead(null)} className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20 transition-all"><XCircle /></button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-10 space-y-10">
+                <div className="space-y-6">
+                   <div className="flex justify-between items-start">
+                      <div>
+                         <h3 className="text-4xl font-black text-white tracking-tighter">{selectedLead.name}</h3>
+                         <p className="text-red-400 font-bold text-lg">{selectedLead.email}</p>
+                      </div>
+                      <div className={cn("text-xs font-black uppercase tracking-[0.2em] px-6 py-2 rounded-2xl", getStatusBadge(selectedLead.status))}>
+                        {selectedLead.status || "New"}
+                      </div>
+                   </div>
+                   
+                   <div className="grid grid-cols-2 gap-6">
+                      <div className="bg-white/5 border border-white/5 rounded-3xl p-6">
+                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Academic Stream</p>
+                         <p className="font-bold text-white flex items-center gap-2"><Briefcase className="text-red-500" size={16} /> {selectedLead.stream}</p>
+                      </div>
+                      <div className="bg-white/5 border border-white/5 rounded-3xl p-6">
+                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Course Level</p>
+                         <p className="font-bold text-white flex items-center gap-2"><GraduationCap className="text-red-500" size={16} /> {selectedLead.level}</p>
+                      </div>
+                      <div className="bg-white/5 border border-white/5 rounded-3xl p-6">
+                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Location</p>
+                         <p className="font-bold text-white flex items-center gap-2"><MapPin className="text-red-500" size={16} /> {selectedLead.state}</p>
+                      </div>
+                      <div className="bg-white/5 border border-white/5 rounded-3xl p-6">
+                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Cutoff Score</p>
+                         <p className="font-black text-2xl text-red-400">{selectedLead.cutoff || "N/A"}</p>
+                      </div>
+                   </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Student Inquiry</h4>
+                  <div className="bg-white/5 border border-white/5 rounded-[2rem] p-8 text-slate-300 leading-relaxed font-medium italic">
+                    &quot;{selectedLead.message}&quot;
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                   <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Admin Intelligence Notes</h4>
+                   <textarea 
+                     defaultValue={selectedLead.notes}
+                     onBlur={(e) => updateLeadNotes(selectedLead.id, e.target.value)}
+                     placeholder="Type lead intelligence notes here (auto-saves on blur)..."
+                     className="w-full h-40 bg-white/5 border border-white/10 rounded-[2rem] p-6 text-white outline-none focus:border-red-500 transition-all resize-none font-medium text-sm"
+                   />
+                </div>
+
+                <div className="pt-6 border-t border-white/5">
+                   <div className="flex flex-col gap-4">
+                      <a 
+                        href={`tel:${selectedLead.phone}`}
+                        className="w-full h-16 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all"
+                      >
+                        <Phone size={20} /> Call Now: {selectedLead.phone}
+                      </a>
+                      <a 
+                        href={`https://wa.me/91${selectedLead.phone}?text=Hi+${encodeURIComponent(selectedLead.name)},+this+is+EduAnalytics-AI+admission+team.+We+received+your+enquiry+about+${encodeURIComponent(selectedLead.stream)}+admissions.+How+can+we+help+you+today?`} 
+                        target="_blank"
+                        className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all"
+                      >
+                        <MessageCircle size={20} /> Open WhatsApp Chat
+                      </a>
+                   </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

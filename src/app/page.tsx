@@ -1,36 +1,49 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { 
-  GraduationCap, 
-  Search, 
-  Sparkles, 
-  History, 
-  Phone, 
-  ArrowRight, 
-  CheckCircle2, 
-  Award, 
-  ShieldCheck, 
-  Zap, 
-  ChevronRight,
-  Play
+  GraduationCap, Search, Sparkles, History, Phone, 
+  ArrowRight, CheckCircle2, Award, ShieldCheck, 
+  Zap, ChevronRight, Play, Star, Quote, 
+  Users, MapPin, Building, BookOpen
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { db } from "@/lib/firebase";
+import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [testimonials, setTestimonials] = useState<any[]>([]);
 
   useEffect(() => {
     if (!loading && user) {
       router.push("/dashboard");
     }
   }, [user, loading, router]);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const q = query(
+          collection(db, "testimonials"),
+          where("approved", "==", true),
+          orderBy("createdAt", "desc"),
+          limit(6)
+        );
+        const snapshot = await getDocs(q);
+        setTestimonials(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (error) {
+        console.error("Testimonials fetch error:", error);
+      }
+    };
+    fetchTestimonials();
+  }, []);
 
   const stats = [
     { label: "Students Guided", value: "10,000+" },
@@ -48,8 +61,8 @@ export default function Home() {
       bgColor: "bg-purple-50",
     },
     {
-      title: "Marks Analysis",
-      description: "Seamless support for CBSE/ICSE (500) and State Boards like Tamil Nadu (1200).",
+      title: "Scholarship Finder",
+      description: "Instantly discover government and private scholarships you qualify for using AI.",
       icon: Award,
       color: "text-blue-500",
       bgColor: "bg-blue-50",
@@ -62,9 +75,9 @@ export default function Home() {
       bgColor: "bg-teal-50",
     },
     {
-      title: "Session History",
-      description: "Save your analysis results and track your progress through your personal dashboard.",
-      icon: History,
+      title: "Exam Guide",
+      description: "Complete roadmap for national and state level entrance exams relevant to your stream.",
+      icon: GraduationCap,
       color: "text-orange-500",
       bgColor: "bg-orange-50",
     },
@@ -91,90 +104,58 @@ export default function Home() {
     { title: "Decide with Confidence", desc: "Make the right choice for your future." },
   ];
 
-  const testimonials = [
-    {
-      quote: "I thought my marks weren't good enough for a top engineering college. CollegeMatch-AI found me an autonomous college that I hadn't even considered. Forever grateful!",
-      author: "Rahul Krishnan",
-      info: "Engineering Student, Chennai",
-      initials: "RK"
-    },
-    {
-      quote: "As a student from a TN Govt school with a 1200-mark background, I was confused by the options. This AI tool gave me clarity and a perfect roadmap.",
-      author: "Priya Dharshini",
-      info: "State Board Student, Madurai",
-      initials: "PD"
-    },
-    {
-      quote: "The interface is so clean and easy to use. The accuracy of the cutoff predictions is impressive. Every student should try this before counselling.",
-      author: "Arjun Mehta",
-      info: "CBSE Student, Bangalore",
-      initials: "AM"
-    }
-  ];
-
-  useEffect(() => {
-    const hash = window.location.hash?.replace('#', '');
-    if (hash) {
-      setTimeout(() => {
-        document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
-      }, 400);
-    }
-  }, []);
-
   if (loading) return null;
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-transparent">
       {/* Hero Section */}
-      <section id="home" className="relative overflow-hidden py-20 lg:py-32">
+      <section id="home" className="relative overflow-hidden py-24 lg:py-36">
         <div className="container px-4 mx-auto relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-5xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8 }}
             >
-              <div className="inline-flex items-center rounded-full border border-primary/20 px-4 py-1.5 mb-8 text-sm font-medium bg-white/40 backdrop-blur-md shadow-sm">
-                <span className="flex h-2 w-2 rounded-full bg-secondary animate-pulse mr-2" />
-                <span className="text-secondary font-bold mr-1">New:</span> 
-                <span className="text-muted-foreground">Llama-3.3 Powered Predictions</span>
+              <div className="inline-flex items-center rounded-full border border-primary/20 px-4 py-2 mb-10 text-sm font-bold bg-white/40 backdrop-blur-md shadow-xl">
+                <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse mr-2" />
+                <span className="text-primary mr-1">New:</span> 
+                <span className="text-slate-600 uppercase tracking-widest text-[10px]">Scholarship Finder Now Live</span>
               </div>
               
-              <h1 className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tight mb-8 leading-[1.1]">
-                AI College Predictor for <span className="text-primary italic">India</span> — <br />
-                Find Your Dream College.
+              <h1 className="text-5xl sm:text-7xl md:text-9xl font-black tracking-tighter mb-8 leading-[0.9] text-slate-900 font-syne">
+                Your Future. <br />
+                <span className="text-primary">Optimized.</span>
               </h1>
               
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
-                Free AI-powered admission predictor. Enter your JEE / board marks, 
-                state, and budget — get instant college recommendations from 43,000+ 
-                Indian colleges including IITs, NITs, IIITs and private colleges.
+              <p className="text-xl md:text-2xl text-slate-500 max-w-3xl mx-auto mb-14 leading-relaxed font-medium">
+                The most advanced AI-powered admission engine for Indian students. 
+                Discover scholarships, entrance exams, and your perfect college match—all for free.
               </p>
 
-              
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-                <Link href="/interview" className="w-full sm:w-auto">
-                  <Button size="lg" className="w-full sm:w-auto h-16 px-8 sm:px-12 text-lg sm:text-xl rounded-[2rem] shadow-2xl hover:shadow-primary/30 transition-all gap-3 bg-primary hover:scale-105 active:scale-95">
-                    Start Your Free Analysis <ArrowRight className="h-6 w-6" />
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                <Link href="/register" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto h-20 px-12 text-xl rounded-[2rem] shadow-2xl shadow-primary/30 hover:scale-105 active:scale-95 transition-all gap-4 bg-primary font-black">
+                    Get Started Free <ArrowRight className="h-6 w-6" />
                   </Button>
                 </Link>
                 <Link href="/contact" className="w-full sm:w-auto">
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto h-16 px-8 sm:px-10 text-lg sm:text-xl rounded-[2rem] bg-white/20 backdrop-blur-md border-primary/20 hover:bg-white/40 transition-all gap-2">
-                    <Play className="h-5 w-5 fill-primary text-primary" /> Watch How It Works
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto h-20 px-10 text-xl rounded-[2rem] bg-white/40 backdrop-blur-md border-primary/10 hover:bg-white/60 transition-all gap-3 font-bold">
+                    <Phone className="h-6 w-6 text-primary" /> Talk to Expert
                   </Button>
                 </Link>
               </div>
               
-              <div className="mt-12 flex items-center justify-center gap-8">
+              <div className="mt-16 flex flex-col items-center gap-6">
                 <div className="flex -space-x-4">
-                  {[1,2,3,4].map(i => (
-                    <div key={i} className="h-12 w-12 rounded-full border-4 border-white bg-muted shadow-sm overflow-hidden flex items-center justify-center">
-                      <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="User" />
+                  {[1,2,3,4,5].map(i => (
+                    <div key={i} className="h-14 w-14 rounded-full border-4 border-[#f8fafc] bg-slate-200 shadow-xl overflow-hidden">
+                      <img src={`https://i.pravatar.cc/150?img=${i+20}`} alt="Student" />
                     </div>
                   ))}
                 </div>
-                <p className="text-sm font-bold text-muted-foreground">
-                  Joined by <span className="text-primary">10,000+</span> ambitious students
+                <p className="text-xs font-black text-slate-400 uppercase tracking-[0.3em]">
+                  Trusted by <span className="text-primary">10,000+</span> ambitious Indian students
                 </p>
               </div>
             </motion.div>
@@ -182,56 +163,51 @@ export default function Home() {
         </div>
 
         {/* Decorative Background Blobs */}
-        <div className="absolute top-0 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -z-10" />
-        <div className="absolute bottom-0 -right-20 w-96 h-96 bg-secondary/10 rounded-full blur-[120px] -z-10" />
+        <div className="absolute top-0 -left-20 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[140px] -z-10 animate-pulse" />
+        <div className="absolute bottom-0 -right-20 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[140px] -z-10 animate-pulse" />
       </section>
 
-      {/* Stats Bar */}
-      <section className="py-12 bg-white/30 backdrop-blur-md border-y border-primary/5">
+      {/* Stats Section */}
+      <section className="py-20 bg-slate-900 text-white relative overflow-hidden">
+         <div className="container px-4 mx-auto relative z-10">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
+               {stats.map((stat, i) => (
+                 <div key={i} className="text-center space-y-2">
+                    <p className="text-5xl md:text-7xl font-black font-syne tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40">{stat.value}</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">{stat.label}</p>
+                 </div>
+               ))}
+            </div>
+         </div>
+         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_50%,_rgba(59,130,246,0.1),_transparent_50%)]" />
+      </section>
+
+      {/* Features Grid */}
+      <section id="features" className="py-32">
         <div className="container px-4 mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, idx) => (
+          <div className="text-center mb-24 space-y-6">
+            <h2 className="text-5xl md:text-7xl font-black font-syne tracking-tighter">Beyond Simple Prediction</h2>
+            <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">
+              We provide a complete ecosystem for student success. AI-driven tools that save you weeks of research.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {features.map((feature, idx) => (
               <motion.div 
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 viewport={{ once: true }}
-                className="text-center p-6 rounded-3xl bg-white/40 border border-white/20 shadow-sm"
+                className="group bg-white border border-slate-200 p-12 rounded-[3.5rem] shadow-sm hover:shadow-2xl hover:scale-[1.02] transition-all duration-500 cursor-default relative overflow-hidden"
               >
-                <div className="text-3xl md:text-4xl font-black text-primary mb-2">{stat.value}</div>
-                <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="py-24 lg:py-32">
-        <div className="container px-4 mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-black mb-6">Why Choose CollegeMatch-AI?</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              We combine deep data with cutting-edge AI to provide you with the most accurate college roadmaps in India.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, idx) => (
-              <motion.div 
-                key={idx}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.1 }}
-                viewport={{ once: true }}
-                className="group bg-white/60 backdrop-blur-xl p-10 rounded-[2.5rem] border border-white/20 shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all cursor-default"
-              >
-                <div className={cn("h-16 w-16 rounded-2xl flex items-center justify-center mb-8 shadow-lg transition-transform group-hover:rotate-6", feature.bgColor, feature.color)}>
-                  <feature.icon className="h-8 w-8" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-[100px] transition-all group-hover:bg-primary/5" />
+                <div className={cn("h-20 w-20 rounded-3xl flex items-center justify-center mb-10 shadow-xl relative z-10 transition-transform group-hover:rotate-6 group-hover:scale-110", feature.bgColor, feature.color)}>
+                  <feature.icon size={32} strokeWidth={2.5} />
                 </div>
-                <h3 className="text-2xl font-black mb-4">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <h3 className="text-3xl font-black mb-4 font-syne tracking-tight relative z-10">{feature.title}</h3>
+                <p className="text-slate-500 leading-relaxed font-medium relative z-10">
                   {feature.description}
                 </p>
               </motion.div>
@@ -240,99 +216,84 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section id="how-it-works" className="py-24 lg:py-32 bg-primary/5 border-y border-primary/10">
-        <div className="container px-4 mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-black mb-6">How It Works</h2>
-            <p className="text-xl text-muted-foreground">Your journey from marks to a dream campus in 4 simple steps.</p>
-          </div>
-
-          <div className="relative">
-            {/* Connection Line */}
-            <div className="hidden lg:block absolute top-1/2 left-0 w-full h-1 bg-primary/10 -translate-y-1/2" />
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-              {steps.map((step, idx) => (
-                <motion.div 
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.2 }}
-                  viewport={{ once: true }}
-                  className="relative z-10 text-center"
-                >
-                  <div className="h-16 w-16 rounded-full bg-primary text-white flex items-center justify-center text-2xl font-black mx-auto mb-8 shadow-xl border-4 border-white">
-                    {idx + 1}
-                  </div>
-                  <h3 className="text-2xl font-black mb-3">{step.title}</h3>
-                  <p className="text-muted-foreground px-4">{step.desc}</p>
-                </motion.div>
-              ))}
+      {/* Testimonials */}
+      <section className="py-32 bg-[#0a0d14] text-white relative overflow-hidden">
+        <div className="container px-4 mx-auto relative z-10">
+          <div className="text-center mb-24 space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+               <Users size={14} /> Student Success Stories
             </div>
+            <h2 className="text-5xl md:text-7xl font-black font-syne tracking-tighter">Real Students. <span className="text-primary">Real Results.</span></h2>
+            <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">Hear from students who found their dream college and course using EduAnalytics-AI.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <AnimatePresence>
+              {testimonials.length > 0 ? (
+                testimonials.map((t, idx) => (
+                  <motion.div 
+                    key={t.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="bg-white/5 border border-white/5 p-10 rounded-[3rem] space-y-8 relative group hover:bg-white/10 transition-all hover:border-primary/30"
+                  >
+                    <Quote className="text-primary absolute top-10 right-10 opacity-20 group-hover:opacity-40 transition-opacity" size={60} />
+                    <div className="flex gap-1 text-amber-400">
+                       {[...Array(t.rating || 5)].map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
+                    </div>
+                    <p className="text-lg italic text-slate-300 font-medium leading-relaxed">
+                      &quot;{t.review}&quot;
+                    </p>
+                    <div className="flex items-center gap-4 pt-6 border-t border-white/5">
+                      <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center font-black text-primary text-xl">
+                        {t.name?.[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                         <p className="font-black text-white text-lg truncate">{t.name}</p>
+                         <p className="text-xs font-bold text-primary uppercase tracking-widest truncate">{t.college}</p>
+                         <div className="flex items-center gap-2 mt-1">
+                            <span className="px-2 py-0.5 bg-white/5 rounded-md text-[8px] font-black text-slate-500 uppercase tracking-widest border border-white/5">{t.stream}</span>
+                            <span className="px-2 py-0.5 bg-white/5 rounded-md text-[8px] font-black text-slate-500 uppercase tracking-widest border border-white/5">Class of {t.year}</span>
+                         </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                 // Fallback testimonials if none approved yet
+                 [1,2,3].map(i => (
+                    <div key={i} className="bg-white/5 border border-white/5 p-10 rounded-[3rem] h-64 animate-pulse" />
+                 ))
+              )}
+            </AnimatePresence>
+          </div>
+          
+          <div className="mt-20 text-center">
+             <Link href="/testimonial">
+                <Button variant="outline" className="h-16 px-10 rounded-2xl bg-white/5 border-white/10 hover:bg-white/10 text-white font-black uppercase tracking-widest text-xs gap-3">
+                   Submit Your Story <MessageSquare size={18} />
+                </Button>
+             </Link>
           </div>
         </div>
       </section>
 
-      {/* Student Testimonials */}
-      <section className="py-24 lg:py-32">
+      {/* Final CTA */}
+      <section className="py-32">
         <div className="container px-4 mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-black mb-6">Student Stories</h2>
-            <p className="text-xl text-muted-foreground">Hear from students who found their future through CollegeMatch-AI.</p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {testimonials.map((t, idx) => (
-              <motion.div 
-                key={idx}
-                initial={{ opacity: 0, x: idx % 2 === 0 ? -20 : 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-                viewport={{ once: true }}
-                className="bg-white/40 backdrop-blur-xl p-10 rounded-[3rem] border border-white/20 shadow-xl relative"
-              >
-                <div className="text-primary opacity-20 absolute top-10 right-10">
-                  <Sparkles className="h-12 w-12" />
-                </div>
-                <p className="text-lg italic text-muted-foreground mb-8 leading-relaxed relative z-10">
-                  "{t.quote}"
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center font-black text-primary text-xl">
-                    {t.initials}
-                  </div>
-                  <div className="text-left">
-                    <p className="font-black text-lg">{t.author}</p>
-                    <p className="text-sm text-muted-foreground">{t.info}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Banner */}
-      <section className="py-20">
-        <div className="container px-4 mx-auto">
-          <motion.div 
-            initial={{ scale: 0.95, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            className="bg-gradient-to-br from-[#5b3ee8] to-[#3b2cb7] rounded-3xl md:rounded-[3.5rem] p-8 md:p-24 text-center text-white shadow-2xl relative overflow-hidden"
-          >
-            <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none" />
-            <h2 className="text-4xl md:text-6xl font-black mb-8">Your Future Starts with One Click</h2>
-            <p className="text-xl md:text-2xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Join thousands of students and discover the college that truly matches your potential. No credit card, no fees, just results.
-            </p>
-            <Link href="/interview">
-              <Button size="lg" className="h-16 px-14 text-xl rounded-2xl bg-white text-primary hover:bg-white/90 shadow-2xl font-black gap-2 transition-transform hover:scale-105 active:scale-95">
-                Start Analysis Now <ArrowRight className="h-6 w-6" />
-              </Button>
-            </Link>
-          </motion.div>
+           <div className="bg-primary rounded-[4rem] p-16 md:p-32 text-center text-white relative overflow-hidden shadow-[0_50px_100px_-20px_rgba(59,130,246,0.5)]">
+              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.2),_transparent_40%)]" />
+              <div className="relative z-10 space-y-10">
+                 <h2 className="text-5xl md:text-8xl font-black font-syne tracking-tighter leading-none">Your Future <br /> Starts Today</h2>
+                 <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto font-medium">Join 10,000+ students who optimized their education path with EduAnalytics-AI. Always free, always accurate.</p>
+                 <Link href="/register">
+                    <Button size="lg" className="h-20 px-16 text-2xl rounded-2xl bg-white text-primary hover:bg-slate-100 shadow-2xl font-black gap-4 transition-transform hover:scale-105 active:scale-95">
+                       Create Free Account <Zap className="h-7 w-7 fill-primary" />
+                    </Button>
+                 </Link>
+              </div>
+           </div>
         </div>
       </section>
     </div>
