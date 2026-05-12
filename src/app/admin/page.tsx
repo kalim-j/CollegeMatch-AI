@@ -47,6 +47,10 @@ export default function AdminDashboard() {
         (snapshot) => {
           setLeads(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
           setLoading(false);
+        },
+        (error) => {
+          console.error("Leads Sync Error:", error);
+          setLoading(false);
         }
       );
 
@@ -54,6 +58,9 @@ export default function AdminDashboard() {
         query(collection(db, "testimonials"), orderBy("createdAt", "desc")),
         (snapshot) => {
           setTestimonials(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+        },
+        (error) => {
+          console.error("Testimonials Sync Error:", error);
         }
       );
 
@@ -136,9 +143,9 @@ export default function AdminDashboard() {
         <div className="p-8">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-red-500 to-amber-600 flex items-center justify-center font-black text-white shadow-lg shadow-red-500/20">
-              EA
+              CM
             </div>
-            <span className="text-2xl font-black text-white font-syne tracking-tight">Admin AI</span>
+            <span className="text-2xl font-black text-white font-syne tracking-tight">CollegeMatch Admin</span>
           </div>
         </div>
 
