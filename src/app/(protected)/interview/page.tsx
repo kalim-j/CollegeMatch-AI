@@ -206,11 +206,23 @@ export default function InterviewPage() {
                         ? "bg-teal-500/20 text-teal-400 border-teal-500/40 shadow-lg shadow-teal-500/10" 
                         : "bg-white/[0.03] text-white/40 border-white/5 hover:border-white/20"
                   )}
-                  onClick={() => { updateForm({ stream }); handleNext(); }}
+                  onClick={() => { updateForm({ stream }); }}
                 >
                   {stream}
                 </button>
               ))}
+            </div>
+            <div className="flex gap-4 max-w-4xl mx-auto pt-8">
+              <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                <ChevronLeft size={20} /> Back
+              </button>
+              <button 
+                onClick={handleNext} 
+                disabled={!formData.stream}
+                className="btn-primary flex-[2] h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2"
+              >
+                Continue <ChevronRight size={20} />
+              </button>
             </div>
           </div>
         );
@@ -250,13 +262,18 @@ export default function InterviewPage() {
                         {(stateDistricts[formData.state!] || []).map(d => <option key={d} value={d} className="bg-[#0a0d14]">{d}</option>)}
                     </select>
                 </div>
-                <button 
-                    className="btn-primary w-full h-16 text-lg mt-4 group flex items-center justify-center gap-3"
-                    onClick={handleNext} 
-                    disabled={!formData.district}
-                >
-                    Continue Journey <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </button>
+                <div className="flex gap-4 mt-4">
+                  <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                    <ChevronLeft size={20} /> Back
+                  </button>
+                  <button 
+                      className="btn-primary flex-[2] h-16 text-lg group flex items-center justify-center gap-3 font-black uppercase tracking-widest"
+                      onClick={handleNext} 
+                      disabled={!formData.district}
+                  >
+                      Continue <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
             </div>
           </div>
         );
@@ -316,13 +333,18 @@ export default function InterviewPage() {
                         />
                     </div>
                 </div>
-                <button 
-                    className="btn-primary w-full h-16 text-lg mt-4 flex items-center justify-center gap-3"
-                    onClick={handleNext} 
-                    disabled={!formData[`marks${levelKey}`] || !formData[`percentage${levelKey}`]}
-                >
-                    Continue <ChevronRight size={20} />
-                </button>
+                <div className="flex gap-4 mt-4">
+                  <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                    <ChevronLeft size={20} /> Back
+                  </button>
+                  <button 
+                      className="btn-primary flex-[2] h-16 text-lg flex items-center justify-center gap-3 font-black uppercase tracking-widest"
+                      onClick={handleNext} 
+                      disabled={!formData[`marks${levelKey}`] || !formData[`percentage${levelKey}`]}
+                  >
+                      Continue <ChevronRight size={20} />
+                  </button>
+                </div>
             </div>
           </div>
         );
@@ -388,12 +410,17 @@ export default function InterviewPage() {
                     </div>
                 </div>
 
-                <button 
-                    className="btn-primary w-full h-16 text-lg mt-4 flex items-center justify-center gap-3"
-                    onClick={handleNext} 
-                >
-                    Continue <ChevronRight size={20} />
-                </button>
+                <div className="flex gap-4 mt-4">
+                  <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                    <ChevronLeft size={20} /> Back
+                  </button>
+                  <button 
+                      className="btn-primary flex-[2] h-16 text-lg flex items-center justify-center gap-3 font-black uppercase tracking-widest"
+                      onClick={handleNext} 
+                  >
+                      Continue <ChevronRight size={20} />
+                  </button>
+                </div>
             </div>
           </div>
         );
@@ -447,12 +474,17 @@ export default function InterviewPage() {
                         ))}
                     </div>
                 </div>
-                <button 
-                    className="btn-primary w-full h-16 text-lg mt-4 flex items-center justify-center gap-3"
-                    onClick={handleNext} 
-                >
-                    Continue <ChevronRight size={20} />
-                </button>
+                <div className="flex gap-4 mt-4">
+                  <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                    <ChevronLeft size={20} /> Back
+                  </button>
+                  <button 
+                      className="btn-primary flex-[2] h-16 text-lg flex items-center justify-center gap-3 font-black uppercase tracking-widest"
+                      onClick={handleNext} 
+                  >
+                      Continue <ChevronRight size={20} />
+                  </button>
+                </div>
             </div>
           </div>
         );
@@ -477,11 +509,23 @@ export default function InterviewPage() {
                             ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-lg" 
                             : "bg-white/[0.03] text-white/30 border-white/5 hover:border-white/10"
                       )}
-                      onClick={() => { updateForm({ budget: b as any }); handleNext(); }}
+                      onClick={() => { updateForm({ budget: b as any }); }}
                     >
                       {b}
                     </button>
                 ))}
+                <div className="flex gap-4 pt-4">
+                  <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                    <ChevronLeft size={20} /> Back
+                  </button>
+                  <button 
+                    onClick={handleNext} 
+                    disabled={!formData.budget}
+                    className="btn-primary flex-[2] h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2"
+                  >
+                    Continue <ChevronRight size={20} />
+                  </button>
+                </div>
             </div>
           </div>
         );
@@ -508,18 +552,23 @@ export default function InterviewPage() {
                         Our advanced matching engine is ready to process your academic profile against 2,500+ top institutions.
                     </p>
                 </div>
-                <button 
-                    className="btn-primary w-full h-20 text-2xl group flex items-center justify-center gap-4" 
-                    onClick={handleFinish}
-                    disabled={analyzing}
-                >
-                    {analyzing ? (
-                      <Loader2 className="animate-spin" size={32} />
-                    ) : (
-                      <Zap size={28} className="group-hover:rotate-12 transition-transform" />
-                    )}
-                    <span>{analyzing ? "AI is Analyzing Profile..." : "Execute AI Search"}</span>
-                </button>
+                <div className="flex gap-4">
+                  <button onClick={handleBack} className="btn-ghost flex-1 h-20 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                    <ChevronLeft size={24} /> Back
+                  </button>
+                  <button 
+                      className="btn-primary flex-[3] h-20 text-2xl group flex items-center justify-center gap-4" 
+                      onClick={handleFinish}
+                      disabled={analyzing}
+                  >
+                      {analyzing ? (
+                        <Loader2 className="animate-spin" size={32} />
+                      ) : (
+                        <Zap size={28} className="group-hover:rotate-12 transition-transform" />
+                      )}
+                      <span>{analyzing ? "AI is Analyzing Profile..." : "Execute AI Search"}</span>
+                  </button>
+                </div>
             </div>
           </div>
         );

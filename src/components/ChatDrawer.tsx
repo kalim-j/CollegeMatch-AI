@@ -28,24 +28,16 @@ export default function ChatDrawer() {
     setLoading(true);
 
     try {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        const response = await fetch("/api/chat", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
                 messages: [
-                    { 
-                        role: "system", 
-                        content: "You are CollegeMatch-AI counselor for Indian students. Help with college selection, JEE cutoffs, IIT NIT IIIT admissions, state exams TNEA KEAM WBJEE. Be concise, under 100 words." 
-                    },
                     ...messages,
                     userMsg
-                ],
-                temperature: 0.5,
-                max_tokens: 200
+                ]
             })
         });
 
