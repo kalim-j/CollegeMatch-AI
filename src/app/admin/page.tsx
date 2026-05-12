@@ -21,7 +21,7 @@ import {
 } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 
-const ADMIN_EMAIL = "kalim.apoffi@gmail.com";
+const ADMIN_EMAILS = ["kalim.apoffi@gmail.com", "kalimdon07@gmail.com"];
 
 export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -36,7 +36,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!authLoading) {
-      if (!user || user.email !== ADMIN_EMAIL) {
+      if (!user || !ADMIN_EMAILS.includes(user.email || "")) {
         router.push("/dashboard");
         return;
       }
@@ -194,7 +194,7 @@ export default function AdminDashboard() {
           <header className="flex justify-between items-center border-b border-white/5 pb-10">
             <div>
               <h1 className="text-6xl font-black text-white font-syne tracking-tighter capitalize">{activeTab}</h1>
-              <p className="text-slate-500 font-bold text-sm uppercase tracking-[0.4em] mt-2">EduAnalytics AI Lead Intelligence</p>
+              <p className="text-slate-500 font-bold text-sm uppercase tracking-[0.4em] mt-2">CollegeMatch-AI Lead Intelligence</p>
             </div>
             <div className="flex gap-4">
               <div className="relative">
@@ -286,7 +286,7 @@ export default function AdminDashboard() {
                               <div className="flex justify-end gap-2">
                                 <a href={`tel:${lead.phone}`} className="h-10 w-10 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center hover:bg-blue-500 hover:text-white transition-all shadow-lg"><Phone size={18} /></a>
                                 <a 
-                                  href={`https://wa.me/91${lead.phone}?text=Hi+${encodeURIComponent(lead.name)},+this+is+EduAnalytics-AI+admission+team.+We+received+your+enquiry+about+${encodeURIComponent(lead.stream)}+admissions.+How+can+we+help+you+today?`} 
+                                  href={`https://wa.me/91${lead.phone}?text=Hi+${encodeURIComponent(lead.name)},+this+is+CollegeMatch-AI+admission+team.+We+received+your+enquiry+about+${encodeURIComponent(lead.stream)}+admissions.+How+can+we+help+you+today?`} 
                                   target="_blank"
                                   className="h-10 w-10 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all shadow-lg"
                                 >
@@ -474,7 +474,7 @@ export default function AdminDashboard() {
                         <Phone size={20} /> Call Now: {selectedLead.phone}
                       </a>
                       <a 
-                        href={`https://wa.me/91${selectedLead.phone}?text=Hi+${encodeURIComponent(selectedLead.name)},+this+is+EduAnalytics-AI+admission+team.+We+received+your+enquiry+about+${encodeURIComponent(selectedLead.stream)}+admissions.+How+can+we+help+you+today?`} 
+                        href={`https://wa.me/91${selectedLead.phone}?text=Hi+${encodeURIComponent(selectedLead.name)},+this+is+CollegeMatch-AI+admission+team.+We+received+your+enquiry+about+${encodeURIComponent(selectedLead.stream)}+admissions.+How+can+we+help+you+today?`} 
                         target="_blank"
                         className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all"
                       >

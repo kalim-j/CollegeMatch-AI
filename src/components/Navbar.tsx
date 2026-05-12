@@ -24,7 +24,7 @@ import {
 import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 
-const ADMIN_EMAIL = "kalim.apoffi@gmail.com";
+const ADMIN_EMAILS = ["kalim.apoffi@gmail.com", "kalimdon07@gmail.com"];
 
 export function Navbar() {
   const { user, profile } = useAuth();
@@ -34,7 +34,7 @@ export function Navbar() {
   const [pendingLeads, setPendingLeads] = useState(0);
 
   useEffect(() => {
-    if (user?.email === ADMIN_EMAIL) {
+    if (user?.email && ADMIN_EMAILS.includes(user.email)) {
       const q = query(collection(db, "contacts"), where("status", "==", "new"));
       const unsub = onSnapshot(q, (snapshot) => {
         setPendingLeads(snapshot.size);
@@ -67,16 +67,16 @@ export function Navbar() {
     { name: "Submit Review", href: "/testimonial", icon: MessageSquare },
   ];
 
-  const isAdmin = user?.email === ADMIN_EMAIL;
+  const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center space-x-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-lg font-bold text-lg">
-            EA
+            CM
           </div>
-          <span className="text-xl font-bold tracking-tight text-primary">EduAnalytics-AI</span>
+          <span className="text-xl font-bold tracking-tight text-primary">CollegeMatch-AI</span>
         </Link>
 
         {/* Desktop Navigation */}

@@ -20,14 +20,14 @@ service cloud.firestore {
     match /contacts/{contactId} {
       allow create: if request.auth != null;
       allow read, update: if request.auth != null
-        && request.auth.token.email == 'kalim.apoffi@gmail.com';
+        && (request.auth.token.email == 'kalim.apoffi@gmail.com' || request.auth.token.email == 'kalimdon07@gmail.com');
     }
 
     match /testimonials/{docId} {
       allow read: if true;
       allow create: if request.auth != null;
       allow update, delete: if request.auth != null
-        && request.auth.token.email == 'kalim.apoffi@gmail.com';
+        && (request.auth.token.email == 'kalim.apoffi@gmail.com' || request.auth.token.email == 'kalimdon07@gmail.com');
     }
   }
 }

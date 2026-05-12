@@ -224,7 +224,7 @@ export default function Home() {
                <Users size={14} /> Student Success Stories
             </div>
             <h2 className="text-5xl md:text-7xl font-black font-syne tracking-tighter">Real Students. <span className="text-primary">Real Results.</span></h2>
-            <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">Hear from students who found their dream college and course using EduAnalytics-AI.</p>
+            <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">Hear from students who found their dream college and course using CollegeMatch-AI.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -286,7 +286,7 @@ export default function Home() {
               <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.2),_transparent_40%)]" />
               <div className="relative z-10 space-y-10">
                  <h2 className="text-5xl md:text-8xl font-black font-syne tracking-tighter leading-none">Your Future <br /> Starts Today</h2>
-                 <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto font-medium">Join 10,000+ students who optimized their education path with EduAnalytics-AI. Always free, always accurate.</p>
+                 <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto font-medium">Join 10,000+ students who optimized their education path with CollegeMatch-AI. Always free, always accurate.</p>
                  <Link href="/register">
                     <Button size="lg" className="h-20 px-16 text-2xl rounded-2xl bg-white text-primary hover:bg-slate-100 shadow-2xl font-black gap-4 transition-transform hover:scale-105 active:scale-95">
                        Create Free Account <Zap className="h-7 w-7 fill-primary" />

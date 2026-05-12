@@ -195,7 +195,7 @@ export default function SubmitTestimonial() {
               <textarea
                 required
                 maxLength={200}
-                placeholder="Share how EduAnalytics-AI helped you..."
+                placeholder="Share how CollegeMatch-AI helped you..."
                 value={formData.review}
                 onChange={(e) => setFormData({ ...formData, review: e.target.value })}
                 className="w-full h-40 bg-white/5 border border-white/10 rounded-[2rem] p-6 text-white focus:border-emerald-500 outline-none transition-all resize-none placeholder:text-slate-600"

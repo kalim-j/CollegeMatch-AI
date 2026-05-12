@@ -40,7 +40,7 @@ export default function ContactPage() {
     }
 
     const message = `Hi, I am ${profile.fullName || user.displayName} from ${profile.state || 'N/A'}. 
-I completed the EduAnalytics-AI interview for ${profile.preferredCourse || 'Engineering'}. 
+I completed the CollegeMatch-AI interview for ${profile.preferredCourse || 'Engineering'}. 
 I need help with college admission. Please guide me.`;
 
     return `https://wa.me/919363554551?text=${encodeURIComponent(message)}`;
@@ -131,7 +131,7 @@ I need help with college admission. Please guide me.`;
               </div>
               <div>
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Email Us</p>
-                <p className="text-xl font-bold text-white">support@eduanalytics.ai</p>
+                <p className="text-xl font-bold text-white">support@collegematch-ai.com</p>
               </div>
             </div>
 

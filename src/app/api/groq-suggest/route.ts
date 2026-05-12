@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const { studentProfile } = await req.json();
 
-    const systemPrompt = `You are EduAnalytics-AI, an expert Indian college admission counsellor. 
+    const systemPrompt = `You are CollegeMatch-AI, an expert Indian college admission counsellor. 
     Given a student's profile, suggest exactly 8 best-fit colleges.
 
     Return only a JSON array of 8 objects. No markdown, no extra text.
