@@ -154,7 +154,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-[#0a0d14] text-slate-300 flex">
       {/* Sidebar */}
-      <aside className="w-72 border-r border-white/5 bg-[#111520] flex flex-col fixed h-full z-30">
+      <aside className="w-72 border-r border-white/5 bg-[#111520] flex flex-col sticky top-16 h-[calc(100vh-64px)] z-30">
         <div className="p-8">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-black text-white shadow-lg shadow-indigo-500/20">
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <nav className="flex-1 px-4 space-y-2 py-4">
+        <nav className="flex-1 px-4 space-y-2 py-4 overflow-y-auto">
           <button
             onClick={() => setActiveTab("analytics")}
             className={cn(
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-72 min-h-screen">
+      <main className="flex-1 min-h-screen">
         <div className="max-w-[1600px] mx-auto p-12 lg:p-16 space-y-12">
           {/* Header */}
           <header className="flex justify-between items-center border-b border-white/5 pb-10">
