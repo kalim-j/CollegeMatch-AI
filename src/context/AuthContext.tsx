@@ -75,19 +75,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(false);
     });
 
-    // Handle offline status when window closes
-    const handleUnload = () => {
+    const handleVisibilityChange = () => {
       if (auth.currentUser) {
         const docRef = doc(db, 'users', auth.currentUser.uid);
-        // Using updateDoc might not finish on close, but we try
-        updateDoc(docRef, { isOnline: false, lastActive: serverTimestamp() });
+        if (document.visibilityState === 'hidden') {
+          updateDoc(docRef, { isOnline: false, lastActive: serverTimestamp() }).catch(console.error);
+        } else {
+          updateDoc(docRef, { isOnline: true, lastActive: serverTimestamp() }).catch(console.error);
+        }
       }
     };
 
-    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('beforeunload', handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       unsubscribe();
-      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('beforeunload', handleVisibilityChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 

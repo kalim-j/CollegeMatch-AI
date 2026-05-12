@@ -30,6 +30,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [leads, setLeads] = useState<any[]>([]);
   const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [usersList, setUsersList] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [selectedLead, setSelectedLead] = useState<any>(null);
@@ -66,9 +67,21 @@ export default function AdminDashboard() {
         }
       );
 
+      const usersUnsub = onSnapshot(
+        collection(db, "users"),
+        (snapshot) => {
+          setUsersList(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+        },
+        (error) => {
+          console.error("Users Sync Error:", error);
+          toast.error("Users permission denied");
+        }
+      );
+
       return () => {
         leadsUnsub();
         testUnsub();
+        usersUnsub();
       };
     }
   }, [user, authLoading, router]);
@@ -144,19 +157,30 @@ export default function AdminDashboard() {
       <aside className="w-72 border-r border-white/5 bg-[#111520] flex flex-col fixed h-full z-30">
         <div className="p-8">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-red-500 to-amber-600 flex items-center justify-center font-black text-white shadow-lg shadow-red-500/20">
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-black text-white shadow-lg shadow-indigo-500/20">
               CM
             </div>
-            <span className="text-2xl font-black text-white font-syne tracking-tight">CollegeMatch Admin</span>
+            <span className="text-2xl font-black text-white font-syne tracking-tight">Admin Console</span>
           </div>
         </div>
 
         <nav className="flex-1 px-4 space-y-2 py-4">
           <button
-            onClick={() => setActiveTab("leads")}
+            onClick={() => setActiveTab("analytics")}
             className={cn(
               "w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all relative group",
-              activeTab === "leads" ? "bg-red-500/10 text-red-400 border border-red-500/20 shadow-lg" : "hover:bg-white/5 text-slate-500 hover:text-slate-300"
+              activeTab === "analytics" ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-lg" : "hover:bg-white/5 text-slate-500 hover:text-slate-300"
+            )}
+          >
+            <LayoutDashboard size={20} />
+            <span>Platform Analytics</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("leads")}
+            className={cn(
+              "w-full flex items-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all relative group mt-2",
+              activeTab === "leads" ? "bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-lg" : "hover:bg-white/5 text-slate-500 hover:text-slate-300"
             )}
           >
             <Users size={20} />
@@ -220,6 +244,82 @@ export default function AdminDashboard() {
           </header>
 
           <AnimatePresence mode="wait">
+            {activeTab === "analytics" && (
+              <motion.div
+                key="analytics"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-10"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div className="bg-[#111520] border border-white/5 rounded-[2rem] p-8 shadow-xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-[50px] -z-10" />
+                    <div className="flex justify-between items-start mb-6">
+                      <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Total Users</p>
+                      <Users className="text-indigo-400" size={24} />
+                    </div>
+                    <p className="text-6xl font-black text-indigo-400 tabular-nums font-syne">{usersList.length}</p>
+                    <p className="text-sm font-bold text-slate-600 mt-4">Registered student profiles</p>
+                  </div>
+                  
+                  <div className="bg-[#111520] border border-white/5 rounded-[2rem] p-8 shadow-xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-[50px] -z-10" />
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="flex items-center gap-2">
+                        <span className="relative flex h-3 w-3">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                        </span>
+                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Live Users</p>
+                      </div>
+                      <LayoutDashboard className="text-emerald-400" size={24} />
+                    </div>
+                    <p className="text-6xl font-black text-emerald-400 tabular-nums font-syne">
+                      {usersList.filter(u => u.isOnline).length}
+                    </p>
+                    <p className="text-sm font-bold text-slate-600 mt-4">Currently active on platform</p>
+                  </div>
+
+                  <div className="bg-[#111520] border border-white/5 rounded-[2rem] p-8 shadow-xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-[50px] -z-10" />
+                    <div className="flex justify-between items-start mb-6">
+                      <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Total Leads</p>
+                      <MessageSquare className="text-blue-400" size={24} />
+                    </div>
+                    <p className="text-6xl font-black text-blue-400 tabular-nums font-syne">{leads.length}</p>
+                    <p className="text-sm font-bold text-slate-600 mt-4">Through contact / tools</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#111520] border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl p-8">
+                  <h3 className="text-xl font-black text-white font-syne tracking-tight mb-8">Recent Signups</h3>
+                  <div className="space-y-4">
+                    {usersList.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)).slice(0, 5).map(u => (
+                      <div key={u.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 bg-indigo-500/20 text-indigo-400 font-black rounded-xl flex items-center justify-center uppercase">
+                            {u.fullName?.[0] || u.email?.[0] || "?"}
+                          </div>
+                          <div>
+                            <p className="font-bold text-white">{u.fullName || "Anonymous"}</p>
+                            <p className="text-xs text-slate-500">{u.email}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          {u.isOnline ? (
+                            <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-full border border-emerald-500/20">Live Now</span>
+                          ) : (
+                            <span className="text-xs font-bold text-slate-600">{u.lastActive?.toDate()?.toLocaleDateString() || "Offline"}</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {activeTab === "leads" && (
               <motion.div
                 key="leads"

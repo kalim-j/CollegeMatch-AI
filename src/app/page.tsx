@@ -33,11 +33,13 @@ export default function Home() {
         const q = query(
           collection(db, "testimonials"),
           where("approved", "==", true),
-          orderBy("createdAt", "desc"),
           limit(6)
         );
         const snapshot = await getDocs(q);
-        setTestimonials(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+        // Sort in memory to avoid needing a composite index
+        const fetched = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        fetched.sort((a: any, b: any) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+        setTestimonials(fetched);
       } catch (error) {
         console.error("Testimonials fetch error:", error);
       }
