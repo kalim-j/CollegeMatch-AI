@@ -50,6 +50,7 @@ export default function AdminDashboard() {
         },
         (error) => {
           console.error("Leads Sync Error:", error);
+          toast.error("Leads permission denied");
           setLoading(false);
         }
       );
@@ -61,6 +62,7 @@ export default function AdminDashboard() {
         },
         (error) => {
           console.error("Testimonials Sync Error:", error);
+          toast.error("Testimonials permission denied");
         }
       );
 
