@@ -160,7 +160,7 @@ export default function InterviewPage() {
                 <GraduationCap size={14} className="text-indigo-400" />
                 <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">Educational Level</span>
               </div>
-              <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter leading-tight">Your Academic Path</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter leading-tight">Your Academic Path</h2>
               <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 1: Select your target degree level</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -211,7 +211,7 @@ export default function InterviewPage() {
                 <Target size={14} className="text-teal-400" />
                 <span className="text-[10px] font-black text-teal-300 uppercase tracking-widest">Field of Interest</span>
               </div>
-              <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter">Choose Your Stream</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Choose Your Stream</h2>
               <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 2: Define your specialization</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -252,7 +252,7 @@ export default function InterviewPage() {
                 <MapPin size={14} className="text-amber-400" />
                 <span className="text-[10px] font-black text-amber-300 uppercase tracking-widest">Geographical Preference</span>
               </div>
-              <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter">Your Location</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Your Location</h2>
               <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 3: Residency and target region</p>
             </div>
             <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-12 space-y-8 shadow-2xl relative overflow-hidden">
@@ -306,7 +306,7 @@ export default function InterviewPage() {
                 <BookOpen size={14} className="text-purple-400" />
                 <span className="text-[10px] font-black text-purple-300 uppercase tracking-widest">{levelKey} Academic Records</span>
               </div>
-              <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter">{levelKey} Standards</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">{levelKey} Standards</h2>
               <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step {step}: Academic performance verification</p>
             </div>
             <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-12 space-y-8 shadow-2xl">
@@ -374,7 +374,7 @@ export default function InterviewPage() {
                 <Sparkles size={14} className="text-indigo-400" />
                 <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">Competitive Edge</span>
               </div>
-              <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter">Further Details</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Further Details</h2>
               <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 6: Specialized scores</p>
             </div>
             <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-12 space-y-8 shadow-2xl">
@@ -450,7 +450,7 @@ export default function InterviewPage() {
                 <Users size={14} className="text-blue-400" />
                 <span className="text-[10px] font-black text-blue-300 uppercase tracking-widest">Demographics</span>
               </div>
-              <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter">Social Profile</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Social Profile</h2>
               <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 7: Category and background</p>
             </div>
             <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-12 space-y-8 shadow-2xl">
@@ -514,7 +514,7 @@ export default function InterviewPage() {
                 <Wallet size={14} className="text-emerald-400" />
                 <span className="text-[10px] font-black text-emerald-300 uppercase tracking-widest">Financial Alignment</span>
               </div>
-              <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter">Budget Policy</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Budget Policy</h2>
               <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 8: Institutional type preference</p>
             </div>
             <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-12 space-y-4 shadow-2xl">
@@ -555,7 +555,7 @@ export default function InterviewPage() {
                 <Sparkles size={14} className="text-indigo-400" />
                 <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">AI Synthesis</span>
               </div>
-              <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter">Ready for Analysis?</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Ready for Analysis?</h2>
               <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 9: Final predictive processing</p>
             </div>
             
@@ -636,7 +636,7 @@ export default function InterviewPage() {
                 <div className="absolute inset-0 bg-teal-500/20 blur-2xl rounded-full" />
                 <Sparkles size={48} className="animate-pulse relative z-10" />
               </div>
-              <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter uppercase">AI Match Analysis</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white tracking-tighter uppercase">AI Match Analysis</h2>
               <p className="text-white/40 font-bold uppercase tracking-[0.3em] text-[11px] leading-relaxed max-w-xl mx-auto">
                 Based on your <span className="text-teal-400">{formData.courseLevel} {formData.stream}</span> profile, we discovered <span className="text-indigo-400">{colleges.length} matches</span> tailored to your performance.
               </p>
@@ -690,7 +690,7 @@ export default function InterviewPage() {
                     <div className="relative z-10 flex-1 flex flex-col">
                       <div className="flex justify-between items-start gap-6 mb-8">
                         <div className="space-y-2 flex-1">
-                          <h3 className="text-3xl font-black text-white group-hover:text-indigo-400 transition-colors tracking-tight line-clamp-2 leading-tight">{college.name}</h3>
+                          <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white group-hover:text-indigo-400 transition-colors tracking-tight line-clamp-2 leading-tight">{college.name}</h3>
                           <div className="flex items-center gap-2 text-white/30">
                              <MapPin size={14} className="text-indigo-500" />
                              <span className="text-[10px] font-black uppercase tracking-widest">{college.location}, {college.state}</span>
