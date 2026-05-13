@@ -733,6 +733,207 @@ export const collegesDatabase: CollegeData[] = [
     seats: 850,
     nirf_rank: 110,
     website: "https://www.cusat.ac.in"
+  },
+
+  // Tamil Nadu - Erode
+  {
+    id: 26,
+    name: "Bannari Amman Institute of Technology",
+    location: "Sathyamangalam",
+    district: "Erode",
+    state: "Tamil Nadu",
+    type: "Private",
+    level: "Both",
+    naac_grade: "A",
+    courses: ["Computer Science", "Information Technology", "Electronics and Communication", "Mechanical Engineering", "Civil Engineering", "Electrical and Electronics"],
+    fees_structure: {
+      ug_annual: 75000,
+      ug_total: 300000,
+      pg_annual: 50000,
+      pg_total: 100000,
+      hostel_annual: 55000
+    },
+    cutoff_general: 175.0,
+    cutoff_obc: 170.0,
+    cutoff_sc: 160.0,
+    cutoff_st: 155.0,
+    avg_package_lpa: 5.2,
+    max_package_lpa: 28.0,
+    seats: 1200,
+    nirf_rank: 180,
+    website: "https://www.bitsathy.ac.in"
+  },
+  {
+    id: 27,
+    name: "Kongu Engineering College",
+    location: "Perundurai",
+    district: "Erode",
+    state: "Tamil Nadu",
+    type: "Autonomous",
+    level: "Both",
+    naac_grade: "A+",
+    courses: ["Computer Science", "Information Technology", "Electronics and Communication", "Mechanical Engineering", "Civil Engineering"],
+    fees_structure: {
+      ug_annual: 65000,
+      ug_total: 260000,
+      pg_annual: 45000,
+      pg_total: 90000,
+      hostel_annual: 50000
+    },
+    cutoff_general: 182.0,
+    cutoff_obc: 177.0,
+    cutoff_sc: 167.0,
+    cutoff_st: 162.0,
+    avg_package_lpa: 6.0,
+    max_package_lpa: 32.0,
+    seats: 1400,
+    nirf_rank: 140,
+    website: "https://www.kongu.edu"
+  },
+
+  // Tamil Nadu - Thanjavur
+  {
+    id: 28,
+    name: "Saranathan College of Engineering",
+    location: "Thanjavur",
+    district: "Thanjavur",
+    state: "Tamil Nadu",
+    type: "Private",
+    level: "Both",
+    naac_grade: "A",
+    courses: ["Computer Science", "Electronics and Communication", "Mechanical Engineering", "Civil Engineering", "Electrical and Electronics"],
+    fees_structure: {
+      ug_annual: 70000,
+      ug_total: 280000,
+      pg_annual: 48000,
+      pg_total: 96000,
+      hostel_annual: 52000
+    },
+    cutoff_general: 172.0,
+    cutoff_obc: 167.0,
+    cutoff_sc: 157.0,
+    cutoff_st: 152.0,
+    avg_package_lpa: 4.8,
+    max_package_lpa: 24.0,
+    seats: 900,
+    nirf_rank: 200,
+    website: "https://www.saranathan.ac.in"
+  },
+
+  // Karnataka - Dakshina Kannada (Mangalore)
+  {
+    id: 29,
+    name: "National Institute of Technology Karnataka (NITK)",
+    location: "Surathkal",
+    district: "Dakshina Kannada",
+    state: "Karnataka",
+    type: "Government",
+    level: "Both",
+    naac_grade: "A++",
+    courses: ["Computer Science", "Information Technology", "Electronics and Communication", "Mechanical Engineering", "Civil Engineering", "Chemical Engineering"],
+    fees_structure: {
+      ug_annual: 170000,
+      ug_total: 680000,
+      pg_annual: 52000,
+      pg_total: 104000,
+      hostel_annual: 65000
+    },
+    cutoff_general: 2000,
+    cutoff_obc: 4000,
+    cutoff_sc: 7000,
+    cutoff_st: 9000,
+    avg_package_lpa: 14.5,
+    max_package_lpa: 52.0,
+    seats: 1100,
+    nirf_rank: 12,
+    website: "https://www.nitk.ac.in"
+  },
+
+  // Karnataka - Udupi
+  {
+    id: 30,
+    name: "Manipal Institute of Technology",
+    location: "Manipal",
+    district: "Udupi",
+    state: "Karnataka",
+    type: "Deemed",
+    level: "Both",
+    naac_grade: "A++",
+    courses: ["Computer Science", "Information Technology", "Electronics and Communication", "Mechanical Engineering", "Biotechnology", "Aeronautical Engineering"],
+    fees_structure: {
+      ug_annual: 350000,
+      ug_total: 1400000,
+      pg_annual: 200000,
+      pg_total: 400000,
+      hostel_annual: 120000
+    },
+    cutoff_general: 178.0,
+    cutoff_obc: 173.0,
+    cutoff_sc: 163.0,
+    cutoff_st: 158.0,
+    avg_package_lpa: 8.5,
+    max_package_lpa: 48.0,
+    seats: 2000,
+    nirf_rank: 48,
+    website: "https://www.manipal.edu/mit.html"
+  },
+
+  // Maharashtra - Nagpur
+  {
+    id: 31,
+    name: "Visvesvaraya National Institute of Technology (VNIT)",
+    location: "South Ambazari Road",
+    district: "Nagpur",
+    state: "Maharashtra",
+    type: "Government",
+    level: "Both",
+    naac_grade: "A++",
+    courses: ["Computer Science", "Electronics and Communication", "Mechanical Engineering", "Civil Engineering", "Electrical Engineering", "Metallurgical Engineering"],
+    fees_structure: {
+      ug_annual: 175000,
+      ug_total: 700000,
+      pg_annual: 55000,
+      pg_total: 110000,
+      hostel_annual: 60000
+    },
+    cutoff_general: 3500,
+    cutoff_obc: 6000,
+    cutoff_sc: 9000,
+    cutoff_st: 11000,
+    avg_package_lpa: 12.8,
+    max_package_lpa: 48.0,
+    seats: 1300,
+    nirf_rank: 38,
+    website: "https://www.vnit.ac.in"
+  },
+
+  // West Bengal - Kolkata
+  {
+    id: 32,
+    name: "Jadavpur University - Faculty of Engineering",
+    location: "Jadavpur",
+    district: "Kolkata",
+    state: "West Bengal",
+    type: "Government",
+    level: "Both",
+    naac_grade: "A++",
+    courses: ["Computer Science", "Information Technology", "Electronics and Telecommunication", "Mechanical Engineering", "Civil Engineering", "Electrical Engineering"],
+    fees_structure: {
+      ug_annual: 12000,
+      ug_total: 48000,
+      pg_annual: 8000,
+      pg_total: 16000,
+      hostel_annual: 25000
+    },
+    cutoff_general: 188.0,
+    cutoff_obc: 183.0,
+    cutoff_sc: 173.0,
+    cutoff_st: 168.0,
+    avg_package_lpa: 9.5,
+    max_package_lpa: 58.0,
+    seats: 1000,
+    nirf_rank: 42,
+    website: "https://www.jadavpuruniversity.in"
   }
 ];
 

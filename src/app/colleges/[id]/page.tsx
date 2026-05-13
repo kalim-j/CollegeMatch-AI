@@ -7,7 +7,7 @@ import {
   Globe, Phone, ChevronLeft, Sparkles, 
   CheckCircle2, Wallet, Briefcase, 
   TrendingUp, Loader2, Target, Zap, 
-  ShieldCheck, ArrowRight
+  ShieldCheck, ArrowRight, Download, FileText
 } from "lucide-react";
 import Link from "next/link";
 import { College } from "@/types";
@@ -19,6 +19,45 @@ export default function CollegeDetailPage() {
   const router = useRouter();
   const [college, setCollege] = useState<College | null>(null);
   const [visiting, setVisiting] = useState(false);
+  const [downloadingFees, setDownloadingFees] = useState(false);
+  
+  const handleDownloadFeeStructure = async () => {
+    if (!college) return;
+    
+    setDownloadingFees(true);
+    try {
+      const response = await fetch('/api/download-fee-structure', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          collegeName: college.name,
+          website: college.website,
+          collegeId: college.id
+        })
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${college.name.replace(/[^a-z0-9]/gi, '_')}_Fee_Structure.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        // Fallback: Open the website in new tab
+        window.open(college.website, '_blank');
+      }
+    } catch (error) {
+      console.error('Error downloading fee structure:', error);
+      // Fallback: Open the website in new tab
+      window.open(college.website, '_blank');
+    } finally {
+      setDownloadingFees(false);
+    }
+  };
   
   useEffect(() => {
     const resultsStr = sessionStorage.getItem('eduanalytics_results');
@@ -226,6 +265,24 @@ export default function CollegeDetailPage() {
                 </div>
 
                 <div className="space-y-4">
+                    <button
+                      onClick={handleDownloadFeeStructure}
+                      disabled={downloadingFees}
+                      className="w-full h-16 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all flex items-center justify-center gap-3 group disabled:opacity-50"
+                    >
+                      {downloadingFees ? (
+                        <>
+                          <Loader2 size={20} className="animate-spin" />
+                          <span>Fetching Fee Details...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Download size={18} className="group-hover:translate-y-0.5 transition-transform" />
+                          <span>Download Fee Structure</span>
+                        </>
+                      )}
+                    </button>
+                    
                     <a
                       href={college.website || `https://www.google.com/search?q=${encodeURIComponent(college.name + ' official website')}`}
                       target="_blank"
