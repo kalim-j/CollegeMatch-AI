@@ -52,6 +52,13 @@ export async function POST(req: Request) {
 
       // Filter by stream - check if college offers related courses
       const streamKeywords = studentProfile.stream.toLowerCase();
+      
+      // If stream is Engineering or contains "engineering", match with engineering colleges
+      if (streamKeywords.includes("engineering") || streamKeywords === "engineering") {
+        return true; // All our colleges are engineering colleges
+      }
+      
+      // For other streams, check if college offers related courses
       const hasMatchingCourse = college.courses.some(course => 
         course.toLowerCase().includes(streamKeywords) || 
         streamKeywords.includes(course.toLowerCase().split(" ")[0])
