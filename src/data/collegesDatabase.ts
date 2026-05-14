@@ -1,5 +1,8 @@
 // Real College Database with Fee Structures
 // Data sourced from official college websites and education portals (2024-2025)
+// Multi-stream database: Engineering, Medical, Arts, Law, MBA, Agriculture, Architecture, etc.
+
+import { medicalColleges } from './medicalColleges';
 
 export interface CollegeData {
   id: number;
@@ -29,7 +32,7 @@ export interface CollegeData {
   website: string;
 }
 
-export const collegesDatabase: CollegeData[] = [
+const engineeringAndMultiStreamColleges: CollegeData[] = [
   // Tamil Nadu - Chennai
   {
     id: 1,
@@ -3877,9 +3880,18 @@ export const collegesDatabase: CollegeData[] = [
   }
 ];
 
+// Merge all college databases
+const allColleges = [
+  ...engineeringAndMultiStreamColleges,
+  ...medicalColleges
+];
+
+// Export merged database as collegesDatabase
+export { allColleges as collegesDatabase };
+
 // Helper function to filter colleges by district
 export function getCollegesByDistrict(district: string, state: string): CollegeData[] {
-  return collegesDatabase.filter(
+  return allColleges.filter(
     college => college.district.toLowerCase() === district.toLowerCase() && 
                college.state.toLowerCase() === state.toLowerCase()
   );
@@ -3887,12 +3899,12 @@ export function getCollegesByDistrict(district: string, state: string): CollegeD
 
 // Helper function to get colleges by state
 export function getCollegesByState(state: string): CollegeData[] {
-  return collegesDatabase.filter(
+  return allColleges.filter(
     college => college.state.toLowerCase() === state.toLowerCase()
   );
 }
 
 // Helper function to get all colleges
 export function getAllColleges(): CollegeData[] {
-  return collegesDatabase;
+  return allColleges;
 }
