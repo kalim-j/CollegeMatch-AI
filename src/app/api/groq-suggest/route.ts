@@ -55,7 +55,62 @@ export async function POST(req: Request) {
       
       // If stream is Engineering or contains "engineering", match with engineering colleges
       if (streamKeywords.includes("engineering") || streamKeywords === "engineering") {
-        return true; // All our colleges are engineering colleges
+        // Check if college has engineering courses
+        const hasEngineeringCourse = college.courses.some(course => 
+          course.toLowerCase().includes("engineering") || 
+          course.toLowerCase().includes("computer") ||
+          course.toLowerCase().includes("mechanical") ||
+          course.toLowerCase().includes("electronics") ||
+          course.toLowerCase().includes("electrical") ||
+          course.toLowerCase().includes("civil")
+        );
+        return hasEngineeringCourse;
+      }
+      
+      // If stream is Medical, match with medical colleges
+      if (streamKeywords.includes("medical") || streamKeywords === "medical") {
+        const hasMedicalCourse = college.courses.some(course => 
+          course.toLowerCase().includes("mbbs") || 
+          course.toLowerCase().includes("md") ||
+          course.toLowerCase().includes("ms") ||
+          course.toLowerCase().includes("medical") ||
+          course.toLowerCase().includes("nursing")
+        );
+        return hasMedicalCourse;
+      }
+      
+      // If stream is Arts, match with arts colleges
+      if (streamKeywords.includes("arts") || streamKeywords.includes("science")) {
+        const hasArtsCourse = college.courses.some(course => 
+          course.toLowerCase().includes("economics") || 
+          course.toLowerCase().includes("english") ||
+          course.toLowerCase().includes("history") ||
+          course.toLowerCase().includes("mathematics") ||
+          course.toLowerCase().includes("physics") ||
+          course.toLowerCase().includes("chemistry") ||
+          course.toLowerCase().includes("commerce")
+        );
+        return hasArtsCourse;
+      }
+      
+      // If stream is Law, match with law colleges
+      if (streamKeywords.includes("law") || streamKeywords === "law") {
+        const hasLawCourse = college.courses.some(course => 
+          course.toLowerCase().includes("law") || 
+          course.toLowerCase().includes("llb") ||
+          course.toLowerCase().includes("llm")
+        );
+        return hasLawCourse;
+      }
+      
+      // If stream is MBA/Management, match with MBA colleges
+      if (streamKeywords.includes("mba") || streamKeywords.includes("management")) {
+        const hasMBACourse = college.courses.some(course => 
+          course.toLowerCase().includes("mba") || 
+          course.toLowerCase().includes("management") ||
+          course.toLowerCase().includes("business")
+        );
+        return hasMBACourse;
       }
       
       // For other streams, check if college offers related courses
