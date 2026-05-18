@@ -1,0 +1,14 @@
+# Robots.txt for CollegeMatch-AI
+# Allow all search engines to crawl public content
+
+User-agent: *
+Allow: /
+
+# Disallow protected routes
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /profile
+Disallow: /history
+
+# Sitemap location
+Sitemap: https://eduanalytics-ai.vercel.app/sitemap.xml

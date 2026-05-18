@@ -1,0 +1,44 @@
+const fs = require('fs');
+const path = require('path');
+
+// Simple SVG to create icon.png (512x512)
+const iconSvg = `<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c5cfc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5b3fd1;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <rect width="512" height="512" fill="url(#bgGrad)" rx="80"/>
+  
+  <!-- Graduation cap icon (centered and larger) -->
+  <g transform="translate(156, 156)">
+    <!-- Cap base -->
+    <polygon points="100,40 200,0 300,40 200,80" fill="#ffffff"/>
+    <!-- Cap board -->
+    <rect x="150" y="40" width="100" height="8" fill="#ffffff"/>
+    <!-- Cap stem -->
+    <rect x="195" y="48" width="10" height="80" fill="#ffffff"/>
+    <!-- Tassel ball -->
+    <circle cx="200" cy="140" r="16" fill="#ffffff"/>
+    <!-- Tassel string -->
+    <line x1="200" y1="140" x2="230" y2="180" stroke="#ffffff" stroke-width="4"/>
+  </g>
+  
+  <!-- Letter C and M -->
+  <text x="256" y="420" font-family="Arial, sans-serif" font-size="120" font-weight="bold" fill="#ffffff" text-anchor="middle">
+    CM
+  </text>
+</svg>`;
+
+// Write icon.svg
+fs.writeFileSync(path.join(__dirname, '../public/icon.svg'), iconSvg);
+
+console.log('✓ Generated icon.svg');
+console.log('\nNote: To generate PNG files, you can:');
+console.log('1. Use an online SVG to PNG converter');
+console.log('2. Use ImageMagick: convert icon.svg -resize 512x512 icon.png');
+console.log('3. Use a browser to open the SVG and take a screenshot');
+console.log('\nFor now, the SVG files are ready and can be used directly in most contexts.');

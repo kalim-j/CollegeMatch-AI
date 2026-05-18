@@ -63,6 +63,8 @@ export function Navbar() {
 
   const tools = [
     { name: "Find Colleges", href: "/interview", icon: Search },
+    { name: "Compare Colleges", href: "/dashboard/compare", icon: ArrowLeftRight },
+    { name: "Cutoff Predictor", href: "/dashboard/predict", icon: TrendingUp },
     { name: "Scholarship Finder", href: "/scholarships", icon: Award },
     { name: "Entrance Exam Guide", href: "/exams", icon: Briefcase },
     { name: "Submit Review", href: "/testimonial", icon: MessageSquare },

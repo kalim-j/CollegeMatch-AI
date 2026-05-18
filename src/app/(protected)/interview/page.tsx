@@ -9,7 +9,7 @@ import {
   Check, ChevronRight, ChevronLeft, GraduationCap, 
   Sparkles, MapPin, Award, BookOpen, 
   Wallet, Users, Loader2, Target,
-  Zap, ArrowRight, FileDown, History
+  Zap, ArrowRight, FileDown, History, GitCompareArrows
 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -18,6 +18,7 @@ import { stateDistricts } from "@/data/stateDistricts";
 import { College, StudentProfile } from "@/types";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import ShareCard from "@/components/ShareCard";
 
 const UG_STREAMS = ["Engineering", "Medical", "Arts & Science", "Commerce", "Law", "Agriculture", "Architecture", "Pharmacy", "Nursing", "Education", "Hotel Management", "Design", "MBA (Integrated)", "Other"];
 const PG_STREAMS = ["ME/MTech", "MD/MS", "MSc", "MA", "MBA", "MCA", "LLM", "MPharm", "MEd", "Other"];
@@ -54,6 +55,7 @@ export default function InterviewPage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [noCollegesInDistrict, setNoCollegesInDistrict] = useState(false);
   const [searchScope, setSearchScope] = useState<string>("");
+  const [compareList, setCompareList] = useState<College[]>([]);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -89,6 +91,23 @@ export default function InterviewPage() {
     }
     const collegeId = college.name.toLowerCase().replace(/ /g, "-");
     router.push(`/colleges/${collegeId}`);
+  };
+
+  const handleToggleCompare = (e: React.MouseEvent, college: College) => {
+    e.stopPropagation();
+    setCompareList((prev) => {
+      const isSelected = prev.some((c) => c.name === college.name);
+      if (isSelected) {
+        return prev.filter((c) => c.name !== college.name);
+      }
+      if (prev.length >= 3) return prev;
+      return [...prev, college];
+    });
+  };
+
+  const handleCompareNow = () => {
+    sessionStorage.setItem("compareColleges", JSON.stringify(compareList));
+    router.push("/dashboard/compare");
   };
 
   const handleFinish = async (searchOtherStates = false) => {
@@ -673,23 +692,48 @@ export default function InterviewPage() {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1400px] mx-auto">
-              {colleges.map((college, idx) => (
+              {colleges.map((college, idx) => {
+                const isSelected = compareList.some((c) => c.name === college.name);
+                const isDisabled = !isSelected && compareList.length >= 3;
+                return (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1, duration: 0.5 }}
                   onClick={() => handleCollegeClick(college)}
-                  className="cursor-pointer group"
+                  className="cursor-pointer group relative"
                 >
-                  <div className="h-full bg-white/[0.02] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-10 hover:border-indigo-500/30 transition-all relative overflow-hidden flex flex-col shadow-2xl">
+                  {/* Compare checkbox overlay */}
+                  <button
+                    onClick={(e) => handleToggleCompare(e, college)}
+                    disabled={isDisabled}
+                    title={isDisabled ? "Max 3 colleges can be compared" : isSelected ? "Remove from comparison" : "Add to comparison"}
+                    className={cn(
+                      "absolute top-4 right-4 z-20 h-8 w-8 rounded-xl border-2 flex items-center justify-center transition-all shadow-lg",
+                      isSelected
+                        ? "bg-indigo-500 border-indigo-400 text-white shadow-indigo-500/30"
+                        : isDisabled
+                        ? "bg-white/[0.03] border-white/10 text-white/20 cursor-not-allowed"
+                        : "bg-white/[0.05] border-white/20 text-white/40 hover:border-indigo-400 hover:bg-indigo-500/20 hover:text-indigo-300"
+                    )}
+                  >
+                    {isSelected && <Check size={14} />}
+                  </button>
+
+                  <div className={cn(
+                    "h-full bg-white/[0.02] backdrop-blur-2xl border rounded-[3rem] p-10 transition-all relative overflow-hidden flex flex-col shadow-2xl",
+                    isSelected
+                      ? "border-indigo-500/50 shadow-indigo-500/10"
+                      : "border-white/5 hover:border-indigo-500/30"
+                  )}>
                     <div className="absolute top-0 right-0 p-10 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700">
                         <GraduationCap size={200} className="text-indigo-500" />
                     </div>
                     
                     <div className="relative z-10 flex-1 flex flex-col">
                       <div className="flex justify-between items-start gap-6 mb-8">
-                        <div className="space-y-2 flex-1">
+                        <div className="space-y-2 flex-1 pr-8">
                           <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white group-hover:text-indigo-400 transition-colors tracking-tight line-clamp-2 leading-tight">{college.name}</h3>
                           <div className="flex items-center gap-2 text-white/30">
                              <MapPin size={14} className="text-indigo-500" />
@@ -753,9 +797,30 @@ export default function InterviewPage() {
                     </div>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
             
+            {/* Share Card Section */}
+            {colleges.length > 0 && (
+              <div className="max-w-2xl mx-auto">
+                <div className="bg-white/[0.02] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-10 space-y-6">
+                  <div className="text-center space-y-2">
+                    <h3 className="text-xl font-black text-white tracking-tight">Share Your Results</h3>
+                    <p className="text-white/30 font-bold text-[10px] uppercase tracking-widest">
+                      Download your match card or share with friends
+                    </p>
+                  </div>
+                  <ShareCard
+                    colleges={colleges}
+                    studentName={profile?.fullName}
+                    stream={formData.stream}
+                    state={formData.state}
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="text-center py-20">
               <button 
                 className="inline-flex items-center gap-3 px-10 py-5 bg-white/[0.05] border border-white/10 rounded-2xl text-white/40 font-black text-[10px] uppercase tracking-widest hover:bg-white/[0.1] hover:text-white transition-all"
@@ -830,6 +895,34 @@ export default function InterviewPage() {
         </motion.div>
       </AnimatePresence>
       </div>
+
+      {/* Floating Compare Bar */}
+      <AnimatePresence>
+        {compareList.length >= 2 && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg px-4"
+          >
+            <div className="flex items-center justify-between gap-4 px-6 py-4 rounded-[2rem] bg-indigo-600/90 backdrop-blur-xl border border-indigo-400/30 shadow-2xl shadow-indigo-500/30">
+              <div className="flex items-center gap-3">
+                <GitCompareArrows size={20} className="text-indigo-200 shrink-0" />
+                <span className="text-white font-black text-sm uppercase tracking-widest">
+                  Comparing {compareList.length} college{compareList.length > 1 ? "s" : ""}
+                </span>
+              </div>
+              <button
+                onClick={handleCompareNow}
+                className="flex items-center gap-2 px-5 py-2.5 bg-white text-indigo-700 rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-indigo-50 transition-all shadow-lg shrink-0"
+              >
+                Compare now <ArrowRight size={14} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

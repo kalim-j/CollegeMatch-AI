@@ -1,13 +1,15 @@
 {
-  "name": "CollegeMatch — AI College Predictor India",
+  "name": "CollegeMatch-AI",
   "short_name": "CollegeMatch",
-  "description": "Free AI college predictor for Indian students",
+  "description": "India's AI-powered college admission advisor",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0d14",
+  "background_color": "#05071a",
   "theme_color": "#7c5cfc",
+  "orientation": "portrait",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
