@@ -15,6 +15,21 @@ interface ComparisonResult {
   };
 }
 
+// Robustly extract the first valid JSON object from any string
+function extractJSON(raw: string): string {
+  // 1. Strip markdown code fences (```json ... ``` or ``` ... ```)
+  let text = raw.replace(/```(?:json)?\s*([\s\S]*?)```/gi, "$1").trim();
+
+  // 2. If still not starting with {, find the first { and last }
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start !== -1 && end !== -1 && end > start) {
+    text = text.slice(start, end + 1);
+  }
+
+  return text.trim();
+}
+
 export async function POST(req: Request) {
   try {
     const { colleges, studentProfile } = await req.json() as {
@@ -45,6 +60,8 @@ export async function POST(req: Request) {
       avg_package_lpa: college.avg_package_lpa,
     }));
 
+    const collegeNames = collegeData.map((c) => c.name);
+
     const userMessage = studentProfile
       ? `Compare these colleges for a student with the following profile:\n${JSON.stringify(studentProfile, null, 2)}\n\nColleges:\n${JSON.stringify(collegeData, null, 2)}`
       : `Compare these colleges:\n${JSON.stringify(collegeData, null, 2)}`;
@@ -54,45 +71,59 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "system",
-          content: `You are CollegeMatch-AI comparison expert. Given 2-3 Indian colleges and a student profile, provide a JSON response with this exact structure:
+          content: `You are CollegeMatch-AI comparison expert. Given 2-3 Indian colleges, respond with ONLY a raw JSON object — no markdown, no code fences, no explanation, no text before or after.
+
+The JSON must follow this exact structure:
 {
-  summary: string (3 sentences comparing all colleges),
-  best_pick: string (name of best college for this student),
-  best_pick_reason: string (2 sentences why),
-  colleges: {
-    [collegeName: string]: {
-      pros: string[] (3 pros specific to this student),
-      cons: string[] (2 cons specific to this student),
-      verdict: string (one sentence)
+  "summary": "3 sentences comparing all colleges",
+  "best_pick": "exact name of best college",
+  "best_pick_reason": "2 sentences explaining why",
+  "colleges": {
+    "EXACT_COLLEGE_NAME_1": {
+      "pros": ["pro 1", "pro 2", "pro 3"],
+      "cons": ["con 1", "con 2"],
+      "verdict": "one sentence verdict"
+    },
+    "EXACT_COLLEGE_NAME_2": {
+      "pros": ["pro 1", "pro 2", "pro 3"],
+      "cons": ["con 1", "con 2"],
+      "verdict": "one sentence verdict"
     }
   }
 }
-Return only valid JSON. No markdown. No explanation.`,
+
+IMPORTANT: Use the exact college names as keys in the colleges object: ${collegeNames.join(", ")}`,
         },
         {
           role: "user",
           content: userMessage,
         },
       ],
-      temperature: 0.5,
-      max_tokens: 1500,
+      temperature: 0.3,
+      max_tokens: 2000,
     });
 
     const rawContent = chatCompletion.choices[0]?.message?.content ?? "";
 
-    // Strip markdown code fences if present
-    const cleaned = rawContent
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```$/i, "")
-      .trim();
+    // Robustly extract JSON
+    const cleaned = extractJSON(rawContent);
 
     let comparisonData: ComparisonResult;
     try {
       comparisonData = JSON.parse(cleaned);
     } catch {
-      console.error("Failed to parse Groq response as JSON:", cleaned);
+      console.error("Failed to parse Groq response as JSON. Raw:", rawContent);
+      console.error("Cleaned attempt:", cleaned);
       return NextResponse.json(
         { error: "Failed to parse AI comparison response" },
+        { status: 500 }
+      );
+    }
+
+    // Validate required fields exist
+    if (!comparisonData.summary || !comparisonData.best_pick || !comparisonData.colleges) {
+      return NextResponse.json(
+        { error: "AI returned incomplete comparison data" },
         { status: 500 }
       );
     }

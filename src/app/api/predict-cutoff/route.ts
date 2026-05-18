@@ -15,6 +15,17 @@ interface PredictionResult {
   alternative_colleges: string[];
 }
 
+// Robustly extract the first valid JSON object from any string
+function extractJSON(raw: string): string {
+  let text = raw.replace(/```(?:json)?\s*([\s\S]*?)```/gi, "$1").trim();
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start !== -1 && end !== -1 && end > start) {
+    text = text.slice(start, end + 1);
+  }
+  return text.trim();
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json() as {
@@ -59,44 +70,49 @@ Predict the admission chances for this student.`;
       messages: [
         {
           role: "system",
-          content: `You are an Indian college admission cutoff expert with deep knowledge of Tamil Nadu, Karnataka, Maharashtra, Kerala, and all major state university cutoff trends from 2022-2026. Given a student's cutoff mark, community, stream, state, college name, and course — predict admission chances. Return only valid JSON with this exact structure:
+          content: `You are an Indian college admission cutoff expert with deep knowledge of Tamil Nadu, Karnataka, Maharashtra, Kerala, and all major state university cutoff trends from 2022-2026. Given a student's cutoff mark, community, stream, state, college name, and course — predict admission chances.
+
+Respond with ONLY a raw JSON object — no markdown, no code fences, no explanation, no text before or after.
+
+The JSON must follow this exact structure:
 {
-  verdict: 'Likely' | 'Borderline' | 'Unlikely',
-  confidence: number (0-100),
-  reasoning: string (3 sentences explaining the prediction),
-  cutoff_trend: [
-    { year: '2022', cutoff: number },
-    { year: '2023', cutoff: number },
-    { year: '2024', cutoff: number },
-    { year: '2025', cutoff: number }
+  "verdict": "Likely",
+  "confidence": 85,
+  "reasoning": "3 sentences explaining the prediction",
+  "cutoff_trend": [
+    { "year": "2022", "cutoff": 185 },
+    { "year": "2023", "cutoff": 187 },
+    { "year": "2024", "cutoff": 188 },
+    { "year": "2025", "cutoff": 190 }
   ],
-  recommendation: string (what the student should do next),
-  alternative_colleges: string[] (3 safer alternatives if unlikely, empty array otherwise)
+  "recommendation": "what the student should do next",
+  "alternative_colleges": ["College 1", "College 2", "College 3"]
 }
-Return only valid JSON. No markdown. No explanation.`,
+
+verdict must be exactly one of: "Likely", "Borderline", or "Unlikely"
+confidence must be a number between 0 and 100
+alternative_colleges should be empty array [] if verdict is not "Unlikely"`,
         },
         {
           role: "user",
           content: userMessage,
         },
       ],
-      temperature: 0.5,
+      temperature: 0.3,
       max_tokens: 1500,
     });
 
     const rawContent = chatCompletion.choices[0]?.message?.content ?? "";
 
-    // Strip markdown code fences if present
-    const cleaned = rawContent
-      .replace(/^```(?:json)?\s*/i, "")
-      .replace(/\s*```$/i, "")
-      .trim();
+    // Robustly extract JSON
+    const cleaned = extractJSON(rawContent);
 
     let predictionData: PredictionResult;
     try {
       predictionData = JSON.parse(cleaned);
     } catch {
-      console.error("Failed to parse Groq response as JSON:", cleaned);
+      console.error("Failed to parse Groq response as JSON. Raw:", rawContent);
+      console.error("Cleaned attempt:", cleaned);
       return NextResponse.json(
         { error: "Failed to parse AI prediction response" },
         { status: 500 }
