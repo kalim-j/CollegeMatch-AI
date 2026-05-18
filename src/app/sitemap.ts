@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://eduanalytics-ai.vercel.app";
+  const baseUrl = "https://collegematch-ai.vercel.app";
   
   return [
     // Homepage - highest priority, updated daily

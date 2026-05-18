@@ -37,7 +37,7 @@ export default function ShareCard({ colleges, studentName, stream, state }: Shar
   const handleWhatsAppShare = () => {
     const topCollege = top3[0]?.name ?? "a great college";
     const topScore = top3[0]?.match_score ?? 0;
-    const message = `I used CollegeMatch-AI and found my top college matches! My top match: ${topCollege} with ${topScore}% accuracy. Find your college match free at: https://eduanalytics-ai.vercel.app`;
+    const message = `I used CollegeMatch-AI and found my top college matches! My top match: ${topCollege} with ${topScore}% accuracy. Find your college match free at: https://collegematch-ai.vercel.app`;
     const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
   };
@@ -268,7 +268,7 @@ export default function ShareCard({ colleges, studentName, stream, state }: Shar
             AI-Powered College Matching
           </div>
           <div style={{ fontSize: "11px", fontWeight: 800, color: "#818cf8" }}>
-            Find yours free at eduanalytics-ai.vercel.app
+            Find yours free at collegematch-ai.vercel.app
           </div>
         </div>
       </div>

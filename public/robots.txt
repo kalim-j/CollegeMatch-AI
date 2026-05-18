@@ -11,4 +11,4 @@ Disallow: /profile
 Disallow: /history
 
 # Sitemap location
-Sitemap: https://eduanalytics-ai.vercel.app/sitemap.xml
+Sitemap: https://collegematch-ai.vercel.app/sitemap.xml

@@ -25,7 +25,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://eduanalytics-ai.vercel.app"),
+  metadataBase: new URL("https://collegematch-ai.vercel.app"),
   title: {
     default: "CollegeMatch-AI — AI College Predictor India",
     template: "%s | CollegeMatch-AI"
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://eduanalytics-ai.vercel.app",
+    url: "https://collegematch-ai.vercel.app",
     siteName: "CollegeMatch-AI",
     title: "CollegeMatch-AI — AI College Predictor India",
     description: "Find your dream college with AI. Free predictor for Indian students based on marks, state and budget.",
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     }
   },
   alternates: {
-    canonical: "https://eduanalytics-ai.vercel.app"
+    canonical: "https://collegematch-ai.vercel.app"
   },
   manifest: "/manifest.json",
   appleWebApp: {
@@ -102,7 +102,7 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "CollegeMatch-AI",
-    "url": "https://eduanalytics-ai.vercel.app",
+    "url": "https://collegematch-ai.vercel.app",
     "description": "AI-powered college predictor for Indian engineering students",
     "applicationCategory": "EducationApplication",
     "operatingSystem": "Web",
