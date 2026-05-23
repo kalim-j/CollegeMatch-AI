@@ -158,30 +158,54 @@ export function Navbar() {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden bg-[#0a0d14]/95 backdrop-blur-2xl border-t border-white/5 p-6 space-y-6">
-           <div className="flex flex-col gap-4">
+        <div className="absolute top-16 left-0 right-0 lg:hidden bg-[#0a0d14]/95 backdrop-blur-2xl border-t border-white/5 shadow-2xl max-h-[calc(100vh-4rem)] overflow-y-auto">
+           <div className="flex flex-col p-6">
              {user ? (
                <>
-                 <Link href="/dashboard" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300">Dashboard</Link>
-                 <div className="space-y-3 pt-2">
-                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Tools</p>
-                   {tools.map(tool => (
-                     <Link key={tool.href} href={tool.href} onClick={() => setIsOpen(false)} className="flex items-center gap-3 text-slate-400">
-                        <tool.icon size={18} /> {tool.name}
-                     </Link>
-                   ))}
+                 <Link href="/dashboard" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Dashboard</Link>
+                 
+                 <div className="py-4 border-b border-white/5">
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Tools</p>
+                   <div className="space-y-1">
+                     {tools.map(tool => (
+                       <Link 
+                         key={tool.href} 
+                         href={tool.href} 
+                         onClick={() => setIsOpen(false)} 
+                         className="flex items-center gap-3 text-slate-400 hover:text-white py-3 px-3 rounded-lg hover:bg-white/5 transition-all"
+                       >
+                         <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 flex-shrink-0">
+                           <tool.icon size={16} />
+                         </div>
+                         <span className="font-medium">{tool.name}</span>
+                       </Link>
+                     ))}
+                   </div>
                  </div>
-                 <Link href="/history" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300">History</Link>
-                 <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300">Contact</Link>
-                 {isAdmin && <Link href="/admin" onClick={() => setIsOpen(false)} className="text-lg font-bold text-red-400">Admin Dashboard ({pendingLeads})</Link>}
-                 <Link href="/profile" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300">My Profile</Link>
-                 <Button variant="destructive" className="w-full mt-4" onClick={handleSignOut}>Logout</Button>
+                 
+                 <Link href="/history" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">History</Link>
+                 <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Contact</Link>
+                 {isAdmin && (
+                   <Link href="/admin" onClick={() => setIsOpen(false)} className="text-lg font-bold text-red-400 py-3 border-b border-white/5 flex items-center justify-between">
+                     <span>Admin Dashboard</span>
+                     {pendingLeads > 0 && (
+                       <span className="h-6 min-w-[24px] px-2 bg-amber-500 text-white text-xs font-black rounded-full flex items-center justify-center">
+                         {pendingLeads}
+                       </span>
+                     )}
+                   </Link>
+                 )}
+                 <Link href="/profile" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">My Profile</Link>
+                 <Button variant="destructive" className="w-full mt-6 h-12" onClick={handleSignOut}>
+                   <LogOut size={18} className="mr-2" />
+                   Logout
+                 </Button>
                </>
              ) : (
                <>
-                 <button onClick={() => handleNavClick("how-it-works")} className="text-left text-lg font-bold text-slate-300">How it works</button>
-                 <button onClick={() => handleNavClick("features")} className="text-left text-lg font-bold text-slate-300">Features</button>
-                 <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300">Contact</Link>
+                 <button onClick={() => handleNavClick("how-it-works")} className="text-left text-lg font-bold text-slate-300 py-3 border-b border-white/5">How it works</button>
+                 <button onClick={() => handleNavClick("features")} className="text-left text-lg font-bold text-slate-300 py-3 border-b border-white/5">Features</button>
+                 <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Contact</Link>
                  <div className="flex flex-col gap-3 pt-6">
                     <Link href="/login" className="w-full"><Button variant="outline" className="w-full h-12">Login</Button></Link>
                     <Link href="/register" className="w-full"><Button className="w-full h-12 bg-primary">Sign Up</Button></Link>

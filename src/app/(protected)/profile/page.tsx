@@ -7,14 +7,13 @@ import { doc, updateDoc } from "firebase/firestore";
 import { toast } from "sonner";
 import { 
   Camera, Save, User, MapPin, 
-  Award, BookOpen, Phone, Loader2,
+  Phone, Loader2,
   Sparkles, ShieldCheck, Mail, Briefcase,
-  Target, GraduationCap
+  Target
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 export default function ProfilePage() {
   const { user, profile, loading, refreshProfile } = useAuth();
@@ -25,6 +24,7 @@ export default function ProfilePage() {
     state: "",
     district: "",
     stream: "",
+    preferredCourse: "",
     courseLevel: "UG" as "UG" | "PG",
     phone: "",
   });
@@ -43,6 +43,7 @@ export default function ProfilePage() {
         state: profile.state || "",
         district: profile.district || "",
         stream: profile.stream || "",
+        preferredCourse: profile.preferredCourse || "",
         courseLevel: (profile.courseLevel as "UG" | "PG") || "UG",
         phone: profile.phone || "",
       });
@@ -111,52 +112,52 @@ export default function ProfilePage() {
         <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-teal-500/5 rounded-full blur-[150px] pointer-events-none" />
       </div>
 
-      <div className="container mx-auto px-6 py-16 max-w-6xl relative z-10">
-        <header className="mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-            <ShieldCheck size={14} className="text-indigo-400" />
-            <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">Identity Management</span>
+      <div className="container mx-auto px-4 md:px-6 py-12 md:py-16 max-w-6xl relative z-10">
+        <header className="mb-12 md:mb-16 space-y-3 md:space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+            <ShieldCheck size={12} className="text-indigo-400" />
+            <span className="text-[9px] md:text-[10px] font-black text-indigo-300 uppercase tracking-widest">Identity Management</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-black text-white tracking-tighter">Your Profile</h1>
-          <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Manage your personal and academic intelligence</p>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Your Profile</h1>
+          <p className="text-white/30 font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] text-[9px] md:text-[10px]">Manage your personal and academic intelligence</p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Left Column: Identity Card */}
-          <div className="lg:col-span-4 space-y-8">
+          <div className="lg:col-span-4 space-y-6 lg:space-y-8">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="rounded-[3rem] border border-white/5 bg-white/[0.03] backdrop-blur-xl overflow-hidden shadow-2xl relative"
+              className="rounded-3xl lg:rounded-[3rem] border border-white/5 bg-white/[0.03] backdrop-blur-xl overflow-hidden shadow-2xl relative"
             >
-              <div className="h-32 bg-gradient-to-r from-indigo-600/20 to-teal-600/20 border-b border-white/5" />
-              <div className="px-8 pb-10 -mt-16 flex flex-col items-center text-center">
-                <div className="relative group mb-6">
-                  <Avatar className="h-40 w-40 border-[6px] border-[#05071a] shadow-2xl">
+              <div className="h-24 lg:h-32 bg-gradient-to-r from-indigo-600/20 to-teal-600/20 border-b border-white/5" />
+              <div className="px-6 lg:px-8 pb-8 lg:pb-10 -mt-12 lg:-mt-16 flex flex-col items-center text-center">
+                <div className="relative group mb-4 lg:mb-6">
+                  <Avatar className="h-32 w-32 lg:h-40 lg:w-40 border-4 lg:border-[6px] border-[#05071a] shadow-2xl">
                     <AvatarImage src={profile?.avatarUrl} className="object-cover" />
-                    <AvatarFallback className="text-5xl font-black bg-indigo-500/20 text-indigo-400">
+                    <AvatarFallback className="text-4xl lg:text-5xl font-black bg-indigo-500/20 text-indigo-400">
                       {profile?.fullName?.charAt(0) || "S"}
                     </AvatarFallback>
                   </Avatar>
-                  <label className="absolute bottom-2 right-2 h-12 w-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center cursor-pointer shadow-2xl hover:scale-110 transition-all border-4 border-[#05071a]">
-                    {uploading ? <Loader2 size={20} className="animate-spin" /> : <Camera size={20} />}
+                  <label className="absolute bottom-1 right-1 lg:bottom-2 lg:right-2 h-10 w-10 lg:h-12 lg:w-12 rounded-xl lg:rounded-2xl bg-indigo-600 text-white flex items-center justify-center cursor-pointer shadow-2xl hover:scale-110 transition-all border-2 lg:border-4 border-[#05071a]">
+                    {uploading ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
                     <input type="file" className="hidden" onChange={handleAvatarUpload} disabled={uploading} accept="image/*" />
                   </label>
                 </div>
                 
-                <h2 className="text-3xl font-black text-white tracking-tight leading-tight">{profile?.fullName}</h2>
+                <h2 className="text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight">{profile?.fullName}</h2>
                 <p className="text-indigo-400 font-bold text-xs uppercase tracking-widest mt-2">{profile?.courseLevel} Student</p>
-                <div className="w-full h-px bg-white/5 my-8" />
+                <div className="w-full h-px bg-white/5 my-6 lg:my-8" />
                 
-                <div className="space-y-4 w-full">
-                  <div className="flex items-center gap-4 text-sm p-5 rounded-2xl bg-white/[0.02] border border-white/5 text-white/40">
-                    <Mail size={18} className="text-indigo-500" />
-                    <span className="font-bold truncate">{user?.email}</span>
+                <div className="space-y-3 lg:space-y-4 w-full">
+                  <div className="flex items-center gap-3 lg:gap-4 text-sm p-4 lg:p-5 rounded-xl lg:rounded-2xl bg-white/[0.02] border border-white/5 text-white/40">
+                    <Mail size={16} className="text-indigo-500 flex-shrink-0" />
+                    <span className="font-bold truncate text-xs lg:text-sm">{user?.email}</span>
                   </div>
-                  <div className="flex items-center gap-4 text-sm p-5 rounded-2xl bg-white/[0.02] border border-white/5 text-white/40">
-                    <MapPin size={18} className="text-indigo-500" />
-                    <span className="font-bold text-left">{profile?.state ? `${profile.district}, ${profile.state}` : "Location not set"}</span>
+                  <div className="flex items-center gap-3 lg:gap-4 text-sm p-4 lg:p-5 rounded-xl lg:rounded-2xl bg-white/[0.02] border border-white/5 text-white/40">
+                    <MapPin size={16} className="text-indigo-500 flex-shrink-0" />
+                    <span className="font-bold text-left text-xs lg:text-sm">{profile?.state ? `${profile.district}, ${profile.state}` : "Location not set"}</span>
                   </div>
                 </div>
               </div>
@@ -169,11 +170,11 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="rounded-[3rem] border border-white/5 bg-white/[0.02] backdrop-blur-xl overflow-hidden shadow-2xl"
+              className="rounded-3xl lg:rounded-[3rem] border border-white/5 bg-white/[0.02] backdrop-blur-xl overflow-hidden shadow-2xl"
             >
-              <div className="p-10 md:p-14">
-                <form onSubmit={handleUpdateProfile} className="space-y-10">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="p-6 md:p-10 lg:p-14">
+                <form onSubmit={handleUpdateProfile} className="space-y-6 md:space-y-8 lg:space-y-10">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     <div className="space-y-3">
                       <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                         <User size={12} className="text-indigo-500" /> Full Identity Name
@@ -181,7 +182,7 @@ export default function ProfilePage() {
                       <input
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all"
+                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
                         required
                         placeholder="Your full name"
                       />
@@ -194,7 +195,7 @@ export default function ProfilePage() {
                         placeholder="My ambition is to..."
                         value={formData.bio}
                         onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                        className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all"
+                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
                       />
                     </div>
                     <div className="space-y-3">
@@ -204,7 +205,7 @@ export default function ProfilePage() {
                       <input
                         value={formData.state}
                         onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                        className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all"
+                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
                         placeholder="e.g. Tamil Nadu"
                       />
                     </div>
@@ -215,7 +216,7 @@ export default function ProfilePage() {
                       <input
                         value={formData.district}
                         onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                        className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all"
+                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
                         placeholder="e.g. Chennai"
                       />
                     </div>
@@ -226,8 +227,19 @@ export default function ProfilePage() {
                       <input
                         value={formData.stream}
                         onChange={(e) => setFormData({ ...formData, stream: e.target.value })}
-                        className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all"
+                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
                         placeholder="e.g. Engineering"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                        <Target size={12} className="text-indigo-500" /> Preferred Course
+                      </label>
+                      <input
+                        value={formData.preferredCourse}
+                        onChange={(e) => setFormData({ ...formData, preferredCourse: e.target.value })}
+                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
+                        placeholder="e.g. Computer Science, Mechanical Engineering"
                       />
                     </div>
                     <div className="space-y-3">
@@ -239,16 +251,16 @@ export default function ProfilePage() {
                         placeholder="+91 9876543210"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all"
+                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
                       />
                     </div>
                   </div>
 
-                  <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center gap-6">
+                  <div className="pt-6 md:pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center gap-4 md:gap-6">
                     <button 
                       type="submit" 
                       disabled={saving} 
-                      className="btn-primary h-16 px-12 text-base font-black gap-3 w-full sm:w-auto"
+                      className="btn-primary h-14 md:h-16 px-8 md:px-12 text-sm md:text-base font-black gap-3 w-full sm:w-auto"
                     >
                       {saving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
                       {saving ? "Updating Profile..." : "Commit Changes"}

@@ -81,19 +81,21 @@ export default function Dashboard() {
             <p className="text-white/30 font-bold text-sm">Your CollegeMatch-AI Command Center</p>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <div className="text-right">
               <p className="text-[9px] font-black text-white/20 uppercase tracking-widest">Preferred Course</p>
-              <p className="text-sm font-bold text-white">{profile?.preferredCourse || "Computer Science"}</p>
+              <p className="text-xs md:text-sm font-bold text-white truncate max-w-[120px] md:max-w-none">
+                {profile?.preferredCourse || "Not Set"}
+              </p>
             </div>
-            <div className="h-12 w-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center font-black text-indigo-300 text-lg">
+            <div className="h-12 w-12 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center font-black text-indigo-300 text-lg flex-shrink-0">
               {profile?.fullName?.[0] ?? "S"}
             </div>
           </div>
         </motion.div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -148,9 +150,9 @@ export default function Dashboard() {
         </motion.div>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Nav Cards — 2/3 width */}
-          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
             {navCards.map((card, i) => (
               <motion.div
                 key={card.label}
@@ -197,7 +199,7 @@ export default function Dashboard() {
           </div>
 
           {/* Sidebar — 1/3 width */}
-          <div className="space-y-5">
+          <div className="space-y-5 md:space-y-6">
             {/* Counseling CTA */}
             <motion.div custom={4} variants={cardVariants} initial="hidden" animate="visible">
               <div className="rounded-[2rem] p-7 bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-2xl shadow-indigo-500/20 relative overflow-hidden group">
