@@ -67,7 +67,7 @@ No markdown. No extra text.`;
           content: systemPrompt
         }
       ],
-      model: "google/gemini-2.5-flash:free", // One of the best free models on OpenRouter
+      model: "google/gemini-2.0-flash-exp:free", // Correct free model alias for OpenRouter
       temperature: 0.7
     });
 
