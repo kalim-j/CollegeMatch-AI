@@ -68,15 +68,17 @@ No markdown. No extra text.`;
         }
       ],
       model: "google/gemini-2.5-flash:free", // One of the best free models on OpenRouter
-      temperature: 0.7,
-      response_format: { type: "json_object" }
+      temperature: 0.7
     });
 
-    const responseContent = chatCompletion.choices[0]?.message?.content;
+    let responseContent = chatCompletion.choices[0]?.message?.content;
 
     if (!responseContent) {
       throw new Error("No response from OpenRouter");
     }
+
+    // Strip markdown formatting if the model wraps it in ```json ... ```
+    responseContent = responseContent.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
 
     const result = JSON.parse(responseContent);
 

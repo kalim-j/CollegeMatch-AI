@@ -60,7 +60,10 @@ export default function DiscoverPage() {
           })
         });
 
-        if (!res.ok) throw new Error('Failed to fetch results');
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => null);
+          throw new Error(errorData?.error || 'Failed to fetch results');
+        }
         
         const data = await res.json();
         
@@ -81,7 +84,7 @@ export default function DiscoverPage() {
         }
       } catch (error) {
         console.error('Discovery error:', error);
-        alert('Something went wrong. Please try again.');
+        alert('Error: ' + (error.message || 'Something went wrong'));
         setCurrentStep(10);
       }
     }
