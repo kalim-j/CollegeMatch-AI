@@ -1,4 +1,4 @@
-import { groq } from "@/lib/groq";
+import { openrouter } from "@/lib/openrouter";
 import { NextResponse } from "next/server";
 
 export const maxDuration = 60; // Allow up to 60 seconds for Groq AI response
@@ -60,22 +60,26 @@ Also return:
 Return only valid JSON matching this exact structure.
 No markdown. No extra text.`;
 
-    const chatCompletion = await groq.chat.completions.create({
+    const chatCompletion = await openrouter.chat.completions.create({
       messages: [
         {
           role: "system",
           content: systemPrompt
         }
       ],
-      model: "llama3-8b-8192", // Use faster model to avoid timeout
+      model: "google/gemini-2.5-flash:free", // One of the best free models on OpenRouter
       temperature: 0.7,
-      response_format: { type: "json_object" }
+      response_format: { type: "json_object" },
+      extra_headers: {
+        "HTTP-Referer": "https://collegematch-ai.vercel.app", // Required for OpenRouter
+        "X-Title": "CollegeMatch-AI", // Optional but good for OpenRouter
+      }
     });
 
     const responseContent = chatCompletion.choices[0]?.message?.content;
 
     if (!responseContent) {
-      throw new Error("No response from Groq");
+      throw new Error("No response from OpenRouter");
     }
 
     const result = JSON.parse(responseContent);
