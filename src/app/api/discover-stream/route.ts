@@ -67,7 +67,7 @@ No markdown. No extra text.`;
           content: systemPrompt
         }
       ],
-      model: "llama3-70b-8192", // We can use the default large model
+      model: "llama3-8b-8192", // Use faster model to avoid timeout
       temperature: 0.7,
       response_format: { type: "json_object" }
     });
