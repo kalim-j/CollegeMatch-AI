@@ -1,6 +1,8 @@
 import { groq } from "@/lib/groq";
 import { NextResponse } from "next/server";
 
+export const maxDuration = 60; // Allow up to 60 seconds for Groq AI response
+
 export async function POST(req: Request) {
   try {
     const { answers, studentName } = await req.json();

@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
-import { collection, query, orderBy, limit, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, query, orderBy, limit, getDocs, doc, getDoc, getCountFromServer } from "firebase/firestore";
 import WelcomeModal from "@/components/WelcomeModal";
 
 const cardVariants = {
@@ -31,6 +31,9 @@ export default function Dashboard() {
   const [latestDiscovery, setLatestDiscovery] = useState<any>(null);
   const [dataLoading, setDataLoading] = useState(true);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [analysesCount, setAnalysesCount] = useState(0);
+  const [collegesCount, setCollegesCount] = useState(0);
+  const [scholarshipsCount, setScholarshipsCount] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -60,6 +63,22 @@ export default function Dashboard() {
           if (!querySnapshot.empty) {
             setLatestDiscovery(querySnapshot.docs[0].data());
           }
+
+          const scholarshipsSnapshot = await getCountFromServer(collection(db, `scholarships/${user.uid}/searches`));
+          setScholarshipsCount(scholarshipsSnapshot.data().count);
+
+          let matched = 0;
+          const interviewsQuery = await getDocs(collection(db, `interviews/${user.uid}/sessions`));
+          interviewsQuery.forEach(doc => {
+            const data = doc.data();
+            if (data.results && Array.isArray(data.results)) {
+               matched += data.results.length;
+            } else if (data.collegeMatches && Array.isArray(data.collegeMatches)) {
+               matched += data.collegeMatches.length;
+            }
+          });
+          setAnalysesCount(interviewsQuery.size);
+          setCollegesCount(matched);
         } catch (error) {
           console.error("Error fetching dashboard data:", error);
         } finally {
@@ -85,10 +104,10 @@ export default function Dashboard() {
   const discoveredStreamName = latestDiscovery ? latestDiscovery.results.streams[0].short_name : "Not yet";
 
   const stats = [
-    { label: "Stream Discovered", value: discoveredStreamName, icon: Lightbulb, color: "text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/20" },
-    { label: "AI Analyses Run", value: "12", icon: BrainCircuit, color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
-    { label: "Colleges Matched", value: "47", icon: Target, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
-    { label: "Scholarship Alerts", value: "3", icon: Award, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+    { label: "Stream Discovered", value: discoveredStreamName, icon: Lightbulb, color: "text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/20", href: "/history?tab=streams" },
+    { label: "AI Analyses Run", value: analysesCount.toString(), icon: BrainCircuit, color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", href: "/history?tab=colleges" },
+    { label: "Colleges Matched", value: collegesCount.toString(), icon: Target, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", href: "/history?tab=colleges" },
+    { label: "Scholarship Alerts", value: scholarshipsCount.toString(), icon: Award, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", href: "/scholarships" },
   ];
 
   const navCards = [
@@ -152,7 +171,8 @@ export default function Dashboard() {
               variants={cardVariants}
               initial="hidden"
               animate="visible"
-              className={`rounded-2xl p-6 border ${stat.border} bg-white/[0.03] backdrop-blur-sm space-y-3 group hover:bg-white/[0.05] transition-colors`}
+              onClick={() => router.push(stat.href)}
+              className={`rounded-2xl p-6 border ${stat.border} bg-white/[0.03] backdrop-blur-sm space-y-3 group hover:bg-white/[0.05] transition-colors cursor-pointer`}
             >
               <div className={`h-10 w-10 rounded-xl ${stat.bg} flex items-center justify-center`}>
                 <stat.icon className={`${stat.color}`} size={20} />
@@ -243,11 +263,11 @@ export default function Dashboard() {
                 <Lightbulb size={240} className="text-teal-500" />
               </div>
               <div className="relative z-10 space-y-4">
-                <div className="absolute -top-4 -right-4 bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-1.5 rounded-full text-xs font-bold">
-                  Start here
+                <div className="absolute -top-4 -right-4 bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-1.5 rounded-full text-xs font-bold flex items-center">
+                  <CheckCircle2 size={12} className="mr-1" /> Start here
                 </div>
                 <div className="w-14 h-14 bg-teal-500/20 rounded-2xl flex items-center justify-center mb-4 border border-teal-500/30">
-                  <i className="ti-bulb text-3xl text-teal-400"></i>
+                  <Lightbulb size={32} className="text-teal-400" />
                 </div>
                 <h2 className="text-3xl md:text-4xl font-black text-white">I don't know what to study</h2>
                 <p className="text-teal-100/70 text-lg max-w-md">
@@ -273,7 +293,7 @@ export default function Dashboard() {
               </div>
               <div className="relative z-10 space-y-4">
                 <div className="w-14 h-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-4 border border-indigo-500/30">
-                  <i className="ti-school text-3xl text-indigo-400"></i>
+                  <School size={32} className="text-indigo-400" />
                 </div>
                 <h2 className="text-3xl md:text-4xl font-black text-white">I know my stream</h2>
                 <p className="text-indigo-100/70 text-lg max-w-md">
