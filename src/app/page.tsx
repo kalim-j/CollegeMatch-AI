@@ -98,17 +98,27 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-6"
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8"
             >
               <Link href="/register">
-                <button className="btn-primary flex items-center justify-center gap-3 group h-16 px-10 text-lg">
-                  <span>Find my colleges</span> <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                <button className="btn-primary flex items-center justify-center gap-3 group h-16 px-8 text-lg w-full sm:w-auto">
+                  <span>Find colleges</span> <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              </Link>
+              <Link href="/register">
+                <button className="h-16 px-8 text-lg font-bold rounded-2xl border border-teal-500/30 bg-teal-500/10 text-teal-300 hover:bg-teal-500/20 hover:border-teal-500/50 transition-all flex items-center justify-center gap-3 w-full sm:w-auto shadow-[0_0_20px_rgba(45,212,191,0.15)] group">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
+                  </span>
+                  <span>Discover my stream</span>
+                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform opacity-70" />
                 </button>
               </Link>
               <button onClick={() => {
                 document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-              }} className="btn-ghost flex items-center gap-3 h-16 px-10 text-lg">
-                <Play size={20} className="fill-white" /> See how it works
+              }} className="btn-ghost flex items-center justify-center gap-3 h-16 px-6 text-lg w-full sm:w-auto">
+                <Play size={20} className="fill-white" /> How it works
               </button>
             </motion.div>
 

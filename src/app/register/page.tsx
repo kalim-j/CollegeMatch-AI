@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { toast } from "sonner";
 import { Mail, Lock, User, Loader2, ArrowRight, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
@@ -84,10 +84,11 @@ export default function RegisterPage() {
         fullName: name,
         email: email,
         createdAt: new Date(),
+        isNewUser: true,
       });
 
       toast.success("Account verified and created!");
-      router.push("/dashboard");
+      router.push("/discover");
     } catch (error: any) {
       toast.error(error.message || "Failed to register");
     } finally {
@@ -101,16 +102,25 @@ export default function RegisterPage() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
-      await setDoc(doc(db, "users", user.uid), {
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+      const isNewUser = !userDocSnap.exists();
+
+      await setDoc(userDocRef, {
         uid: user.uid,
         fullName: user.displayName || "",
         email: user.email || "",
         avatarUrl: user.photoURL || "",
         createdAt: new Date(),
+        ...(isNewUser ? { isNewUser: true } : {}),
       }, { merge: true });
 
       toast.success("Welcome to CollegeMatch!");
-      router.push("/dashboard");
+      if (isNewUser) {
+        router.push("/discover");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error: any) {
       toast.error(error.message || "Google registration failed");
     }

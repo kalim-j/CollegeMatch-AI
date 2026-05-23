@@ -1,15 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
   GraduationCap, Sparkles, Zap, Loader2,
   BrainCircuit, TrendingUp, History, Settings, ArrowRight,
-  BookOpen, Target, Award
+  BookOpen, Target, Award, Lightbulb, CheckCircle2,
+  School
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { db } from "@/lib/firebase";
+import { collection, query, orderBy, limit, getDocs, doc, getDoc } from "firebase/firestore";
+import WelcomeModal from "@/components/WelcomeModal";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 24 },
@@ -24,13 +28,50 @@ export default function Dashboard() {
   const { user, profile, loading: authLoading } = useAuth();
   const router = useRouter();
 
+  const [latestDiscovery, setLatestDiscovery] = useState<any>(null);
+  const [dataLoading, setDataLoading] = useState(true);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login");
+      return;
+    }
+
+    if (user) {
+      const fetchData = async () => {
+        try {
+          // Check welcome modal
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            const data = userDoc.data();
+            if (!data.shownWelcome) {
+              setShowWelcomeModal(true);
+            }
+          }
+
+          // Fetch latest discovery
+          const q = query(
+            collection(db, `discoveries/${user.uid}/sessions`),
+            orderBy("timestamp", "desc"),
+            limit(1)
+          );
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            setLatestDiscovery(querySnapshot.docs[0].data());
+          }
+        } catch (error) {
+          console.error("Error fetching dashboard data:", error);
+        } finally {
+          setDataLoading(false);
+        }
+      };
+      
+      fetchData();
     }
   }, [user, authLoading, router]);
 
-  if (authLoading) {
+  if (authLoading || dataLoading) {
     return (
       <div className="min-h-screen bg-[#05071a] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -41,15 +82,16 @@ export default function Dashboard() {
     );
   }
 
+  const discoveredStreamName = latestDiscovery ? latestDiscovery.results.streams[0].short_name : "Not yet";
+
   const stats = [
+    { label: "Stream Discovered", value: discoveredStreamName, icon: Lightbulb, color: "text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/20" },
     { label: "AI Analyses Run", value: "12", icon: BrainCircuit, color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20" },
-    { label: "Colleges Matched", value: "47", icon: Target, color: "text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/20" },
-    { label: "Exams Tracked", value: "5", icon: BookOpen, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
+    { label: "Colleges Matched", value: "47", icon: Target, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
     { label: "Scholarship Alerts", value: "3", icon: Award, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
   ];
 
   const navCards = [
-    { href: "/interview", label: "AI College Predictor", desc: "Get a full AI-driven college recommendation based on your profile.", icon: Sparkles, color: "text-indigo-400", bg: "bg-indigo-500/10", hover: "hover:border-indigo-500/40", cta: "Start Analysis" },
     { href: "/history", label: "Analysis History", desc: "Review all past AI college analyses and their recommendations.", icon: History, color: "text-purple-400", bg: "bg-purple-500/10", hover: "hover:border-purple-500/40", cta: "View History" },
     { href: "/scholarships", label: "Scholarship Finder", desc: "Discover scholarships and financial aid tailored to your profile.", icon: Award, color: "text-teal-400", bg: "bg-teal-500/10", hover: "hover:border-teal-500/40", cta: "Find Scholarships" },
     { href: "/exams", label: "Entrance Exams", desc: "Track important entrance exam dates, results and cutoffs.", icon: BookOpen, color: "text-amber-400", bg: "bg-amber-500/10", hover: "hover:border-amber-500/40", cta: "Track Exams" },
@@ -57,6 +99,13 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#05071a] relative overflow-hidden">
+      {showWelcomeModal && user && (
+        <WelcomeModal 
+          userName={profile?.fullName?.split(" ")[0] || "Student"}
+          onClose={() => setShowWelcomeModal(false)}
+        />
+      )}
+
       {/* Ambient background glows */}
       <div className="fixed top-0 right-0 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-[150px] pointer-events-none" />
       <div className="fixed bottom-0 left-0 w-[500px] h-[500px] bg-teal-500/5 rounded-full blur-[150px] pointer-events-none" />
@@ -109,48 +158,138 @@ export default function Dashboard() {
                 <stat.icon className={`${stat.color}`} size={20} />
               </div>
               <div>
-                <p className="text-3xl font-black text-white">{stat.value}</p>
-                <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">{stat.label}</p>
+                <p className="text-2xl md:text-3xl font-black text-white truncate">{stat.value}</p>
+                <p className="text-[10px] font-black text-white/30 uppercase tracking-widest truncate">{stat.label}</p>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Hero CTA — Quick Predictor */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="relative rounded-[2.5rem] overflow-hidden border border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 via-transparent to-teal-500/10 p-10 md:p-14"
-        >
-          <div className="absolute inset-0 bg-[#05071a]/60 backdrop-blur-xl" />
-          <div className="absolute top-0 right-0 opacity-5 pointer-events-none">
-            <Zap size={320} className="text-indigo-500" />
-          </div>
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="space-y-4 text-center md:text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-                <Sparkles size={14} className="text-indigo-400" />
-                <span className="text-[11px] font-black text-indigo-300 uppercase tracking-widest">AI Powered</span>
-              </div>
-              <h2 className="text-4xl font-black text-white tracking-tight">Ready for your analysis?</h2>
-              <p className="text-white/40 font-medium max-w-md">
-                Get a comprehensive, AI-driven college recommendation in under 5 minutes based on your marks, preferences, and location.
-              </p>
-            </div>
-            <button
-              onClick={() => router.push("/interview")}
-              className="btn-primary h-16 px-10 text-base whitespace-nowrap group flex-shrink-0 flex items-center justify-center gap-3"
+        {/* Main CTA Section depending on discovery status */}
+        {latestDiscovery ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="relative rounded-[2.5rem] overflow-hidden border border-teal-500/30 bg-teal-500/10 p-8 md:p-10"
             >
-              <Sparkles size={18} className="group-hover:rotate-12 transition-transform" />
-              <span>Start Full AI Analysis</span>
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </button>
+              <div className="absolute inset-0 bg-[#05071a]/40 backdrop-blur-md" />
+              <div className="relative z-10 space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-500/30">
+                  <CheckCircle2 size={14} className="text-teal-400" />
+                  <span className="text-[11px] font-bold text-teal-300 uppercase tracking-widest">Recommended Stream</span>
+                </div>
+                <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-indigo-300 truncate">
+                  {latestDiscovery.results.streams[0].stream}
+                </h2>
+                <p className="text-gray-300 italic text-sm line-clamp-2 mb-4">
+                  "{latestDiscovery.results.streams[0].why_fits}"
+                </p>
+                <div className="flex gap-3 mt-4">
+                  <button
+                    onClick={() => {
+                      sessionStorage.setItem('selectedStream', latestDiscovery.results.streams[0].stream);
+                      router.push(`/interview?stream=${encodeURIComponent(latestDiscovery.results.streams[0].stream)}&fromDiscover=true`);
+                    }}
+                    className="flex-1 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2"
+                  >
+                    <span>Find colleges for this stream</span>
+                    <ArrowRight size={16} />
+                  </button>
+                  <button
+                    onClick={() => router.push('/discover')}
+                    className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium rounded-xl transition-all"
+                  >
+                    Retake discovery
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="relative rounded-[2.5rem] overflow-hidden border border-indigo-500/20 bg-indigo-500/5 p-8 md:p-10 flex flex-col justify-center"
+            >
+              <div className="absolute inset-0 bg-[#05071a]/40 backdrop-blur-md" />
+              <div className="relative z-10 space-y-4">
+                <h2 className="text-2xl font-black text-white">Know another stream?</h2>
+                <p className="text-gray-400 text-sm">
+                  You can also run a direct college match analysis for any stream you already have in mind.
+                </p>
+                <button
+                  onClick={() => router.push("/interview")}
+                  className="mt-2 w-full py-3 bg-white/5 border border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-300 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                >
+                  <Sparkles size={16} />
+                  <span>Custom College Search</span>
+                </button>
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="relative rounded-[2.5rem] overflow-hidden border border-teal-500/50 bg-teal-500/10 p-8 md:p-10 shadow-[0_0_30px_rgba(45,212,191,0.15)] group hover:shadow-[0_0_40px_rgba(45,212,191,0.25)] transition-all cursor-pointer"
+              onClick={() => router.push('/discover')}
+            >
+              <div className="absolute inset-0 bg-[#05071a]/40 backdrop-blur-md" />
+              <div className="absolute top-0 right-0 opacity-10 pointer-events-none group-hover:scale-110 transition-transform">
+                <Lightbulb size={240} className="text-teal-500" />
+              </div>
+              <div className="relative z-10 space-y-4">
+                <div className="absolute -top-4 -right-4 bg-green-500/20 text-green-400 border border-green-500/30 px-4 py-1.5 rounded-full text-xs font-bold">
+                  Start here
+                </div>
+                <div className="w-14 h-14 bg-teal-500/20 rounded-2xl flex items-center justify-center mb-4 border border-teal-500/30">
+                  <i className="ti-bulb text-3xl text-teal-400"></i>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-black text-white">I don't know what to study</h2>
+                <p className="text-teal-100/70 text-lg max-w-md">
+                  Let AI ask you questions and suggest the right stream and career paths for you based on your interests.
+                </p>
+                <div className="mt-6 flex items-center gap-2 text-teal-400 font-bold group-hover:gap-4 transition-all">
+                  <span>Discover my stream</span>
+                  <ArrowRight size={20} />
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="relative rounded-[2.5rem] overflow-hidden border border-indigo-500/30 bg-indigo-500/10 p-8 md:p-10 shadow-[0_0_20px_rgba(99,102,241,0.1)] group hover:shadow-[0_0_30px_rgba(99,102,241,0.2)] transition-all cursor-pointer"
+              onClick={() => router.push('/interview')}
+            >
+              <div className="absolute inset-0 bg-[#05071a]/40 backdrop-blur-md" />
+              <div className="absolute top-0 right-0 opacity-5 pointer-events-none group-hover:scale-110 transition-transform">
+                <School size={240} className="text-indigo-500" />
+              </div>
+              <div className="relative z-10 space-y-4">
+                <div className="w-14 h-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-4 border border-indigo-500/30">
+                  <i className="ti-school text-3xl text-indigo-400"></i>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-black text-white">I know my stream</h2>
+                <p className="text-indigo-100/70 text-lg max-w-md">
+                  Skip the discovery and jump straight into finding the best colleges for your marks and preferences.
+                </p>
+                <div className="mt-6 flex items-center gap-2 text-indigo-400 font-bold group-hover:gap-4 transition-all">
+                  <span>Find colleges</span>
+                  <ArrowRight size={20} />
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mt-4">
           {/* Nav Cards — 2/3 width */}
           <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
             {navCards.map((card, i) => (
@@ -177,25 +316,6 @@ export default function Dashboard() {
                 </Link>
               </motion.div>
             ))}
-
-            {user?.email === "kalimdon07@gmail.com" && (
-              <motion.div custom={8} variants={cardVariants} initial="hidden" animate="visible">
-                <Link href="/admin" className="group block h-full">
-                  <div className="h-full rounded-[2rem] p-7 border border-emerald-500/20 bg-emerald-500/5 hover:border-emerald-500/40 transition-all backdrop-blur-sm space-y-5">
-                    <div className="h-12 w-12 rounded-xl bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Settings className="text-emerald-400" size={22} />
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-xl font-black text-white">Admin Panel</h3>
-                      <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Management Console</p>
-                    </div>
-                    <div className="flex items-center justify-start gap-2 text-emerald-400 font-black text-[10px] uppercase tracking-widest">
-                      <span>Open Console</span> <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            )}
           </div>
 
           {/* Sidebar — 1/3 width */}
@@ -217,30 +337,6 @@ export default function Dashboard() {
                     </button>
                   </Link>
                 </div>
-              </div>
-            </motion.div>
-
-            {/* Profile Strength */}
-            <motion.div custom={5} variants={cardVariants} initial="hidden" animate="visible">
-              <div className="rounded-[2rem] p-7 border border-white/5 bg-white/[0.03] backdrop-blur-sm space-y-6">
-                <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] border-b border-white/5 pb-4">
-                  Profile Strength
-                </h4>
-                {[
-                  { label: "Academic Data", pct: 100, color: "bg-teal-500", text: "Complete" },
-                  { label: "Preferences", pct: 90, color: "bg-indigo-500", text: "90%" },
-                  { label: "Location Data", pct: 70, color: "bg-purple-500", text: "70%" },
-                ].map((item) => (
-                  <div key={item.label} className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-bold text-white/70">{item.label}</span>
-                      <span className="text-[10px] font-black text-teal-400 uppercase tracking-widest">{item.text}</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                      <div className={`h-full ${item.color} rounded-full`} style={{ width: `${item.pct}%` }} />
-                    </div>
-                  </div>
-                ))}
               </div>
             </motion.div>
           </div>

@@ -61,6 +61,23 @@ export default function InterviewPage() {
     if (!loading && !user) router.push("/login");
   }, [user, loading, router]);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const streamParam = urlParams.get('stream');
+      const sessionStream = sessionStorage.getItem('selectedStream');
+      const fromDiscover = urlParams.get('fromDiscover');
+      
+      const prefilledStream = streamParam || sessionStream;
+      if (prefilledStream) {
+        setFormData((prev: any) => ({ ...prev, stream: prefilledStream }));
+        if (fromDiscover === 'true' || streamParam) {
+          setStep(3); // Skip straight to location step since stream is known
+        }
+      }
+    }
+  }, []);
+
   const handleNext = () => {
     if (step < totalSteps) setStep(step + 1);
     else handleFinish();
