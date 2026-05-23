@@ -7,14 +7,15 @@ import GlassCard from '@/components/GlassCard';
 import { StreamDetails } from '@/types/discovery';
 import DiscoveryLoadingScreen from '@/components/DiscoveryLoadingScreen';
 
-export default function StreamDetailPage({ params }: { params: { slug: string } }) {
+export default function StreamDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter();
   const { user } = useAuth();
   const [details, setDetails] = useState<StreamDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const streamName = params.slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const resolvedParams = React.use(params);
+  const streamName = resolvedParams.slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   useEffect(() => {
     if (user === null) {
