@@ -69,11 +69,7 @@ No markdown. No extra text.`;
       ],
       model: "google/gemini-2.5-flash:free", // One of the best free models on OpenRouter
       temperature: 0.7,
-      response_format: { type: "json_object" },
-      extra_headers: {
-        "HTTP-Referer": "https://collegematch-ai.vercel.app", // Required for OpenRouter
-        "X-Title": "CollegeMatch-AI", // Optional but good for OpenRouter
-      }
+      response_format: { type: "json_object" }
     });
 
     const responseContent = chatCompletion.choices[0]?.message?.content;
