@@ -186,7 +186,7 @@ for ${studentName} based on their interests: ${freqStr}`;
     const parsed = JSON.parse(jsonStr);
 
     console.log('Successfully parsed AI response');
-    return NextResponse.json(parsed);
+    return NextResponse.json({ results: parsed });
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);

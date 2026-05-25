@@ -7,31 +7,19 @@ service cloud.firestore {
         && request.auth.uid == userId;
     }
 
-    match /interviews/{userId} {
+    match /interviews/{userId}/{document=**} {
       allow read, write: if request.auth != null
         && request.auth.uid == userId;
-      match /sessions/{sessionId} {
-        allow read, write: if request.auth != null
-          && request.auth.uid == userId;
-      }
     }
 
-    match /discoveries/{userId} {
+    match /discoveries/{userId}/{document=**} {
       allow read, write: if request.auth != null
         && request.auth.uid == userId;
-      match /{anyDoc} {
-        allow read, write: if request.auth != null
-          && request.auth.uid == userId;
-      }
     }
 
-    match /scholarships/{userId} {
+    match /scholarships/{userId}/{document=**} {
       allow read, write: if request.auth != null
         && request.auth.uid == userId;
-      match /searches/{searchId} {
-        allow read, write: if request.auth != null
-          && request.auth.uid == userId;
-      }
     }
 
     match /contacts/{contactId} {
