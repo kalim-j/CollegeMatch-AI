@@ -18,6 +18,26 @@ interface CounsellorChatProps {
   uid: string;
 }
 
+const formatMessage = (text: string) => {
+  if (!text) return null;
+  // Handle literal "\n" strings from API and actual newlines
+  const lines = text.replace(/\\n/g, '\n').split('\n');
+  return lines.map((line, i) => {
+    // Basic bold parsing for **text**
+    const parts = line.split(/(\*\*.*?\*\*)/g);
+    return (
+      <p key={i} className="mb-2 last:mb-0 break-words leading-relaxed">
+        {parts.map((part, j) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={j} className="font-black text-white">{part.slice(2, -2)}</strong>;
+          }
+          return <span key={j}>{part}</span>;
+        })}
+      </p>
+    );
+  });
+};
+
 export default function CounsellorChat({ studentProfile, uid }: CounsellorChatProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -161,7 +181,7 @@ export default function CounsellorChat({ studentProfile, uid }: CounsellorChatPr
                       ? "bg-indigo-600 text-white rounded-br-sm" 
                       : "bg-white/10 text-white/90 border border-white/5 rounded-bl-sm"
                   )}>
-                    {msg.content.split('\\n').map((line, i) => <p key={i} className="mb-1 last:mb-0">{line}</p>)}
+                    {formatMessage(msg.content)}
                   </div>
                   {msg.timestamp && (
                     <span className="text-[9px] text-white/30 font-bold mt-1 px-1">
