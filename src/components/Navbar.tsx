@@ -84,6 +84,7 @@ export function Navbar() {
           <>
             <button onClick={() => handleNavClick("how-it-works")} className="text-[13px] font-medium text-white/60 hover:text-white transition-colors">How it works</button>
             <button onClick={() => handleNavClick("features")} className="text-[13px] font-medium text-white/60 hover:text-white transition-colors">Features</button>
+            <Link href="/cutoff-calculator" className="text-[13px] font-medium text-white/60 hover:text-white transition-colors">Cutoff Calculator</Link>
             <Link href="/contact" className="text-[13px] font-medium text-white/60 hover:text-white transition-colors">Contact</Link>
           </>
         ) : (
@@ -205,6 +206,7 @@ export function Navbar() {
                <>
                  <button onClick={() => handleNavClick("how-it-works")} className="text-left text-lg font-bold text-slate-300 py-3 border-b border-white/5">How it works</button>
                  <button onClick={() => handleNavClick("features")} className="text-left text-lg font-bold text-slate-300 py-3 border-b border-white/5">Features</button>
+                 <Link href="/cutoff-calculator" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Cutoff Calculator</Link>
                  <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Contact</Link>
                  <div className="flex flex-col gap-3 pt-6">
                     <Link href="/login" className="w-full"><Button variant="outline" className="w-full h-12">Login</Button></Link>

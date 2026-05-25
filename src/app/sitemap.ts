@@ -23,6 +23,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/cutoff-calculator`,
+      lastModified: CONTENT_UPDATE,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/scholarships`,
       lastModified: CONTENT_UPDATE,
       changeFrequency: "weekly",

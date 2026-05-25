@@ -92,6 +92,7 @@ export const metadata: Metadata = {
 };
 
 import Footer from "@/components/Footer";
+import GlobalChatWrapper from "@/components/GlobalChatWrapper";
 
 export default function RootLayout({
   children,
@@ -147,6 +148,7 @@ export default function RootLayout({
             <Footer />
           </div>
           <Toaster position="top-center" richColors />
+          <GlobalChatWrapper />
         </Providers>
       </body>
     </html>
