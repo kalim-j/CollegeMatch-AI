@@ -132,7 +132,7 @@ for ${studentName} based on their interests: ${freqStr}`;
           'X-Title': 'CollegeMatch-AI',
         },
         body: JSON.stringify({
-          model: 'meta-llama/llama-3.3-70b-instruct:free',
+          model: 'google/gemma-4-26b-a4b-it:free',
           messages: [{ role: 'user', content: prompt }],
           max_tokens: 3000,
           temperature: 0.7,
