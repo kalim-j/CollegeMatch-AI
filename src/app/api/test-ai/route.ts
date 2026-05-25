@@ -25,11 +25,6 @@ export async function GET() {
           models: [
             'google/gemma-4-26b-a4b-it:free',
             'meta-llama/llama-3.3-70b-instruct:free',
-            'nousresearch/hermes-3-llama-3.1-405b:free',
-            'google/gemma-4-31b-it:free',
-            'qwen/qwen3-coder:free',
-            'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free',
-            'liquid/lfm-2.5-1.2b-instruct:free',
             'poolside/laguna-xs.2:free'
           ],
           messages: [{ role: 'user', content: 'Say: working' }],
