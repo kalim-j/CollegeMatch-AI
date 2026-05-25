@@ -4,35 +4,47 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read, write: if request.auth != null
-        && (request.auth.uid == userId || request.auth.token.email == 'kalim.apoffi@gmail.com' || request.auth.token.email == 'kalimdon07@gmail.com');
-    }
-
-    match /interviews/{userId}/sessions/{sessionId} {
-      allow read, write: if request.auth != null
         && request.auth.uid == userId;
     }
 
-    match /discoveries/{userId}/sessions/{sessionId} {
+    match /interviews/{userId} {
       allow read, write: if request.auth != null
         && request.auth.uid == userId;
+      match /sessions/{sessionId} {
+        allow read, write: if request.auth != null
+          && request.auth.uid == userId;
+      }
     }
 
-    match /scholarships/{userId}/searches/{searchId} {
+    match /discoveries/{userId} {
       allow read, write: if request.auth != null
         && request.auth.uid == userId;
+      match /{anyDoc} {
+        allow read, write: if request.auth != null
+          && request.auth.uid == userId;
+      }
+    }
+
+    match /scholarships/{userId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == userId;
+      match /searches/{searchId} {
+        allow read, write: if request.auth != null
+          && request.auth.uid == userId;
+      }
     }
 
     match /contacts/{contactId} {
       allow create: if request.auth != null;
-      allow read, update: if request.auth != null
-        && (request.auth.token.email == 'kalim.apoffi@gmail.com' || request.auth.token.email == 'kalimdon07@gmail.com');
+      allow read, update, delete: if request.auth != null
+        && request.auth.token.email == 'kalim.apoffi@gmail.com';
     }
 
     match /testimonials/{docId} {
       allow read: if true;
       allow create: if request.auth != null;
       allow update, delete: if request.auth != null
-        && (request.auth.token.email == 'kalim.apoffi@gmail.com' || request.auth.token.email == 'kalimdon07@gmail.com');
+        && request.auth.token.email == 'kalim.apoffi@gmail.com';
     }
   }
 }
