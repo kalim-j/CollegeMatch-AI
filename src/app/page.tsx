@@ -8,7 +8,7 @@ import {
   Search, Sparkles, Phone, ArrowRight, Play, Star, 
   Quote, Users, MapPin, Building, Award, Notebook,
   ShieldCheck, Zap, LayoutGrid, ClipboardList, Bot, 
-  Building2, ArrowUpRight
+  Building2, ArrowUpRight, GraduationCap
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -50,20 +50,35 @@ export default function Home() {
   if (loading) return null;
 
   return (
-    <div className="flex flex-col min-h-screen bg-transparent selection:bg-indigo-500/30 selection:text-white">
+    <div className="flex flex-col min-h-screen bg-slate-50 selection:bg-indigo-500/30 selection:text-indigo-900">
+      
       {/* Section 1 — Hero */}
-      <section className="relative min-h-[90vh] flex items-center justify-center pt-20 pb-32 overflow-hidden">
-        <AppBackground />
+      <section className="relative min-h-[95vh] flex items-center justify-center pt-28 pb-32 overflow-hidden bg-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-50 via-white to-white -z-10" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-teal-50 via-white to-white -z-10" />
         
+        {/* Animated Background Shapes */}
+        <motion.div 
+          animate={{ y: [0, -20, 0], opacity: [0.5, 0.8, 0.5] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-20 left-[10%] w-64 h-64 bg-indigo-400/10 rounded-full blur-[80px] -z-10"
+        />
+        <motion.div 
+          animate={{ y: [0, 30, 0], opacity: [0.5, 0.9, 0.5] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-20 right-[10%] w-80 h-80 bg-teal-400/10 rounded-full blur-[100px] -z-10"
+        />
+
         <div className="container px-6 mx-auto relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-10">
+          <div className="max-w-5xl mx-auto text-center space-y-10">
             {/* AI Pill */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border-indigo-500/30 text-[11px] font-black uppercase tracking-widest text-indigo-300 shadow-[0_0_20px_rgba(127,119,221,0.2)]"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-slate-200 text-xs font-black uppercase tracking-widest text-indigo-600 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all cursor-default"
             >
-              <Bot size={14} className="text-indigo-400" />
+              <Bot size={16} className="text-indigo-500" />
               Powered by Groq AI · Llama-3.3-70b
             </motion.div>
 
@@ -71,206 +86,193 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="space-y-4"
+              transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+              className="space-y-6"
             >
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter leading-[1.1]">
-                <span className="text-gradient">Find your dream college</span><br />
-                <span className="text-white">with the power of AI</span>
+              <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold tracking-tighter leading-[1.05] text-slate-900">
+                Find your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-teal-500">dream college</span><br />
+                with the power of AI
               </h1>
-              <p className="text-2xl md:text-3xl text-white/40 font-medium tracking-tight">
-                in just 9 smart questions.
+              <p className="text-xl md:text-2xl text-slate-500 font-medium tracking-tight max-w-2xl mx-auto">
+                Join 10,000+ students who used our AI to discover their perfect engineering and medical colleges in just 2 minutes.
               </p>
             </motion.div>
 
-            {/* Description */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed"
-            >
-              CollegeMatch-AI analyses your marks, cutoff, community, district and stream to suggest the best-fit colleges across India — for free.
-            </motion.p>
-
-            {/* CTA Buttons */}
+            {/* CTA Box (Search-like Component) */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8"
+              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+              className="max-w-2xl mx-auto mt-12 bg-white p-2 pl-6 rounded-full border border-slate-200 shadow-xl shadow-indigo-900/5 flex flex-col sm:flex-row items-center gap-4 hover:border-indigo-300 transition-colors"
             >
-              <Link href="/register">
-                <button className="btn-primary flex items-center justify-center gap-3 group h-16 px-8 text-lg w-full sm:w-auto">
-                  <span>Find colleges</span> <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              <div className="flex-1 flex items-center gap-3 w-full sm:w-auto py-2 sm:py-0">
+                <Search className="text-slate-400 shrink-0" size={24} />
+                <span className="text-slate-500 font-medium text-lg w-full text-left">Start your free college prediction...</span>
+              </div>
+              <Link href="/register" className="w-full sm:w-auto">
+                <button className="btn-primary h-14 w-full sm:w-auto px-8 rounded-full text-base whitespace-nowrap shadow-md hover:shadow-lg bg-indigo-600 hover:bg-indigo-700">
+                  Analyze My Marks <ArrowRight size={18} className="ml-1" />
                 </button>
               </Link>
-              <Link href="/register">
-                <button className="h-16 px-8 text-lg font-bold rounded-2xl border border-teal-500/30 bg-teal-500/10 text-teal-300 hover:bg-teal-500/20 hover:border-teal-500/50 transition-all flex items-center justify-center gap-3 w-full sm:w-auto shadow-[0_0_20px_rgba(45,212,191,0.15)] group">
-                  <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
-                  </span>
-                  <span>Discover my stream</span>
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform opacity-70" />
-                </button>
-              </Link>
-              <button onClick={() => {
-                document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-              }} className="btn-ghost flex items-center justify-center gap-3 h-16 px-6 text-lg w-full sm:w-auto">
-                <Play size={20} className="fill-white" /> How it works
-              </button>
             </motion.div>
 
-            {/* Trust Strip */}
+            {/* Trust Badges */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="pt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4 text-[12px] font-bold text-white/30 uppercase tracking-[0.1em]"
+              transition={{ duration: 1, delay: 0.6 }}
+              className="pt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-[13px] font-bold text-slate-400 uppercase tracking-wider"
             >
-              <span>10,000+ Students Matched</span>
-              <span className="h-1 w-1 rounded-full bg-white/20" />
-              <span>500+ Colleges</span>
-              <span className="h-1 w-1 rounded-full bg-white/20" />
-              <span>All India Coverage</span>
-              <span className="h-1 w-1 rounded-full bg-white/20" />
-              <span className="text-teal-500">Free Forever</span>
+              <span className="flex items-center gap-2"><Users size={16} className="text-indigo-500" /> 10K+ Students</span>
+              <span className="flex items-center gap-2"><Building size={16} className="text-teal-500" /> 500+ Colleges</span>
+              <span className="flex items-center gap-2"><Award size={16} className="text-amber-500" /> Free Forever</span>
             </motion.div>
-          </div>
-
-          {/* Floating Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-24 max-w-5xl mx-auto">
-            <GlassCard delay={600} className="p-8 text-center space-y-2">
-              <p className="text-4xl font-black text-white">92%</p>
-              <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Average match accuracy</p>
-            </GlassCard>
-            <GlassCard delay={700} className="p-8 text-center space-y-2">
-              <p className="text-4xl font-black text-white">8</p>
-              <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Colleges per result</p>
-            </GlassCard>
-            <GlassCard delay={800} className="p-8 text-center space-y-2">
-              <p className="text-4xl font-black text-white">2 min</p>
-              <p className="text-xs font-bold text-white/40 uppercase tracking-widest">Time to your results</p>
-            </GlassCard>
           </div>
         </div>
       </section>
 
+      {/* Marquee Trust Banner */}
+      <section className="border-y border-slate-200 bg-slate-50 py-6 overflow-hidden flex whitespace-nowrap relative">
+        <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-slate-50 to-transparent z-10" />
+        <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-slate-50 to-transparent z-10" />
+        
+        <motion.div 
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="flex gap-16 items-center text-slate-400 font-black text-2xl uppercase tracking-widest px-8"
+        >
+          <span>Anna University</span> • <span>PSG Tech</span> • <span>CIT Coimbatore</span> • <span>SSN College</span> • <span>Madras Institute</span> • <span>Thiagarajar</span> •
+          <span>Anna University</span> • <span>PSG Tech</span> • <span>CIT Coimbatore</span> • <span>SSN College</span> • <span>Madras Institute</span> • <span>Thiagarajar</span> •
+        </motion.div>
+      </section>
+
       {/* Section 2 — How it works */}
-      <section id="how-it-works" className="py-32 relative border-y border-white/5 bg-[#080c24]/50">
+      <section id="how-it-works" className="py-32 bg-white relative">
         <div className="container px-6 mx-auto">
-          <div className="text-center mb-20 space-y-4">
-            <p className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.3em]">How it works</p>
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Three steps to your perfect college</h2>
+          <div className="text-center mb-24 space-y-4">
+            <p className="text-[12px] font-black text-indigo-600 uppercase tracking-[0.2em] bg-indigo-50 inline-block px-4 py-1.5 rounded-full">The Process</p>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Three steps to your perfect match</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative">
             {/* Step 1 */}
-            <GlassCard className="p-10 space-y-6 relative group">
-              <div className="h-14 w-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-lg">
-                <ClipboardList size={28} />
+            <motion.div 
+              whileHover={{ y: -8 }}
+              className="bg-white p-10 rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(99,102,241,0.1)] transition-all duration-300 relative overflow-hidden group"
+            >
+              <div className="h-16 w-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
+                <ClipboardList size={32} />
               </div>
-              <h3 className="text-2xl font-black text-white">Answer 9 smart questions</h3>
-              <p className="text-white/50 leading-relaxed">Tell us your marks, stream, state, district, cutoff and community. Every detail helps our AI fine-tune your match.</p>
-              <div className="absolute top-10 right-10 text-4xl font-black text-white/5 select-none">01</div>
-            </GlassCard>
+              <h3 className="text-2xl font-black text-slate-900 mb-4">1. Share Your Details</h3>
+              <p className="text-slate-500 leading-relaxed text-lg">Tell us your 12th marks, preferred state, district, stream, and community quota. It takes less than a minute.</p>
+              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-slate-50 select-none group-hover:text-indigo-50/50 transition-colors">1</div>
+            </motion.div>
 
             {/* Step 2 */}
-            <GlassCard className="p-10 space-y-6 relative group">
-              <div className="h-14 w-14 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 group-hover:bg-teal-500 group-hover:text-white transition-all shadow-lg">
-                <Bot size={28} />
+            <motion.div 
+              whileHover={{ y: -8 }}
+              className="bg-white p-10 rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(20,184,166,0.1)] transition-all duration-300 relative overflow-hidden group"
+            >
+              <div className="h-16 w-16 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
+                <Bot size={32} />
               </div>
-              <h3 className="text-2xl font-black text-white">AI finds your matches</h3>
-              <p className="text-white/50 leading-relaxed">Groq AI analyses 500+ colleges and ranks the top 8 for your profile based on real-time cutoff trends and placement data.</p>
-              <div className="absolute top-10 right-10 text-4xl font-black text-white/5 select-none">02</div>
-            </GlassCard>
+              <h3 className="text-2xl font-black text-slate-900 mb-4">2. AI Analysis</h3>
+              <p className="text-slate-500 leading-relaxed text-lg">Our advanced AI scans historical cutoff trends, placements, and NAAC grades across 500+ colleges instantly.</p>
+              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-slate-50 select-none group-hover:text-teal-50/50 transition-colors">2</div>
+            </motion.div>
 
             {/* Step 3 */}
-            <GlassCard className="p-10 space-y-6 relative group">
-              <div className="h-14 w-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-lg">
-                <Building2 size={28} />
+            <motion.div 
+              whileHover={{ y: -8 }}
+              className="bg-white p-10 rounded-[2rem] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(99,102,241,0.1)] transition-all duration-300 relative overflow-hidden group"
+            >
+              <div className="h-16 w-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
+                <GraduationCap size={32} />
               </div>
-              <h3 className="text-2xl font-black text-white">Apply with confidence</h3>
-              <p className="text-white/50 leading-relaxed">Get detailed cutoff data, NAAC grades, course lists and direct admission expert contact to secure your seat.</p>
-              <div className="absolute top-10 right-10 text-4xl font-black text-white/5 select-none">03</div>
-            </GlassCard>
+              <h3 className="text-2xl font-black text-slate-900 mb-4">3. Get Admissions</h3>
+              <p className="text-slate-500 leading-relaxed text-lg">Receive your curated list of top 8 colleges, complete with scholarship info and direct counselor chat.</p>
+              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-slate-50 select-none group-hover:text-indigo-50/50 transition-colors">3</div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Section 3 — Features grid */}
-      <section id="features" className="py-32">
+      <section id="features" className="py-32 bg-slate-50 border-t border-slate-200">
         <div className="container px-6 mx-auto">
-          <div className="text-center mb-20 space-y-4">
-            <p className="text-[11px] font-black text-teal-400 uppercase tracking-[0.3em]">What you get</p>
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Everything you need for admission</h2>
+          <div className="text-center mb-24 space-y-4">
+            <p className="text-[12px] font-black text-teal-600 uppercase tracking-[0.2em] bg-teal-50 inline-block px-4 py-1.5 rounded-full">Core Features</p>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Everything you need, in one place</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { icon: MapPin, title: "District-wise search", desc: "Find the best colleges near your home or preferred district." },
-              { icon: Zap, title: "Cutoff mark matching", desc: "AI calculates ±10 safety and aspirational college ranges for you." },
+              { icon: MapPin, title: "District-wise search", desc: "Find the best colleges near your home or preferred district without moving far." },
+              { icon: Zap, title: "Smart Cutoff Engine", desc: "Live-calculates your exact TNEA cutoff from subject marks automatically." },
               { icon: Award, title: "Scholarship finder", desc: "Instantly discover 8+ real scholarships based on your unique profile." },
-              { icon: Notebook, title: "Entrance exam guide", desc: "Stay ahead with a complete roadmap of all relevant national and state exams." },
-              { icon: Users, title: "UG & PG support", desc: "Tailored recommendations across 15+ streams for both levels." },
-              { icon: ShieldCheck, title: "Community quota", desc: "Full support for BC, MBC, OC, SC/ST, and NRI category matching." },
+              { icon: MessageSquare, title: "AI Chat Counsellor", desc: "Talk to our 24/7 personalized AI assistant to answer all your admission queries." },
+              { icon: Users, title: "Community Quota", desc: "Full support for BC, MBC, SC/ST, and OC category matching algorithms." },
+              { icon: Notebook, title: "Exam Guidelines", desc: "Stay ahead with a complete roadmap of relevant national and state entrance exams." },
             ].map((f, i) => (
-              <GlassCard key={i} className="p-8 group hover:border-indigo-500/30 flex flex-col h-full">
-                <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center text-indigo-400 group-hover:text-indigo-300 transition-colors mb-6">
-                  <f.icon size={22} />
+              <motion.div 
+                key={i}
+                whileHover={{ y: -5 }}
+                className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all group"
+              >
+                <div className="h-14 w-14 rounded-2xl bg-indigo-50/50 flex items-center justify-center text-indigo-600 mb-6 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+                  <f.icon size={24} />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-3">{f.title}</h3>
-                <p className="text-sm text-white/40 leading-relaxed">{f.desc}</p>
-              </GlassCard>
+                <h3 className="text-xl font-black text-slate-900 mb-3">{f.title}</h3>
+                <p className="text-slate-500 leading-relaxed">{f.desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Section 4 — Testimonials */}
-      <section className="py-32 bg-[#05071a] border-t border-white/5">
+      <section className="py-32 bg-white">
         <div className="container px-6 mx-auto">
-          <div className="text-center mb-20 space-y-4">
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Students who found their dream college</h2>
-            <p className="text-lg text-white/40 max-w-2xl mx-auto">Real students. Real results. Powered by Groq AI.</p>
+          <div className="text-center mb-24 space-y-4">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Loved by students across India</h2>
+            <p className="text-xl text-slate-500 max-w-2xl mx-auto">Real success stories from students who found their perfect match.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <AnimatePresence>
               {testimonials.length > 0 ? (
-                testimonials.map((t, idx) => (
-                  <GlassCard key={t.id} delay={idx * 100} className="p-10 space-y-8 flex flex-col group h-full">
-                    <div className="flex justify-between items-start">
-                      <div className="flex gap-1 text-amber-500">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={14} fill={i < (t.rating || 5) ? "currentColor" : "none"} />
-                        ))}
-                      </div>
-                      <Quote className="text-white/5 group-hover:text-indigo-500/20 transition-colors" size={40} />
+                testimonials.slice(0, 3).map((t, idx) => (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    key={t.id} 
+                    className="bg-slate-50 p-10 rounded-[2rem] border border-slate-100 flex flex-col h-full hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex gap-1 text-amber-400 mb-6">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={18} fill={i < (t.rating || 5) ? "currentColor" : "none"} />
+                      ))}
                     </div>
                     
-                    <p className="text-white/70 italic leading-relaxed text-lg flex-1">
+                    <p className="text-slate-700 italic leading-relaxed text-lg flex-1 mb-8">
                       &quot;{t.review}&quot;
                     </p>
 
-                    <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                      <div className="h-14 w-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center font-black text-indigo-400 text-xl shadow-lg">
+                    <div className="flex items-center gap-4 pt-6 border-t border-slate-200">
+                      <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center font-black text-indigo-600 text-lg">
                         {t.name?.[0]}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-black text-white truncate">{t.name}</p>
-                        <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest truncate">{t.college}</p>
-                        <div className="flex gap-2 mt-2">
-                           <span className="px-2 py-0.5 bg-indigo-500/10 rounded-md text-[9px] font-black text-indigo-300 uppercase tracking-wider border border-indigo-500/20">{t.stream}</span>
-                           <span className="px-2 py-0.5 bg-white/5 rounded-md text-[9px] font-black text-white/40 uppercase tracking-wider border border-white/5">Class of {t.year}</span>
-                        </div>
+                        <p className="font-black text-slate-900 truncate">{t.name}</p>
+                        <p className="text-xs font-bold text-slate-500 truncate">{t.college}</p>
                       </div>
                     </div>
-                  </GlassCard>
+                  </motion.div>
                 ))
               ) : (
-                [1,2,3].map(i => <div key={i} className="h-64 rounded-3xl bg-white/5 animate-pulse" />)
+                [1,2,3].map(i => <div key={i} className="h-64 rounded-[2rem] bg-slate-100 animate-pulse" />)
               )}
             </AnimatePresence>
           </div>
@@ -278,22 +280,23 @@ export default function Home() {
       </section>
 
       {/* Section 5 — CTA Banner */}
-      <section className="py-32 px-6">
+      <section className="py-24 px-6 bg-slate-50">
         <div className="container mx-auto">
-          <div className="relative rounded-[40px] overflow-hidden border border-indigo-500/30 p-12 md:p-24 text-center space-y-10 group">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-teal-500/5 to-transparent -z-10" />
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--indigo),_transparent_70%)] blur-[100px] -z-10 group-hover:opacity-30 transition-opacity" />
+          <div className="bg-indigo-600 rounded-[3rem] overflow-hidden p-16 md:p-24 text-center space-y-10 relative">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-400/40 via-transparent to-transparent" />
             
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter leading-none">
-              Your dream college <br /> is one AI away.
+            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-tight relative z-10">
+              Ready to find your <br /> dream college?
             </h2>
-            <p className="text-xl text-white/50 max-w-xl mx-auto">Start your free college match analysis in just 2 minutes. No credit card required.</p>
+            <p className="text-xl text-indigo-100 max-w-xl mx-auto relative z-10">Join thousands of students and let our AI do the heavy lifting. Free forever.</p>
             
-            <Link href="/register" className="inline-block">
-              <button className="btn-primary h-20 px-16 text-xl rounded-3xl shadow-[0_0_40px_rgba(127,119,221,0.4)] group hover:scale-105 transition-all">
-                Start for free <ArrowUpRight size={24} className="inline-block ml-2 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </Link>
+            <div className="relative z-10 mt-8">
+              <Link href="/register" className="inline-block">
+                <button className="h-16 px-12 text-lg font-bold rounded-full bg-white text-indigo-600 hover:bg-slate-50 hover:scale-105 transition-all shadow-xl flex items-center gap-2">
+                  Get Started Now <ArrowRight size={20} />
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

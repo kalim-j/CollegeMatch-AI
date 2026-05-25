@@ -14,24 +14,24 @@
 */
 @layer base {
   :root {
-    --bg-base: #05071a;
-    --bg-deep: #080c24;
-    --bg-mid: #0d1230;
-    --glass: rgba(255,255,255,0.04);
-    --glass-border: rgba(255,255,255,0.10);
-    --glass-hover: rgba(255,255,255,0.07);
-    --glass-strong: rgba(255,255,255,0.08);
-    --indigo: #7F77DD;
-    --indigo-light: #a89ef8;
-    --indigo-dark: #534AB7;
-    --teal: #1D9E75;
-    --teal-light: #5DCAA5;
-    --text-primary: rgba(255,255,255,0.95);
-    --text-secondary: rgba(255,255,255,0.60);
-    --text-muted: rgba(255,255,255,0.35);
-    --glow-indigo: 0 0 30px rgba(127,119,221,0.25);
-    --glow-teal: 0 0 30px rgba(29,158,117,0.25);
-    --radius-card: 20px;
+    --bg-base: #fdfdfd;
+    --bg-deep: #ffffff;
+    --bg-mid: #f3f4f6;
+    --glass: rgba(255,255,255,0.7);
+    --glass-border: rgba(0,0,0,0.05);
+    --glass-hover: rgba(255,255,255,0.95);
+    --glass-strong: rgba(255,255,255,0.9);
+    --indigo: #4f46e5;
+    --indigo-light: #6366f1;
+    --indigo-dark: #4338ca;
+    --teal: #0d9488;
+    --teal-light: #14b8a6;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --glow-indigo: 0 10px 30px rgba(79,70,229,0.15);
+    --glow-teal: 0 10px 30px rgba(13,148,136,0.15);
+    --radius-card: 24px;
     --radius-btn: 12px;
     --radius-pill: 100px;
   }
@@ -63,13 +63,14 @@
   border-radius: var(--radius-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .glass-card:hover {
   background: var(--glass-hover);
-  border-color: var(--indigo);
-  box-shadow: var(--glow-indigo);
-  transform: translateY(-2px);
+  border-color: rgba(79,70,229, 0.2);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.06), var(--glow-indigo);
+  transform: translateY(-4px);
 }
 
 /* Text gradient utility */
@@ -108,18 +109,18 @@
   justify-content: center;
   gap: 10px;
   background: transparent;
-  border: 1px solid var(--glass-border);
+  border: 1px solid rgba(0,0,0,0.1);
   color: var(--text-primary);
   border-radius: var(--radius-btn);
   padding: 12px 24px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   backdrop-filter: blur(10px);
   transition: all 0.2s ease;
 }
 .btn-ghost:hover {
-  border-color: var(--indigo);
-  background: rgba(127,119,221,0.1);
+  border-color: var(--indigo-light);
+  background: rgba(79,70,229,0.05);
 }
 
 /* Teal button */
