@@ -3,10 +3,11 @@ const OPENROUTER_BASE = 'https://openrouter.ai/api/v1';
 // Working free models on OpenRouter as of 2026
 // Listed in priority order — first one is tried first
 export const FREE_MODELS = [
+  'deepseek/deepseek-v4-flash:free',
+  'minimax/minimax-m2.5:free',
   'meta-llama/llama-3.3-70b-instruct:free',
-  'meta-llama/llama-3.1-8b-instruct:free',
-  'mistralai/mistral-7b-instruct:free',
-  'google/gemma-2-9b-it:free',
+  'google/gemma-4-31b-it:free',
+  'qwen/qwen3-coder:free',
   'nousresearch/hermes-3-llama-3.1-405b:free',
 ];
 
@@ -44,17 +45,54 @@ export async function callOpenRouter(
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('OpenRouter error:', errorText);
+    console.error(`OpenRouter error with model ${model}:`, errorText);
 
-    // If model not found, try fallback models
-    if (response.status === 404 && model !== FREE_MODELS[FREE_MODELS.length - 1]) {
-      const nextModel = FREE_MODELS[FREE_MODELS.indexOf(model) + 1];
+    // Try fallback models if the current one fails for any reason
+    const modelIndex = FREE_MODELS.indexOf(model);
+    if (modelIndex !== -1 && modelIndex < FREE_MODELS.length - 1) {
+      const nextModel = FREE_MODELS[modelIndex + 1];
       console.log(`Trying fallback model: ${nextModel}`);
       return callOpenRouter(systemPrompt, userMessage, nextModel);
     }
 
+    // Ultimate fallback to Groq if all OpenRouter models fail/are rate-limited
+    if (process.env.GROQ_API_KEY) {
+      console.log('All OpenRouter models failed. Falling back to Groq Llama-3.3...');
+      try {
+        const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userMessage },
+            ],
+            temperature: 0.7,
+          }),
+        });
+
+        if (groqResponse.ok) {
+          const groqData = await groqResponse.json();
+          if (groqData.choices && groqData.choices.length > 0) {
+            console.log('Groq fallback successful!');
+            return groqData.choices[0].message.content;
+          }
+        } else {
+          console.error('Groq fallback failed status:', groqResponse.status, await groqResponse.text());
+        }
+      } catch (groqError) {
+        console.error('Groq fallback error:', groqError);
+      }
+    }
+
     throw new Error(`OpenRouter API error: ${response.status} ${errorText}`);
   }
+
+
 
   const data = await response.json();
 
