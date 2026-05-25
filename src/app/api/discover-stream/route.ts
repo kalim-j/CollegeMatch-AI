@@ -1,211 +1,198 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const maxDuration = 30;
+
 export async function POST(req: NextRequest) {
+  const key = process.env.OPENROUTER_API_KEY;
+
+  if (!key) {
+    console.error('FATAL: OPENROUTER_API_KEY not set');
+    return NextResponse.json(
+      { error: 'OPENROUTER_API_KEY is not configured in Vercel' },
+      { status: 500 }
+    );
+  }
+
+  let body: { answers?: unknown[]; studentName?: string } = {};
   try {
-    // Step 1: Parse request body safely
-    let body: { answers?: unknown[]; studentName?: string };
-    try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json(
-        { error: 'Invalid request body' },
-        { status: 400 }
-      );
+    body = await req.json();
+  } catch {
+    return NextResponse.json(
+      { error: 'Invalid JSON in request body' },
+      { status: 400 }
+    );
+  }
+
+  const { answers = [], studentName = 'Student' } = body;
+
+  // Count stream frequency from answers
+  const freq: Record<string, number> = {};
+  if (Array.isArray(answers)) {
+    for (const a of answers) {
+      const ans = a as { streams?: string[] };
+      for (const s of ans?.streams ?? []) {
+        freq[s] = (freq[s] ?? 0) + 1;
+      }
     }
+  }
 
-    const { answers = [], studentName = 'Student' } = body;
+  const freqStr = Object.entries(freq)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([s, c]) => `${s}(${c})`)
+    .join(', ');
 
-    // Step 2: Check API key exists
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) {
-      console.error('OPENROUTER_API_KEY is not set');
-      return NextResponse.json(
-        { error: 'AI service not configured. API key missing.' },
-        { status: 500 }
-      );
-    }
+  const prompt = `You are an Indian education counsellor helping a student
+named ${studentName} choose what to study after 12th grade.
 
-    // Step 3: Build stream frequency map from answers
-    const streamCount: Record<string, number> = {};
-    if (Array.isArray(answers)) {
-      answers.forEach((ans: unknown) => {
-        const answer = ans as { streams?: string[] };
-        if (answer?.streams && Array.isArray(answer.streams)) {
-          answer.streams.forEach((s: string) => {
-            streamCount[s] = (streamCount[s] || 0) + 1;
-          });
-        }
-      });
-    }
+Their interest analysis shows these streams ranked by frequency:
+${freqStr || 'General interests'}
 
-    const streamFrequency = Object.entries(streamCount)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([stream, count]) => `${stream}: ${count} times`)
-      .join(', ');
+Recommend exactly 3 streams. Return ONLY raw JSON — no markdown,
+no backticks, no explanation. Start with { immediately.
 
-    // Step 4: Build prompts
-    const systemPrompt = `You are CollegeMatch-AI's stream discovery counsellor.
-You help Indian students who have no idea what to study after 12th grade.
-You are warm, encouraging, and speak like a wise mentor.
-
-A student answered 10 questions about their interests, strengths,
-personality, lifestyle, and goals. Based on their answers, recommend
-the top 3 streams they should study after 12th.
-
-CRITICAL: Return ONLY a valid JSON object. No markdown. No backticks.
-No explanation. Start your response with { and end with }.
-
-Return this exact structure:
 {
-  "overall_personality": "2 sentences describing this student",
-  "strength_summary": "what this student is naturally good at",
-  "encouragement": "3 warm encouraging sentences for this student",
+  "overall_personality": "2 sentences about this student",
+  "strength_summary": "their natural strengths in 1 sentence",
+  "encouragement": "2 warm encouraging sentences",
   "streams": [
     {
       "rank": 1,
-      "stream": "full stream name",
-      "short_name": "short name",
-      "match_score": 92,
-      "why_fits": "3 sentences why this suits this student",
-      "career_paths": ["Job 1", "Job 2", "Job 3", "Job 4", "Job 5"],
-      "top_companies": ["Company 1", "Company 2", "Company 3", "Company 4", "Company 5"],
-      "average_salary": "₹4L–₹12L per year",
+      "stream": "Computer Science Engineering",
+      "short_name": "CSE / IT",
+      "match_score": 91,
+      "why_fits": "3 sentences why this fits this student",
+      "career_paths": ["Software Engineer", "Data Scientist",
+        "AI Engineer", "Web Developer", "Product Manager"],
+      "top_companies": ["TCS", "Infosys", "Google", "Amazon", "Wipro"],
+      "average_salary": "₹5L–₹20L per year",
       "course_duration": "4 years BTech",
-      "difficulty_level": "Moderate",
-      "entrance_exams": ["JEE Main", "TNEA"],
-      "best_for_personality": "one sentence",
-      "inspirational_quote": "a real quote",
-      "famous_people": ["Person 1", "Person 2", "Person 3"],
-      "next_step": "exact advice for this week"
+      "difficulty_level": "Competitive",
+      "entrance_exams": ["JEE Main", "TNEA", "VITEEE"],
+      "best_for_personality": "Logical thinkers who love building things",
+      "inspirational_quote": "The computer was born to solve problems that did not exist before.",
+      "famous_people": ["Sundar Pichai", "Satya Nadella", "N. R. Narayana Murthy"],
+      "next_step": "Register for JEE Main at jeemain.nta.nic.in this week"
     },
     {
       "rank": 2,
-      "stream": "second stream",
-      "short_name": "short",
-      "match_score": 85,
+      "stream": "Medicine / MBBS",
+      "short_name": "Medical",
+      "match_score": 82,
       "why_fits": "why this fits",
-      "career_paths": ["Job 1", "Job 2", "Job 3", "Job 4", "Job 5"],
-      "top_companies": ["Co 1", "Co 2", "Co 3", "Co 4", "Co 5"],
-      "average_salary": "₹3L–₹8L per year",
-      "course_duration": "3 years BSc",
-      "difficulty_level": "Easy to get in",
-      "entrance_exams": ["NEET", "KEAM"],
-      "best_for_personality": "one sentence",
-      "inspirational_quote": "a real quote",
-      "famous_people": ["Person 1", "Person 2", "Person 3"],
-      "next_step": "advice"
+      "career_paths": ["Doctor", "Surgeon", "Radiologist",
+        "Psychiatrist", "Medical Researcher"],
+      "top_companies": ["AIIMS", "Apollo", "Fortis",
+        "Manipal Hospitals", "Government hospitals"],
+      "average_salary": "₹6L–₹25L per year",
+      "course_duration": "5.5 years MBBS",
+      "difficulty_level": "Very competitive",
+      "entrance_exams": ["NEET UG"],
+      "best_for_personality": "Empathetic people who want to heal others",
+      "inspirational_quote": "Wherever the art of medicine is loved, there is also a love of humanity.",
+      "famous_people": ["Dr. APJ Abdul Kalam", "Devi Shetty", "Naresh Trehan"],
+      "next_step": "Start NEET preparation with Biology focus immediately"
     },
     {
       "rank": 3,
-      "stream": "third stream",
-      "short_name": "short",
-      "match_score": 78,
+      "stream": "Commerce / Business",
+      "short_name": "BCom / BBA",
+      "match_score": 74,
       "why_fits": "why this fits",
-      "career_paths": ["Job 1", "Job 2", "Job 3", "Job 4", "Job 5"],
-      "top_companies": ["Co 1", "Co 2", "Co 3", "Co 4", "Co 5"],
-      "average_salary": "₹3L–₹6L per year",
-      "course_duration": "3 years BCom",
+      "career_paths": ["CA", "Business Analyst",
+        "Banker", "Entrepreneur", "Financial Advisor"],
+      "top_companies": ["Deloitte", "KPMG", "HDFC Bank",
+        "Reliance", "Tata Group"],
+      "average_salary": "₹4L–₹15L per year",
+      "course_duration": "3 years BCom or BBA",
       "difficulty_level": "Easy to get in",
-      "entrance_exams": ["CUET"],
-      "best_for_personality": "one sentence",
-      "inspirational_quote": "a real quote",
-      "famous_people": ["Person 1", "Person 2", "Person 3"],
-      "next_step": "advice"
+      "entrance_exams": ["CUET", "IPMAT", "SET"],
+      "best_for_personality": "Organised minds who love numbers and strategy",
+      "inspirational_quote": "Business opportunities are like buses, there is always another one coming.",
+      "famous_people": ["Ratan Tata", "Mukesh Ambani", "Kiran Mazumdar-Shaw"],
+      "next_step": "Research BCom colleges in your state and check CUET dates"
     }
   ]
-}`;
+}
 
-    const userMessage = `Student name: ${studentName}
-Stream frequency from answers: ${streamFrequency}
-Total answers given: ${answers.length}
-Analyse and recommend top 3 streams. Return only JSON.`;
+Replace the 3 stream examples above with the actual best streams
+for ${studentName} based on their interests: ${freqStr}`;
 
-    // Step 5: Call OpenRouter API
-    console.log('Calling OpenRouter with model: meta-llama/llama-3.3-70b-instruct:free');
+  try {
+    console.log('Calling OpenRouter...');
 
-    const aiResponse = await fetch(
+    const res = await fetch(
       'https://openrouter.ai/api/v1/chat/completions',
       {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
+          Authorization: `Bearer ${key}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': 'https://collegematch-ai.vercel.app',
           'X-Title': 'CollegeMatch-AI',
         },
         body: JSON.stringify({
           model: 'meta-llama/llama-3.3-70b-instruct:free',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userMessage },
-          ],
+          messages: [{ role: 'user', content: prompt }],
           max_tokens: 3000,
           temperature: 0.7,
         }),
       }
     );
 
-    // Step 6: Handle OpenRouter response errors
-    if (!aiResponse.ok) {
-      const errBody = await aiResponse.text();
-      console.error('OpenRouter HTTP error:', aiResponse.status, errBody);
+    const rawText = await res.text();
+    console.log('OpenRouter status:', res.status);
+
+    if (!res.ok) {
+      console.error('OpenRouter error:', res.status, rawText);
       return NextResponse.json(
-        {
-          error: `AI API error ${aiResponse.status}: ${errBody}`,
-        },
+        { error: `OpenRouter ${res.status}: ${rawText}` },
         { status: 500 }
       );
     }
 
-    const aiData = await aiResponse.json();
-    console.log('OpenRouter response received');
+    const data = JSON.parse(rawText);
+    const content: string = data?.choices?.[0]?.message?.content ?? '';
 
-    // Step 7: Extract content from response
-    const rawContent = aiData?.choices?.[0]?.message?.content;
-    if (!rawContent) {
-      console.error('No content in OpenRouter response:', JSON.stringify(aiData));
+    if (!content) {
+      console.error('Empty content from OpenRouter');
       return NextResponse.json(
         { error: 'AI returned empty response' },
         { status: 500 }
       );
     }
 
-    console.log('Raw AI content length:', rawContent.length);
+    console.log('AI content received, length:', content.length);
 
-    // Step 8: Parse JSON safely — strip fences
-    let parsed: unknown;
-    try {
-      const cleaned = rawContent
-        .replace(/```json\s*/gi, '')
-        .replace(/```\s*/g, '')
-        .trim();
+    // Strip markdown fences
+    const cleaned = content
+      .replace(/```json\s*/gi, '')
+      .replace(/```\s*/gi, '')
+      .trim();
 
-      // Find first { and last } to extract JSON
-      const start = cleaned.indexOf('{');
-      const end = cleaned.lastIndexOf('}');
-      if (start === -1 || end === -1) {
-        throw new Error('No JSON object found in response');
-      }
-      const jsonStr = cleaned.slice(start, end + 1);
-      parsed = JSON.parse(jsonStr);
-    } catch (parseErr) {
-      console.error('JSON parse error:', parseErr);
-      console.error('Raw content was:', rawContent.substring(0, 500));
+    // Extract JSON object
+    const start = cleaned.indexOf('{');
+    const end = cleaned.lastIndexOf('}');
+
+    if (start === -1 || end === -1) {
+      console.error('No JSON found in:', cleaned.slice(0, 300));
       return NextResponse.json(
-        { error: 'AI response was not valid JSON. Please try again.' },
+        { error: 'AI did not return valid JSON' },
         { status: 500 }
       );
     }
 
-    // Step 9: Return successful result
+    const jsonStr = cleaned.slice(start, end + 1);
+    const parsed = JSON.parse(jsonStr);
+
+    console.log('Successfully parsed AI response');
     return NextResponse.json(parsed);
 
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error('discover-stream unhandled error:', message);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('discover-stream crash:', msg);
     return NextResponse.json(
-      { error: `Server error: ${message}` },
+      { error: `Unexpected error: ${msg}` },
       { status: 500 }
     );
   }
