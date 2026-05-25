@@ -80,7 +80,7 @@ export default function Dashboard() {
           setAnalysesCount(interviewsQuery.size);
           setCollegesCount(matched);
         } catch (error) {
-          console.error("Error fetching dashboard data:", error);
+          console.error("Dashboard fetch error:", error);
         } finally {
           setDataLoading(false);
         }

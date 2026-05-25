@@ -65,21 +65,16 @@ export async function callOpenRouter(
   return data.choices[0].message.content;
 }
 
-export function parseJSON(text: string): unknown {
-  // Strip markdown code fences if present
+export function parseJSON(text: string): any {
   const clean = text
-    .replace(/```json\n?/g, '')
+    .replace(/```json\n?/gi, '')
     .replace(/```\n?/g, '')
     .trim();
-
   try {
     return JSON.parse(clean);
   } catch {
-    // Try to extract JSON from the response
-    const jsonMatch = clean.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
-    }
-    throw new Error('Could not parse JSON from AI response');
+    const match = clean.match(/[\[{][\s\S]*[\]}]/);
+    if (match) return JSON.parse(match[0]);
+    throw new Error('Could not parse AI JSON response');
   }
 }

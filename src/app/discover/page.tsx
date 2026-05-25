@@ -19,7 +19,7 @@ export default function DiscoverPage() {
   const [answers, setAnswers] = useState<Record<number, { optionId: string; streams: string[] }>>({});
   const [results, setResults] = useState<DiscoveryResult | null>(null);
   const [discoveryId, setDiscoveryId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   // Protected route check
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function DiscoverPage() {
       setCurrentStep(prev => prev + 1);
     } else if (currentStep === 10) {
       // Submit
-      setError(null);
+      setAiError(null);
       setCurrentStep(11); // Loading
       try {
         const answersArray = Object.entries(answers).map(([qId, data]) => ({
@@ -84,9 +84,10 @@ export default function DiscoverPage() {
           setDiscoveryId(newDocRef.id);
           setCurrentStep(12); // Results
         }
-      } catch (err: any) {
-        console.error('Discovery error:', err);
-        setError(err.message || 'Our AI is temporarily busy. Please try again in a moment.');
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        console.error('Discovery error:', msg);
+        setAiError('AI is temporarily unavailable. Please try again.');
         setCurrentStep(10);
       }
     }
@@ -267,41 +268,34 @@ export default function DiscoverPage() {
         </div>
       </div>
 
-      {error && (
+      {aiError && (
         <div style={{
-          background: 'rgba(226,75,74,0.1)',
-          border: '1px solid rgba(226,75,74,0.3)',
-          borderRadius: '12px',
-          padding: '16px',
-          display: 'flex',
-          gap: '10px',
-          alignItems: 'flex-start',
-          marginBottom: '16px',
+          margin: '20px auto',
+          maxWidth: '500px',
+          background: 'rgba(226,75,74,0.12)',
+          border: '1px solid rgba(226,75,74,0.35)',
+          borderRadius: '14px',
+          padding: '20px',
+          textAlign: 'center',
         }}>
-          <span style={{ fontSize: '20px' }}>⚠️</span>
-          <div>
-            <p style={{ color: '#F09595', fontWeight: 500, marginBottom: '4px' }}>
-              Something went wrong
-            </p>
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>
-              {error}
-            </p>
-            <button
-              onClick={() => { setError(null); }}
-              style={{
-                marginTop: '8px',
-                background: 'rgba(226,75,74,0.2)',
-                border: '1px solid rgba(226,75,74,0.4)',
-                borderRadius: '8px',
-                color: '#F09595',
-                padding: '6px 14px',
-                cursor: 'pointer',
-                fontSize: '12px',
-              }}
-            >
-              Dismiss
-            </button>
-          </div>
+          <p style={{ color: '#F09595', fontSize: '15px',
+            fontWeight: 500, marginBottom: '8px' }}>
+            Something went wrong
+          </p>
+          <p style={{ color: 'rgba(255,255,255,0.55)',
+            fontSize: '13px', marginBottom: '14px' }}>
+            {aiError}
+          </p>
+          <button onClick={() => { setAiError(null); }}
+            style={{
+              background: 'rgba(127,119,221,0.2)',
+              border: '1px solid rgba(127,119,221,0.4)',
+              borderRadius: '10px', color: '#a89ef8',
+              padding: '8px 20px', cursor: 'pointer',
+              fontSize: '13px',
+            }}>
+            Try again
+          </button>
         </div>
       )}
 
