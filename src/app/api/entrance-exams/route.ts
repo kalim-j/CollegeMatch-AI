@@ -20,8 +20,9 @@ export async function POST(req: Request) {
       "registration_start": string (approximate month),
       "official_url": string,
       "eligibility": string (one sentence),
-      "syllabus_highlights": string[] (5 key topics),
-      "exam_pattern": string (2 sentences),
+      "syllabus_highlights": string[] (3 key topics),
+      "exam_pattern": string (1 concise sentence),
+
       "importance": string (High / Medium / Low),
       "tip": string (one powerful preparation tip)
     }

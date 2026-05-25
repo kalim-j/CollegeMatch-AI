@@ -47,17 +47,9 @@ export async function callOpenRouter(
     const errorText = await response.text();
     console.error(`OpenRouter error with model ${model}:`, errorText);
 
-    // Try fallback models if the current one fails for any reason
-    const modelIndex = FREE_MODELS.indexOf(model);
-    if (modelIndex !== -1 && modelIndex < FREE_MODELS.length - 1) {
-      const nextModel = FREE_MODELS[modelIndex + 1];
-      console.log(`Trying fallback model: ${nextModel}`);
-      return callOpenRouter(systemPrompt, userMessage, nextModel);
-    }
-
-    // Ultimate fallback to Groq if all OpenRouter models fail/are rate-limited
+    // Ultimate fallback to Groq if the OpenRouter request fails (to prevent 10s Vercel timeouts)
     if (process.env.GROQ_API_KEY) {
-      console.log('All OpenRouter models failed. Falling back to Groq Llama-3.3...');
+      console.log('OpenRouter model failed. Falling back to Groq immediately to prevent timeout...');
       try {
         const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
@@ -72,7 +64,9 @@ export async function callOpenRouter(
               { role: 'user', content: userMessage },
             ],
             temperature: 0.7,
+            max_tokens: 4000,
           }),
+
         });
 
         if (groqResponse.ok) {
@@ -89,8 +83,17 @@ export async function callOpenRouter(
       }
     }
 
+    // Try fallback OpenRouter models only if Groq key isn't set
+    const modelIndex = FREE_MODELS.indexOf(model);
+    if (modelIndex !== -1 && modelIndex < FREE_MODELS.length - 1) {
+      const nextModel = FREE_MODELS[modelIndex + 1];
+      console.log(`Trying fallback model: ${nextModel}`);
+      return callOpenRouter(systemPrompt, userMessage, nextModel);
+    }
+
     throw new Error(`OpenRouter API error: ${response.status} ${errorText}`);
   }
+
 
 
 
