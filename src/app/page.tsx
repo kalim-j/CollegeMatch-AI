@@ -8,7 +8,7 @@ import {
   Search, Sparkles, Phone, ArrowRight, Play, Star, 
   Quote, Users, MapPin, Building, Award, Notebook,
   ShieldCheck, Zap, LayoutGrid, ClipboardList, Bot, 
-  Building2, ArrowUpRight, GraduationCap
+  Building2, ArrowUpRight, GraduationCap, MessageSquare
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
