@@ -60,22 +60,32 @@ export default function CounsellorChat({ studentProfile, uid }: CounsellorChatPr
       try {
         const docRef = doc(db, "chats", uid);
         const docSnap = await getDoc(docRef);
+        
         if (docSnap.exists() && docSnap.data().messages) {
-          setMessages(docSnap.data().messages);
-          setUnreadCount(0); // If they've loaded history, reset unread
-        } else {
-          // No history, add welcome message
-          setMessages([{
-            role: "assistant",
-            content: `Hi ${studentProfile?.name?.split(' ')[0] || 'there'}! I'm your personal admission counsellor. Ask me anything about:
+          const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
+          const filteredMessages = docSnap.data().messages.filter((msg: any) => {
+            if (!msg.timestamp) return true;
+            return new Date(msg.timestamp) > fifteenDaysAgo;
+          });
+          
+          if (filteredMessages.length > 0) {
+            setMessages(filteredMessages);
+            setUnreadCount(0); // If they've loaded history, reset unread
+            return;
+          }
+        }
+        
+        // No history or all history expired, add welcome message
+        setMessages([{
+          role: "assistant",
+          content: `Hi ${studentProfile?.name?.split(' ')[0] || 'there'}! I'm your personal admission counsellor. Ask me anything about:
 • Which college is best for your marks
 • How to apply for scholarships
 • What entrance exams you need
 • Cutoff trends and predictions
 • Any admission-related question`,
-            timestamp: new Date().toISOString()
-          }]);
-        }
+          timestamp: new Date().toISOString()
+        }]);
       } catch (err) {
         console.error("Failed to load chat history", err);
       }
