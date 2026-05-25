@@ -1,4 +1,4 @@
-import { groq } from "@/lib/groq";
+import { callOpenRouter, parseJSON } from "@/lib/openrouter";
 import { NextResponse } from "next/server";
 
 interface CutoffTrendEntry {
@@ -15,16 +15,6 @@ interface PredictionResult {
   alternative_colleges: string[];
 }
 
-// Robustly extract the first valid JSON object from any string
-function extractJSON(raw: string): string {
-  let text = raw.replace(/```(?:json)?\s*([\s\S]*?)```/gi, "$1").trim();
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  if (start !== -1 && end !== -1 && end > start) {
-    text = text.slice(start, end + 1);
-  }
-  return text.trim();
-}
 
 export async function POST(req: Request) {
   try {
@@ -65,12 +55,8 @@ export async function POST(req: Request) {
 
 Predict the admission chances for this student.`;
 
-    const chatCompletion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content: `You are an Indian college admission cutoff expert with deep knowledge of Tamil Nadu, Karnataka, Maharashtra, Kerala, and all major state university cutoff trends from 2022-2026. Given a student's cutoff mark, community, stream, state, college name, and course — predict admission chances.
+    const rawContent = await callOpenRouter(
+      `You are an Indian college admission cutoff expert with deep knowledge of Tamil Nadu, Karnataka, Maharashtra, Kerala, and all major state university cutoff trends from 2022-2026. Given a student's cutoff mark, community, stream, state, college name, and course — predict admission chances.
 
 Respond with ONLY a raw JSON object — no markdown, no code fences, no explanation, no text before or after.
 
@@ -92,27 +78,14 @@ The JSON must follow this exact structure:
 verdict must be exactly one of: "Likely", "Borderline", or "Unlikely"
 confidence must be a number between 0 and 100
 alternative_colleges should be empty array [] if verdict is not "Unlikely"`,
-        },
-        {
-          role: "user",
-          content: userMessage,
-        },
-      ],
-      temperature: 0.3,
-      max_tokens: 1500,
-    });
-
-    const rawContent = chatCompletion.choices[0]?.message?.content ?? "";
-
-    // Robustly extract JSON
-    const cleaned = extractJSON(rawContent);
+      userMessage
+    );
 
     let predictionData: PredictionResult;
     try {
-      predictionData = JSON.parse(cleaned);
+      predictionData = parseJSON(rawContent) as PredictionResult;
     } catch {
-      console.error("Failed to parse Groq response as JSON. Raw:", rawContent);
-      console.error("Cleaned attempt:", cleaned);
+      console.error("Failed to parse OpenRouter response as JSON. Raw:", rawContent);
       return NextResponse.json(
         { error: "Failed to parse AI prediction response" },
         { status: 500 }
@@ -122,9 +95,8 @@ alternative_colleges should be empty array [] if verdict is not "Unlikely"`,
     return NextResponse.json(predictionData);
   } catch (error: unknown) {
     console.error("Predict cutoff API error:", error);
-    const message = error instanceof Error ? error.message : "Internal server error";
     return NextResponse.json(
-      { error: message },
+      { error: "AI service temporarily unavailable. Please try again." }, 
       { status: 500 }
     );
   }

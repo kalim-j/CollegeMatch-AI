@@ -1,4 +1,4 @@
-import { groq } from "@/lib/groq";
+import { callOpenRouter, parseJSON } from "@/lib/openrouter";
 import { NextResponse } from "next/server";
 import { College } from "@/types";
 
@@ -15,20 +15,6 @@ interface ComparisonResult {
   };
 }
 
-// Robustly extract the first valid JSON object from any string
-function extractJSON(raw: string): string {
-  // 1. Strip markdown code fences (```json ... ``` or ``` ... ```)
-  let text = raw.replace(/```(?:json)?\s*([\s\S]*?)```/gi, "$1").trim();
-
-  // 2. If still not starting with {, find the first { and last }
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  if (start !== -1 && end !== -1 && end > start) {
-    text = text.slice(start, end + 1);
-  }
-
-  return text.trim();
-}
 
 export async function POST(req: Request) {
   try {
@@ -66,12 +52,8 @@ export async function POST(req: Request) {
       ? `Compare these colleges for a student with the following profile:\n${JSON.stringify(studentProfile, null, 2)}\n\nColleges:\n${JSON.stringify(collegeData, null, 2)}`
       : `Compare these colleges:\n${JSON.stringify(collegeData, null, 2)}`;
 
-    const chatCompletion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content: `You are CollegeMatch-AI comparison expert. Given 2-3 Indian colleges, respond with ONLY a raw JSON object — no markdown, no code fences, no explanation, no text before or after.
+    const rawContent = await callOpenRouter(
+      `You are CollegeMatch-AI comparison expert. Given 2-3 Indian colleges, respond with ONLY a raw JSON object — no markdown, no code fences, no explanation, no text before or after.
 
 The JSON must follow this exact structure:
 {
@@ -93,27 +75,14 @@ The JSON must follow this exact structure:
 }
 
 IMPORTANT: Use the exact college names as keys in the colleges object: ${collegeNames.join(", ")}`,
-        },
-        {
-          role: "user",
-          content: userMessage,
-        },
-      ],
-      temperature: 0.3,
-      max_tokens: 2000,
-    });
-
-    const rawContent = chatCompletion.choices[0]?.message?.content ?? "";
-
-    // Robustly extract JSON
-    const cleaned = extractJSON(rawContent);
+      userMessage
+    );
 
     let comparisonData: ComparisonResult;
     try {
-      comparisonData = JSON.parse(cleaned);
+      comparisonData = parseJSON(rawContent) as ComparisonResult;
     } catch {
-      console.error("Failed to parse Groq response as JSON. Raw:", rawContent);
-      console.error("Cleaned attempt:", cleaned);
+      console.error("Failed to parse OpenRouter response as JSON. Raw:", rawContent);
       return NextResponse.json(
         { error: "Failed to parse AI comparison response" },
         { status: 500 }
@@ -132,7 +101,7 @@ IMPORTANT: Use the exact college names as keys in the colleges object: ${college
   } catch (error: any) {
     console.error("Compare colleges API error:", error);
     return NextResponse.json(
-      { error: error.message ?? "Internal server error" },
+      { error: "AI service temporarily unavailable. Please try again." }, 
       { status: 500 }
     );
   }

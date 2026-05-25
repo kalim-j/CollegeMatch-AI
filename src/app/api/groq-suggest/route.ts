@@ -1,4 +1,4 @@
-import { groq } from "@/lib/groq";
+
 import { NextResponse } from "next/server";
 import { collegesDatabase, getCollegesByDistrict, getCollegesByState, getAllColleges } from "@/data/collegesDatabase";
 

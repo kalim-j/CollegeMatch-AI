@@ -1,4 +1,4 @@
-import { groq } from "@/lib/groq";
+import { callOpenRouter, parseJSON } from "@/lib/openrouter";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -55,29 +55,15 @@ Return JSON:
 }
 Return only valid JSON. No markdown. No extra text.`;
 
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        }
-      ],
-      model: "llama3-70b-8192", // Using large model for content generation
-      temperature: 0.7,
-      response_format: { type: "json_object" }
-    });
-
-    const responseContent = chatCompletion.choices[0]?.message?.content;
-
-    if (!responseContent) {
-      throw new Error("No response from Groq");
-    }
-
-    const result = JSON.parse(responseContent);
+    const rawText = await callOpenRouter(systemPrompt, "Provide stream details.");
+    const result = parseJSON(rawText);
 
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("Stream Details Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "AI service temporarily unavailable. Please try again." }, 
+      { status: 500 }
+    );
   }
 }

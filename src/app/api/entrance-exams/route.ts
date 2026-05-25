@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server';
-import Groq from 'groq-sdk';
-
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+import { callOpenRouter, parseJSON } from '@/lib/openrouter';
 
 export async function POST(req: Request) {
   try {
@@ -42,23 +38,16 @@ export async function POST(req: Request) {
 
     const userPrompt = `Level: ${level}, Stream: ${stream}`;
 
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      model: 'llama-3.3-70b-versatile',
-      temperature: 0.1,
-      response_format: { type: "json_object" }
-    });
-
-    const content = chatCompletion.choices[0]?.message?.content || '{"exams": []}';
-    const parsed = JSON.parse(content);
+    const rawText = await callOpenRouter(systemPrompt, userPrompt);
+    const parsed = parseJSON(rawText) as any;
     const results = Array.isArray(parsed) ? parsed : (parsed.exams || []);
 
     return NextResponse.json(results);
   } catch (error: any) {
     console.error('Exams API Error:', error);
-    return NextResponse.json({ error: 'Failed to fetch entrance exams' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'AI service temporarily unavailable. Please try again.' }, 
+      { status: 500 }
+    );
   }
 }

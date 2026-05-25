@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server';
-import Groq from 'groq-sdk';
-
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+import { callOpenRouter, parseJSON } from '@/lib/openrouter';
 
 export async function POST(req: Request) {
   try {
@@ -38,18 +34,8 @@ export async function POST(req: Request) {
     - Income: ${income}
     - 12th Percentage: ${percentage}%`;
 
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      model: 'llama-3.3-70b-versatile',
-      temperature: 0.1,
-      response_format: { type: "json_object" }
-    });
-
-    const content = chatCompletion.choices[0]?.message?.content || '{"scholarships": []}';
-    const parsed = JSON.parse(content);
+    const rawText = await callOpenRouter(systemPrompt, userPrompt);
+    const parsed = parseJSON(rawText) as any;
     
     // Ensure we return an array
     const results = Array.isArray(parsed) ? parsed : (parsed.scholarships || []);
@@ -57,6 +43,9 @@ export async function POST(req: Request) {
     return NextResponse.json(results);
   } catch (error: any) {
     console.error('Scholarship API Error:', error);
-    return NextResponse.json({ error: 'Failed to fetch scholarships' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'AI service temporarily unavailable. Please try again.' }, 
+      { status: 500 }
+    );
   }
 }

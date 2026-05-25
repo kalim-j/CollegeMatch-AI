@@ -1,4 +1,4 @@
-import { openrouter } from "@/lib/openrouter";
+import { callOpenRouter, parseJSON } from "@/lib/openrouter";
 import { NextResponse } from "next/server";
 
 export const maxDuration = 60; // Allow up to 60 seconds for Groq AI response
@@ -60,31 +60,15 @@ Also return:
 Return only valid JSON matching this exact structure.
 No markdown. No extra text.`;
 
-    const chatCompletion = await openrouter.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        }
-      ],
-      model: "google/gemini-2.0-flash-exp:free", // Correct free model alias for OpenRouter
-      temperature: 0.7
-    });
-
-    let responseContent = chatCompletion.choices[0]?.message?.content;
-
-    if (!responseContent) {
-      throw new Error("No response from OpenRouter");
-    }
-
-    // Strip markdown formatting if the model wraps it in ```json ... ```
-    responseContent = responseContent.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-
-    const result = JSON.parse(responseContent);
+    const rawText = await callOpenRouter(systemPrompt, "Discover best streams for this student.");
+    const result = parseJSON(rawText);
 
     return NextResponse.json({ results: result });
   } catch (error: any) {
     console.error("Discover Stream Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "AI service temporarily unavailable. Please try again." }, 
+      { status: 500 }
+    );
   }
 }

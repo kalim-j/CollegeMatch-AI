@@ -140,7 +140,10 @@ export default function InterviewPage() {
         }),
       });
       
-      if (!res.ok) throw new Error("College matching failed");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.error || "College matching failed");
+      }
       const data = await res.json();
 
       // Check if no colleges found in district
@@ -174,7 +177,7 @@ export default function InterviewPage() {
       toast.success(`Found ${collegesData.length} matching colleges!`);
     } catch (error: any) {
       console.error("Analysis error:", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(error.message || "Something went wrong. Please try again.");
     } finally {
       setAnalyzing(false);
     }
