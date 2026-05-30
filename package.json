@@ -40,6 +40,7 @@
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.460.0",
     "next": "15.3.6",
+    "next-pwa": "^5.6.0",
     "next-sitemap": "^4.2.3",
     "next-themes": "^0.4.0",
     "nodemailer": "^6.9.16",
@@ -61,9 +62,11 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^9",
     "eslint-config-next": "15.3.6",
+    "jimp": "^1.6.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.15",
-    "typescript": "^5"
+    "typescript": "^5",
+    "webpack": "^5.107.2"
   },
   "overrides": {
     "react": "$react",

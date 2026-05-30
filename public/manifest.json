@@ -1,24 +1,115 @@
 {
-  "name": "CollegeMatch-AI",
-  "short_name": "CollegeMatch",
-  "description": "India's AI-powered college admission advisor",
+  "name": "AdmissionIQ - AI College Predictor India",
+  "short_name": "AdmissionIQ",
+  "description": "AI-powered college predictor for Indian students. Get instant personalised college recommendations.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#05071a",
-  "theme_color": "#7c5cfc",
-  "orientation": "portrait",
-    "icons": [
-      {
-        "src": "/icon.svg",
-        "sizes": "any",
-        "type": "image/svg+xml",
-        "purpose": "any"
-      },
-      {
-        "src": "/icon.svg",
-        "sizes": "any",
-        "type": "image/svg+xml",
-        "purpose": "maskable"
-      }
-    ]
+  "orientation": "portrait-primary",
+  "background_color": "#07091a",
+  "theme_color": "#7c3aed",
+  "lang": "en-IN",
+  "categories": ["education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Predict Cutoff",
+      "short_name": "Predict",
+      "description": "Get AI college cutoff predictions",
+      "url": "/dashboard/predict",
+      "icons": [
+        {
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Find Scholarships",
+      "short_name": "Scholarships",
+      "description": "Find real scholarships with AI",
+      "url": "/dashboard/scholarships",
+      "icons": [
+        {
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Entrance Exams",
+      "short_name": "Exams",
+      "description": "View entrance exam dates and cutoffs",
+      "url": "/exams",
+      "icons": [
+        {
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Compare Colleges",
+      "short_name": "Compare",
+      "description": "Compare colleges side by side",
+      "url": "/dashboard/compare",
+      "icons": [
+        {
+          "src": "/icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }
