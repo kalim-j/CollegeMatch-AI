@@ -107,12 +107,12 @@ export default function Dashboard() {
     { label: "Stream Discovered", value: discoveredStreamName, icon: Lightbulb, color: "text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/20", href: "/history?tab=streams" },
     { label: "AI Analyses Run", value: analysesCount.toString(), icon: BrainCircuit, color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", href: "/history?tab=colleges" },
     { label: "Colleges Matched", value: collegesCount.toString(), icon: Target, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", href: "/history?tab=colleges" },
-    { label: "Scholarship Alerts", value: scholarshipsCount.toString(), icon: Award, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", href: "/scholarships" },
+    { label: "Scholarship Alerts", value: scholarshipsCount.toString(), icon: Award, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", href: "/dashboard/scholarships" },
   ];
 
   const navCards = [
     { href: "/history", label: "Analysis History", desc: "Review all past AI college analyses and their recommendations.", icon: History, color: "text-purple-400", bg: "bg-purple-500/10", hover: "hover:border-purple-500/40", cta: "View History" },
-    { href: "/scholarships", label: "Scholarship Finder", desc: "Discover scholarships and financial aid tailored to your profile.", icon: Award, color: "text-teal-400", bg: "bg-teal-500/10", hover: "hover:border-teal-500/40", cta: "Find Scholarships" },
+    { href: "/dashboard/scholarships", label: "Scholarship Finder", desc: "Discover scholarships and financial aid tailored to your profile.", icon: Award, color: "text-teal-400", bg: "bg-teal-500/10", hover: "hover:border-teal-500/40", cta: "Find Scholarships" },
     { href: "/exams", label: "Entrance Exams", desc: "Track important entrance exam dates, results and cutoffs.", icon: BookOpen, color: "text-amber-400", bg: "bg-amber-500/10", hover: "hover:border-amber-500/40", cta: "Track Exams" },
   ];
 
