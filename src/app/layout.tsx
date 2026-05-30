@@ -41,8 +41,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'AdmissionIQ — AI College Predictor India',
-    template: '%s | AdmissionIQ',
+    default: 'CollegeMatch-AI — AI College Predictor India',
+    template: '%s | CollegeMatch-AI',
   },
   description: 'AI-powered college predictor for Indian students. Get instant personalised college recommendations based on your marks.',
   keywords: [
@@ -55,16 +55,16 @@ export const metadata: Metadata = {
     'NIT predictor',
     'IIT predictor',
     'college recommendations',
-    'AdmissionIQ',
+    'CollegeMatch-AI',
   ],
-  authors: [{ name: 'AdmissionIQ Team' }],
-  creator: 'AdmissionIQ',
-  publisher: 'AdmissionIQ',
+  authors: [{ name: 'CollegeMatch-AI Team' }],
+  creator: 'CollegeMatch-AI',
+  publisher: 'CollegeMatch-AI',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'AdmissionIQ',
+    title: 'CollegeMatch-AI',
     startupImage: [
       {
         url: '/icons/icon-512x512.png',
@@ -87,21 +87,21 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_IN',
     url: 'https://admissioniq-app.vercel.app',
-    title: 'AdmissionIQ — AI College Predictor India',
+    title: 'CollegeMatch-AI — AI College Predictor India',
     description: 'Get AI-powered college recommendations based on your marks.',
-    siteName: 'AdmissionIQ',
+    siteName: 'CollegeMatch-AI',
     images: [
       {
         url: '/icons/icon-512x512.png',
         width: 512,
         height: 512,
-        alt: 'AdmissionIQ',
+        alt: 'CollegeMatch-AI',
       },
     ],
   },
   twitter: {
     card: 'summary',
-    title: 'AdmissionIQ — AI College Predictor India',
+    title: 'CollegeMatch-AI — AI College Predictor India',
     description: 'Get AI-powered college recommendations based on your marks.',
     images: ['/icons/icon-512x512.png'],
   },
@@ -157,10 +157,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <meta name="application-name" content="AdmissionIQ" />
+        <meta name="application-name" content="CollegeMatch-AI" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="AdmissionIQ" />
+        <meta name="apple-mobile-web-app-title" content="CollegeMatch-AI" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="msapplication-TileColor" content="#7c3aed" />
         <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />

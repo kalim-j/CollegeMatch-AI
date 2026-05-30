@@ -89,7 +89,7 @@ export default function InstallPrompt() {
             </div>
             <div className="flex-1">
               <h3 className="text-white font-bold text-base">
-                Install AdmissionIQ
+                Install CollegeMatch-AI
               </h3>
               <p className="text-gray-400 text-xs mt-0.5">
                 Add to home screen • Works offline

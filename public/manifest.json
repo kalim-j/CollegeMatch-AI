@@ -1,6 +1,6 @@
 {
-  "name": "AdmissionIQ - AI College Predictor India",
-  "short_name": "AdmissionIQ",
+  "name": "CollegeMatch-AI - AI College Predictor India",
+  "short_name": "CollegeMatch-AI",
   "description": "AI-powered college predictor for Indian students. Get instant personalised college recommendations.",
   "start_url": "/",
   "scope": "/",
