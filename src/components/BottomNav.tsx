@@ -3,27 +3,30 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const NAV_ITEMS = [
-  { href: '/dashboard', label: 'Home', activeIcon: '🏠', icon: '🏠' },
-  { href: '/dashboard/predictor', label: 'Predict', activeIcon: '⚡', icon: '⚡' },
-  { href: '/dashboard/scholarships', label: 'Scholarships', activeIcon: '🎓', icon: '🎓' },
-  { href: '/dashboard/map', label: 'Map', activeIcon: '🗺️', icon: '🗺️' },
-  { href: '/dashboard/profile', label: 'Profile', activeIcon: '👤', icon: '👤' },
+  { href: '/dashboard', label: 'Home', icon: '🏠' },
+  { href: '/dashboard/predictor', label: 'Predict', icon: '⚡' },
+  { href: '/dashboard/scholarships', label: 'Scholarships', icon: '🎓' },
+  { href: '/dashboard/map', label: 'Map', icon: '🗺️' },
+  { href: '/dashboard/profile', label: 'Profile', icon: '👤' },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
-
   if (!pathname?.startsWith('/dashboard')) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40
-      bg-[#07091a]/95 backdrop-blur-2xl
-      border-t border-white/[0.06]
-      sm:hidden"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-      <div className="flex items-center justify-around px-2 py-1">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-40
+        bg-[#07091a]/98 backdrop-blur-2xl
+        border-t border-white/[0.08]
+        sm:hidden"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+    >
+      <div className="flex items-center justify-around
+        px-1 py-1.5 max-w-screen-sm mx-auto">
         {NAV_ITEMS.map(item => {
-          const isActive = pathname === item.href ||
+          const isActive =
+            pathname === item.href ||
             (item.href !== '/dashboard' &&
               pathname.startsWith(item.href));
 
@@ -31,28 +34,29 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5
-                px-3 py-2 rounded-2xl transition-all duration-200
-                min-w-[56px]
+              className={`flex flex-col items-center justify-center
+                gap-0.5 py-1.5 px-2 rounded-xl
+                transition-all duration-200 flex-1
+                max-w-[72px]
                 ${isActive
                   ? 'bg-purple-500/15'
-                  : 'hover:bg-white/[0.05]'
+                  : 'hover:bg-white/[0.04]'
                 }`}
             >
-              <span className={`text-xl transition-all duration-200
+              <span className={`text-xl leading-none
+                transition-transform duration-200
                 ${isActive ? 'scale-110' : 'scale-100'}`}>
-                {isActive ? item.activeIcon : item.icon}
+                {item.icon}
               </span>
-              <span className={`text-[10px] font-medium
+              <span className={`text-[9px] font-medium
+                leading-none mt-0.5 text-center w-full
                 transition-colors duration-200
-                ${isActive
-                  ? 'text-purple-400'
-                  : 'text-gray-600'}`}>
+                ${isActive ? 'text-purple-400' : 'text-gray-600'}`}>
                 {item.label}
               </span>
               {isActive && (
-                <div className="w-1 h-1 rounded-full bg-purple-400
-                  mt-0.5 animate-pulse" />
+                <div className="w-1 h-1 rounded-full
+                  bg-purple-400 mt-0.5" />
               )}
             </Link>
           );

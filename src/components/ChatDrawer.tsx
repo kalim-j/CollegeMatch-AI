@@ -53,10 +53,9 @@ export default function ChatDrawer() {
 
   return (
     <>
-      {/* Floating Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-8 right-8 h-16 w-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full shadow-[0_8px_32px_rgba(124,92,252,0.4)] flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all z-40 group"
+        className="fixed z-30 bottom-20 right-4 sm:bottom-6 sm:right-6 h-16 w-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full shadow-[0_8px_32px_rgba(124,92,252,0.4)] flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all group"
       >
         <MessageCircle size={32} className="group-hover:rotate-12 transition-transform" />
       </button>
