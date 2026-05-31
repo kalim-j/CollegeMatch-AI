@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+    width="512" height="512"
+    viewBox="0 0 512 512">
+    <defs>
+      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1e1058"/>
+        <stop offset="40%" stop-color="#6d28d9"/>
+        <stop offset="100%" stop-color="#db2777"/>
+      </linearGradient>
+      <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="rgba(255,255,255,0.2)"/>
+        <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+      </linearGradient>
+      <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="100%" stop-color="#e9d5ff"/>
+      </linearGradient>
+      <filter id="softShadow">
+        <feDropShadow dx="0" dy="7.68"
+          stdDeviation="12.8"
+          flood-color="#000000" flood-opacity="0.35"/>
+      </filter>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="9.216" result="blur"/>
+        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+      </filter>
+    </defs>
+
+    <!-- Main background -->
+    <rect width="512" height="512"
+      rx="112.64" ry="112.64"
+      fill="url(#bg)"/>
+
+    <!-- Shine top half -->
+    <rect width="512" height="256"
+      rx="112.64" ry="112.64"
+      fill="url(#shine)"/>
+
+    <!-- Decorative background circles -->
+    <circle cx="51.2" cy="61.44"
+      r="71.68"
+      fill="rgba(255,255,255,0.05)"/>
+    <circle cx="450.56" cy="450.56"
+      r="92.16"
+      fill="rgba(255,255,255,0.04)"/>
+    <circle cx="460.8" cy="76.8"
+      r="46.08"
+      fill="rgba(255,255,255,0.06)"/>
+
+    <!-- Star sparkles -->
+    <circle cx="419.84" cy="143.36"
+      r="9.216"
+      fill="rgba(255,255,255,0.7)"/>
+    <circle cx="92.16" cy="368.64"
+      r="7.168"
+      fill="rgba(255,255,255,0.5)"/>
+    <circle cx="384" cy="384"
+      r="6.144"
+      fill="rgba(255,220,100,0.7)"/>
+
+    <!-- Graduation Cap -->
+    <g transform="translate(256, 153.6)"
+      filter="url(#softShadow)">
+      <!-- Cap diamond top -->
+      <polygon
+        points="0,-81.92 112.64,-15.36 0,46.08 -112.64,-15.36"
+        fill="url(#capGrad)"/>
+      <!-- Cap brim -->
+      <rect x="-102.4" y="-17.92"
+        width="204.8" height="51.2"
+        rx="10.24"
+        fill="rgba(255,255,255,0.85)"/>
+      <!-- Gold tassel rope -->
+      <line
+        x1="102.4" y1="12.8"
+        x2="102.4" y2="87.04"
+        stroke="#FFD700"
+        stroke-width="14.336"
+        stroke-linecap="round"/>
+      <!-- Tassel end -->
+      <circle cx="102.4" cy="92.16"
+        r="16.384"
+        fill="#FFD700"/>
+      <line
+        x1="102.4" y1="107.52"
+        x2="92.16" y2="138.24"
+        stroke="#FFD700"
+        stroke-width="7.168"
+        stroke-linecap="round"/>
+      <line
+        x1="102.4" y1="107.52"
+        x2="102.4" y2="143.36"
+        stroke="#FFD700"
+        stroke-width="7.168"
+        stroke-linecap="round"/>
+      <line
+        x1="102.4" y1="107.52"
+        x2="112.64" y2="138.24"
+        stroke="#FFD700"
+        stroke-width="7.168"
+        stroke-linecap="round"/>
+    </g>
+
+    <!-- CM Text -->
+    <text x="256" y="358.4"
+      font-family="Arial Black, Arial, sans-serif"
+      font-size="143.36"
+      font-weight="900"
+      fill="white"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      filter="url(#softShadow)"
+      letter-spacing="2.56">CM</text>
+
+    <!-- CollegeMatch label -->
+    <text x="256" y="445.44"
+      font-family="Arial, sans-serif"
+      font-size="38.4"
+      font-weight="700"
+      fill="rgba(255,255,255,0.75)"
+      text-anchor="middle"
+      letter-spacing="3.072">COLLEGEMATCH AI</text>
+
+    <!-- Bottom glow line -->
+    <rect x="128" y="468.48"
+      width="256" height="3.584"
+      rx="2.048"
+      fill="rgba(255,255,255,0.25)"/>
+  </svg>

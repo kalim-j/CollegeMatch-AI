@@ -146,7 +146,7 @@ export default function Dashboard() {
                 {profile?.fullName?.split(" ")[0] || "Student"}
               </span>
             </h1>
-            <p className="text-white/30 font-bold text-sm">Your CollegeMatch-AI Command Center</p>
+            <p className="text-white/30 font-bold text-sm">Welcome to CollegeMatch AI</p>
           </div>
 
           <div className="flex items-center gap-3 md:gap-4">

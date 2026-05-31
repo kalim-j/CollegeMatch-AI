@@ -110,7 +110,19 @@ export default function LoginPage() {
         
         {/* Left Side — Branding */}
         <div className="hidden lg:flex flex-col space-y-10">
-          <Logo />
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-pink-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+              <span className="text-white font-black text-base">CM</span>
+            </div>
+            <div>
+              <p className="text-white font-bold text-xl leading-tight">
+                CollegeMatch <span className="text-purple-400">AI</span>
+              </p>
+              <p className="text-gray-500 text-xs">
+                AI College Predictor India
+              </p>
+            </div>
+          </div>
           
           <div className="space-y-6">
             <h1 className="text-6xl font-black text-white leading-[1.1] tracking-tighter">

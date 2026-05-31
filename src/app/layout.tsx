@@ -41,96 +41,41 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'CollegeMatch-AI — AI College Predictor India',
-    template: '%s | CollegeMatch-AI',
+    default: 'CollegeMatch AI — AI College Predictor India',
+    template: '%s | CollegeMatch AI',
   },
   description: 'AI-powered college predictor for Indian students. Get instant personalised college recommendations based on your marks.',
   keywords: [
     'college predictor India',
+    'CollegeMatch AI',
     'AI admission predictor',
     'JEE college predictor',
     'NEET college predictor',
-    'cutoff predictor',
-    'best colleges India',
     'NIT predictor',
     'IIT predictor',
-    'college recommendations',
-    'CollegeMatch-AI',
+    'best colleges India',
+    'cutoff predictor 2026',
   ],
-  authors: [{ name: 'CollegeMatch-AI Team' }],
-  creator: 'CollegeMatch-AI',
-  publisher: 'CollegeMatch-AI',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'CollegeMatch-AI',
-    startupImage: [
-      {
-        url: '/icons/icon-512x512.png',
-        media: '(device-width: 768px) and (device-height: 1024px)',
-      },
+    title: 'CollegeMatch AI',
+  },
+  icons: {
+    icon: [
+      { url: '/icons/icon-192x192.svg', sizes: '192x192' },
+      { url: '/icons/icon-512x512.svg', sizes: '512x512' },
     ],
-  },
-  formatDetection: {
-    telephone: false,
-    date: false,
-    address: false,
-    email: false,
-    url: false,
-  },
-  metadataBase: new URL('https://admissioniq-app.vercel.app'),
-  alternates: {
-    canonical: '/',
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'en_IN',
-    url: 'https://admissioniq-app.vercel.app',
-    title: 'CollegeMatch-AI — AI College Predictor India',
-    description: 'Get AI-powered college recommendations based on your marks.',
-    siteName: 'CollegeMatch-AI',
-    images: [
-      {
-        url: '/icons/icon-512x512.png',
-        width: 512,
-        height: 512,
-        alt: 'CollegeMatch-AI',
-      },
+    apple: [
+      { url: '/icons/icon-152x152.svg', sizes: '152x152' },
+      { url: '/icons/icon-192x192.svg', sizes: '192x192' },
     ],
-  },
-  twitter: {
-    card: 'summary',
-    title: 'CollegeMatch-AI — AI College Predictor India',
-    description: 'Get AI-powered college recommendations based on your marks.',
-    images: ['/icons/icon-512x512.png'],
   },
   verification: {
     google: '3FzK2uEANXU1UxcCAAfgeX8axs3N4oSq-2slO34BnCU',
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-    },
-  },
-  icons: {
-    icon: [
-      { url: '/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
-      { url: '/icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
-      { url: '/icons/icon-128x128.png', sizes: '128x128', type: 'image/png' },
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
-    shortcut: ['/icons/icon-192x192.png'],
-  },
+  metadataBase: new URL('https://your-vercel-url.vercel.app'),
 };
 
 
@@ -142,8 +87,8 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "CollegeMatch-AI",
-    "url": "https://collegematch-ai.vercel.app",
+    "name": "CollegeMatch AI",
+    "url": "https://your-vercel-url.vercel.app",
     "description": "AI-powered college predictor for Indian engineering students",
     "applicationCategory": "EducationApplication",
     "operatingSystem": "Web",
@@ -157,19 +102,19 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <meta name="application-name" content="CollegeMatch-AI" />
+        <meta name="application-name" content="CollegeMatch AI" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="CollegeMatch-AI" />
+        <meta name="apple-mobile-web-app-title" content="CollegeMatch AI" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="msapplication-TileColor" content="#7c3aed" />
-        <meta name="msapplication-TileImage" content="/icons/icon-144x144.png" />
+        <meta name="msapplication-TileColor" content="#6d28d9" />
+        <meta name="msapplication-TileImage" content="/icons/icon-144x144.svg" />
         <meta name="msapplication-tap-highlight" content="no" />
-        <link rel="apple-touch-icon" href="/icons/icon-152x152.png" />
-        <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
-        <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png" />
+        <link rel="apple-touch-icon" href="/icons/icon-152x152.svg" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.svg" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.svg" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="shortcut icon" href="/icons/icon-96x96.png" />
+        <link rel="shortcut icon" href="/icons/icon-96x96.svg" />
       </head>
       <body className={cn(jakarta.variable, syne.variable, dmSans.variable, "min-h-screen bg-[#05071a] font-sans antialiased")}>
         <script

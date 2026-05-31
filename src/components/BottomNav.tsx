@@ -3,36 +3,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const NAV_ITEMS = [
-  {
-    href: '/dashboard',
-    label: 'Home',
-    activeIcon: '🏠',
-    icon: '🏠',
-  },
-  {
-    href: '/dashboard/predict',
-    label: 'Predict',
-    activeIcon: '⚡',
-    icon: '⚡',
-  },
-  {
-    href: '/dashboard/scholarships',
-    label: 'Scholarships',
-    activeIcon: '🎓',
-    icon: '🎓',
-  },
-  {
-    href: '/dashboard/compare',
-    label: 'Compare',
-    activeIcon: '🗺️',
-    icon: '🗺️',
-  },
-  {
-    href: '/dashboard/profile',
-    label: 'Profile',
-    activeIcon: '👤',
-    icon: '👤',
-  },
+  { href: '/dashboard', label: 'Home', activeIcon: '🏠', icon: '🏠' },
+  { href: '/dashboard/predictor', label: 'Predict', activeIcon: '⚡', icon: '⚡' },
+  { href: '/dashboard/scholarships', label: 'Scholarships', activeIcon: '🎓', icon: '🎓' },
+  { href: '/dashboard/map', label: 'Map', activeIcon: '🗺️', icon: '🗺️' },
+  { href: '/dashboard/profile', label: 'Profile', activeIcon: '👤', icon: '👤' },
 ];
 
 export default function BottomNav() {

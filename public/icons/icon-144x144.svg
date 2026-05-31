@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+    width="144" height="144"
+    viewBox="0 0 144 144">
+    <defs>
+      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1e1058"/>
+        <stop offset="40%" stop-color="#6d28d9"/>
+        <stop offset="100%" stop-color="#db2777"/>
+      </linearGradient>
+      <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="rgba(255,255,255,0.2)"/>
+        <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+      </linearGradient>
+      <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="100%" stop-color="#e9d5ff"/>
+      </linearGradient>
+      <filter id="softShadow">
+        <feDropShadow dx="0" dy="2.16"
+          stdDeviation="3.6"
+          flood-color="#000000" flood-opacity="0.35"/>
+      </filter>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="2.5919999999999996" result="blur"/>
+        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+      </filter>
+    </defs>
+
+    <!-- Main background -->
+    <rect width="144" height="144"
+      rx="31.68" ry="31.68"
+      fill="url(#bg)"/>
+
+    <!-- Shine top half -->
+    <rect width="144" height="72"
+      rx="31.68" ry="31.68"
+      fill="url(#shine)"/>
+
+    <!-- Decorative background circles -->
+    <circle cx="14.4" cy="17.28"
+      r="20.160000000000004"
+      fill="rgba(255,255,255,0.05)"/>
+    <circle cx="126.72" cy="126.72"
+      r="25.919999999999998"
+      fill="rgba(255,255,255,0.04)"/>
+    <circle cx="129.6" cy="21.599999999999998"
+      r="12.959999999999999"
+      fill="rgba(255,255,255,0.06)"/>
+
+    <!-- Star sparkles -->
+    <circle cx="118.08" cy="40.32000000000001"
+      r="2.5919999999999996"
+      fill="rgba(255,255,255,0.7)"/>
+    <circle cx="25.919999999999998" cy="103.67999999999999"
+      r="2.016"
+      fill="rgba(255,255,255,0.5)"/>
+    <circle cx="108" cy="108"
+      r="1.728"
+      fill="rgba(255,220,100,0.7)"/>
+
+    <!-- Graduation Cap -->
+    <g transform="translate(72, 43.199999999999996)"
+      filter="url(#softShadow)">
+      <!-- Cap diamond top -->
+      <polygon
+        points="0,-23.04 31.68,-4.32 0,12.959999999999999 -31.68,-4.32"
+        fill="url(#capGrad)"/>
+      <!-- Cap brim -->
+      <rect x="-28.8" y="-5.040000000000001"
+        width="57.6" height="14.4"
+        rx="2.88"
+        fill="rgba(255,255,255,0.85)"/>
+      <!-- Gold tassel rope -->
+      <line
+        x1="28.8" y1="3.6"
+        x2="28.8" y2="24.48"
+        stroke="#FFD700"
+        stroke-width="4.032"
+        stroke-linecap="round"/>
+      <!-- Tassel end -->
+      <circle cx="28.8" cy="25.919999999999998"
+        r="4.6080000000000005"
+        fill="#FFD700"/>
+      <line
+        x1="28.8" y1="30.24"
+        x2="25.919999999999998" y2="38.88"
+        stroke="#FFD700"
+        stroke-width="2.016"
+        stroke-linecap="round"/>
+      <line
+        x1="28.8" y1="30.24"
+        x2="28.8" y2="40.32000000000001"
+        stroke="#FFD700"
+        stroke-width="2.016"
+        stroke-linecap="round"/>
+      <line
+        x1="28.8" y1="30.24"
+        x2="31.68" y2="38.88"
+        stroke="#FFD700"
+        stroke-width="2.016"
+        stroke-linecap="round"/>
+    </g>
+
+    <!-- CM Text -->
+    <text x="72" y="100.8"
+      font-family="Arial Black, Arial, sans-serif"
+      font-size="40.32000000000001"
+      font-weight="900"
+      fill="white"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      filter="url(#softShadow)"
+      letter-spacing="0.72">CM</text>
+
+    <!-- CollegeMatch label -->
+    <text x="72" y="125.28"
+      font-family="Arial, sans-serif"
+      font-size="10.799999999999999"
+      font-weight="700"
+      fill="rgba(255,255,255,0.75)"
+      text-anchor="middle"
+      letter-spacing="0.864">COLLEGEMATCH AI</text>
+
+    <!-- Bottom glow line -->
+    <rect x="36" y="131.76"
+      width="72" height="1.008"
+      rx="0.5760000000000001"
+      fill="rgba(255,255,255,0.25)"/>
+  </svg>

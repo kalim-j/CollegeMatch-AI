@@ -81,15 +81,12 @@ export default function InstallPrompt() {
 
           {/* Header */}
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-2xl
-              bg-gradient-to-br from-purple-600 to-pink-600
-              flex items-center justify-center flex-shrink-0
-              shadow-lg shadow-purple-500/30">
-              <span className="text-white font-black text-xl">IQ</span>
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-pink-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-violet-500/30">
+              <span className="text-white font-black text-xl">CM</span>
             </div>
             <div className="flex-1">
               <h3 className="text-white font-bold text-base">
-                Install CollegeMatch-AI
+                Install CollegeMatch AI
               </h3>
               <p className="text-gray-400 text-xs mt-0.5">
                 Add to home screen • Works offline
@@ -130,7 +127,7 @@ export default function InstallPrompt() {
                 transition-all duration-200 shadow-lg
                 shadow-purple-500/30"
             >
-              📱 Install App
+              📱 Install CollegeMatch AI
             </button>
             <button
               onClick={handleDismiss}

@@ -80,7 +80,7 @@ const withPWA = withPWAInit({
       urlPattern: /.*/i,
       handler: 'NetworkFirst',
       options: {
-        cacheName: 'admissioniq-others',
+        cacheName: 'collegematch-ai-others',
         expiration: {
           maxEntries: 32,
           maxAgeSeconds: 24 * 60 * 60,

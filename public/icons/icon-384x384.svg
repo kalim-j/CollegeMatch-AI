@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+    width="384" height="384"
+    viewBox="0 0 384 384">
+    <defs>
+      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1e1058"/>
+        <stop offset="40%" stop-color="#6d28d9"/>
+        <stop offset="100%" stop-color="#db2777"/>
+      </linearGradient>
+      <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="rgba(255,255,255,0.2)"/>
+        <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+      </linearGradient>
+      <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="100%" stop-color="#e9d5ff"/>
+      </linearGradient>
+      <filter id="softShadow">
+        <feDropShadow dx="0" dy="5.76"
+          stdDeviation="9.600000000000001"
+          flood-color="#000000" flood-opacity="0.35"/>
+      </filter>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="6.911999999999999" result="blur"/>
+        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+      </filter>
+    </defs>
+
+    <!-- Main background -->
+    <rect width="384" height="384"
+      rx="84.48" ry="84.48"
+      fill="url(#bg)"/>
+
+    <!-- Shine top half -->
+    <rect width="384" height="192"
+      rx="84.48" ry="84.48"
+      fill="url(#shine)"/>
+
+    <!-- Decorative background circles -->
+    <circle cx="38.400000000000006" cy="46.08"
+      r="53.760000000000005"
+      fill="rgba(255,255,255,0.05)"/>
+    <circle cx="337.92" cy="337.92"
+      r="69.12"
+      fill="rgba(255,255,255,0.04)"/>
+    <circle cx="345.6" cy="57.599999999999994"
+      r="34.56"
+      fill="rgba(255,255,255,0.06)"/>
+
+    <!-- Star sparkles -->
+    <circle cx="314.88" cy="107.52000000000001"
+      r="6.911999999999999"
+      fill="rgba(255,255,255,0.7)"/>
+    <circle cx="69.12" cy="276.48"
+      r="5.376"
+      fill="rgba(255,255,255,0.5)"/>
+    <circle cx="288" cy="288"
+      r="4.6080000000000005"
+      fill="rgba(255,220,100,0.7)"/>
+
+    <!-- Graduation Cap -->
+    <g transform="translate(192, 115.19999999999999)"
+      filter="url(#softShadow)">
+      <!-- Cap diamond top -->
+      <polygon
+        points="0,-61.44 84.48,-11.52 0,34.56 -84.48,-11.52"
+        fill="url(#capGrad)"/>
+      <!-- Cap brim -->
+      <rect x="-76.80000000000001" y="-13.440000000000001"
+        width="153.60000000000002" height="38.400000000000006"
+        rx="7.68"
+        fill="rgba(255,255,255,0.85)"/>
+      <!-- Gold tassel rope -->
+      <line
+        x1="76.80000000000001" y1="9.600000000000001"
+        x2="76.80000000000001" y2="65.28"
+        stroke="#FFD700"
+        stroke-width="10.752"
+        stroke-linecap="round"/>
+      <!-- Tassel end -->
+      <circle cx="76.80000000000001" cy="69.12"
+        r="12.288"
+        fill="#FFD700"/>
+      <line
+        x1="76.80000000000001" y1="80.64"
+        x2="69.12" y2="103.68"
+        stroke="#FFD700"
+        stroke-width="5.376"
+        stroke-linecap="round"/>
+      <line
+        x1="76.80000000000001" y1="80.64"
+        x2="76.80000000000001" y2="107.52000000000001"
+        stroke="#FFD700"
+        stroke-width="5.376"
+        stroke-linecap="round"/>
+      <line
+        x1="76.80000000000001" y1="80.64"
+        x2="84.48" y2="103.68"
+        stroke="#FFD700"
+        stroke-width="5.376"
+        stroke-linecap="round"/>
+    </g>
+
+    <!-- CM Text -->
+    <text x="192" y="268.79999999999995"
+      font-family="Arial Black, Arial, sans-serif"
+      font-size="107.52000000000001"
+      font-weight="900"
+      fill="white"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      filter="url(#softShadow)"
+      letter-spacing="1.92">CM</text>
+
+    <!-- CollegeMatch label -->
+    <text x="192" y="334.08"
+      font-family="Arial, sans-serif"
+      font-size="28.799999999999997"
+      font-weight="700"
+      fill="rgba(255,255,255,0.75)"
+      text-anchor="middle"
+      letter-spacing="2.3040000000000003">COLLEGEMATCH AI</text>
+
+    <!-- Bottom glow line -->
+    <rect x="96" y="351.36"
+      width="192" height="2.688"
+      rx="1.536"
+      fill="rgba(255,255,255,0.25)"/>
+  </svg>

@@ -121,9 +121,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
            <div className="flex items-center gap-2 text-white/20 text-xs font-bold">
-              <span>© {new Date().getFullYear()} CollegeMatch-AI</span>
-              <span className="h-1 w-1 rounded-full bg-white/10" />
-              <span>Inspiring ambition since 2024</span>
+              <span>© 2026 CollegeMatch AI. All rights reserved.</span>
            </div>
            
            <div className="flex items-center gap-6">

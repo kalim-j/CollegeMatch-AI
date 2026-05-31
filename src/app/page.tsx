@@ -93,7 +93,7 @@ export default function Home() {
                 with the power of AI
               </h1>
               <p className="text-xl md:text-2xl text-white/60 font-medium tracking-tight max-w-2xl mx-auto">
-                Join 10,000+ students who used our AI to discover their perfect engineering and medical colleges in just 2 minutes.
+                CollegeMatch AI analyses cutoff data from 30+ top Indian colleges to give you a data-backed roadmap to your dream campus in seconds.
               </p>
             </motion.div>
 
