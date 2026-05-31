@@ -10,7 +10,7 @@ import {
   GraduationCap, LayoutDashboard, History, User, 
   Phone, LogOut, Menu, X, Zap, Sparkles, 
   ArrowLeftRight, TrendingUp, Settings, ChevronDown,
-  Search, Award, MessageSquare, Briefcase
+  Search, Award, MessageSquare, Briefcase, MapPin
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -65,6 +65,7 @@ export function Navbar() {
     { name: "Find Colleges", href: "/interview", icon: Search },
     { name: "Compare Colleges", href: "/dashboard/compare", icon: ArrowLeftRight },
     { name: "Cutoff Predictor", href: "/dashboard/predict", icon: TrendingUp },
+    { name: "College Map", href: "/dashboard/map", icon: MapPin },
     { name: "Scholarship Finder", href: "/dashboard/scholarships", icon: Award },
     { name: "Entrance Exam Guide", href: "/exams", icon: Briefcase },
     { name: "Submit Review", href: "/testimonial", icon: MessageSquare },
