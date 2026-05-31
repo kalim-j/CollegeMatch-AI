@@ -657,7 +657,7 @@ export default function PredictPage() {
               <div className="flex items-center justify-center gap-3 opacity-30 py-4">
                 <ShieldCheck size={14} />
                 <span className="text-[10px] font-black uppercase tracking-widest">
-                  Verified CollegeMatch-AI Predictive Data
+                  Verified CollegeMatch AI Predictive Data
                 </span>
               </div>
             </motion.div>
