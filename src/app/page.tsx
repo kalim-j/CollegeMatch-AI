@@ -134,14 +134,14 @@ export default function Home() {
             {/* CTA Box (Search-like Component) */}
             <div
               data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
-              className="max-w-2xl mx-auto mt-12 bg-white/70 backdrop-blur-2xl border border-purple-100 p-2 pl-6 rounded-full flex flex-col sm:flex-row items-center gap-4 hover:border-purple-300 transition-colors shadow-lg shadow-purple-100/30"
+              className="max-w-2xl mx-auto mt-12 bg-white/70 backdrop-blur-2xl border border-purple-100 p-4 sm:p-2 sm:pl-6 rounded-3xl sm:rounded-full flex flex-col sm:flex-row items-center gap-4 hover:border-purple-300 transition-colors shadow-lg shadow-purple-100/30"
             >
-              <div className="flex-1 flex items-center gap-3 w-full sm:w-auto py-2 sm:py-0">
+              <div className="flex-1 flex items-center gap-3 w-full py-2 sm:py-0 px-2 sm:px-0">
                 <Search className="text-purple-300 shrink-0" size={24} />
                 <span className="text-gray-400 font-medium text-lg w-full text-left">Start your free college prediction...</span>
               </div>
               <Link href="/register" className="w-full sm:w-auto">
-                <button className="h-14 w-full sm:w-auto px-8 rounded-full text-base whitespace-nowrap bg-purple-600 hover:bg-purple-700 text-white font-bold transition-all duration-300 shadow-md flex items-center justify-center gap-2">
+                <button className="h-14 w-full sm:w-auto px-8 rounded-2xl sm:rounded-full text-base whitespace-nowrap bg-purple-600 hover:bg-purple-700 text-white font-bold transition-all duration-300 shadow-md flex items-center justify-center gap-2">
                   Analyze My Marks <ArrowRight size={18} />
                 </button>
               </Link>
@@ -309,7 +309,7 @@ export default function Home() {
       {/* Section 5 — CTA Banner */}
       <section className="py-24 px-6 border-t border-purple-100 bg-white/30">
         <div className="container mx-auto">
-          <div className="bg-gradient-to-br from-purple-100 via-blue-50 to-transparent border border-purple-200 rounded-[3rem] p-16 md:p-24 text-center space-y-10 relative overflow-hidden shadow-lg"
+          <div className="bg-gradient-to-br from-purple-100 via-blue-50 to-transparent dark:from-purple-950/40 dark:via-slate-900/40 dark:to-transparent border border-purple-200 dark:border-purple-900/40 rounded-[3rem] p-16 md:p-24 text-center space-y-10 relative overflow-hidden shadow-lg"
             data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
             
             <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-tight relative z-10">
