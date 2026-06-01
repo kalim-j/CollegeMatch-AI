@@ -79,6 +79,7 @@ export function Navbar() {
   }, [user]);
 
   const handleSignOut = async () => {
+    setIsOpen(false);
     await signOut(auth);
     router.push("/");
   };
@@ -249,8 +250,8 @@ export function Navbar() {
                  <Link href="/cutoff-calculator" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Cutoff Calculator</Link>
                  <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Contact</Link>
                  <div className="flex flex-col gap-3 pt-6">
-                    <Link href="/login" className="w-full"><Button variant="outline" className="w-full h-12">Login</Button></Link>
-                    <Link href="/register" className="w-full"><Button className="w-full h-12 bg-primary">Sign Up</Button></Link>
+                    <Link href="/login" onClick={() => setIsOpen(false)} className="w-full"><Button variant="outline" className="w-full h-12">Login</Button></Link>
+                    <Link href="/register" onClick={() => setIsOpen(false)} className="w-full"><Button className="w-full h-12 bg-primary">Sign Up</Button></Link>
                  </div>
                </>
              )}
