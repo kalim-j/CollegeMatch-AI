@@ -77,6 +77,8 @@ export interface College {
   naac_grade?: string;
   fees_approx?: string;
   district?: string;
+  latitude?: number;
+  longitude?: number;
   fees_structure?: {
     ug_annual: number;
     ug_total: number;
