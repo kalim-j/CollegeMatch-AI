@@ -8,21 +8,22 @@ export function Sidebar() {
   const pathname = usePathname();
 
   const navigation = [
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/dashboard/scholarships', label: 'Scholarships', icon: GraduationCap },
     { href: '/dashboard/streams', label: 'Streams', icon: BookOpen },
   ];
 
   return (
-    <aside className="w-64 bg-[#05071a]/60 border-r border-white/10 p-6 flex flex-col gap-2">
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-white/[0.06] mb-4">
+    <aside className="hidden sm:flex flex-col w-64 bg-white/80 backdrop-blur-2xl border-r border-purple-100 shadow-xl shadow-purple-50/50 h-screen sticky top-0 p-6 gap-2">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-purple-100 mb-4">
         <div className="w-10 h-10 rounded-xl flex-shrink-0 bg-gradient-to-br from-violet-600 to-pink-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
           <span className="text-white font-black text-sm">CM</span>
         </div>
         <div className="min-w-0">
-          <p className="text-white font-bold text-sm leading-tight">
+          <p className="text-gray-900 font-bold text-sm leading-tight">
             CollegeMatch
           </p>
-          <p className="text-purple-400 text-xs font-medium">AI</p>
+          <p className="text-purple-600 text-xs font-semibold">AI</p>
         </div>
       </div>
       {navigation.map((item) => {
@@ -32,10 +33,10 @@ export function Sidebar() {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
               isActive
-                ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
+                ? "bg-purple-50 text-purple-700 border border-purple-200 font-semibold"
+                : "text-gray-500 hover:bg-purple-50/50 hover:text-purple-600 transition-all"
             }`}
           >
             <Icon size={18} />

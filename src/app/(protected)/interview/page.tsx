@@ -12,7 +12,7 @@ import {
   Zap, ArrowRight, FileDown, History, GitCompareArrows
 } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, doc, updateDoc, setDoc, increment, serverTimestamp } from "firebase/firestore";
 import { toast } from "sonner";
 import { stateDistricts } from "@/data/stateDistricts";
 import { College, StudentProfile } from "@/types";
@@ -70,6 +70,39 @@ export default function InterviewPage() {
   const [noCollegesInDistrict, setNoCollegesInDistrict] = useState(false);
   const [searchScope, setSearchScope] = useState<string>("");
   const [compareList, setCompareList] = useState<College[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [currentRating, setCurrentRating] = useState<string | null>(null);
+
+  const handleRating = async (rating: "happy" | "bad") => {
+    if (!user || !currentSessionId) return;
+    try {
+      await updateDoc(doc(db, "interviews", user.uid, "sessions", currentSessionId), {
+        rating,
+        ratingTimestamp: serverTimestamp()
+      });
+
+      const statsRef = doc(db, "publicStats", "ratings");
+      await updateDoc(statsRef, {
+        happyCount: rating === "happy" ? increment(1) : increment(0),
+        badCount: rating === "bad" ? increment(1) : increment(0),
+        totalCount: increment(1)
+      }).catch(async (err) => {
+        if (err.code === 'not-found') {
+          await setDoc(statsRef, {
+            happyCount: rating === "happy" ? 1 : 0,
+            badCount: rating === "bad" ? 1 : 0,
+            totalCount: 1
+          });
+        }
+      });
+
+      setCurrentRating(rating);
+      toast.success("Thank you for your feedback!");
+    } catch (error) {
+      console.error("Failed to save feedback:", error);
+      toast.error("Failed to save feedback");
+    }
+  };
 
   // 10th Marks Calculation
   useEffect(() => {
@@ -226,7 +259,7 @@ export default function InterviewPage() {
       setSearchScope(data.searchScope || "district");
 
       if (user && Array.isArray(collegesData) && collegesData.length > 0) {
-        await addDoc(collection(db, "interviews", user.uid, "sessions"), {
+        const docRef = await addDoc(collection(db, "interviews", user.uid, "sessions"), {
           timestamp: serverTimestamp(),
           createdAt: new Date().toISOString(),
           studentProfile: formData,
@@ -235,6 +268,8 @@ export default function InterviewPage() {
           totalResults: collegesData.length,
           searchScope: data.searchScope
         });
+        setCurrentSessionId(docRef.id);
+        setCurrentRating(null);
       }
 
       sessionStorage.setItem('eduanalytics_results', JSON.stringify(collegesData));
@@ -1045,6 +1080,45 @@ export default function InterviewPage() {
               })}
             </div>
             
+            {/* Rating Section */}
+            {colleges.length > 0 && currentSessionId && (
+              <div className="max-w-2xl mx-auto mb-8">
+                <div className="bg-white/[0.02] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-10 text-center space-y-6">
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-black text-white tracking-tight">Are you happy with these results?</h3>
+                    <p className="text-white/30 font-bold text-[10px] uppercase tracking-widest">
+                      Your feedback helps improve our matching accuracy
+                    </p>
+                  </div>
+                  {currentRating ? (
+                    <div className="flex flex-col items-center justify-center py-4 space-y-2">
+                      <span className="text-4xl">{currentRating === "happy" ? "😊" : "😢"}</span>
+                      <p className="text-sm font-bold text-teal-400">
+                        {currentRating === "happy" 
+                          ? "Awesome! We're glad you liked the matches." 
+                          : "Thanks for letting us know. We will continuously work to improve our database."}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex gap-4 justify-center pt-2">
+                      <button
+                        onClick={() => handleRating("happy")}
+                        className="flex items-center gap-3 px-8 py-4 bg-teal-500/10 border border-teal-500/20 rounded-2xl text-teal-400 font-black text-xs uppercase tracking-widest hover:bg-teal-500 hover:text-white transition-all duration-300 group"
+                      >
+                        <span className="text-lg group-hover:scale-125 transition-transform duration-300">😊</span> Happy
+                      </button>
+                      <button
+                        onClick={() => handleRating("bad")}
+                        className="flex items-center gap-3 px-8 py-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 font-black text-xs uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all duration-300 group"
+                      >
+                        <span className="text-lg group-hover:scale-125 transition-transform duration-300">😢</span> Bad
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Share Card Section */}
             {colleges.length > 0 && (
               <div className="max-w-2xl mx-auto">

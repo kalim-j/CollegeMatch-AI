@@ -17,8 +17,9 @@ export default function BottomNav() {
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-40
-        bg-[#07091a]/98 backdrop-blur-2xl
-        border-t border-white/[0.08]
+        bg-white/90 backdrop-blur-2xl
+        border-t border-purple-100
+        shadow-lg shadow-purple-100/50
         sm:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
@@ -39,8 +40,8 @@ export default function BottomNav() {
                 transition-all duration-200 flex-1
                 max-w-[72px]
                 ${isActive
-                  ? 'bg-purple-500/15'
-                  : 'hover:bg-white/[0.04]'
+                  ? 'bg-purple-50 border border-purple-200'
+                  : 'hover:bg-purple-50/50'
                 }`}
             >
               <span className={`text-xl leading-none
@@ -51,12 +52,12 @@ export default function BottomNav() {
               <span className={`text-[9px] font-medium
                 leading-none mt-0.5 text-center w-full
                 transition-colors duration-200
-                ${isActive ? 'text-purple-400' : 'text-gray-600'}`}>
+                ${isActive ? 'text-purple-700' : 'text-gray-400'}`}>
                 {item.label}
               </span>
               {isActive && (
-                <div className="w-1 h-1 rounded-full
-                  bg-purple-400 mt-0.5" />
+                <div className="w-1.5 h-1.5 rounded-full
+                  bg-purple-600 mt-0.5" />
               )}
             </Link>
           );

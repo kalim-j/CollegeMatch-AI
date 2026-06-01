@@ -9,12 +9,12 @@ import {
   LayoutDashboard, Users, Star, Search,
   MapPin, Phone, XCircle, Loader2,
   Briefcase, GraduationCap, MessageCircle,
-  FileText, Trash2, MessageSquare
+  FileText, Trash2, MessageSquare, Activity, History
 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import {
   collection, query, orderBy,
-  updateDoc, doc, deleteDoc, serverTimestamp, onSnapshot
+  updateDoc, doc, deleteDoc, serverTimestamp, onSnapshot, getDocs, limit
 } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
@@ -31,6 +31,36 @@ export default function AdminDashboard() {
   const [usersList, setUsersList] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLead, setSelectedLead] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [userPredictions, setUserPredictions] = useState<any[]>([]);
+  const [userScholarships, setUserScholarships] = useState<any[]>([]);
+  const [loadingActivity, setLoadingActivity] = useState(false);
+
+  const loadUserActivity = async (userId: string) => {
+    setLoadingActivity(true);
+    try {
+      const predSnap = await getDocs(
+        query(collection(db, "interviews", userId, "sessions"), orderBy("timestamp", "desc"), limit(15))
+      );
+      setUserPredictions(predSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+
+      const scholSnap = await getDocs(
+        query(collection(db, "scholarships", userId, "searches"), orderBy("timestamp", "desc"), limit(15))
+      );
+      setUserScholarships(scholSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (err) {
+      console.error("Failed to load user activity:", err);
+      toast.error("Failed to load activity logs");
+    } finally {
+      setLoadingActivity(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedUser) {
+      loadUserActivity(selectedUser.id);
+    }
+  }, [selectedUser]);
 
   useEffect(() => {
     if (!authLoading) {
@@ -94,6 +124,7 @@ export default function AdminDashboard() {
     { id: "analytics", label: "Analytics", icon: LayoutDashboard, accent: "indigo" },
     { id: "leads", label: "Lead Management", icon: Users, accent: "blue", badge: newLeadsCount },
     { id: "testimonials", label: "Testimonials", icon: Star, accent: "amber", badge: pendingCount },
+    { id: "activity", label: "User Activity", icon: Activity, accent: "teal" },
   ];
 
   if (loading || authLoading) return (
@@ -353,6 +384,169 @@ export default function AdminDashboard() {
                         ))}
                       </tbody>
                     </table>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* USER ACTIVITY TAB */}
+            {activeTab === "activity" && (
+              <motion.div key="activity" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {/* Users list */}
+                  <div className="lg:col-span-1 space-y-4">
+                    <div className="rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 space-y-4">
+                      <h3 className="text-lg font-black text-white">Registered Users</h3>
+                      <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Select a user to view their search activity</p>
+                      
+                      <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2">
+                        {usersList.map(u => (
+                          <button
+                            key={u.id}
+                            onClick={() => setSelectedUser(u)}
+                            className={cn(
+                              "w-full flex items-center justify-between p-4 rounded-2xl border transition-all text-left",
+                              selectedUser?.id === u.id
+                                ? "bg-teal-500/10 border-teal-500/30 text-teal-400"
+                                : "bg-white/[0.01] border-white/5 hover:bg-white/[0.03] text-white/70"
+                            )}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="h-9 w-9 bg-teal-500/20 text-teal-400 font-black rounded-xl flex items-center justify-center text-xs uppercase">
+                                {u.fullName?.[0] || u.email?.[0] || "?"}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-bold text-sm truncate">{u.fullName || "Anonymous"}</p>
+                                <p className="text-[10px] text-white/30 truncate">{u.email}</p>
+                              </div>
+                            </div>
+                            {u.isOnline ? (
+                              <span className="h-2 w-2 rounded-full bg-teal-400 animate-pulse shrink-0" />
+                            ) : (
+                              <span className="text-[9px] font-bold text-white/20 shrink-0">Offline</span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Selected User Activity Logs */}
+                  <div className="lg:col-span-2 space-y-6">
+                    {selectedUser ? (
+                      <div className="space-y-6">
+                        {/* User Summary Header */}
+                        <div className="rounded-[2.5rem] border border-teal-500/20 bg-teal-500/[0.02] p-8 flex justify-between items-center">
+                          <div>
+                            <p className="text-[9px] font-black text-teal-400 uppercase tracking-widest mb-1">Active Profile</p>
+                            <h3 className="text-2xl font-black text-white">{selectedUser.fullName || "Anonymous"}</h3>
+                            <p className="text-sm text-white/40">{selectedUser.email}</p>
+                            {selectedUser.lastActive && (
+                              <p className="text-[10px] text-white/20 mt-1">
+                                Last Active: {selectedUser.lastActive?.toDate ? selectedUser.lastActive.toDate().toLocaleString() : new Date(selectedUser.lastActive).toLocaleString()}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end gap-1">
+                            {selectedUser.isOnline ? (
+                              <span className="px-3 py-1 bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">Live Now</span>
+                            ) : (
+                              <span className="px-3 py-1 bg-white/5 text-white/30 border border-white/5 rounded-full text-[10px] font-black uppercase tracking-widest">Offline</span>
+                            )}
+                          </div>
+                        </div>
+
+                        {loadingActivity ? (
+                          <div className="flex flex-col items-center justify-center py-20 gap-4">
+                            <Loader2 className="h-8 w-8 text-teal-400 animate-spin" />
+                            <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">Retrieving User Activity Logs…</p>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Predictions history */}
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+                                <GraduationCap size={16} className="text-indigo-400" /> College Predictions ({userPredictions.length})
+                              </h4>
+                              {userPredictions.length > 0 ? (
+                                <div className="space-y-3">
+                                  {userPredictions.map((pred, i) => (
+                                    <div key={i} className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 space-y-3 hover:border-indigo-500/20 transition-all">
+                                      <div className="flex justify-between items-start">
+                                        <div>
+                                          <p className="text-xs font-bold text-white">{pred.studentProfile?.stream || "General"}</p>
+                                          <p className="text-[9px] text-white/30 uppercase tracking-widest mt-0.5">{pred.studentProfile?.courseLevel} · {pred.studentProfile?.state}</p>
+                                        </div>
+                                        {pred.rating ? (
+                                          <span className="text-xs py-0.5 px-2 bg-white/5 rounded-full" title={`User rated matches: ${pred.rating}`}>
+                                            {pred.rating === "happy" ? "😊 Happy" : "😢 Bad"}
+                                          </span>
+                                        ) : (
+                                          <span className="text-[9px] text-white/20 font-bold uppercase">Unrated</span>
+                                        )}
+                                      </div>
+                                      <div className="p-3 bg-white/[0.02] rounded-xl border border-white/5 text-[11px] space-y-1">
+                                        <p className="text-white/60"><span className="text-white/30">Top Match:</span> {pred.topCollege || "Unknown"}</p>
+                                        <p className="text-white/60"><span className="text-white/30">Results:</span> {pred.totalResults || 0} colleges found</p>
+                                        {pred.studentProfile?.cutoffMark && (
+                                          <p className="text-white/60"><span className="text-white/30">Cutoff:</span> {pred.studentProfile.cutoffMark}</p>
+                                        )}
+                                      </div>
+                                      <p className="text-[9px] text-white/20 font-mono text-right">
+                                        {pred.timestamp?.toDate ? pred.timestamp.toDate().toLocaleString() : new Date(pred.createdAt || "").toLocaleString()}
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="rounded-2xl border border-dashed border-white/5 p-8 text-center text-white/20 text-xs">
+                                  No college predictions found.
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Scholarship searches */}
+                            <div className="space-y-4">
+                              <h4 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+                                <Activity size={16} className="text-teal-400" /> Scholarship Finder ({userScholarships.length})
+                              </h4>
+                              {userScholarships.length > 0 ? (
+                                <div className="space-y-3">
+                                  {userScholarships.map((schol, i) => (
+                                    <div key={i} className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 space-y-3 hover:border-teal-500/20 transition-all">
+                                      <div>
+                                        <p className="text-xs font-bold text-white">{schol.studentData?.stream || "General"}</p>
+                                        <p className="text-[9px] text-white/30 uppercase tracking-widest mt-0.5">{schol.studentData?.level} · {schol.studentData?.state}</p>
+                                      </div>
+                                      <div className="p-3 bg-white/[0.02] rounded-xl border border-white/5 text-[11px] space-y-1">
+                                        <p className="text-white/60"><span className="text-white/30">Community:</span> {schol.studentData?.community}</p>
+                                        <p className="text-white/60"><span className="text-white/30">Income:</span> {schol.studentData?.income}</p>
+                                        <p className="text-white/60"><span className="text-white/30">Percentage:</span> {schol.studentData?.percentage}%</p>
+                                      </div>
+                                      <p className="text-[9px] text-white/20 font-mono text-right">
+                                        {schol.timestamp?.toDate ? schol.timestamp.toDate().toLocaleString() : "—"}
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="rounded-2xl border border-dashed border-white/5 p-8 text-center text-white/20 text-xs">
+                                  No scholarship searches found.
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="h-full flex flex-col items-center justify-center border border-dashed border-white/5 rounded-[2.5rem] py-32 space-y-4">
+                        <Activity className="h-16 w-16 text-white/10 animate-pulse" />
+                        <div className="text-center">
+                          <p className="text-white font-bold text-sm">No User Selected</p>
+                          <p className="text-[10px] text-white/20 uppercase tracking-widest mt-1">Select a registered student from the list to view logs</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
