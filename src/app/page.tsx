@@ -91,7 +91,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-transparent selection:bg-purple-200 selection:text-purple-900"
-      style={{ background: 'linear-gradient(135deg, #f0f4ff, #faf5ff)' }}>
+      style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
       
       {/* Section 1 — Hero */}
       <section className="relative min-h-[95vh] flex items-center justify-center pt-28 pb-32 overflow-hidden">
@@ -163,8 +163,8 @@ export default function Home() {
 
       {/* Marquee Trust Banner */}
       <section className="border-y border-purple-100 bg-white/50 backdrop-blur-md py-6 overflow-hidden flex whitespace-nowrap relative">
-        <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-[#f0f4ff] to-transparent z-10" />
-        <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-[#f0f4ff] to-transparent z-10" />
+        <div className="absolute left-0 top-0 w-32 h-full z-10" style={{ backgroundImage: 'linear-gradient(to right, var(--bg-primary), transparent)' }} />
+        <div className="absolute right-0 top-0 w-32 h-full z-10" style={{ backgroundImage: 'linear-gradient(to left, var(--bg-primary), transparent)' }} />
         
         <motion.div 
           animate={{ x: ["0%", "-50%"] }}

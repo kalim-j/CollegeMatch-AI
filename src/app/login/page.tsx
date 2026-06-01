@@ -99,8 +99,8 @@ export default function LoginPage() {
   if (!mounted) return null;
 
   return (
-    <div className="relative min-h-screen min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-4 py-8"
-      style={{ background: 'linear-gradient(135deg, #f0f4ff 0%, #e8eeff 50%, #f5f0ff 100%)' }}>
+    <div className="relative min-h-screen min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-4 py-8 text-[var(--text-primary)]"
+      style={{ background: 'linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%)' }}>
 
       {/* Animated background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">

@@ -38,6 +38,48 @@
   --glow-blue: rgba(59, 130, 246, 0.3);
 }
 
+/* Automatic Tailwind mapping for dark mode compatibility */
+.dark .text-gray-900,
+.dark .text-gray-950,
+.dark .text-gray-800,
+.dark .text-slate-900,
+.dark .text-\[\#1e1b4b\] {
+  color: var(--text-primary) !important;
+}
+
+.dark .text-gray-700,
+.dark .text-gray-600,
+.dark .text-slate-700 {
+  color: var(--text-muted) !important;
+}
+
+.dark .bg-white {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark .bg-white\/70 {
+  background-color: var(--bg-card) !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.dark .border-purple-100,
+.dark .border-purple-200,
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: var(--border-color) !important;
+}
+
+.dark .bg-gradient-to-br.from-\[\#f0f4ff\].to-\[\#faf5ff\],
+.dark .bg-gradient-to-br.from-purple-100.to-blue-100,
+.dark [class*="from-[#f0f4ff]"],
+.dark [class*="to-[#faf5ff]"] {
+  background-image: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary)) !important;
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;

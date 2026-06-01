@@ -127,7 +127,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center p-6 overflow-hidden bg-[#05071a]">
+    <div className="relative min-h-screen w-full flex items-center justify-center p-6 overflow-hidden bg-[var(--bg-primary)]">
       <LoginBackground />
       
       <div className="w-full max-w-[1100px] grid lg:grid-cols-2 gap-16 items-center relative z-10">

@@ -128,8 +128,8 @@ export default function MapPage() {
   const states = [...new Set(filtered.map(c => c.state))].length;
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6"
-      style={{ background: 'linear-gradient(135deg, #f0f4ff, #faf5ff)' }}>
+    <div className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6 text-[var(--text-primary)]"
+      style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}

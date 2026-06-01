@@ -235,8 +235,8 @@ export default function StreamsPage() {
 
   return (
     <div
-      className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6"
-      style={{ background: 'linear-gradient(135deg, #f0f4ff, #faf5ff, #f0f9ff)' }}
+      className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6 text-[var(--text-primary)]"
+      style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}
     >
       <div className="max-w-6xl mx-auto">
         <div data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }} className="mb-8">

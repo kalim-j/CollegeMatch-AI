@@ -101,8 +101,8 @@ export default function Dashboard() {
 
   if (authLoading || dataLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f0f4ff]"
-        style={{ background: 'linear-gradient(135deg, #f0f4ff, #faf5ff)' }}>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]"
+        style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
           <p className="text-gray-500 text-sm font-bold uppercase tracking-widest">Loading your profile…</p>
@@ -127,8 +127,8 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6"
-      style={{ background: 'linear-gradient(135deg, #f0f4ff, #faf5ff)' }}>
+    <div className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6 text-[var(--text-primary)]"
+      style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
       {showWelcomeModal && user && (
         <WelcomeModal 
           userName={profile?.fullName?.split(" ")[0] || "Student"}

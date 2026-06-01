@@ -91,8 +91,8 @@ export default function CollegeDetailPage() {
 
   if (!college) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f0f4ff]"
-        style={{ background: 'linear-gradient(135deg, #f0f4ff, #faf5ff)' }}>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]"
+        style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
           <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Analyzing Institutional Intelligence…</p>
@@ -135,8 +135,8 @@ export default function CollegeDetailPage() {
   };
 
   return (
-    <div className="min-h-screen text-gray-900 relative overflow-hidden selection:bg-purple-200"
-      style={{ background: 'linear-gradient(135deg, #f0f4ff, #faf5ff)' }}>
+    <div className="min-h-screen text-[var(--text-primary)] relative overflow-hidden selection:bg-purple-200"
+      style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
       
       <div className="container mx-auto px-6 py-12 max-w-7xl relative z-10">
         <button
