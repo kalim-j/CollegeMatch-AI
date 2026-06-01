@@ -180,19 +180,19 @@ export function Navbar() {
                 </AvatarFallback>
               </Avatar>
             </Link>
-            <button onClick={handleSignOut} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+            <button onClick={handleSignOut} className="hidden sm:block p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
               <LogOut size={20} />
             </button>
           </div>
         ) : (
-          <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-3">
             <Link href="/login" className="btn-ghost !py-2 !px-5 !text-[13px] !text-gray-700 !border-purple-200 hover:!bg-purple-50">Login</Link>
             <Link href="/register" className="btn-primary !py-2 !px-5 !text-[13px] !bg-purple-600 hover:!bg-purple-700">Get Started</Link>
           </div>
         )}
 
         {/* Mobile Toggle */}
-        <button className="lg:hidden p-2 text-gray-800" onClick={() => setIsOpen(!isOpen)}>
+        <button className="lg:hidden p-2 text-[var(--text-primary)]" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>

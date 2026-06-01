@@ -14,10 +14,10 @@ export default function Logo() {
         </div>
       </div>
       <div className="flex flex-col">
-        <span className="text-xl font-black text-white tracking-tighter leading-none group-hover:text-indigo-400 transition-colors">
+        <span className="text-xl font-black text-[var(--text-primary)] tracking-tighter leading-none group-hover:text-indigo-400 transition-colors">
           CollegeMatch<span className="text-indigo-500">.AI</span>
         </span>
-        <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mt-1.5 leading-none">
+        <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mt-1.5 leading-none">
           Institutional Intelligence
         </span>
       </div>
