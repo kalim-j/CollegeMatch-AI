@@ -59,7 +59,7 @@
       fill="rgba(255,220,100,0.7)"/>
 
     <!-- Graduation Cap -->
-    <g transform="translate(64, 38.4)"
+    <g transform="translate(64, 28.16)"
       filter="url(#softShadow)">
       <!-- Cap diamond top -->
       <polygon
@@ -102,7 +102,7 @@
     </g>
 
     <!-- CM Text -->
-    <text x="64" y="89.6"
+    <text x="64" y="69.12"
       font-family="Arial Black, Arial, sans-serif"
       font-size="35.84"
       font-weight="900"
@@ -113,7 +113,7 @@
       letter-spacing="0.64">CM</text>
 
     <!-- CollegeMatch label -->
-    <text x="64" y="111.36"
+    <text x="64" y="98.56"
       font-family="Arial, sans-serif"
       font-size="9.6"
       font-weight="700"
@@ -122,7 +122,7 @@
       letter-spacing="0.768">COLLEGEMATCH AI</text>
 
     <!-- Bottom glow line -->
-    <rect x="32" y="117.12"
+    <rect x="32" y="107.52"
       width="64" height="0.896"
       rx="0.512"
       fill="rgba(255,255,255,0.25)"/>

@@ -68,7 +68,7 @@ const createIcon = (size) => {
       fill="rgba(255,220,100,0.7)"/>
 
     <!-- Graduation Cap -->
-    <g transform="translate(${center}, ${size*0.3})"
+    <g transform="translate(${center}, ${size*0.22})"
       filter="url(#softShadow)">
       <!-- Cap diamond top -->
       <polygon
@@ -111,7 +111,7 @@ const createIcon = (size) => {
     </g>
 
     <!-- CM Text -->
-    <text x="${center}" y="${size*0.7}"
+    <text x="${center}" y="${size*0.54}"
       font-family="Arial Black, Arial, sans-serif"
       font-size="${size*0.28}"
       font-weight="900"
@@ -122,7 +122,7 @@ const createIcon = (size) => {
       letter-spacing="${size*0.005}">CM</text>
 
     <!-- CollegeMatch label -->
-    <text x="${center}" y="${size*0.87}"
+    <text x="${center}" y="${size*0.77}"
       font-family="Arial, sans-serif"
       font-size="${size*0.075}"
       font-weight="700"
@@ -131,7 +131,7 @@ const createIcon = (size) => {
       letter-spacing="${size*0.006}">COLLEGEMATCH AI</text>
 
     <!-- Bottom glow line -->
-    <rect x="${size*0.25}" y="${size*0.915}"
+    <rect x="${size*0.25}" y="${size*0.84}"
       width="${size*0.5}" height="${size*0.007}"
       rx="${size*0.004}"
       fill="rgba(255,255,255,0.25)"/>
