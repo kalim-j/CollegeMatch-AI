@@ -68,99 +68,108 @@ export default function Home() {
     fetchStats();
   }, []);
 
+  useEffect(() => {
+    const elements = document.querySelectorAll('[data-animate]');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry, i) => {
+          if (entry.isIntersecting) {
+            setTimeout(() => {
+              (entry.target as HTMLElement).style.opacity = '1';
+              (entry.target as HTMLElement).style.transform = 'translateY(0)';
+            }, i * 80);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    elements.forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   if (loading) return null;
 
   return (
-    <div className="flex flex-col min-h-screen bg-transparent selection:bg-indigo-500/30 selection:text-white">
+    <div className="flex flex-col min-h-screen bg-transparent selection:bg-purple-200 selection:text-purple-900"
+      style={{ background: 'linear-gradient(135deg, #f0f4ff, #faf5ff)' }}>
       
       {/* Section 1 — Hero */}
       <section className="relative min-h-[95vh] flex items-center justify-center pt-28 pb-32 overflow-hidden">
-        <AppBackground />
         
         {/* Animated Background Shapes */}
-        <motion.div 
-          animate={{ y: [0, -20, 0], opacity: [0.5, 0.8, 0.5] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-20 left-[10%] w-64 h-64 bg-indigo-500/20 rounded-full blur-[80px] -z-10"
+        <div 
+          style={{ animation: 'float 5s ease-in-out infinite' }}
+          className="absolute top-20 left-[10%] w-64 h-64 bg-purple-300/30 rounded-full blur-[80px] -z-10"
         />
-        <motion.div 
-          animate={{ y: [0, 30, 0], opacity: [0.5, 0.9, 0.5] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-20 right-[10%] w-80 h-80 bg-teal-500/20 rounded-full blur-[100px] -z-10"
+        <div 
+          style={{ animation: 'float 7s ease-in-out infinite reverse' }}
+          className="absolute bottom-20 right-[10%] w-80 h-80 bg-blue-300/20 rounded-full blur-[100px] -z-10"
         />
 
         <div className="container px-6 mx-auto relative z-10">
           <div className="max-w-5xl mx-auto text-center space-y-10">
             {/* AI Pill */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass-card text-xs font-black uppercase tracking-widest text-indigo-300 shadow-sm hover:shadow-md hover:border-indigo-500/50 transition-all cursor-default"
+            <div
+              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/70 backdrop-blur-xl border border-purple-100 text-xs font-bold uppercase tracking-wider text-purple-700 shadow-sm hover:shadow-md transition-all cursor-default"
             >
-              <Bot size={16} className="text-indigo-400" />
+              <Bot size={16} className="text-purple-600" />
               Powered by Groq AI · Llama-3.3-70b
-            </motion.div>
+            </div>
 
             {/* Headline */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+            <div
+              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
               className="space-y-6"
             >
-              <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold tracking-tighter leading-[1.05] text-white">
-                Find your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-teal-400">dream college</span><br />
+              <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold tracking-tighter leading-[1.05] text-gray-900">
+                Find your <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">dream college</span><br />
                 with the power of AI
               </h1>
-              <p className="text-xl md:text-2xl text-white/60 font-medium tracking-tight max-w-2xl mx-auto">
+              <p className="text-xl md:text-2xl text-gray-500 font-medium tracking-tight max-w-2xl mx-auto">
                 CollegeMatch AI analyses cutoff data from 30+ top Indian colleges to give you a data-backed roadmap to your dream campus in seconds.
               </p>
-            </motion.div>
+            </div>
 
             {/* CTA Box (Search-like Component) */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-              className="max-w-2xl mx-auto mt-12 glass-card p-2 pl-6 rounded-full flex flex-col sm:flex-row items-center gap-4 hover:border-indigo-400/50 transition-colors"
+            <div
+              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
+              className="max-w-2xl mx-auto mt-12 bg-white/70 backdrop-blur-2xl border border-purple-100 p-2 pl-6 rounded-full flex flex-col sm:flex-row items-center gap-4 hover:border-purple-300 transition-colors shadow-lg shadow-purple-100/30"
             >
               <div className="flex-1 flex items-center gap-3 w-full sm:w-auto py-2 sm:py-0">
-                <Search className="text-white/40 shrink-0" size={24} />
-                <span className="text-white/50 font-medium text-lg w-full text-left">Start your free college prediction...</span>
+                <Search className="text-purple-300 shrink-0" size={24} />
+                <span className="text-gray-400 font-medium text-lg w-full text-left">Start your free college prediction...</span>
               </div>
               <Link href="/register" className="w-full sm:w-auto">
-                <button className="btn-primary h-14 w-full sm:w-auto px-8 rounded-full text-base whitespace-nowrap shadow-md">
-                  Analyze My Marks <ArrowRight size={18} className="ml-1" />
+                <button className="h-14 w-full sm:w-auto px-8 rounded-full text-base whitespace-nowrap bg-purple-600 hover:bg-purple-700 text-white font-bold transition-all duration-300 shadow-md flex items-center justify-center gap-2">
+                  Analyze My Marks <ArrowRight size={18} />
                 </button>
               </Link>
-            </motion.div>
+            </div>
 
             {/* Trust Badges */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.6 }}
-              className="pt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-[13px] font-bold text-white/40 uppercase tracking-wider"
+            <div
+              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
+              className="pt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-[13px] font-bold text-gray-400 uppercase tracking-wider"
             >
-              <span className="flex items-center gap-2" title={`${matchAccuracy}% based on ${ratedCount} student ratings`}><Sparkles size={16} className="text-teal-300" /> {matchAccuracy}% Match Accuracy</span>
-              <span className="flex items-center gap-2"><Users size={16} className="text-indigo-400" /> 10K+ Students</span>
-              <span className="flex items-center gap-2"><Building size={16} className="text-teal-400" /> 500+ Colleges</span>
-              <span className="flex items-center gap-2"><Award size={16} className="text-amber-400" /> Free Forever</span>
-            </motion.div>
+              <span className="flex items-center gap-2" title={`${matchAccuracy}% based on ${ratedCount} student ratings`}><Sparkles size={16} className="text-purple-500" /> {matchAccuracy}% Match Accuracy</span>
+              <span className="flex items-center gap-2"><Users size={16} className="text-blue-500" /> 10K+ Students</span>
+              <span className="flex items-center gap-2"><Building2 size={16} className="text-purple-500" /> 500+ Colleges</span>
+              <span className="flex items-center gap-2"><Award size={16} className="text-amber-500" /> Free Forever</span>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Marquee Trust Banner */}
-      <section className="border-y border-white/10 bg-white/5 backdrop-blur-md py-6 overflow-hidden flex whitespace-nowrap relative">
-        <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-[#05071a] to-transparent z-10" />
-        <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-[#05071a] to-transparent z-10" />
+      <section className="border-y border-purple-100 bg-white/50 backdrop-blur-md py-6 overflow-hidden flex whitespace-nowrap relative">
+        <div className="absolute left-0 top-0 w-32 h-full bg-gradient-to-r from-[#f0f4ff] to-transparent z-10" />
+        <div className="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-[#f0f4ff] to-transparent z-10" />
         
         <motion.div 
           animate={{ x: ["0%", "-50%"] }}
           transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="flex gap-16 items-center text-white/20 font-black text-2xl uppercase tracking-widest px-8"
+          className="flex gap-16 items-center text-purple-700/30 font-black text-2xl uppercase tracking-widest px-8"
         >
           <span>Anna University</span> • <span>PSG Tech</span> • <span>CIT Coimbatore</span> • <span>SSN College</span> • <span>Madras Institute</span> • <span>Thiagarajar</span> •
           <span>Anna University</span> • <span>PSG Tech</span> • <span>CIT Coimbatore</span> • <span>SSN College</span> • <span>Madras Institute</span> • <span>Thiagarajar</span> •
@@ -170,60 +179,60 @@ export default function Home() {
       {/* Section 2 — How it works */}
       <section id="how-it-works" className="py-32 relative">
         <div className="container px-6 mx-auto">
-          <div className="text-center mb-24 space-y-4">
-            <p className="text-[12px] font-black text-indigo-400 uppercase tracking-[0.2em] bg-indigo-500/10 border border-indigo-500/20 inline-block px-4 py-1.5 rounded-full">The Process</p>
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Three steps to your perfect match</h2>
+          <div className="text-center mb-24 space-y-4" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
+            <p className="text-[12px] font-black text-purple-700 uppercase tracking-[0.2em] bg-purple-50 border border-purple-100 inline-block px-4 py-1.5 rounded-full">The Process</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Three steps to your perfect match</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative">
             {/* Step 1 */}
-            <motion.div 
-              whileHover={{ y: -8 }}
-              className="glass-card p-10 relative overflow-hidden group"
+            <div 
+              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
+              className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-10 relative overflow-hidden group hover:-translate-y-2"
             >
-              <div className="h-16 w-16 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all duration-300">
+              <div className="h-16 w-16 rounded-2xl bg-purple-50 border border-purple-100 text-purple-600 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-purple-100 transition-all duration-300">
                 <ClipboardList size={32} />
               </div>
-              <h3 className="text-2xl font-black text-white mb-4">1. Share Your Details</h3>
-              <p className="text-white/60 leading-relaxed text-lg">Tell us your 12th marks, preferred state, district, stream, and community quota. It takes less than a minute.</p>
-              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-white/5 select-none group-hover:text-indigo-500/10 transition-colors">1</div>
-            </motion.div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">1. Share Your Details</h3>
+              <p className="text-gray-500 leading-relaxed text-base">Tell us your 12th marks, preferred state, district, stream, and community quota. It takes less than a minute.</p>
+              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-purple-100 select-none group-hover:text-purple-200 transition-colors">1</div>
+            </div>
 
             {/* Step 2 */}
-            <motion.div 
-              whileHover={{ y: -8 }}
-              className="glass-card p-10 relative overflow-hidden group"
+            <div 
+              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
+              className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-10 relative overflow-hidden group hover:-translate-y-2"
             >
-              <div className="h-16 w-16 rounded-2xl bg-teal-500/10 text-teal-400 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-teal-500/20 transition-all duration-300">
+              <div className="h-16 w-16 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-blue-100 transition-all duration-300">
                 <Bot size={32} />
               </div>
-              <h3 className="text-2xl font-black text-white mb-4">2. AI Analysis</h3>
-              <p className="text-white/60 leading-relaxed text-lg">Our advanced AI scans historical cutoff trends, placements, and NAAC grades across 500+ colleges instantly.</p>
-              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-white/5 select-none group-hover:text-teal-500/10 transition-colors">2</div>
-            </motion.div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">2. AI Analysis</h3>
+              <p className="text-gray-500 leading-relaxed text-base">Our advanced AI scans historical cutoff trends, placements, and NAAC grades across 500+ colleges instantly.</p>
+              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-blue-100 select-none group-hover:text-blue-200 transition-colors">2</div>
+            </div>
 
             {/* Step 3 */}
-            <motion.div 
-              whileHover={{ y: -8 }}
-              className="glass-card p-10 relative overflow-hidden group"
+            <div 
+              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
+              className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-10 relative overflow-hidden group hover:-translate-y-2"
             >
-              <div className="h-16 w-16 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all duration-300">
+              <div className="h-16 w-16 rounded-2xl bg-purple-50 border border-purple-100 text-purple-600 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-purple-100 transition-all duration-300">
                 <GraduationCap size={32} />
               </div>
-              <h3 className="text-2xl font-black text-white mb-4">3. Get Admissions</h3>
-              <p className="text-white/60 leading-relaxed text-lg">Receive your curated list of top 8 colleges, complete with scholarship info and direct counselor chat.</p>
-              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-white/5 select-none group-hover:text-indigo-500/10 transition-colors">3</div>
-            </motion.div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">3. Get Admissions</h3>
+              <p className="text-gray-500 leading-relaxed text-base">Receive your curated list of top 8 colleges, complete with scholarship info and direct counselor chat.</p>
+              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-purple-100 select-none group-hover:text-purple-200 transition-colors">3</div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Section 3 — Features grid */}
-      <section id="features" className="py-32 bg-[#080c24]/50 border-t border-white/5">
+      <section id="features" className="py-32 border-t border-purple-100 bg-white/30">
         <div className="container px-6 mx-auto">
-          <div className="text-center mb-24 space-y-4">
-            <p className="text-[12px] font-black text-teal-400 uppercase tracking-[0.2em] bg-teal-500/10 border border-teal-500/20 inline-block px-4 py-1.5 rounded-full">Core Features</p>
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Everything you need, in one place</h2>
+          <div className="text-center mb-24 space-y-4" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
+            <p className="text-[12px] font-black text-purple-700 uppercase tracking-[0.2em] bg-purple-50 border border-purple-100 inline-block px-4 py-1.5 rounded-full">Core Features</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Everything you need, in one place</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -235,17 +244,17 @@ export default function Home() {
               { icon: Users, title: "Community Quota", desc: "Full support for BC, MBC, SC/ST, and OC category matching algorithms." },
               { icon: Notebook, title: "Exam Guidelines", desc: "Stay ahead with a complete roadmap of relevant national and state entrance exams." },
             ].map((f, i) => (
-              <motion.div 
+              <div 
                 key={i}
-                whileHover={{ y: -5 }}
-                className="glass-card p-8 group"
+                data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
+                className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-8 group hover:-translate-y-1.5"
               >
-                <div className="h-14 w-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-6 group-hover:bg-indigo-500/20 group-hover:text-indigo-300 transition-colors duration-300">
+                <div className="h-14 w-14 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 mb-6 group-hover:bg-purple-100 transition-colors duration-300">
                   <f.icon size={24} />
                 </div>
-                <h3 className="text-xl font-black text-white mb-3">{f.title}</h3>
-                <p className="text-white/50 leading-relaxed">{f.desc}</p>
-              </motion.div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">{f.title}</h3>
+                <p className="text-gray-500 leading-relaxed">{f.desc}</p>
+              </div>
             ))}
           </div>
         </div>
@@ -254,22 +263,19 @@ export default function Home() {
       {/* Section 4 — Testimonials */}
       <section className="py-32">
         <div className="container px-6 mx-auto">
-          <div className="text-center mb-24 space-y-4">
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Loved by students across India</h2>
-            <p className="text-xl text-white/50 max-w-2xl mx-auto">Real success stories from students who found their perfect match.</p>
+          <div className="text-center mb-24 space-y-4" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Loved by students across India</h2>
+            <p className="text-xl text-gray-500 max-w-2xl mx-auto">Real success stories from students who found their perfect match.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <AnimatePresence>
               {testimonials.length > 0 ? (
                 testimonials.slice(0, 3).map((t, idx) => (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1 }}
+                  <div 
+                    data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
                     key={t.id} 
-                    className="glass-card p-10 flex flex-col h-full"
+                    className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl shadow-sm p-10 flex flex-col h-full hover:shadow-md transition-all duration-300"
                   >
                     <div className="flex gap-1 text-amber-500 mb-6">
                       {[...Array(5)].map((_, i) => (
@@ -277,23 +283,23 @@ export default function Home() {
                       ))}
                     </div>
                     
-                    <p className="text-white/70 italic leading-relaxed text-lg flex-1 mb-8">
+                    <p className="text-gray-600 italic leading-relaxed text-base flex-1 mb-8">
                       &quot;{t.review}&quot;
                     </p>
 
-                    <div className="flex items-center gap-4 pt-6 border-t border-white/10">
-                      <div className="h-12 w-12 rounded-full bg-indigo-500/20 flex items-center justify-center font-black text-indigo-400 text-lg">
+                    <div className="flex items-center gap-4 pt-6 border-t border-purple-100">
+                      <div className="h-12 w-12 rounded-full bg-purple-50 border border-purple-200 flex items-center justify-center font-bold text-purple-700 text-lg">
                         {t.name?.[0]}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-black text-white truncate">{t.name}</p>
-                        <p className="text-xs font-bold text-white/50 truncate">{t.college}</p>
+                        <p className="font-bold text-gray-900 truncate">{t.name}</p>
+                        <p className="text-xs font-bold text-gray-400 truncate">{t.college}</p>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 ))
               ) : (
-                [1,2,3].map(i => <div key={i} className="h-64 rounded-[2rem] bg-white/5 animate-pulse" />)
+                [1,2,3].map(i => <div key={i} className="h-64 rounded-[2rem] bg-white/5 border border-purple-100 animate-pulse" />)
               )}
             </AnimatePresence>
           </div>
@@ -301,19 +307,19 @@ export default function Home() {
       </section>
 
       {/* Section 5 — CTA Banner */}
-      <section className="py-24 px-6 border-t border-white/5 bg-[#080c24]/50">
+      <section className="py-24 px-6 border-t border-purple-100 bg-white/30">
         <div className="container mx-auto">
-          <div className="bg-gradient-to-br from-indigo-500/20 via-teal-500/10 to-transparent border border-indigo-500/30 rounded-[3rem] overflow-hidden p-16 md:p-24 text-center space-y-10 relative">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-500/20 via-transparent to-transparent" />
+          <div className="bg-gradient-to-br from-purple-100 via-blue-50 to-transparent border border-purple-200 rounded-[3rem] p-16 md:p-24 text-center space-y-10 relative overflow-hidden shadow-lg"
+            data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
             
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-tight relative z-10">
+            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-tight relative z-10">
               Ready to find your <br /> dream college?
             </h2>
-            <p className="text-xl text-white/60 max-w-xl mx-auto relative z-10">Join thousands of students and let our AI do the heavy lifting. Free forever.</p>
+            <p className="text-xl text-gray-500 max-w-xl mx-auto relative z-10">Join thousands of students and let our AI do the heavy lifting. Free forever.</p>
             
             <div className="relative z-10 mt-8">
               <Link href="/register" className="inline-block">
-                <button className="btn-primary h-16 px-12 text-lg font-bold rounded-full shadow-xl flex items-center gap-2">
+                <button className="h-16 px-12 text-lg font-bold rounded-full bg-purple-600 hover:bg-purple-700 text-white transition-all shadow-xl flex items-center justify-center gap-2 mx-auto">
                   Get Started Now <ArrowRight size={20} />
                 </button>
               </Link>

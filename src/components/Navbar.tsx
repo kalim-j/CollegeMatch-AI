@@ -74,7 +74,7 @@ export function Navbar() {
   const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
 
   return (
-    <nav className="sticky top-0 z-[100] w-full border-b border-white/5 bg-[#05071a]/85 backdrop-blur-[24px] px-6 h-16 flex items-center justify-between">
+    <nav className="sticky top-0 z-[100] w-full border-b border-purple-100 bg-white/80 backdrop-blur-[24px] px-6 h-16 flex items-center justify-between shadow-sm">
       <Link href="/" className="hover:opacity-90 transition-opacity">
         <Logo />
       </Link>
@@ -83,35 +83,25 @@ export function Navbar() {
       <div className="hidden lg:flex items-center gap-8">
         {!user ? (
           <>
-            <button onClick={() => handleNavClick("how-it-works")} className="text-[13px] font-medium text-white/60 hover:text-white transition-colors">How it works</button>
-            <button onClick={() => handleNavClick("features")} className="text-[13px] font-medium text-white/60 hover:text-white transition-colors">Features</button>
-            <Link href="/cutoff-calculator" className="text-[13px] font-medium text-white/60 hover:text-white transition-colors">Cutoff Calculator</Link>
-            <Link href="/contact" className="text-[13px] font-medium text-white/60 hover:text-white transition-colors">Contact</Link>
+            <button onClick={() => handleNavClick("how-it-works")} className="text-[13px] font-medium text-gray-500 hover:text-purple-600 transition-colors">How it works</button>
+            <button onClick={() => handleNavClick("features")} className="text-[13px] font-medium text-gray-500 hover:text-purple-600 transition-colors">Features</button>
+            <Link href="/cutoff-calculator" className="text-[13px] font-medium text-gray-500 hover:text-purple-600 transition-colors">Cutoff Calculator</Link>
+            <Link href="/contact" className="text-[13px] font-medium text-gray-500 hover:text-purple-600 transition-colors">Contact</Link>
           </>
         ) : (
           <>
-            <Link href="/dashboard" className={cn("text-[13px] font-medium transition-colors hover:text-white", pathname === "/dashboard" ? "text-white border-b-2 border-[#7F77DD] pb-1" : "text-white/60")}>Dashboard</Link>
+            <Link href="/dashboard" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Dashboard</Link>
             
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1 text-[13px] font-medium text-white/60 hover:text-white outline-none transition-colors">
-                Tools <ChevronDown size={14} />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-[#111520] border-white/10 text-slate-300 w-64 p-2 rounded-2xl backdrop-blur-xl shadow-2xl">
-                {tools.map((tool) => (
-                  <DropdownMenuItem key={tool.href} asChild>
-                    <Link href={tool.href} className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition-all group">
-                      <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
-                        <tool.icon size={16} />
-                      </div>
-                      <span className="font-bold text-sm">{tool.name}</span>
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Link href="/interview" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/interview" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Find Colleges</Link>
+            <Link href="/dashboard/compare" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/compare" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Compare</Link>
+            <Link href="/dashboard/predict" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/predict" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Predictor</Link>
+            <Link href="/dashboard/map" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/map" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Map</Link>
+            <Link href="/dashboard/scholarships" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/scholarships" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Scholarships</Link>
+            <Link href="/exams" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/exams" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Exams</Link>
+            <Link href="/testimonial" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/testimonial" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Submit Review</Link>
 
-            <Link href="/history" className={cn("text-[13px] font-medium transition-colors hover:text-white", pathname === "/history" ? "text-white border-b-2 border-[#7F77DD] pb-1" : "text-white/60")}>History</Link>
-            <Link href="/contact" className={cn("text-[13px] font-medium transition-colors hover:text-white", pathname === "/contact" ? "text-white border-b-2 border-[#7F77DD] pb-1" : "text-white/60")}>Contact</Link>
+            <Link href="/history" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/history" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>History</Link>
+            <Link href="/contact" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/contact" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Contact</Link>
           </>
         )}
       </div>
@@ -120,10 +110,10 @@ export function Navbar() {
         {user ? (
           <div className="flex items-center gap-4">
             {isAdmin && (
-              <Link href="/admin" className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-black uppercase tracking-wider relative">
+              <Link href="/admin" className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-600 text-[10px] font-black uppercase tracking-wider relative">
                 Admin
                 {pendingLeads > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 h-4 min-w-[16px] px-1 bg-amber-500 text-white text-[8px] font-black rounded-full flex items-center justify-center animate-pulse border border-[#05071a]">
+                  <span className="absolute -top-1.5 -right-1.5 h-4 min-w-[16px] px-1 bg-amber-500 text-white text-[8px] font-black rounded-full flex items-center justify-center animate-pulse border border-[#f0f4ff]">
                     {pendingLeads}
                   </span>
                 )}
@@ -131,29 +121,29 @@ export function Navbar() {
             )}
             <Link href="/profile" className="flex items-center gap-3 group">
               <div className="flex flex-col items-end hidden sm:flex">
-                <span className="text-[12px] font-bold text-white leading-tight">{profile?.fullName?.split(' ')[0] || user.email?.split('@')[0]}</span>
-                <span className="text-[10px] text-white/40 leading-tight">Student Profile</span>
+                <span className="text-[12px] font-bold text-gray-800 leading-tight">{profile?.fullName?.split(' ')[0] || user.email?.split('@')[0]}</span>
+                <span className="text-[10px] text-gray-400 leading-tight">Student Profile</span>
               </div>
-              <Avatar className="h-10 w-10 border border-white/10 group-hover:border-indigo-500/50 transition-all">
+              <Avatar className="h-10 w-10 border border-purple-200 group-hover:border-purple-500 transition-all">
                 <AvatarImage src={profile?.avatarUrl} />
-                <AvatarFallback className="bg-indigo-500/10 text-indigo-400 font-bold">
+                <AvatarFallback className="bg-purple-50 text-purple-700 font-bold">
                   {profile?.fullName?.charAt(0) || user.email?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
             </Link>
-            <button onClick={handleSignOut} className="p-2 text-white/40 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all">
+            <button onClick={handleSignOut} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
               <LogOut size={20} />
             </button>
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <Link href="/login" className="btn-ghost !py-2 !px-5 !text-[13px]">Login</Link>
-            <Link href="/register" className="btn-primary !py-2 !px-5 !text-[13px]">Get Started</Link>
+            <Link href="/login" className="btn-ghost !py-2 !px-5 !text-[13px] !text-gray-700 !border-purple-200 hover:!bg-purple-50">Login</Link>
+            <Link href="/register" className="btn-primary !py-2 !px-5 !text-[13px] !bg-purple-600 hover:!bg-purple-700">Get Started</Link>
           </div>
         )}
 
         {/* Mobile Toggle */}
-        <button className="lg:hidden p-2 text-white" onClick={() => setIsOpen(!isOpen)}>
+        <button className="lg:hidden p-2 text-gray-800" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>

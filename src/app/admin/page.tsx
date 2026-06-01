@@ -399,8 +399,22 @@ export default function AdminDashboard() {
                       <h3 className="text-lg font-black text-white">Registered Users</h3>
                       <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Select a user to view their search activity</p>
                       
+                      <div className="relative">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+                        <input
+                          type="text"
+                          placeholder="Search users..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full h-10 pl-9 pr-4 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-teal-500/50 text-xs font-semibold"
+                        />
+                      </div>
+                      
                       <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2">
-                        {usersList.map(u => (
+                        {usersList.filter(u => 
+                          u.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          u.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                        ).map(u => (
                           <button
                             key={u.id}
                             onClick={() => setSelectedUser(u)}
@@ -436,23 +450,53 @@ export default function AdminDashboard() {
                     {selectedUser ? (
                       <div className="space-y-6">
                         {/* User Summary Header */}
-                        <div className="rounded-[2.5rem] border border-teal-500/20 bg-teal-500/[0.02] p-8 flex justify-between items-center">
-                          <div>
-                            <p className="text-[9px] font-black text-teal-400 uppercase tracking-widest mb-1">Active Profile</p>
-                            <h3 className="text-2xl font-black text-white">{selectedUser.fullName || "Anonymous"}</h3>
-                            <p className="text-sm text-white/40">{selectedUser.email}</p>
-                            {selectedUser.lastActive && (
-                              <p className="text-[10px] text-white/20 mt-1">
-                                Last Active: {selectedUser.lastActive?.toDate ? selectedUser.lastActive.toDate().toLocaleString() : new Date(selectedUser.lastActive).toLocaleString()}
-                              </p>
-                            )}
+                        <div className="rounded-[2.5rem] border border-teal-500/20 bg-teal-500/[0.02] p-8 space-y-6">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="text-[9px] font-black text-teal-400 uppercase tracking-widest mb-1">Active Profile</p>
+                              <h3 className="text-2xl font-black text-white">{selectedUser.fullName || "Anonymous"}</h3>
+                              <p className="text-sm text-white/40">{selectedUser.email}</p>
+                              {selectedUser.lastActive && (
+                                <p className="text-[10px] text-white/20 mt-1">
+                                  Last Active: {selectedUser.lastActive?.toDate ? selectedUser.lastActive.toDate().toLocaleString() : new Date(selectedUser.lastActive).toLocaleString()}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              {selectedUser.isOnline ? (
+                                <span className="px-3 py-1 bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">Live Now</span>
+                              ) : (
+                                <span className="px-3 py-1 bg-white/5 text-white/30 border border-white/5 rounded-full text-[10px] font-black uppercase tracking-widest">Offline</span>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex flex-col items-end gap-1">
-                            {selectedUser.isOnline ? (
-                              <span className="px-3 py-1 bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">Live Now</span>
-                            ) : (
-                              <span className="px-3 py-1 bg-white/5 text-white/30 border border-white/5 rounded-full text-[10px] font-black uppercase tracking-widest">Offline</span>
-                            )}
+
+                          {/* Profile Details Block */}
+                          <div className="border-t border-white/5 pt-6 grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            <div>
+                              <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Course Level</p>
+                              <p className="text-sm font-bold text-white">{selectedUser.courseLevel || "N/A"}</p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Preferred Stream</p>
+                              <p className="text-sm font-bold text-white">{selectedUser.preferredCourse || "N/A"}</p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Budget Preference</p>
+                              <p className="text-sm font-bold text-white">{selectedUser.budget || "N/A"}</p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">10th Marks</p>
+                              <p className="text-sm font-bold text-white">{selectedUser.percentage10th ? `${selectedUser.percentage10th}%` : selectedUser.cgpa10 ? `CGPA: ${selectedUser.cgpa10}` : "N/A"}</p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">12th Marks</p>
+                              <p className="text-sm font-bold text-white">{selectedUser.percentage12th ? `${selectedUser.percentage12th}%` : selectedUser.cgpa12 ? `CGPA: ${selectedUser.cgpa12}` : "N/A"}</p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] font-black text-white/20 uppercase tracking-widest mb-1">Quota / Quota Group</p>
+                              <p className="text-sm font-bold text-white">{selectedUser.quota || "N/A"}</p>
+                            </div>
                           </div>
                         </div>
 

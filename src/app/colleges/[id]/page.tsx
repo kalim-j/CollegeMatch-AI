@@ -124,12 +124,12 @@ export default function CollegeDetailPage() {
         {/* College Image */}
         <div className="relative w-full h-48 sm:h-64 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-100 to-blue-100 mb-6">
           <img
-            src={`https://source.unsplash.com/800x400/?${encodeURIComponent(college.name + ' college India campus')}`}
+            src={`https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80`}
             alt={college.name}
             className="w-full h-full object-cover"
             onError={(e) => {
               (e.target as HTMLImageElement).src =
-                `https://ui-avatars.com/api/?name=${encodeURIComponent(college.name)}&size=800&background=7c3aed&color=fff&bold=true&format=svg`;
+                `https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80`;
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
