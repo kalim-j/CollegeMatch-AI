@@ -87,7 +87,7 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
-  if (loading) return null;
+  // Allow home page to render immediately without blocking on auth loading state
 
   return (
     <div className="flex flex-col min-h-screen bg-transparent selection:bg-purple-200 selection:text-purple-900"
