@@ -2407,6 +2407,33 @@ const engineeringAndMultiStreamColleges: CollegeData[] = [
     website: "https://www.rathinamtechnical.com"
   },
   {
+    id: 861,
+    name: "Rathinam College of Arts and Science",
+    location: "Eachanari",
+    district: "Coimbatore",
+    state: "Tamil Nadu",
+    type: "Private",
+    level: "Both",
+    naac_grade: "A++",
+    courses: ["Computer Science", "Information Technology", "Data Science", "Business Administration", "Commerce", "Visual Communication"],
+    fees_structure: {
+      ug_annual: 80000,
+      ug_total: 240000,
+      pg_annual: 40000,
+      pg_total: 80000,
+      hostel_annual: 38000
+    },
+    cutoff_general: 150.0,
+    cutoff_obc: 140.0,
+    cutoff_sc: 130.0,
+    cutoff_st: 120.0,
+    avg_package_lpa: 3.5,
+    max_package_lpa: 10.0,
+    seats: 1200,
+    nirf_rank: 101,
+    website: "https://www.rathinamcolleges.edu.in"
+  },
+  {
     id: 87,
     name: "Kathir College of Engineering",
     location: "Avinashi Road",

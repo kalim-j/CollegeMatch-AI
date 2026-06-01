@@ -116,7 +116,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <link rel="shortcut icon" href="/icons/icon-96x96.svg" />
       </head>
-      <body className={cn(jakarta.variable, syne.variable, dmSans.variable, "min-h-screen bg-[#05071a] font-sans antialiased")}>
+      <body className={cn(jakarta.variable, syne.variable, dmSans.variable, "min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased")}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

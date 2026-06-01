@@ -1,8 +1,8 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { collegesDatabase } from '@/data/collegesDatabase';
 
 const CollegeMap = dynamic(
   () => import('@/components/CollegeMap'),
@@ -34,6 +34,7 @@ type College = {
   website: string;
   latitude: number;
   longitude: number;
+  district: string;
 };
 
 export default function MapPage() {
@@ -41,37 +42,54 @@ export default function MapPage() {
   const [filter, setFilter] = useState('All');
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [searchTrigger, setSearchTrigger] = useState('');
 
   useEffect(() => {
     const fetchColleges = async () => {
       setLoading(true);
-      
-      // First try with latitude filter
-      let { data, error } = await supabase
-        .from('colleges')
-        .select('*')
-        .order('nirf_rank', { ascending: true });
 
-      if (error) {
-        console.error('Supabase error:', error);
-        setLoading(false);
-        return;
-      }
+      const stateCoords: Record<string, [number, number]> = {
+        'Tamil Nadu': [11.1271, 78.6569],
+        'Maharashtra': [19.7515, 75.7139],
+        'Karnataka': [15.3173, 75.7139],
+        'Kerala': [10.8505, 76.2711],
+        'Delhi': [28.7041, 77.1025],
+        'Gujarat': [22.2587, 71.1924],
+        'West Bengal': [22.9868, 87.8550],
+        'Uttar Pradesh': [26.8467, 80.9462],
+        'Andhra Pradesh': [15.9129, 79.7400],
+        'Telangana': [18.1124, 79.0193],
+      };
 
-      // Filter valid coordinates client-side
-      const withCoords = (data || []).filter(
-        c => c.latitude && c.longitude &&
-             !isNaN(c.latitude) && !isNaN(c.longitude)
-      );
+      const processed = (collegesDatabase || []).map((c: any) => {
+        let lat = c.latitude;
+        let lng = c.longitude;
 
-      // If no coordinates, use default India coordinates
-      const processed = (data || []).map(c => ({
-        ...c,
-        latitude: c.latitude || 20.5937,
-        longitude: c.longitude || 78.9629,
-      }));
+        if (!lat || !lng) {
+          const base = stateCoords[c.state] || [20.5937, 78.9629];
+          const offsetLat = (Math.random() - 0.5) * 0.25;
+          const offsetLng = (Math.random() - 0.5) * 0.25;
+          lat = base[0] + offsetLat;
+          lng = base[1] + offsetLng;
+        }
 
-      setColleges(withCoords.length > 0 ? withCoords : processed);
+        return {
+          id: c.id,
+          name: c.name,
+          location: c.location,
+          state: c.state,
+          type: c.type,
+          cutoff_general: c.cutoff_general,
+          avg_package_lpa: c.avg_package_lpa,
+          nirf_rank: c.nirf_rank,
+          website: c.website,
+          latitude: lat,
+          longitude: lng,
+          district: c.district || '',
+        };
+      });
+
+      setColleges(processed);
       setLoading(false);
     };
 
@@ -99,13 +117,15 @@ export default function MapPage() {
 
   const filtered = colleges.filter(c => {
     const matchFilter = filter === 'All' || c.type === filter;
-    const matchSearch = search === '' ||
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.state.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = searchTrigger === '' ||
+      c.name.toLowerCase().includes(searchTrigger.toLowerCase()) ||
+      c.state.toLowerCase().includes(searchTrigger.toLowerCase()) ||
+      c.location.toLowerCase().includes(searchTrigger.toLowerCase()) ||
+      c.district.toLowerCase().includes(searchTrigger.toLowerCase());
     return matchFilter && matchSearch;
   });
 
-  const states = [...new Set(colleges.map(c => c.state))].length;
+  const states = [...new Set(filtered.map(c => c.state))].length;
 
   return (
     <div className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6"
@@ -118,16 +138,16 @@ export default function MapPage() {
             College Map
           </h1>
           <p className="text-gray-500 text-sm">
-            Explore {colleges.length}+ colleges across India
+            Explore {filtered.length}+ colleges across India
           </p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
           {[
-            { label: 'Total', value: colleges.length, icon: '🏫' },
-            { label: 'Govt', value: colleges.filter(c => c.type === 'Government').length, icon: '🏛️' },
-            { label: 'Private', value: colleges.filter(c => c.type === 'Private').length, icon: '🏢' },
+            { label: 'Total', value: filtered.length, icon: '🏫' },
+            { label: 'Govt', value: filtered.filter(c => c.type === 'Government' || c.type === 'Autonomous').length, icon: '🏛️' },
+            { label: 'Private', value: filtered.filter(c => c.type === 'Private' || c.type === 'Deemed').length, icon: '🏢' },
             { label: 'States', value: states, icon: '🗺️' },
           ].map(s => (
             <div key={s.label}
@@ -142,16 +162,29 @@ export default function MapPage() {
 
         {/* Search + Filter */}
         <div className="flex flex-col sm:flex-row gap-3 mb-5" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
-          <input
-            type="text"
-            placeholder="Search college or state..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="flex-1 px-4 py-2.5 rounded-xl text-sm
-              bg-white/60 border border-purple-200 text-gray-800
-              placeholder:text-gray-400 focus:outline-none
-              focus:ring-2 focus:ring-purple-200 transition-all duration-300"
-          />
+          <div className="flex-1 flex gap-2">
+            <input
+              type="text"
+              placeholder="Search college, city, or state..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  setSearchTrigger(search);
+                }
+              }}
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm
+                bg-white/60 border border-purple-200 text-gray-800
+                placeholder:text-gray-400 focus:outline-none
+                focus:ring-2 focus:ring-purple-200 transition-all duration-300"
+            />
+            <button
+              onClick={() => setSearchTrigger(search)}
+              className="px-6 py-2.5 rounded-xl text-xs font-semibold bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-200 transition-all duration-300"
+            >
+              Search
+            </button>
+          </div>
           <div className="flex gap-2 flex-wrap">
             {['All', 'Government', 'Private', 'Deemed'].map(f => (
               <button key={f} onClick={() => setFilter(f)}

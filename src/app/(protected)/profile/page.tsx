@@ -99,27 +99,21 @@ export default function ProfilePage() {
   };
 
   if (loading || !user) return (
-    <div className="min-h-screen bg-[#05071a] flex items-center justify-center">
-      <Loader2 className="h-10 w-10 text-indigo-400 animate-spin" />
+    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] flex items-center justify-center">
+      <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#05071a] text-white relative overflow-hidden selection:bg-indigo-500/30">
-      {/* Background Ambience */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 rounded-full blur-[150px] pointer-events-none" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-teal-500/5 rounded-full blur-[150px] pointer-events-none" />
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] text-gray-900 relative overflow-hidden selection:bg-purple-250/20 pt-24">
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-16 max-w-6xl relative z-10">
         <header className="mb-12 md:mb-16 space-y-3 md:space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-            <ShieldCheck size={12} className="text-indigo-400" />
-            <span className="text-[9px] md:text-[10px] font-black text-indigo-300 uppercase tracking-widest">Identity Management</span>
+          <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-purple-50 border border-purple-100 shadow-sm">
+            <ShieldCheck size={12} className="text-purple-650" />
+            <span className="text-[9px] md:text-[10px] font-black text-purple-700 uppercase tracking-widest">Identity Management</span>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Your Profile</h1>
-          <p className="text-white/30 font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] text-[9px] md:text-[10px]">Manage your personal and academic intelligence</p>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-950 tracking-tight">Your Profile</h1>
+          <p className="text-gray-400 font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] text-[9px] md:text-[10px]">Manage your personal and academic intelligence</p>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
@@ -129,34 +123,34 @@ export default function ProfilePage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="rounded-3xl lg:rounded-[3rem] border border-white/5 bg-white/[0.03] backdrop-blur-xl overflow-hidden shadow-2xl relative"
+              className="rounded-3xl border border-purple-100 bg-white/70 backdrop-blur-xl overflow-hidden shadow-sm relative"
             >
-              <div className="h-24 lg:h-32 bg-gradient-to-r from-indigo-600/20 to-teal-600/20 border-b border-white/5" />
+              <div className="h-24 lg:h-32 bg-gradient-to-r from-purple-600/10 to-indigo-650/10 border-b border-purple-100" />
               <div className="px-6 lg:px-8 pb-8 lg:pb-10 -mt-12 lg:-mt-16 flex flex-col items-center text-center">
                 <div className="relative group mb-4 lg:mb-6">
-                  <Avatar className="h-32 w-32 lg:h-40 lg:w-40 border-4 lg:border-[6px] border-[#05071a] shadow-2xl">
+                  <Avatar className="h-32 w-32 lg:h-40 lg:w-40 border-4 lg:border-[6px] border-white shadow-md">
                     <AvatarImage src={profile?.avatarUrl} className="object-cover" />
-                    <AvatarFallback className="text-4xl lg:text-5xl font-black bg-indigo-500/20 text-indigo-400">
+                    <AvatarFallback className="text-4xl lg:text-5xl font-bold bg-purple-50 text-purple-700">
                       {profile?.fullName?.charAt(0) || "S"}
                     </AvatarFallback>
                   </Avatar>
-                  <label className="absolute bottom-1 right-1 lg:bottom-2 lg:right-2 h-10 w-10 lg:h-12 lg:w-12 rounded-xl lg:rounded-2xl bg-indigo-600 text-white flex items-center justify-center cursor-pointer shadow-2xl hover:scale-110 transition-all border-2 lg:border-4 border-[#05071a]">
+                  <label className="absolute bottom-1 right-1 lg:bottom-2 lg:right-2 h-10 w-10 lg:h-12 lg:w-12 rounded-xl lg:rounded-2xl bg-purple-650 bg-purple-600 text-white flex items-center justify-center cursor-pointer shadow-md hover:scale-110 transition-all border-2 lg:border-4 border-white">
                     {uploading ? <Loader2 size={18} className="animate-spin" /> : <Camera size={18} />}
                     <input type="file" className="hidden" onChange={handleAvatarUpload} disabled={uploading} accept="image/*" />
                   </label>
                 </div>
                 
-                <h2 className="text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight">{profile?.fullName}</h2>
-                <p className="text-indigo-400 font-bold text-xs uppercase tracking-widest mt-2">{profile?.courseLevel} Student</p>
-                <div className="w-full h-px bg-white/5 my-6 lg:my-8" />
+                <h2 className="text-2xl lg:text-3xl font-bold text-gray-950 tracking-tight leading-tight">{profile?.fullName}</h2>
+                <p className="text-purple-600 font-bold text-xs uppercase tracking-widest mt-2">{profile?.courseLevel} Student</p>
+                <div className="w-full h-px bg-purple-100 my-6 lg:my-8" />
                 
                 <div className="space-y-3 lg:space-y-4 w-full">
-                  <div className="flex items-center gap-3 lg:gap-4 text-sm p-4 lg:p-5 rounded-xl lg:rounded-2xl bg-white/[0.02] border border-white/5 text-white/40">
-                    <Mail size={16} className="text-indigo-500 flex-shrink-0" />
+                  <div className="flex items-center gap-3 lg:gap-4 text-sm p-4 lg:p-5 rounded-2xl bg-white border border-purple-100 text-gray-500 shadow-sm">
+                    <Mail size={16} className="text-purple-650 flex-shrink-0" />
                     <span className="font-bold truncate text-xs lg:text-sm">{user?.email}</span>
                   </div>
-                  <div className="flex items-center gap-3 lg:gap-4 text-sm p-4 lg:p-5 rounded-xl lg:rounded-2xl bg-white/[0.02] border border-white/5 text-white/40">
-                    <MapPin size={16} className="text-indigo-500 flex-shrink-0" />
+                  <div className="flex items-center gap-3 lg:gap-4 text-sm p-4 lg:p-5 rounded-2xl bg-white border border-purple-100 text-gray-500 shadow-sm">
+                    <MapPin size={16} className="text-purple-650 flex-shrink-0" />
                     <span className="font-bold text-left text-xs lg:text-sm">{profile?.state ? `${profile.district}, ${profile.state}` : "Location not set"}</span>
                   </div>
                 </div>
@@ -170,102 +164,102 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="rounded-3xl lg:rounded-[3rem] border border-white/5 bg-white/[0.02] backdrop-blur-xl overflow-hidden shadow-2xl"
+              className="rounded-3xl border border-purple-100 bg-white/70 backdrop-blur-xl overflow-hidden shadow-sm"
             >
               <div className="p-6 md:p-10 lg:p-14">
                 <form onSubmit={handleUpdateProfile} className="space-y-6 md:space-y-8 lg:space-y-10">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                        <User size={12} className="text-indigo-500" /> Full Identity Name
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                        <User size={12} className="text-purple-605 text-purple-600" /> Full Name
                       </label>
                       <input
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
+                        className="w-full h-14 md:h-16 bg-white border border-purple-200 rounded-xl md:rounded-2xl px-4 md:px-6 text-gray-900 font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 transition-all placeholder:text-gray-400"
                         required
                         placeholder="Your full name"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                        <Sparkles size={12} className="text-indigo-500" /> Personal Bio
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                        <Sparkles size={12} className="text-purple-605 text-purple-600" /> Personal Bio
                       </label>
                       <input
                         placeholder="My ambition is to..."
                         value={formData.bio}
                         onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
+                        className="w-full h-14 md:h-16 bg-white border border-purple-200 rounded-xl md:rounded-2xl px-4 md:px-6 text-gray-900 font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 transition-all placeholder:text-gray-400"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                        <MapPin size={12} className="text-indigo-500" /> State
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                        <MapPin size={12} className="text-purple-650 text-purple-600" /> State
                       </label>
                       <input
                         value={formData.state}
                         onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
+                        className="w-full h-14 md:h-16 bg-white border border-purple-200 rounded-xl md:rounded-2xl px-4 md:px-6 text-gray-900 font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 transition-all placeholder:text-gray-400"
                         placeholder="e.g. Tamil Nadu"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                        <MapPin size={12} className="text-indigo-500" /> District
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                        <MapPin size={12} className="text-purple-650 text-purple-600" /> District
                       </label>
                       <input
                         value={formData.district}
                         onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
+                        className="w-full h-14 md:h-16 bg-white border border-purple-200 rounded-xl md:rounded-2xl px-4 md:px-6 text-gray-900 font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 transition-all placeholder:text-gray-400"
                         placeholder="e.g. Chennai"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                        <Briefcase size={12} className="text-indigo-500" /> Targeted Stream
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                        <Briefcase size={12} className="text-purple-650 text-purple-600" /> Targeted Stream
                       </label>
                       <input
                         value={formData.stream}
                         onChange={(e) => setFormData({ ...formData, stream: e.target.value })}
-                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
+                        className="w-full h-14 md:h-16 bg-white border border-purple-200 rounded-xl md:rounded-2xl px-4 md:px-6 text-gray-900 font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 transition-all placeholder:text-gray-400"
                         placeholder="e.g. Engineering"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                        <Target size={12} className="text-indigo-500" /> Preferred Course
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                        <Target size={12} className="text-purple-650 text-purple-600" /> Preferred Course
                       </label>
                       <input
                         value={formData.preferredCourse}
                         onChange={(e) => setFormData({ ...formData, preferredCourse: e.target.value })}
-                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
+                        className="w-full h-14 md:h-16 bg-white border border-purple-200 rounded-xl md:rounded-2xl px-4 md:px-6 text-gray-900 font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 transition-all placeholder:text-gray-400"
                         placeholder="e.g. Computer Science, Mechanical Engineering"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                        <Phone size={12} className="text-indigo-500" /> Secure Phone
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                        <Phone size={12} className="text-purple-650 text-purple-600" /> Secure Phone
                       </label>
                       <input
                         type="tel"
                         placeholder="+91 9876543210"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full h-14 md:h-16 bg-white/[0.05] border border-white/10 rounded-xl md:rounded-2xl px-4 md:px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/20"
+                        className="w-full h-14 md:h-16 bg-white border border-purple-200 rounded-xl md:rounded-2xl px-4 md:px-6 text-gray-900 font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 transition-all placeholder:text-gray-400"
                       />
                     </div>
                   </div>
 
-                  <div className="pt-6 md:pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center gap-4 md:gap-6">
+                  <div className="pt-6 md:pt-8 border-t border-purple-100 flex flex-col sm:flex-row items-center gap-4 md:gap-6">
                     <button 
                       type="submit" 
                       disabled={saving} 
-                      className="btn-primary h-14 md:h-16 px-8 md:px-12 text-sm md:text-base font-black gap-3 w-full sm:w-auto"
+                      className="h-16 px-12 text-xs font-semibold uppercase bg-purple-600 hover:bg-purple-750 text-white rounded-2xl transition-all shadow-md shadow-purple-200/20 flex items-center justify-center gap-3 w-full sm:w-auto animate-pulse"
                     >
                       {saving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
                       {saving ? "Updating Profile..." : "Commit Changes"}
                     </button>
-                    <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest italic text-center sm:text-left">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic text-center sm:text-left">
                       Identity data is used for personalized AI matching algorithms.
                     </p>
                   </div>

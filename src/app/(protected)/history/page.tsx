@@ -17,7 +17,6 @@ import {
   Search, X, FileDown, Target, Zap, Loader2,
   Lightbulb
 } from "lucide-react";
-import { generatePDFReport } from '@/lib/generateReport';
 import { cn } from "@/lib/utils";
 import StreamResultCard from '@/components/StreamResultCard';
 
@@ -127,59 +126,53 @@ export default function HistoryPage() {
 
   if (loading || fetching) {
     return (
-      <div className="min-h-screen bg-[#05071a] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-10 w-10 text-indigo-400 animate-spin" />
-          <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">Retrieving analysis history…</p>
+          <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
+          <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Retrieving analysis history…</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#05071a] text-white relative overflow-hidden selection:bg-indigo-500/30">
-      {/* Background Ambience */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 rounded-full blur-[150px] pointer-events-none" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-teal-500/5 rounded-full blur-[150px] pointer-events-none" />
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] text-gray-900 relative overflow-hidden selection:bg-purple-250/20 pt-24">
       <div className="container mx-auto px-6 py-16 max-w-5xl relative z-10">
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-8 border-b border-white/5 pb-8">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-8 border-b border-purple-100 pb-8">
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-              <HistoryIcon size={14} className="text-indigo-400" />
-              <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">User Intelligence</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50 border border-purple-100 shadow-sm">
+              <HistoryIcon size={14} className="text-purple-600" />
+              <span className="text-[10px] font-black text-purple-700 uppercase tracking-widest">User Intelligence</span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-black text-white tracking-tighter">Analysis History</h1>
-            <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Revisit your previous AI recommendations</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-950 tracking-tight leading-tight">Analysis History</h1>
+            <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">Revisit your previous AI recommendations</p>
           </div>
         </header>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-10 border-b border-white/10 pb-4 overflow-x-auto">
+        <div className="flex gap-4 mb-10 border-b border-purple-100 pb-4 overflow-x-auto">
           <button
             onClick={() => { setActiveTab('colleges'); setExpandedId(null); }}
             className={cn(
-              "px-6 py-3 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-2",
+              "px-6 py-3 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-2 text-sm",
               activeTab === 'colleges' 
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25" 
-                : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                ? "bg-purple-600 text-white shadow-md shadow-purple-200" 
+                : "bg-white text-gray-500 border border-purple-100 hover:bg-purple-50"
             )}
           >
-            <SchoolIcon size={18} />
+            <SchoolIcon className="h-4.5 w-4.5" />
             College Searches
           </button>
           <button
             onClick={() => { setActiveTab('streams'); setExpandedId(null); }}
             className={cn(
-              "px-6 py-3 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-2",
+              "px-6 py-3 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-2 text-sm",
               activeTab === 'streams' 
-                ? "bg-teal-600 text-white shadow-lg shadow-teal-500/25" 
-                : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
+                ? "bg-purple-600 text-white shadow-md shadow-purple-200" 
+                : "bg-white text-gray-500 border border-purple-100 hover:bg-purple-50"
             )}
           >
-            <Lightbulb size={18} />
+            <Lightbulb className="h-4.5 w-4.5" />
             Stream Discoveries
           </button>
         </div>
@@ -187,13 +180,13 @@ export default function HistoryPage() {
         {activeTab === 'colleges' && (
           <div className="space-y-6 pb-24">
             {sessions.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="h-20 w-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <HistoryIcon className="text-gray-500" size={32} />
+              <div className="text-center py-12 bg-white/70 backdrop-blur-xl border border-purple-100 rounded-3xl p-8 shadow-sm">
+                <div className="h-20 w-20 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-100">
+                  <HistoryIcon className="text-purple-600" size={32} />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">No College Searches</h3>
-                <p className="text-gray-400 mb-6">You haven't performed any AI college analyses yet.</p>
-                <button onClick={() => router.push('/interview')} className="btn-primary px-8">Start Analysis</button>
+                <h3 className="text-xl font-bold text-gray-950 mb-2">No College Searches</h3>
+                <p className="text-gray-500 font-medium text-sm mb-6">You haven't performed any AI college analyses yet.</p>
+                <button onClick={() => router.push('/interview')} className="h-12 px-6 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold text-xs tracking-widest uppercase transition-all shadow-sm">Start Analysis</button>
               </div>
             ) : (
               sessions.map((session, idx) => (
@@ -204,32 +197,32 @@ export default function HistoryPage() {
                   key={session.id}
                 >
                   <div className={cn(
-                    "rounded-[2.5rem] border transition-all overflow-hidden bg-white/[0.02] backdrop-blur-xl group",
-                    expandedId === session.id ? "border-indigo-500/40 bg-white/[0.04]" : "border-white/5 hover:border-white/20"
+                    "rounded-[2.5rem] border transition-all overflow-hidden bg-white/70 backdrop-blur-xl group shadow-sm",
+                    expandedId === session.id ? "border-purple-300" : "border-purple-100 hover:border-purple-250"
                   )}>
-                    <div className="p-10">
+                    <div className="p-8 md:p-10">
                       <div className="flex flex-col lg:flex-row justify-between items-start gap-10">
                         <div className="space-y-6 flex-1">
                           <div className="flex flex-wrap gap-2">
-                            <span className="px-3 py-1 bg-indigo-500/10 rounded-lg text-[9px] font-black text-indigo-400 uppercase tracking-widest border border-indigo-500/20">
+                            <span className="px-3 py-1 bg-purple-50 rounded-lg text-[9px] font-black text-purple-700 uppercase tracking-widest border border-purple-100 shadow-sm">
                               {session.studentProfile?.level || "UG"}
                             </span>
-                            <span className="px-3 py-1 bg-teal-500/10 rounded-lg text-[9px] font-black text-teal-400 uppercase tracking-widest border border-teal-500/20">
+                            <span className="px-3 py-1 bg-teal-50 rounded-lg text-[9px] font-black text-teal-700 uppercase tracking-widest border border-teal-100 shadow-sm">
                               {session.studentProfile?.stream || "Engineering"}
                             </span>
                           </div>
                           
                           <div className="space-y-2">
-                            <h3 className="text-3xl font-black text-white leading-tight tracking-tight group-hover:text-indigo-400 transition-colors">
+                            <h3 className="text-2xl md:text-3xl font-bold text-gray-950 leading-tight tracking-tight group-hover:text-purple-700 transition-colors">
                               {session.topCollege}
                             </h3>
                             <div className="flex flex-wrap gap-x-6 gap-y-2">
-                              <div className="flex items-center gap-2 text-[11px] text-white/30 font-black uppercase tracking-widest">
-                                <MapPin className="h-3.5 w-3.5 text-indigo-500" />
+                              <div className="flex items-center gap-2 text-[11px] text-gray-400 font-bold uppercase tracking-widest">
+                                <MapPin className="h-3.5 w-3.5 text-purple-650" />
                                 {session.studentProfile?.district}, {session.studentProfile?.state}
                               </div>
-                              <div className="flex items-center gap-2 text-[11px] text-white/30 font-black uppercase tracking-widest">
-                                <Calendar className="h-3.5 w-3.5 text-indigo-500" />
+                              <div className="flex items-center gap-2 text-[11px] text-gray-400 font-bold uppercase tracking-widest">
+                                <Calendar className="h-3.5 w-3.5 text-purple-650" />
                                 {session.createdAt ? new Date(session.createdAt).toLocaleDateString('en-IN', {
                                   day: 'numeric', month: 'short', year: 'numeric'
                                 }) : 'N/A'}
@@ -242,10 +235,10 @@ export default function HistoryPage() {
                           <button
                             onClick={() => setExpandedId(expandedId === session.id ? null : session.id)}
                             className={cn(
-                              "h-14 px-10 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center gap-2",
+                              "h-14 px-8 rounded-xl font-bold text-xs tracking-widest uppercase transition-all flex items-center justify-center gap-2",
                               expandedId === session.id 
-                                  ? "bg-white text-[#05071a]" 
-                                  : "bg-indigo-600 hover:bg-indigo-500 text-white"
+                                  ? "bg-gray-100 text-gray-700 hover:bg-gray-250 border border-purple-200" 
+                                  : "bg-purple-600 hover:bg-purple-700 text-white shadow-sm"
                             )}
                           >
                             {expandedId === session.id ? <><X size={16} /> Close Results</> : <><Search size={16} /> Reveal Analysis</>}
@@ -261,16 +254,16 @@ export default function HistoryPage() {
                             exit={{ height: 0, opacity: 0 }}
                             className="overflow-hidden"
                           >
-                            <div className="pt-12 space-y-6">
+                            <div className="pt-10 space-y-6">
                               <div className="grid grid-cols-1 gap-4">
                                 {session.results.map((college, idx) => (
-                                  <div key={idx} onClick={() => handleCollegeClick(college)} className="group p-6 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-indigo-500/30 cursor-pointer flex justify-between items-center gap-4">
+                                  <div key={idx} onClick={() => handleCollegeClick(college)} className="group p-5 rounded-2xl bg-white border border-purple-100 hover:border-purple-300 cursor-pointer flex justify-between items-center gap-4 shadow-sm transition-all">
                                     <div>
-                                      <h4 className="text-lg font-bold text-white group-hover:text-indigo-400">{college.name}</h4>
-                                      <p className="text-xs text-gray-400">{college.location}</p>
+                                      <h4 className="text-base font-bold text-gray-900 group-hover:text-purple-700">{college.name}</h4>
+                                      <p className="text-xs text-gray-400 font-bold">{college.location}</p>
                                     </div>
                                     <div className="text-right">
-                                      <div className="text-xl font-black text-teal-400">{Math.round(college.match_score)}%</div>
+                                      <div className="text-lg font-bold text-emerald-600">{Math.round(college.match_score)}% Match</div>
                                     </div>
                                   </div>
                                 ))}
@@ -290,13 +283,13 @@ export default function HistoryPage() {
         {activeTab === 'streams' && (
           <div className="space-y-6 pb-24">
             {discoveries.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="h-20 w-20 bg-teal-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-teal-500/20">
-                  <Lightbulb className="text-teal-500" size={32} />
+              <div className="text-center py-12 bg-white/70 backdrop-blur-xl border border-purple-100 rounded-3xl p-8 shadow-sm">
+                <div className="h-20 w-20 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-100">
+                  <Lightbulb className="text-purple-650" size={32} />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">No Stream Discoveries</h3>
-                <p className="text-gray-400 mb-6">You haven't run the Stream Discovery AI yet.</p>
-                <button onClick={() => router.push('/discover')} className="px-8 py-3 bg-teal-600 text-white rounded-lg font-bold hover:bg-teal-500">Discover your stream</button>
+                <h3 className="text-xl font-bold text-gray-950 mb-2">No Stream Discoveries</h3>
+                <p className="text-gray-500 font-medium text-sm mb-6">You haven't run the Stream Discovery AI yet.</p>
+                <button onClick={() => router.push('/discover')} className="h-12 px-6 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-750 text-xs uppercase tracking-widest shadow-sm">Discover your stream</button>
               </div>
             ) : (
               discoveries.map((discovery, idx) => (
@@ -307,27 +300,27 @@ export default function HistoryPage() {
                   key={discovery.id}
                 >
                   <div className={cn(
-                    "rounded-[2.5rem] border transition-all overflow-hidden bg-white/[0.02] backdrop-blur-xl group",
-                    expandedId === discovery.id ? "border-teal-500/40 bg-white/[0.04]" : "border-white/5 hover:border-white/20"
+                    "rounded-[2.5rem] border transition-all overflow-hidden bg-white/70 backdrop-blur-xl group shadow-sm",
+                    expandedId === discovery.id ? "border-purple-300" : "border-purple-100 hover:border-purple-250"
                   )}>
                     <div className="p-8 md:p-10">
                       <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                         <div>
-                          <div className="flex items-center gap-2 text-[10px] font-black text-white/30 uppercase tracking-widest mb-3">
-                            <Calendar className="h-3.5 w-3.5 text-teal-500" />
+                          <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
+                            <Calendar className="h-3.5 w-3.5 text-purple-600" />
                             {discovery.timestamp ? new Date(discovery.timestamp.toDate()).toLocaleDateString('en-IN', {
                               day: 'numeric', month: 'short', year: 'numeric'
                             }) : 'N/A'}
                           </div>
-                          <h3 className="text-2xl md:text-3xl font-black text-teal-400 mb-2">
+                          <h3 className="text-xl md:text-2xl font-bold text-purple-700 mb-2">
                             {discovery.results.streams[0].stream}
                           </h3>
                           <div className="flex items-center gap-3">
-                            <span className="px-3 py-1 bg-white/5 rounded-full text-xs font-bold text-white">
+                            <span className="px-3 py-1 bg-white border border-purple-100 rounded-full text-xs font-bold text-gray-700 shadow-sm">
                               Score: {discovery.results.streams[0].match_score}%
                             </span>
                             {discovery.selectedStream && (
-                              <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-xs font-bold border border-indigo-500/30">
+                              <span className="px-3 py-1 bg-indigo-50 border border-indigo-150 text-indigo-750 rounded-full text-xs font-bold shadow-sm">
                                 Selected: {discovery.selectedStream}
                               </span>
                             )}
@@ -336,10 +329,10 @@ export default function HistoryPage() {
                         <button
                           onClick={() => setExpandedId(expandedId === discovery.id ? null : discovery.id)}
                           className={cn(
-                            "px-8 py-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2",
+                            "px-8 py-4 rounded-xl font-bold text-xs tracking-widest uppercase transition-all flex items-center justify-center gap-2",
                             expandedId === discovery.id 
-                                ? "bg-white text-[#05071a]" 
-                                : "bg-teal-600 hover:bg-teal-500 text-white"
+                                ? "bg-gray-100 text-gray-700 hover:bg-gray-250 border border-purple-200" 
+                                : "bg-purple-600 hover:bg-purple-700 text-white shadow-sm"
                           )}
                         >
                           {expandedId === discovery.id ? "Close Results" : "View Full Result"}
@@ -354,7 +347,7 @@ export default function HistoryPage() {
                             exit={{ height: 0, opacity: 0 }}
                             className="overflow-hidden"
                           >
-                            <div className="pt-8 mt-8 border-t border-white/5 space-y-6">
+                            <div className="pt-8 mt-8 border-t border-purple-150 space-y-6">
                               {discovery.results.streams.map((stream: any, i: number) => (
                                 <StreamResultCard 
                                   key={i} 

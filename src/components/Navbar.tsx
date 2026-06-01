@@ -10,7 +10,8 @@ import {
   GraduationCap, LayoutDashboard, History, User, 
   Phone, LogOut, Menu, X, Zap, Sparkles, 
   ArrowLeftRight, TrendingUp, Settings, ChevronDown,
-  Search, Award, MessageSquare, Briefcase, MapPin
+  Search, Award, MessageSquare, Briefcase, MapPin,
+  Sun, Moon
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,39 @@ export function Navbar() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [pendingLeads, setPendingLeads] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme") as "light" | "dark" | null;
+    if (saved) {
+      setTheme(saved);
+      document.documentElement.classList.toggle("dark", saved === "dark");
+    } else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setTheme(prefersDark ? "dark" : "light");
+      document.documentElement.classList.toggle("dark", prefersDark);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === "light" ? "dark" : "light";
+    setTheme(next);
+    localStorage.setItem("theme", next);
+    document.documentElement.classList.toggle("dark", next === "dark");
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     if (user?.email && ADMIN_EMAILS.includes(user.email)) {
@@ -74,7 +108,12 @@ export function Navbar() {
   const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
 
   return (
-    <nav className="sticky top-0 z-[100] w-full border-b border-purple-100 bg-white/80 backdrop-blur-[24px] px-6 h-16 flex items-center justify-between shadow-sm">
+    <nav className={cn(
+      "sticky top-0 z-[100] w-full border-b px-6 transition-all duration-300 flex items-center justify-between",
+      scrolled 
+        ? "bg-[var(--bg-card)] backdrop-blur-[16px] border-[var(--border-hover)] shadow-md shadow-purple-500/5 h-14" 
+        : "bg-[var(--bg-card)] backdrop-blur-[24px] border-[var(--border-color)] shadow-sm h-16"
+    )}>
       <Link href="/" className="hover:opacity-90 transition-opacity">
         <Logo />
       </Link>
@@ -107,13 +146,23 @@ export function Navbar() {
       </div>
 
       <div className="flex items-center gap-4">
+        {theme !== null && (
+          <button
+            onClick={toggleTheme}
+            className="p-2.5 rounded-xl border border-purple-100/80 hover:bg-purple-50 text-gray-500 hover:text-purple-600 transition-all dark:border-white/10 dark:hover:bg-white/5 dark:text-gray-400 dark:hover:text-purple-400"
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+          </button>
+        )}
+
         {user ? (
           <div className="flex items-center gap-4">
             {isAdmin && (
               <Link href="/admin" className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-600 text-[10px] font-black uppercase tracking-wider relative">
                 Admin
                 {pendingLeads > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 h-4 min-w-[16px] px-1 bg-amber-500 text-white text-[8px] font-black rounded-full flex items-center justify-center animate-pulse border border-[#f0f4ff]">
+                  <span className="absolute -top-1.5 -right-1.5 h-4 min-w-[16px] px-1 bg-amber-500 text-white text-[8px] font-black rounded-full flex items-center justify-center animate-pulse border border-purple-200">
                     {pendingLeads}
                   </span>
                 )}
@@ -121,7 +170,7 @@ export function Navbar() {
             )}
             <Link href="/profile" className="flex items-center gap-3 group">
               <div className="flex flex-col items-end hidden sm:flex">
-                <span className="text-[12px] font-bold text-gray-800 leading-tight">{profile?.fullName?.split(' ')[0] || user.email?.split('@')[0]}</span>
+                <span className="text-[12px] font-bold text-gray-800 dark:text-slate-200 leading-tight">{profile?.fullName?.split(' ')[0] || user.email?.split('@')[0]}</span>
                 <span className="text-[10px] text-gray-400 leading-tight">Student Profile</span>
               </div>
               <Avatar className="h-10 w-10 border border-purple-200 group-hover:border-purple-500 transition-all">

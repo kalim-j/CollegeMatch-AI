@@ -81,54 +81,43 @@ export default function ScholarshipsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Open': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'Closing Soon': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'Open': return 'bg-emerald-50 text-emerald-700 border-emerald-250';
+      case 'Closing Soon': return 'bg-amber-50 text-amber-700 border-amber-250';
+      default: return 'bg-gray-50 text-gray-700 border-gray-250';
     }
   };
 
   const getCategoryColor = (cat: string) => {
     const colors: Record<string, string> = {
-      'OBC': 'bg-blue-500/20 text-blue-400',
-      'SC': 'bg-purple-500/20 text-purple-400',
-      'ST': 'bg-green-500/20 text-green-400',
-      'Minority': 'bg-orange-500/20 text-orange-400',
-      'EWS': 'bg-pink-500/20 text-pink-400',
-      'General': 'bg-gray-500/20 text-gray-400',
-      'All': 'bg-indigo-500/20 text-indigo-400',
+      'OBC': 'bg-blue-50 text-blue-700 border-blue-100',
+      'SC': 'bg-purple-50 text-purple-700 border-purple-100',
+      'ST': 'bg-emerald-50 text-emerald-700 border-emerald-100',
+      'Minority': 'bg-amber-50 text-amber-700 border-amber-100',
+      'EWS': 'bg-rose-50 text-rose-700 border-rose-100',
+      'General': 'bg-gray-50 text-gray-700 border-gray-100',
+      'All': 'bg-indigo-50 text-indigo-700 border-indigo-100',
     };
-    return colors[cat] || 'bg-gray-500/20 text-gray-400';
+    return colors[cat] || 'bg-gray-50 text-gray-700';
   };
 
   return (
-    <div className="min-h-screen bg-[#07091a] p-6 pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] text-gray-900 p-6 pt-24">
       <div className="max-w-7xl mx-auto">
 
         {/* HERO HEADER */}
         <div className="relative rounded-3xl overflow-hidden mb-8 p-8
-          bg-gradient-to-br from-purple-900/40 via-violet-900/20 to-pink-900/20
-          border border-purple-500/20">
-
-          {/* Animated background orbs */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute -top-20 -left-20 w-64 h-64 
-              bg-purple-600/20 rounded-full blur-3xl 
-              animate-[float_8s_ease-in-out_infinite]" />
-            <div className="absolute -bottom-20 -right-20 w-64 h-64
-              bg-pink-600/15 rounded-full blur-3xl
-              animate-[float_10s_ease-in-out_infinite_2s]" />
-          </div>
+          bg-white/70 backdrop-blur-xl border border-purple-100 shadow-sm">
 
           <div className="relative text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1.5
-              rounded-full bg-purple-500/20 border border-purple-500/30
-              text-purple-300 text-xs font-medium mb-4">
+              rounded-full bg-purple-50 border border-purple-100
+              text-purple-750 text-xs font-semibold mb-4">
               ✦ AI-POWERED • REAL DATA • UPDATED LIVE
             </div>
-            <h1 className="text-4xl font-bold text-white mb-3">
+            <h1 className="text-4xl font-bold text-gray-950 mb-3">
               Find Scholarships
             </h1>
-            <p className="text-gray-300 text-lg mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-500 font-bold text-sm mb-6 max-w-2xl mx-auto">
               Our AI finds real, active scholarships from government portals,
               PSUs, and private organizations — updated every search
             </p>
@@ -149,16 +138,15 @@ export default function ScholarshipsPage() {
                   onChange={e => setSearch(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && fetchScholarships()}
                   className="w-full pl-11 pr-4 py-3.5 rounded-xl
-                    bg-white/10 border border-white/20 text-white
-                    placeholder:text-gray-400 focus:outline-none
-                    focus:border-purple-400 transition text-sm"
+                    bg-white border border-purple-200 text-gray-900
+                    placeholder:text-gray-400 focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 focus:outline-none transition text-sm"
                 />
               </div>
               <button
                 onClick={fetchScholarships}
                 disabled={loading}
                 className="px-6 py-3.5 rounded-xl font-semibold text-white
-                  bg-gradient-to-r from-purple-600 to-pink-600
+                  bg-purple-600 hover:bg-purple-700
                   hover:opacity-90 transition disabled:opacity-50
                   flex items-center gap-2 whitespace-nowrap"
               >
@@ -198,15 +186,14 @@ export default function ScholarshipsPage() {
         </div>
 
         {/* FILTERS */}
-        <div className="bg-white/[0.04] border border-white/10 rounded-2xl 
-          p-5 mb-8">
+        <div className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-3xl p-6 mb-8 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              strokeWidth="2" className="w-4 h-4 text-purple-400">
+              strokeWidth="2" className="w-4 h-4 text-purple-600">
               <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
             </svg>
-            <span className="text-white font-medium text-sm">Filters</span>
-            <span className="text-gray-500 text-xs ml-auto">
+            <span className="text-gray-900 font-bold text-sm">Filters</span>
+            <span className="text-gray-400 text-xs ml-auto">
               Refine your scholarship search
             </span>
           </div>
@@ -220,12 +207,12 @@ export default function ScholarshipsPage() {
                 value={stream}
                 onChange={e => setStream(e.target.value)}
                 className="w-full px-3 py-2.5 rounded-xl text-sm
-                  bg-white/[0.06] border border-white/10 text-white
-                  focus:outline-none focus:border-purple-500 transition"
+                  bg-white border border-purple-200 text-gray-900
+                  focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 focus:outline-none transition"
               >
                 {STREAMS.map(s => (
                   <option key={s} value={s}
-                    className="bg-[#0d1024] text-white">{s}</option>
+                    className="bg-white text-gray-800">{s}</option>
                 ))}
               </select>
             </div>
@@ -238,12 +225,12 @@ export default function ScholarshipsPage() {
                 value={category}
                 onChange={e => setCategory(e.target.value)}
                 className="w-full px-3 py-2.5 rounded-xl text-sm
-                  bg-white/[0.06] border border-white/10 text-white
-                  focus:outline-none focus:border-purple-500 transition"
+                  bg-white border border-purple-200 text-gray-900
+                  focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 focus:outline-none transition"
               >
                 {CATEGORIES.map(c => (
                   <option key={c} value={c}
-                    className="bg-[#0d1024] text-white">{c}</option>
+                    className="bg-white text-gray-800">{c}</option>
                 ))}
               </select>
             </div>
@@ -256,12 +243,12 @@ export default function ScholarshipsPage() {
                 value={level}
                 onChange={e => setLevel(e.target.value)}
                 className="w-full px-3 py-2.5 rounded-xl text-sm
-                  bg-white/[0.06] border border-white/10 text-white
-                  focus:outline-none focus:border-purple-500 transition"
+                  bg-white border border-purple-200 text-gray-900
+                  focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 focus:outline-none transition"
               >
                 {LEVELS.map(l => (
                   <option key={l} value={l}
-                    className="bg-[#0d1024] text-white">{l}</option>
+                    className="bg-white text-gray-800">{l}</option>
                 ))}
               </select>
             </div>
@@ -274,12 +261,12 @@ export default function ScholarshipsPage() {
                 value={state}
                 onChange={e => setState(e.target.value)}
                 className="w-full px-3 py-2.5 rounded-xl text-sm
-                  bg-white/[0.06] border border-white/10 text-white
-                  focus:outline-none focus:border-purple-500 transition"
+                  bg-white border border-purple-200 text-gray-900
+                  focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 focus:outline-none transition"
               >
                 {STATES.map(s => (
                   <option key={s} value={s}
-                    className="bg-[#0d1024] text-white">{s}</option>
+                    className="bg-white text-gray-800">{s}</option>
                 ))}
               </select>
             </div>
@@ -288,9 +275,8 @@ export default function ScholarshipsPage() {
           <button
             onClick={fetchScholarships}
             disabled={loading}
-            className="mt-4 w-full py-3 rounded-xl font-semibold text-white
-              bg-gradient-to-r from-purple-600 to-pink-600
-              hover:opacity-90 transition disabled:opacity-50
+            className="mt-4 w-full py-3.5 rounded-xl font-semibold text-white
+              bg-purple-600 hover:bg-purple-750 transition disabled:opacity-50
               flex items-center justify-center gap-2"
           >
             {loading ? (
@@ -312,8 +298,8 @@ export default function ScholarshipsPage() {
 
         {/* ERROR */}
         {error && (
-          <div className="mb-6 p-4 rounded-xl border border-red-500/30
-            bg-red-500/10 text-red-400 text-sm">
+          <div className="mb-6 p-4 rounded-xl border border-red-200
+            bg-red-50 text-red-750 text-sm shadow-sm">
             ⚠️ {error}
           </div>
         )}
@@ -324,14 +310,12 @@ export default function ScholarshipsPage() {
             <div className="inline-flex flex-col items-center gap-4">
               <div className="relative w-16 h-16">
                 <div className="absolute inset-0 rounded-full border-2
-                  border-purple-500/30 animate-ping" />
+                  border-purple-600/30 animate-ping" />
                 <div className="absolute inset-2 rounded-full border-2
-                  border-purple-500 border-t-transparent animate-spin" />
-                <div className="absolute inset-4 rounded-full
-                  bg-purple-500/20 animate-pulse" />
+                  border-purple-600 border-t-transparent animate-spin" />
               </div>
               <div>
-                <p className="text-white font-semibold text-lg">
+                <p className="text-gray-950 font-bold text-lg">
                   AI is searching real scholarships...
                 </p>
                 <p className="text-gray-400 text-sm mt-1">
@@ -342,7 +326,7 @@ export default function ScholarshipsPage() {
                 {['NSP Portal', 'AICTE', 'UGC', 'State Govts', 'PSUs'].map((s, i) => (
                   <span key={s}
                     className="px-3 py-1 rounded-full text-xs border
-                      border-purple-500/30 text-purple-400
+                      border-purple-200 bg-white text-purple-700
                       animate-pulse"
                     style={{ animationDelay: `${i * 200}ms` }}>
                     {s}
@@ -359,7 +343,7 @@ export default function ScholarshipsPage() {
             {/* Results header */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-white font-bold text-xl">
+                <h2 className="text-gray-950 font-bold text-xl">
                   {scholarships.length} Scholarships Found
                 </h2>
                 <p className="text-gray-500 text-xs mt-1">
@@ -370,8 +354,8 @@ export default function ScholarshipsPage() {
               <button
                 onClick={fetchScholarships}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl
-                  text-sm text-purple-400 border border-purple-500/30
-                  hover:bg-purple-500/10 transition"
+                  text-sm text-purple-700 border border-purple-200 bg-white
+                  hover:bg-purple-50 transition shadow-sm"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
                   strokeWidth="2" className="w-4 h-4">
@@ -387,68 +371,62 @@ export default function ScholarshipsPage() {
               {scholarships.map((s, i) => (
                 <div
                   key={s.id}
-                  className="group bg-white/[0.04] border border-white/10
-                    rounded-2xl p-6 hover:border-purple-500/40
-                    hover:bg-purple-500/[0.05] hover:-translate-y-1
-                    hover:shadow-xl hover:shadow-purple-900/20
-                    transition-all duration-300"
-                  style={{
-                    animationDelay: `${i * 60}ms`,
-                    animation: 'fadeSlideUp 0.4s ease forwards',
-                    opacity: 0,
-                  }}
+                  className="group bg-white/70 backdrop-blur-xl border border-purple-100
+                    rounded-3xl p-6 hover:border-purple-300
+                    hover:shadow-md hover:-translate-y-1
+                    transition-all duration-300 shadow-sm"
                 >
                   {/* Tags row */}
                   <div className="flex flex-wrap gap-2 mb-3">
-                    <span className={`px-2.5 py-0.5 rounded-full text-xs
-                      font-medium border ${getStatusColor(s.status)}`}>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px]
+                      font-bold border ${getStatusColor(s.status)}`}>
                       ● {s.status}
                     </span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-xs
-                      font-medium ${getCategoryColor(s.category)}`}>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px]
+                      font-bold border ${getCategoryColor(s.category)}`}>
                       {s.category}
                     </span>
                     {s.stream !== 'All' && (
-                      <span className="px-2.5 py-0.5 rounded-full text-xs
-                        font-medium bg-indigo-500/20 text-indigo-400">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px]
+                        font-bold bg-indigo-50 border border-indigo-100 text-indigo-700">
                         {s.stream}
                       </span>
                     )}
                   </div>
 
                   {/* Name */}
-                  <h3 className="text-white font-bold text-base mb-1
-                    leading-snug line-clamp-2 group-hover:text-purple-200
+                  <h3 className="text-gray-950 font-bold text-base mb-1
+                    leading-snug line-clamp-2 group-hover:text-purple-700
                     transition-colors">
                     {s.name}
                   </h3>
 
                   {/* Provider */}
-                  <p className="text-gray-500 text-xs mb-3 flex items-center gap-1">
+                  <p className="text-gray-400 font-bold text-xs mb-3 flex items-center gap-1">
                     🏛️ {s.provider}
                   </p>
 
                   {/* Amount */}
                   <div className="inline-flex items-baseline gap-1 
                     px-3 py-1.5 rounded-xl
-                    bg-green-500/15 border border-green-500/20 mb-3">
-                    <span className="text-green-400 text-xl font-bold">
+                    bg-emerald-550 bg-emerald-50 border border-emerald-200 mb-3">
+                    <span className="text-emerald-700 text-xl font-bold">
                       {formatAmount(s.amount_per_year)}
                     </span>
-                    <span className="text-green-600 text-xs">/yr</span>
+                    <span className="text-emerald-600 text-xs">/yr</span>
                   </div>
 
                   {/* Description */}
-                  <p className="text-gray-400 text-xs leading-relaxed mb-3
+                  <p className="text-gray-500 text-xs leading-relaxed mb-3
                     line-clamp-2">
                     {s.description}
                   </p>
 
                   {/* Eligibility */}
-                  <div className="bg-white/[0.04] rounded-xl p-3 mb-4">
-                    <p className="text-gray-500 text-xs uppercase 
+                  <div className="bg-purple-50/50 border border-purple-100/50 rounded-2xl p-3 mb-4">
+                    <p className="text-gray-400 text-[10px] font-black uppercase 
                       tracking-wider mb-1">Eligibility</p>
-                    <p className="text-gray-300 text-xs leading-relaxed
+                    <p className="text-gray-600 text-xs leading-relaxed
                       line-clamp-2">
                       {s.eligibility}
                     </p>
@@ -456,11 +434,11 @@ export default function ScholarshipsPage() {
 
                   {/* Deadline & Level */}
                   <div className="flex items-center gap-3 mb-4 text-xs">
-                    <span className="flex items-center gap-1 text-gray-400">
+                    <span className="flex items-center gap-1 text-gray-400 font-semibold">
                       📅 {s.deadline}
                     </span>
-                    <span className="text-gray-600">•</span>
-                    <span className="flex items-center gap-1 text-gray-400">
+                    <span className="text-gray-300">•</span>
+                    <span className="flex items-center gap-1 text-gray-400 font-semibold">
                       🎓 {s.level}
                     </span>
                   </div>
@@ -470,9 +448,9 @@ export default function ScholarshipsPage() {
                     <div className="flex flex-wrap gap-1.5 mb-4">
                       {s.tags.map(tag => (
                         <span key={tag}
-                          className="px-2 py-0.5 rounded-md text-xs
-                            bg-white/[0.04] text-gray-500 
-                            border border-white/[0.06]">
+                          className="px-2 py-0.5 rounded-md text-[10px] font-semibold
+                            bg-white text-gray-400 
+                            border border-purple-100">
                           {tag}
                         </span>
                       ))}
@@ -487,8 +465,7 @@ export default function ScholarshipsPage() {
                       rel="noopener noreferrer"
                       className="flex-1 py-2.5 rounded-xl text-center
                         text-xs font-semibold text-white
-                        bg-gradient-to-r from-purple-600 to-pink-600
-                        hover:opacity-90 transition"
+                        bg-purple-600 hover:bg-purple-750 transition"
                     >
                       Apply Now →
                     </a>
@@ -497,9 +474,8 @@ export default function ScholarshipsPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-4 py-2.5 rounded-xl text-xs
-                        font-medium text-gray-400
-                        border border-white/10 hover:border-white/20
-                        hover:text-white transition"
+                        font-semibold text-gray-500 bg-white
+                        border border-purple-200 hover:bg-gray-50 transition"
                     >
                       Details
                     </a>
@@ -509,15 +485,15 @@ export default function ScholarshipsPage() {
             </div>
 
             {/* Disclaimer */}
-            <div className="mt-8 p-4 rounded-xl border border-yellow-500/20
-              bg-yellow-500/5 text-center">
-              <p className="text-yellow-400/80 text-xs">
+            <div className="mt-8 p-4 rounded-xl border border-amber-200
+              bg-amber-50 text-center">
+              <p className="text-amber-800 text-xs">
                 ⚠️ Scholarship data is AI-generated based on real Indian 
                 scholarships. Always verify details on official websites 
                 before applying. Visit{' '}
                 <a href="https://scholarships.gov.in" target="_blank"
                   rel="noopener noreferrer"
-                  className="underline hover:text-yellow-300">
+                  className="underline hover:text-amber-900">
                   scholarships.gov.in
                 </a>
                 {' '}for the official NSP portal.
@@ -528,19 +504,19 @@ export default function ScholarshipsPage() {
 
         {/* EMPTY STATE */}
         {!loading && !searched && (
-          <div className="text-center py-20 rounded-2xl border 
-            border-white/10 bg-white/[0.02]">
+          <div className="text-center py-20 rounded-3xl border 
+            border-purple-100 bg-white/70 backdrop-blur-xl shadow-sm">
             <div className="text-6xl mb-4">🎓</div>
-            <h2 className="text-white font-bold text-xl mb-2">
+            <h2 className="text-gray-950 font-bold text-xl mb-2">
               Discover Real Scholarships
             </h2>
-            <p className="text-gray-400 text-sm max-w-md mx-auto mb-6">
+            <p className="text-gray-500 font-bold text-sm max-w-md mx-auto mb-6">
               Our AI searches through NSP, AICTE, UGC, state government 
               portals and private organizations to find scholarships 
               matching your profile
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 
-              max-w-2xl mx-auto mb-8">
+              max-w-2xl mx-auto mb-8 px-4">
               {[
                 { icon: '🏛️', label: 'Central Govt', sub: 'NSP, AICTE, UGC' },
                 { icon: '🗺️', label: 'State Govt', sub: '28 States' },
@@ -548,21 +524,20 @@ export default function ScholarshipsPage() {
                 { icon: '🌍', label: 'International', sub: 'Study Abroad' },
               ].map(item => (
                 <div key={item.label}
-                  className="bg-white/[0.04] border border-white/10
-                    rounded-xl p-4 text-center">
+                  className="bg-white/80 border border-purple-100
+                    rounded-2xl p-4 text-center shadow-sm">
                   <p className="text-2xl mb-1">{item.icon}</p>
-                  <p className="text-white text-sm font-medium">
+                  <p className="text-gray-900 text-sm font-bold">
                     {item.label}
                   </p>
-                  <p className="text-gray-500 text-xs mt-0.5">{item.sub}</p>
+                  <p className="text-gray-400 text-xs mt-0.5">{item.sub}</p>
                 </div>
               ))}
             </div>
             <button
               onClick={fetchScholarships}
-              className="px-8 py-3 rounded-xl font-semibold text-white
-                bg-gradient-to-r from-purple-600 to-pink-600
-                hover:opacity-90 transition text-sm"
+              className="px-8 py-3.5 rounded-xl font-semibold text-white
+                bg-purple-600 hover:bg-purple-750 transition text-sm shadow-md"
             >
               🤖 Find My Scholarships
             </button>
@@ -571,10 +546,10 @@ export default function ScholarshipsPage() {
 
         {/* NO RESULTS */}
         {!loading && searched && scholarships.length === 0 && (
-          <div className="text-center py-20 rounded-2xl border
-            border-white/10 bg-white/[0.02]">
+          <div className="text-center py-20 rounded-3xl border
+            border-purple-100 bg-white/70 backdrop-blur-xl shadow-sm">
             <p className="text-4xl mb-4">🔍</p>
-            <p className="text-white font-semibold text-lg mb-2">
+            <p className="text-gray-950 font-bold text-lg mb-2">
               No scholarships found
             </p>
             <p className="text-gray-400 text-sm mb-4">
@@ -588,8 +563,8 @@ export default function ScholarshipsPage() {
                 setState('All India');
                 setSearch('');
               }}
-              className="px-6 py-2.5 rounded-xl text-sm text-purple-400
-                border border-purple-500/30 hover:bg-purple-500/10 transition"
+              className="px-6 py-2.5 rounded-xl text-sm text-purple-700
+                border border-purple-200 bg-white hover:bg-gray-50 transition"
             >
               Reset Filters
             </button>
