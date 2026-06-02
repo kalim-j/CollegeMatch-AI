@@ -14,6 +14,7 @@ import {
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { isAdminEmail } from "@/lib/admin";
 
 export default function LoginPage() {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -40,7 +41,7 @@ export default function LoginPage() {
       if (isSignIn) {
         const { user } = await signInWithEmailAndPassword(auth, email, password);
         toast.success("Welcome back!");
-        if (email === "kalimdon07@gmail.com") {
+        if (isAdminEmail(email)) {
           router.push("/admin");
         } else {
           router.push("/dashboard");
@@ -86,7 +87,7 @@ export default function LoginPage() {
       }
 
       toast.success("Signed in with Google!");
-      if (user.email === "kalimdon07@gmail.com") {
+      if (isAdminEmail(user.email)) {
         router.push("/admin");
       } else {
         router.push("/dashboard");

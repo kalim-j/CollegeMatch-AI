@@ -42,8 +42,10 @@ export default function AppBackground() {
       ctx.clearRect(0, 0, W, H);
       t++;
 
-      // Deep Space Base
-      ctx.fillStyle = '#05071a';
+      const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+
+      // Base background
+      ctx.fillStyle = isDark ? '#05071a' : '#f0f4ff';
       ctx.fillRect(0, 0, W, H);
 
       // Ambient Glows
@@ -52,10 +54,16 @@ export default function AppBackground() {
         const by = blob.y + Math.cos(t * blob.speed * 0.8 + i) * 90;
 
         const grad = ctx.createRadialGradient(bx, by, 0, bx, by, blob.r);
-        grad.addColorStop(0, `hsla(${blob.hue}, 60%, 40%, 0.08)`);
-        grad.addColorStop(1, `hsla(${blob.hue}, 60%, 40%, 0)`);
+        if (isDark) {
+          grad.addColorStop(0, `hsla(${blob.hue}, 60%, 40%, 0.08)`);
+          grad.addColorStop(1, `hsla(${blob.hue}, 60%, 40%, 0)`);
+          ctx.globalCompositeOperation = 'screen';
+        } else {
+          grad.addColorStop(0, `hsla(${blob.hue}, 80%, 85%, 0.4)`);
+          grad.addColorStop(1, `hsla(${blob.hue}, 80%, 85%, 0)`);
+          ctx.globalCompositeOperation = 'multiply';
+        }
         
-        ctx.globalCompositeOperation = 'screen';
         ctx.beginPath();
         ctx.arc(bx, by, blob.r, 0, Math.PI * 2);
         ctx.fillStyle = grad;
@@ -70,15 +78,20 @@ export default function AppBackground() {
         const y = dot.baseY + Math.sin(t * dot.speed + dot.offset) * 20;
         ctx.beginPath();
         ctx.arc(dot.x, y, dot.r, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${dot.hue}, 70%, 70%, ${dot.alpha})`;
-        ctx.shadowBlur = 4;
-        ctx.shadowColor = `hsla(${dot.hue}, 70%, 70%, 0.5)`;
+        if (isDark) {
+          ctx.fillStyle = `hsla(${dot.hue}, 70%, 70%, ${dot.alpha})`;
+          ctx.shadowBlur = 4;
+          ctx.shadowColor = `hsla(${dot.hue}, 70%, 70%, 0.5)`;
+        } else {
+          ctx.fillStyle = `hsla(${dot.hue}, 60%, 40%, ${dot.alpha * 0.7})`;
+          ctx.shadowBlur = 0;
+        }
         ctx.fill();
         ctx.shadowBlur = 0;
       });
 
       // Subtle Cyber Grid
-      ctx.strokeStyle = 'rgba(127, 119, 221, 0.03)';
+      ctx.strokeStyle = isDark ? 'rgba(127, 119, 221, 0.03)' : 'rgba(127, 119, 221, 0.06)';
       ctx.lineWidth = 0.5;
       const gridSize = 80;
       

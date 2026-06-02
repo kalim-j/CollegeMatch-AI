@@ -1,7 +1,9 @@
 'use client';
 import AdminGuard from '@/components/AdminGuard';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/firebase';
+import { collection, query, where, getCountFromServer, collectionGroup } from 'firebase/firestore';
+import { collegesDatabase } from '@/data/collegesDatabase';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
@@ -16,43 +18,43 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const today = new Date().toISOString().split('T')[0];
+      try {
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
 
-      // Total users
-      const { count: totalCount } = await supabase
-        .from('profiles')
-        .select('id', { count: 'exact' });
+        // Total users
+        const totalUsersSnap = await getCountFromServer(collection(db, 'users'));
+        const totalUsers = totalUsersSnap.data().count || 0;
 
-      // New users today
-      const { count: newCount } = await supabase
-        .from('profiles')
-        .select('id', { count: 'exact' })
-        .gte('created_at', today);
+        // New users today
+        const newUsersQuery = query(collection(db, 'users'), where('createdAt', '>=', todayStart));
+        const newUsersSnap = await getCountFromServer(newUsersQuery);
+        const newUsers = newUsersSnap.data().count || 0;
 
-      // Predictions count
-      const { count: predCount } = await supabase
-        .from('predictions')
-        .select('id', { count: 'exact' });
+        // Predictions count
+        const predictionsSnap = await getCountFromServer(collectionGroup(db, 'sessions'));
+        const predictions = predictionsSnap.data().count || 0;
 
-      // Pending verifications
-      const { count: verCount } = await supabase
-        .from('verifications')
-        .select('id', { count: 'exact' })
-        .eq('status', 'pending');
+        // Pending verifications
+        const verificationsQuery = query(collection(db, 'verifications'), where('status', '==', 'pending'));
+        const verificationsSnap = await getCountFromServer(verificationsQuery);
+        const verifications = verificationsSnap.data().count || 0;
 
-      // Colleges count
-      const { count: colCount } = await supabase
-        .from('colleges')
-        .select('id', { count: 'exact' });
+        // Colleges count (from collegesDatabase)
+        const colleges = collegesDatabase.length || 0;
 
-      setStats({
-        totalUsers: totalCount || 0,
-        newUsers: newCount || 0,
-        predictions: predCount || 0,
-        verifications: verCount || 0,
-        colleges: colCount || 0,
-      });
-      setLoading(false);
+        setStats({
+          totalUsers,
+          newUsers,
+          predictions,
+          verifications,
+          colleges,
+        });
+      } catch (error) {
+        console.error("Error fetching admin stats:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchStats();

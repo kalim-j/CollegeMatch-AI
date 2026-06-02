@@ -1,22 +1,23 @@
-import { supabase } from '@/lib/supabase';
+import { auth, db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { redirect } from 'next/navigation';
+import { isAdminEmail } from '@/lib/admin';
 
 export async function adminAuthCheck() {
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = auth.currentUser;
   
   if (!user) {
     redirect('/login');
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
+  const docSnap = await getDoc(doc(db, 'users', user.uid));
+  const profile = docSnap.data();
 
-  if (profile?.role !== 'admin') {
+  if (profile?.role !== 'admin' && !isAdminEmail(user.email)) {
     redirect('/dashboard');
   }
 
   return user;
 }
+
+

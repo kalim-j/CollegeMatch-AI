@@ -25,8 +25,7 @@ import {
 import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import Logo from "./Logo";
-
-const ADMIN_EMAILS = ["kalim.apoffi@gmail.com", "kalimdon07@gmail.com"];
+import { isAdminEmail } from "@/lib/admin";
 
 export function Navbar() {
   const { user, profile } = useAuth();
@@ -69,7 +68,7 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (user?.email && ADMIN_EMAILS.includes(user.email)) {
+    if (isAdminEmail(user?.email)) {
       const q = query(collection(db, "contacts"), where("status", "==", "new"));
       const unsub = onSnapshot(q, (snapshot) => {
         setPendingLeads(snapshot.size);
@@ -106,7 +105,7 @@ export function Navbar() {
     { name: "Submit Review", href: "/testimonial", icon: MessageSquare },
   ];
 
-  const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
+  const isAdmin = isAdminEmail(user?.email);
 
   return (
     <nav className={cn(
