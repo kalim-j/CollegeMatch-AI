@@ -11,6 +11,14 @@ service cloud.firestore {
       allow read: if isAdmin();
     }
 
+    match /{path=**}/sessions/{sessionId} {
+      allow read: if isAdmin();
+    }
+
+    match /verifications/{verificationId} {
+      allow read, write: if isAdmin();
+    }
+
     match /interviews/{userId}/{document=**} {
       allow read, write: if request.auth != null
         && request.auth.uid == userId;

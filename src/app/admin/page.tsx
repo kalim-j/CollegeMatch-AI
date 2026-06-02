@@ -18,43 +18,56 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchStats = async () => {
+      let totalUsers = 0;
+      let newUsers = 0;
+      let predictions = 0;
+      let verifications = 0;
+      const colleges = collegesDatabase.length || 0;
+
+      try {
+        // Total users
+        const totalUsersSnap = await getCountFromServer(collection(db, 'users'));
+        totalUsers = totalUsersSnap.data().count || 0;
+      } catch (error) {
+        console.error("Error fetching total users:", error);
+      }
+
       try {
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
-
-        // Total users
-        const totalUsersSnap = await getCountFromServer(collection(db, 'users'));
-        const totalUsers = totalUsersSnap.data().count || 0;
-
         // New users today
         const newUsersQuery = query(collection(db, 'users'), where('createdAt', '>=', todayStart));
         const newUsersSnap = await getCountFromServer(newUsersQuery);
-        const newUsers = newUsersSnap.data().count || 0;
+        newUsers = newUsersSnap.data().count || 0;
+      } catch (error) {
+        console.error("Error fetching new users:", error);
+      }
 
+      try {
         // Predictions count
         const predictionsSnap = await getCountFromServer(collectionGroup(db, 'sessions'));
-        const predictions = predictionsSnap.data().count || 0;
+        predictions = predictionsSnap.data().count || 0;
+      } catch (error) {
+        console.error("Error fetching predictions:", error);
+      }
 
+      try {
         // Pending verifications
         const verificationsQuery = query(collection(db, 'verifications'), where('status', '==', 'pending'));
         const verificationsSnap = await getCountFromServer(verificationsQuery);
-        const verifications = verificationsSnap.data().count || 0;
-
-        // Colleges count (from collegesDatabase)
-        const colleges = collegesDatabase.length || 0;
-
-        setStats({
-          totalUsers,
-          newUsers,
-          predictions,
-          verifications,
-          colleges,
-        });
+        verifications = verificationsSnap.data().count || 0;
       } catch (error) {
-        console.error("Error fetching admin stats:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching verifications:", error);
       }
+
+      setStats({
+        totalUsers,
+        newUsers,
+        predictions,
+        verifications,
+        colleges,
+      });
+      setLoading(false);
     };
 
     fetchStats();
