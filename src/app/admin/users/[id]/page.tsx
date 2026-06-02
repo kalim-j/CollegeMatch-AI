@@ -1,7 +1,8 @@
 'use client';
 import AdminGuard from '@/components/AdminGuard';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { db, auth } from '@/lib/firebase';
+import { doc, getDoc, collection, getDocs, query, orderBy, setDoc, updateDoc } from 'firebase/firestore';
 import { useParams } from 'next/navigation';
 
 type UserProfile = {
@@ -38,21 +39,44 @@ export default function UserProfilePage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: userData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      try {
+        const docRef = doc(db, 'users', userId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setUser({
+            id: docSnap.id,
+            full_name: data.fullName || '',
+            email: data.email || '',
+            phone: data.phone || '',
+            category: data.category || '',
+            state: data.state || '',
+            district: data.district || '',
+            stream: data.stream || '',
+            marks_12th: data.marks12th || 0,
+            institution: data.institution || '',
+            verified: data.verified || false,
+            created_at: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt || new Date().toISOString(),
+          });
+        }
 
-      const { data: predData } = await supabase
-        .from('predictions')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-      setUser(userData);
-      setPredictions(predData || []);
-      setLoading(false);
+        const predRef = collection(db, 'interviews', userId, 'sessions');
+        const predSnap = await getDocs(query(predRef, orderBy('timestamp', 'desc')));
+        const predHistory = predSnap.docs.map(doc => {
+          const d = doc.data();
+          return {
+            id: doc.id,
+            marks: d.studentProfile?.marks12th || d.studentProfile?.marks12thBoard || 0,
+            colleges: d.results || d.collegeMatches || [],
+            created_at: d.timestamp?.toDate ? d.timestamp.toDate().toISOString() : d.timestamp || new Date().toISOString(),
+          };
+        });
+        setPredictions(predHistory);
+      } catch (error) {
+        console.error("Error loading user profile details:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -60,26 +84,32 @@ export default function UserProfilePage() {
 
   const handleVerify = async (status: 'verified' | 'rejected') => {
     setVerifying(true);
-    const { data: { user: authUser } } = await supabase.auth.getUser();
+    try {
+      const authUser = auth.currentUser;
 
-    await supabase.from('verifications').insert({
-      user_id: userId,
-      full_name: user?.full_name,
-      status,
-      notes,
-      verified_by: authUser?.id,
-      verified_at: new Date().toISOString(),
-    });
+      const verificationRef = doc(collection(db, 'verifications'));
+      await setDoc(verificationRef, {
+        userId,
+        fullName: user?.full_name || '',
+        status,
+        notes,
+        verifiedBy: authUser?.uid || '',
+        verifiedAt: new Date(),
+      });
 
-    if (status === 'verified') {
-      await supabase
-        .from('profiles')
-        .update({ verified: true })
-        .eq('id', userId);
+      const userRef = doc(db, 'users', userId);
+      await updateDoc(userRef, {
+        verified: status === 'verified',
+      });
+
+      setUser(prev => prev ? { ...prev, verified: status === 'verified' } : null);
+      alert(`User ${status} successfully!`);
+    } catch (error) {
+      console.error("Error performing user verification:", error);
+      alert("Error performing verification");
+    } finally {
+      setVerifying(false);
     }
-
-    setVerifying(false);
-    alert(`User ${status} successfully!`);
   };
 
   if (loading) {

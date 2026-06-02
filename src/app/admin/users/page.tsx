@@ -1,7 +1,8 @@
 'use client';
 import AdminGuard from '@/components/AdminGuard';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import Link from 'next/link';
 
 type UserProfile = {
@@ -17,7 +18,8 @@ type UserProfile = {
 };
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
@@ -27,32 +29,56 @@ export default function UsersPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
-      let query = supabase.from('profiles').select('*');
-
-      if (filter === 'verified') {
-        query = query.eq('verified', true);
-      } else if (filter === 'unverified') {
-        query = query.eq('verified', false);
+      try {
+        const querySnapshot = await getDocs(collection(db, 'users'));
+        const usersList: UserProfile[] = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            full_name: data.fullName || '',
+            email: data.email || '',
+            phone: data.phone || '',
+            category: data.category || '',
+            state: data.state || '',
+            created_at: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt || new Date().toISOString(),
+            role: data.role || 'student',
+            verified: data.verified || false
+          };
+        });
+        setAllUsers(usersList);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
       }
-
-      if (search) {
-        query = query.or(
-          `full_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`
-        );
-      }
-
-      const { data, error } = await query
-        .order('created_at', { ascending: false })
-        .range(page * pageSize, (page + 1) * pageSize - 1);
-
-      if (!error) {
-        setUsers(data || []);
-      }
-      setLoading(false);
     };
 
     fetchUsers();
-  }, [search, filter, page, pageSize]);
+  }, []);
+
+  useEffect(() => {
+    let result = [...allUsers];
+
+    if (filter === 'verified') {
+      result = result.filter(u => u.verified);
+    } else if (filter === 'unverified') {
+      result = result.filter(u => !u.verified);
+    }
+
+    if (search) {
+      const s = search.toLowerCase();
+      result = result.filter(u => 
+        (u.full_name?.toLowerCase() || '').includes(s) ||
+        (u.email?.toLowerCase() || '').includes(s) ||
+        (u.phone?.toLowerCase() || '').includes(s)
+      );
+    }
+
+    setFilteredUsers(result);
+    setPage(0);
+  }, [search, filter, allUsers]);
+
+  const displayedUsers = filteredUsers.slice(page * pageSize, (page + 1) * pageSize);
 
   return (
     <AdminGuard>
@@ -62,7 +88,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-black text-gray-900">User Management</h1>
-              <p className="text-gray-500">Total users: {users.length}</p>
+              <p className="text-gray-500">Total users: {filteredUsers.length}</p>
             </div>
             <Link href="/admin/users"
               className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600
@@ -133,14 +159,14 @@ export default function UsersPage() {
                         </div>
                       </td>
                     </tr>
-                  ) : users.length === 0 ? (
+                  ) : displayedUsers.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                         No users found
                       </td>
                     </tr>
                   ) : (
-                    users.map((user, i) => (
+                    displayedUsers.map((user, i) => (
                       <tr key={user.id} className="hover:bg-purple-50/50 transition">
                         <td className="px-6 py-4">
                           <div>
@@ -197,7 +223,7 @@ export default function UsersPage() {
               </span>
               <button
                 onClick={() => setPage(p => p + 1)}
-                disabled={users.length < pageSize}
+                disabled={(page + 1) * pageSize >= filteredUsers.length}
                 className="px-4 py-2 rounded-lg bg-purple-100 text-purple-700
                   font-bold disabled:opacity-50 disabled:cursor-not-allowed
                   hover:bg-purple-200 transition">
