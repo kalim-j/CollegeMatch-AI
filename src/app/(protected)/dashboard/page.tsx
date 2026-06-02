@@ -129,6 +129,15 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6 text-[var(--text-primary)]"
       style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
+      
+      {/* Animated background blobs */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full
+          bg-purple-300/20 blur-[100px] animate-[float_8s_ease-in-out_infinite]" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full
+          bg-blue-300/15 blur-[100px] animate-[float_10s_ease-in-out_infinite_2s]" />
+      </div>
+
       {showWelcomeModal && user && (
         <WelcomeModal 
           userName={profile?.fullName?.split(" ")[0] || "Student"}
@@ -138,34 +147,34 @@ export default function Dashboard() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12 space-y-12 pb-24">
         
-        {/* Header */}
-        <div
-          data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
-          className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6"
-        >
-          <div className="space-y-2">
-            <p className="text-[10px] font-black text-purple-700 uppercase tracking-[0.3em]">Welcome back</p>
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight leading-none">
-              Hello,{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
-                {profile?.fullName?.split(" ")[0] || "Student"}
-              </span>
-            </h1>
-            <p className="text-gray-500 font-bold text-sm">Welcome to CollegeMatch AI</p>
-          </div>
-
-          <div className="flex items-center gap-3 md:gap-4">
-            <div className="text-right">
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Preferred Course</p>
-              <p className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[120px] md:max-w-none">
-                {profile?.preferredCourse || "Not Set"}
-              </p>
-            </div>
-            <div className="h-12 w-12 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center font-black text-purple-700 text-lg flex-shrink-0">
-              {profile?.fullName?.[0] ?? "S"}
-            </div>
+        {/* Welcome Card */}
+        <div className="mb-8 p-8 rounded-3xl
+          bg-gradient-to-br from-white/80 via-white/70 to-purple-50/80
+          backdrop-blur-2xl border border-purple-200/50
+          shadow-2xl shadow-purple-200/30 animate-in fade-in slide-in-from-top-6 duration-700">
+          <h1 className="text-4xl sm:text-5xl font-black text-transparent
+            bg-clip-text bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600 mb-3">
+            Welcome back, {profile?.fullName?.split(" ")[0] || "Student"}! 👋
+          </h1>
+          <p className="text-gray-600 text-lg mb-6">
+            Let's find your perfect college match today
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <Link href="/interview"
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600
+                text-white font-bold hover:shadow-lg hover:opacity-90
+                transition-all duration-300 flex items-center gap-2">
+              ⚡ New Prediction
+            </Link>
+            <Link href="/dashboard/scholarships"
+              className="px-6 py-3 rounded-xl bg-white/70 backdrop-blur
+                border border-purple-200 text-purple-700 font-bold
+                hover:bg-white/90 transition-all duration-300 flex items-center gap-2">
+              🎓 Find Scholarships
+            </Link>
           </div>
         </div>
+
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>

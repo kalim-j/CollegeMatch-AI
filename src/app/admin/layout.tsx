@@ -1,7 +1,11 @@
+import AdminGuard from '@/components/AdminGuard';
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#0a0d14]">
-      {children}
-    </div>
+    <AdminGuard>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 text-gray-900">
+        {children}
+      </div>
+    </AdminGuard>
   );
 }
