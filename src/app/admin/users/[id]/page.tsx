@@ -104,9 +104,9 @@ export default function UserProfilePage() {
 
       setUser(prev => prev ? { ...prev, verified: status === 'verified' } : null);
       alert(`User ${status} successfully!`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error performing user verification:", error);
-      alert("Error performing verification");
+      alert(`Error performing verification: ${error.message || error}`);
     } finally {
       setVerifying(false);
     }
