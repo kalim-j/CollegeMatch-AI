@@ -1,9 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { useAuth } from '@/context/AuthContext';
 import { isAdminEmail } from '@/lib/admin';
 
 export default function AdminGuard({
@@ -12,41 +10,20 @@ export default function AdminGuard({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { user, profile, loading } = useAuth();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    if (!loading) {
       if (!user) {
         router.push('/login');
-        return;
-      }
-
-      try {
-        const docRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(docRef);
-        const profile = docSnap.data();
-
-        if (profile?.role === 'admin' || isAdminEmail(user.email)) {
-          setIsAdmin(true);
-        } else {
+      } else {
+        const hasAdminAccess = profile?.role === 'admin' || isAdminEmail(user.email);
+        if (!hasAdminAccess) {
           router.push('/dashboard');
         }
-      } catch (error) {
-        console.error("Error verifying admin role:", error);
-        // Fallback for primary admin email
-        if (isAdminEmail(user.email)) {
-          setIsAdmin(true);
-        } else {
-          router.push('/dashboard');
-        }
-      } finally {
-        setLoading(false);
       }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
+    }
+  }, [user, profile, loading, router]);
 
   if (loading) {
     return (
@@ -56,6 +33,8 @@ export default function AdminGuard({
     );
   }
 
-  return isAdmin ? children : null;
+  const hasAdminAccess = user && (profile?.role === 'admin' || isAdminEmail(user.email));
+
+  return hasAdminAccess ? <>{children}</> : null;
 }
 
