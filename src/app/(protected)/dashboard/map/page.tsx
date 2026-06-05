@@ -1,27 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import { collegesDatabase } from '@/data/collegesDatabase';
 import { supabase } from '@/lib/supabase';
+import Map3D from '@/components/3D/Map3D';
+import PageTransition from '@/components/3D/PageTransition';
 
-const CollegeMap = dynamic(
-  () => import('@/components/CollegeMap'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex items-center justify-center h-[500px]
-        rounded-2xl border border-purple-100 bg-white/70 backdrop-blur-xl">
-        <div className="text-center">
-          <div className="w-10 h-10 rounded-full border-2
-            border-purple-600 border-t-transparent
-            animate-spin mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Loading Map...</p>
-        </div>
-      </div>
-    ),
-  }
-);
+
 
 type College = {
   id: number;
@@ -145,9 +130,10 @@ export default function MapPage() {
   const states = [...new Set(filtered.map(c => c.state))].length;
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6 text-[var(--text-primary)]"
-      style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
-      <div className="max-w-7xl mx-auto">
+    <PageTransition>
+      <div className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6 text-[var(--text-primary)]"
+        style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
+        <div className="max-w-7xl mx-auto">
 
         {/* Header */}
         <div className="mb-5" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
@@ -226,10 +212,11 @@ export default function MapPage() {
                 border-purple-600 border-t-transparent animate-spin" />
             </div>
           ) : (
-            <CollegeMap colleges={filtered} />
+            <Map3D />
           )}
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 }

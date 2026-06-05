@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
 import axios from 'axios';
+import Scholarship3DCard from '@/components/3D/Scholarship3DCard';
+import PageTransition from '@/components/3D/PageTransition';
 
 type Scholarship = {
   id: number;
@@ -165,8 +167,9 @@ export default function ScholarshipsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] text-gray-900 p-6 pt-24">
-      <div className="max-w-7xl mx-auto">
+    <PageTransition>
+      <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] text-gray-900 p-6 pt-24">
+        <div className="max-w-7xl mx-auto">
 
         {/* HERO HEADER */}
         <div className="relative rounded-3xl overflow-hidden mb-8 p-8
@@ -431,120 +434,13 @@ export default function ScholarshipsPage() {
             </div>
 
             {/* Scholarship Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {scholarships.map((s, i) => (
-                <div
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {scholarships.map((s) => (
+                <Scholarship3DCard
                   key={s.id}
-                  className="group bg-white/70 backdrop-blur-xl border border-purple-100
-                    rounded-3xl p-6 hover:border-purple-300
-                    hover:shadow-md hover:-translate-y-1
-                    transition-all duration-300 shadow-sm"
-                >
-                  {/* Tags row */}
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px]
-                      font-bold border ${getStatusColor(s.status)}`}>
-                      ● {s.status}
-                    </span>
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px]
-                      font-bold border ${getCategoryColor(s.category)}`}>
-                      {s.category}
-                    </span>
-                    {s.stream !== 'All' && (
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px]
-                        font-bold bg-indigo-50 border border-indigo-100 text-indigo-700">
-                        {s.stream}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Name */}
-                  <h3 className="text-gray-950 font-bold text-base mb-1
-                    leading-snug line-clamp-2 group-hover:text-purple-700
-                    transition-colors">
-                    {s.name}
-                  </h3>
-
-                  {/* Provider */}
-                  <p className="text-gray-400 font-bold text-xs mb-3 flex items-center gap-1">
-                    🏛️ {s.provider}
-                  </p>
-
-                  {/* Amount */}
-                  <div className="inline-flex items-baseline gap-1 
-                    px-3 py-1.5 rounded-xl
-                    bg-emerald-550 bg-emerald-50 border border-emerald-200 mb-3">
-                    <span className="text-emerald-700 text-xl font-bold">
-                      {formatAmount(s.amount_per_year)}
-                    </span>
-                    <span className="text-emerald-600 text-xs">/yr</span>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-gray-500 text-xs leading-relaxed mb-3
-                    line-clamp-2">
-                    {s.description}
-                  </p>
-
-                  {/* Eligibility */}
-                  <div className="bg-purple-50/50 border border-purple-100/50 rounded-2xl p-3 mb-4">
-                    <p className="text-gray-400 text-[10px] font-black uppercase 
-                      tracking-wider mb-1">Eligibility</p>
-                    <p className="text-gray-600 text-xs leading-relaxed
-                      line-clamp-2">
-                      {s.eligibility}
-                    </p>
-                  </div>
-
-                  {/* Deadline & Level */}
-                  <div className="flex items-center gap-3 mb-4 text-xs">
-                    <span className="flex items-center gap-1 text-gray-400 font-semibold">
-                      📅 {s.deadline}
-                    </span>
-                    <span className="text-gray-300">•</span>
-                    <span className="flex items-center gap-1 text-gray-400 font-semibold">
-                      🎓 {s.level}
-                    </span>
-                  </div>
-
-                  {/* Tags */}
-                  {s.tags && s.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {s.tags.map(tag => (
-                        <span key={tag}
-                          className="px-2 py-0.5 rounded-md text-[10px] font-semibold
-                            bg-white text-gray-400 
-                            border border-purple-100">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Buttons */}
-                  <div className="flex gap-2">
-                    <a
-                      href={s.apply_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 py-2.5 rounded-xl text-center
-                        text-xs font-semibold text-white
-                        bg-purple-600 hover:bg-purple-750 transition"
-                    >
-                      Apply Now →
-                    </a>
-                    <a
-                      href={s.apply_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2.5 rounded-xl text-xs
-                        font-semibold text-gray-500 bg-white
-                        border border-purple-200 hover:bg-gray-50 transition"
-                    >
-                      Details
-                    </a>
-                  </div>
-                </div>
+                  title={s.name}
+                  amount={formatAmount(s.amount_per_year)}
+                />
               ))}
             </div>
 
@@ -636,5 +532,6 @@ export default function ScholarshipsPage() {
         )}
       </div>
     </div>
+    </PageTransition>
   );
 }

@@ -5,6 +5,7 @@ import { db } from '@/lib/firebase';
 import { collection, query, where, getCountFromServer, collectionGroup } from 'firebase/firestore';
 import { collegesDatabase } from '@/data/collegesDatabase';
 import Link from 'next/link';
+import AdminStats3D from '@/components/3D/AdminStats3D';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -73,46 +74,12 @@ export default function AdminDashboard() {
     fetchStats();
   }, []);
 
-  const cards = [
-    {
-      title: 'Total Users',
-      value: stats.totalUsers,
-      icon: '👥',
-      color: 'from-blue-400 to-blue-600',
-      link: '/admin/users',
-      bgLight: 'bg-blue-50',
-    },
-    {
-      title: 'New Users (Today)',
-      value: stats.newUsers,
-      icon: '🆕',
-      color: 'from-green-400 to-green-600',
-      bgLight: 'bg-green-50',
-    },
-    {
-      title: 'Predictions Made',
-      value: stats.predictions,
-      icon: '⚡',
-      color: 'from-purple-400 to-purple-600',
-      link: '/admin/analytics',
-      bgLight: 'bg-purple-50',
-    },
-    {
-      title: 'Pending Verifications',
-      value: stats.verifications,
-      icon: '✅',
-      color: 'from-amber-400 to-amber-600',
-      link: '/admin/verifications',
-      bgLight: 'bg-amber-50',
-    },
-    {
-      title: 'Colleges Listed',
-      value: stats.colleges,
-      icon: '🏫',
-      color: 'from-pink-400 to-pink-600',
-      link: '/admin/colleges',
-      bgLight: 'bg-pink-50',
-    },
+  const statsFor3D = [
+    { label: 'Total Users', value: stats.totalUsers, color: 'blue', hexColor: '#3b82f6', link: '/admin/users' },
+    { label: 'New Users Today', value: stats.newUsers, color: 'green', hexColor: '#10b981' },
+    { label: 'Predictions Made', value: stats.predictions, color: 'purple', hexColor: '#8b5cf6', link: '/admin/analytics' },
+    { label: 'Pending Verifications', value: stats.verifications, color: 'amber', hexColor: '#f59e0b', link: '/admin/verifications' },
+    { label: 'Colleges Listed', value: stats.colleges, color: 'pink', hexColor: '#ec4899', link: '/admin/colleges' },
   ];
 
   return (
@@ -134,40 +101,8 @@ export default function AdminDashboard() {
               <div className="w-12 h-12 rounded-full border-4 border-purple-200 border-t-purple-600 animate-spin" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-              {cards.map((card, i) => (
-                <Link key={i} href={card.link || '#'}
-                  className="group cursor-pointer block"
-                  style={{
-                    animationDelay: `${i * 80}ms`,
-                  }}>
-                  <div className={`${card.bgLight} backdrop-blur-xl
-                    border border-opacity-20 rounded-2xl p-5
-                    hover:shadow-xl transition-all duration-300
-                    hover:-translate-y-2 hover:scale-[1.02]`}
-                    style={{
-                      background: `linear-gradient(135deg, ${card.bgLight}, rgba(255,255,255,0.7))`,
-                      boxShadow: '0 8px 32px rgba(139,92,246,0.06)',
-                      border: '1px solid rgba(139,92,246,0.2)',
-                    }}>
-                    <div className="flex items-start justify-between mb-3">
-                      <div className={`text-3xl p-3 rounded-xl
-                        bg-gradient-to-br ${card.color} text-white
-                        shadow-lg group-hover:scale-110 transition-transform`}>
-                        {card.icon}
-                      </div>
-                      <span className="text-xs font-semibold text-purple-600
-                        bg-purple-100 px-2.5 py-1 rounded-full">
-                        Today
-                      </span>
-                    </div>
-                    <p className="text-gray-500 text-sm mb-1">{card.title}</p>
-                    <h3 className={`text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r ${card.color}`}>
-                      {card.value.toLocaleString()}
-                    </h3>
-                  </div>
-                </Link>
-              ))}
+            <div className="mb-12">
+              <AdminStats3D stats={statsFor3D} />
             </div>
           )}
 

@@ -208,3 +208,48 @@ body {
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .safe-bottom { padding-bottom:env(safe-area-inset-bottom); }
 }
+
+/* 3D Perspective */
+* {
+  perspective: 1000px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  perspective: 1200px;
+}
+
+/* Canvas styling */
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* 3D Transform utilities */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective {
+  perspective: 1000px;
+}
+
+/* 3D shadows */
+.shadow-3d {
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.1),
+    0 20px 48px rgba(0, 0, 0, 0.08),
+    0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 3D hover effect */
+@media (hover: hover) {
+  .hover-3d:hover {
+    transform: translateZ(20px) rotateX(2deg) rotateY(2deg);
+    transition: transform 0.3s ease;
+  }
+}

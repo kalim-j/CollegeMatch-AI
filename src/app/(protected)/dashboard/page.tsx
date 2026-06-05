@@ -13,6 +13,8 @@ import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, query, orderBy, limit, getDocs, doc, getDoc, getCountFromServer } from "firebase/firestore";
 import WelcomeModal from "@/components/WelcomeModal";
+import PageTransition from "@/components/3D/PageTransition";
+import DashboardBackground from "@/components/3D/DashboardBackground";
 
 export default function Dashboard() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -127,16 +129,9 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6 text-[var(--text-primary)]"
-      style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
-      
-      {/* Animated background blobs */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full
-          bg-purple-300/20 blur-[100px] animate-[float_8s_ease-in-out_infinite]" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full
-          bg-blue-300/15 blur-[100px] animate-[float_10s_ease-in-out_infinite_2s]" />
-      </div>
+    <PageTransition>
+      <div className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6 text-[var(--text-primary)] relative">
+        <DashboardBackground />
 
       {showWelcomeModal && user && (
         <WelcomeModal 
@@ -340,5 +335,6 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 }

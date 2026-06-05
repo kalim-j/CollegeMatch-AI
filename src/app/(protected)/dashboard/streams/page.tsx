@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import PageTransition from '@/components/3D/PageTransition';
+import Stream3DCard from '@/components/3D/Stream3DCard';
 
 const STREAMS = [
   {
@@ -234,91 +236,37 @@ export default function StreamsPage() {
   }, []);
 
   return (
-    <div
-      className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6 text-[var(--text-primary)]"
-      style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}
-    >
-      <div className="max-w-6xl mx-auto">
-        <div data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }} className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Explore Educational Streams</h1>
-          <p className="text-gray-500">Discover key fields, courses, and match criteria to find your ideal discipline.</p>
-        </div>
+    <PageTransition>
+      <div
+        className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6 text-[var(--text-primary)] animate-fadeIn"
+        style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}
+      >
+        <div className="max-w-6xl mx-auto">
+          <div data-animate className="mb-8 transition-all duration-500">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Explore Educational Streams</h1>
+            <p className="text-gray-500">Discover key fields, courses, and match criteria to find your ideal discipline.</p>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {STREAMS.map((stream, i) => (
-            <div
-              key={stream.name}
-              onClick={() => {
-                setSelected(selected === stream.name ? null : stream.name);
-                if (selected !== stream.name) {
-                  router.push(`/stream/${stream.name.toLowerCase().replace(/\s+/g, '-')}`);
-                }
-              }}
-              className={`group cursor-pointer rounded-2xl p-6
-                bg-white/70 backdrop-blur-xl
-                border transition-all duration-300
-                hover:-translate-y-2 hover:scale-[1.02]
-                ${stream.borderColor}
-                ${selected === stream.name
-                  ? `shadow-xl border-2 ${stream.borderColor}`
-                  : 'hover:shadow-xl border'
-                }`}
-              style={{
-                animationDelay: `${i * 60}ms`,
-                animation: 'fadeSlideUp 0.5s ease forwards',
-                opacity: 0,
-                boxShadow: selected === stream.name
-                  ? '0 20px 40px rgba(124,58,237,0.15), inset 0 1px 0 rgba(255,255,255,0.9)'
-                  : undefined,
-              }}
-            >
-              {/* Glassy icon container */}
-              <div className={`w-14 h-14 rounded-2xl mb-4
-                bg-gradient-to-br ${stream.color}
-                flex items-center justify-center text-white
-                shadow-lg transition-all duration-300
-                group-hover:scale-110 group-hover:rotate-3`}
-                style={{
-                  boxShadow: `0 8px 20px rgba(124,58,237,0.3)`,
-                  background: `linear-gradient(135deg, ${stream.color})`,
-                }}>
-                {stream.svgIcon}
-              </div>
-
-              <h3 className={`font-bold text-lg mb-1 ${stream.textColor}`}>
-                {stream.name}
-              </h3>
-              <p className="text-purple-500 text-sm font-semibold mb-2">
-                {stream.count} colleges
-              </p>
-              <p className="text-gray-500 text-xs mb-4 leading-relaxed">
-                {stream.desc}
-              </p>
-
-              <div className="flex flex-wrap gap-1.5 mb-4">
-                {stream.courses.slice(0, 3).map(c => (
-                  <span key={c}
-                    className={`px-2 py-0.5 rounded-md text-xs
-                      ${stream.bgLight} ${stream.textColor}
-                      border ${stream.borderColor} font-medium`}>
-                    {c}
-                  </span>
-                ))}
-              </div>
-
-              <div className={`flex items-center gap-1 text-sm font-semibold
-                ${stream.textColor} group-hover:gap-2 transition-all`}>
-                Explore
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  strokeWidth="2.5" className="w-4 h-4
-                    group-hover:translate-x-1 transition-transform">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </div>
-            </div>
-          ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {STREAMS.map((stream) => (
+              <Stream3DCard
+                key={stream.name}
+                name={stream.name}
+                count={stream.count}
+                color={stream.color}
+                desc={stream.desc}
+                courses={stream.courses}
+                onClick={() => {
+                  setSelected(selected === stream.name ? null : stream.name);
+                  if (selected !== stream.name) {
+                    router.push(`/stream/${stream.name.toLowerCase().replace(/\s+/g, '-')}`);
+                  }
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }

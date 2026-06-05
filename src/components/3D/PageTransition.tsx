@@ -1,0 +1,25 @@
+'use client';
+import { motion } from 'framer-motion';
+
+export default function PageTransition({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20, rotateX: -5 }}
+      animate={{ opacity: 1, y: 0, rotateX: 0 }}
+      exit={{ opacity: 0, y: -20, rotateX: 5 }}
+      transition={{
+        duration: 0.6,
+        ease: 'easeInOut',
+        type: 'spring',
+        stiffness: 100,
+      }}
+      style={{ perspective: 1000 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
