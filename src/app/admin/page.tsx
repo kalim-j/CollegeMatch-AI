@@ -5,7 +5,7 @@ import { db } from '@/lib/firebase';
 import { collection, query, where, getCountFromServer, collectionGroup } from 'firebase/firestore';
 import { collegesDatabase } from '@/data/collegesDatabase';
 import Link from 'next/link';
-import AdminStats3D from '@/components/3D/AdminStats3D';
+import { cn } from '@/lib/utils';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -74,17 +74,17 @@ export default function AdminDashboard() {
     fetchStats();
   }, []);
 
-  const statsFor3D = [
-    { label: 'Total Users', value: stats.totalUsers, color: 'blue', hexColor: '#3b82f6', link: '/admin/users' },
-    { label: 'New Users Today', value: stats.newUsers, color: 'green', hexColor: '#10b981' },
-    { label: 'Predictions Made', value: stats.predictions, color: 'purple', hexColor: '#8b5cf6', link: '/admin/analytics' },
-    { label: 'Pending Verifications', value: stats.verifications, color: 'amber', hexColor: '#f59e0b', link: '/admin/verifications' },
-    { label: 'Colleges Listed', value: stats.colleges, color: 'pink', hexColor: '#ec4899', link: '/admin/colleges' },
+  const statsList = [
+    { label: 'Total Users', value: stats.totalUsers, color: 'blue', link: '/admin/users' },
+    { label: 'New Users Today', value: stats.newUsers, color: 'green' },
+    { label: 'Predictions Made', value: stats.predictions, color: 'purple', link: '/admin/analytics' },
+    { label: 'Pending Verifications', value: stats.verifications, color: 'amber', link: '/admin/verifications' },
+    { label: 'Colleges Listed', value: stats.colleges, color: 'pink', link: '/admin/colleges' },
   ];
 
   return (
     <AdminGuard>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 p-4 sm:p-8">
+      <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] p-4 sm:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-12 animate-in fade-in duration-500">
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
               bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600 mb-2">
               Admin Dashboard
             </h1>
-            <p className="text-gray-500">Manage users, colleges, and platform analytics</p>
+            <p className="text-gray-500 dark:text-slate-400">Manage users, colleges, and platform analytics</p>
           </div>
 
           {/* Stats Grid */}
@@ -101,8 +101,39 @@ export default function AdminDashboard() {
               <div className="w-12 h-12 rounded-full border-4 border-purple-200 border-t-purple-600 animate-spin" />
             </div>
           ) : (
-            <div className="mb-12">
-              <AdminStats3D stats={statsFor3D} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6 mb-12">
+              {statsList.map((stat) => {
+                const CardWrapper = stat.link ? Link : 'div';
+                const colorClasses = {
+                  blue: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900/30",
+                  green: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/30",
+                  purple: "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900/30",
+                  amber: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/30",
+                  pink: "text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/20 border-pink-200 dark:border-pink-900/30",
+                }[stat.color as 'blue' | 'green' | 'purple' | 'amber' | 'pink'];
+
+                return (
+                  <CardWrapper
+                    key={stat.label}
+                    href={stat.link || ''}
+                    className={cn(
+                      "bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-purple-100 dark:border-purple-900/20 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-6 space-y-4 flex flex-col justify-between",
+                      stat.link ? "cursor-pointer hover:-translate-y-0.5" : ""
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <p className="text-[10px] font-black text-gray-400 dark:text-slate-400 uppercase tracking-widest truncate">{stat.label}</p>
+                      <span className="flex h-2 w-2 relative">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                      </span>
+                    </div>
+                    <p className={cn("text-3xl md:text-4xl font-black tracking-tight", colorClasses.split(' ')[0])}>
+                      {stat.value}
+                    </p>
+                  </CardWrapper>
+                );
+              })}
             </div>
           )}
 
@@ -118,16 +149,16 @@ export default function AdminDashboard() {
             ].map((action, i) => (
               <Link key={i} href={action.link}
                 className="group p-5 rounded-2xl
-                  bg-white/70 backdrop-blur-xl
-                  border border-purple-100
+                  bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl
+                  border border-purple-100 dark:border-purple-900/20
                   hover:shadow-xl hover:-translate-y-1
                   transition-all duration-300">
                 <div className="flex items-start gap-3">
                   <div className="text-3xl">{action.icon}</div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-gray-900 group-hover:text-purple-600
+                    <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-purple-600
                       transition">{action.title}</h3>
-                    <p className="text-sm text-gray-500">{action.desc}</p>
+                    <p className="text-sm text-gray-500 dark:text-slate-400">{action.desc}</p>
                   </div>
                   <svg className="w-5 h-5 text-purple-400 group-hover:translate-x-1
                     transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
