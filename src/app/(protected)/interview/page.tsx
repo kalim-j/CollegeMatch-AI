@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import PageTransition from "@/components/3D/PageTransition";
+import DashboardBackground from "@/components/3D/DashboardBackground";
 import { generatePDFReport } from '@/lib/generateReport';
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -287,8 +289,8 @@ export default function InterviewPage() {
   };
 
   if (loading || !user) return (
-    <div className="min-h-screen bg-[#05071a] flex items-center justify-center">
-      <Loader2 className="h-10 w-10 text-indigo-400 animate-spin" />
+    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
+      <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
     </div>
   );
 
@@ -297,7 +299,7 @@ export default function InterviewPage() {
     if (p >= 90) return { color: "text-emerald-400", label: "Excellent", bg: "bg-emerald-500/10", border: "border-emerald-500/20" };
     if (p >= 75) return { color: "text-teal-400", label: "Good", bg: "bg-teal-500/10", border: "border-teal-500/20" };
     if (p >= 60) return { color: "text-amber-400", label: "Average", bg: "bg-amber-500/10", border: "border-amber-500/20" };
-    return { color: "text-white/40", label: "Keep trying", bg: "bg-white/5", border: "border-white/10" };
+    return { color: "text-gray-900 dark:text-gray-500 dark:text-slate-400", label: "Keep trying", bg: "bg-white/5", border: "border-purple-250/30 dark:border-purple-900/30" };
   };
 
   const getCutoffColor = (c: number) => {
@@ -305,7 +307,7 @@ export default function InterviewPage() {
     if (c >= 175) return { color: "text-teal-400", label: "Excellent", bg: "bg-teal-500/10", border: "border-teal-500/20" };
     if (c >= 160) return { color: "text-blue-400", label: "Good", bg: "bg-blue-500/10", border: "border-blue-500/20" };
     if (c >= 145) return { color: "text-amber-400", label: "Average", bg: "bg-amber-500/10", border: "border-amber-500/20" };
-    return { color: "text-white/40", label: "Needs improvement", bg: "bg-white/5", border: "border-white/10" };
+    return { color: "text-gray-900 dark:text-gray-500 dark:text-slate-400", label: "Needs improvement", bg: "bg-white/5", border: "border-purple-250/30 dark:border-purple-900/30" };
   };
 
   const renderStep = () => {
@@ -318,8 +320,8 @@ export default function InterviewPage() {
                 <GraduationCap size={14} className="text-indigo-400" />
                 <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">Educational Level</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter leading-tight">Your Academic Path</h2>
-              <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 1: Select your target degree level</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter leading-tight">Your Academic Path</h2>
+              <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 1: Select your target degree level</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {[
@@ -334,23 +336,23 @@ export default function InterviewPage() {
                     "cursor-pointer transition-all border-2 rounded-[3rem] p-12 text-center relative overflow-hidden backdrop-blur-xl group",
                     formData.courseLevel === level.id 
                         ? "border-indigo-500 bg-indigo-500/10 shadow-2xl shadow-indigo-500/10" 
-                        : "border-white/5 bg-white/[0.03] hover:border-white/20"
+                        : "border-purple-250/20 dark:border-purple-900/20 bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 hover:border-purple-250/40 dark:border-purple-900/40"
                   )}
                   onClick={() => { updateForm({ courseLevel: level.id as any }); handleNext(); }}
                 >
                   <div className={cn(
                       "h-20 w-20 rounded-3xl mx-auto mb-8 flex items-center justify-center transition-all",
-                      formData.courseLevel === level.id ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20" : "bg-white/5 text-white/20 group-hover:bg-white/10"
+                      formData.courseLevel === level.id ? "bg-indigo-500 text-gray-900 dark:text-white shadow-lg shadow-indigo-500/20" : "bg-white/5 text-gray-900 dark:text-gray-400 dark:text-slate-500 group-hover:bg-white/10"
                   )}>
                     <GraduationCap size={40} />
                   </div>
-                  <h3 className="text-3xl font-black text-white mb-2">{level.label}</h3>
-                  <p className="text-white/30 font-bold text-[10px] uppercase tracking-widest leading-relaxed">
+                  <h3 className="text-3xl font-black text-gray-900 dark:text-gray-900 dark:text-white mb-2">{level.label}</h3>
+                  <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest leading-relaxed">
                     {level.desc}
                   </p>
                   {formData.courseLevel === level.id && (
                     <div className="absolute top-6 right-6">
-                      <div className="h-8 w-8 bg-indigo-500 rounded-full flex items-center justify-center text-white">
+                      <div className="h-8 w-8 bg-indigo-500 rounded-full flex items-center justify-center text-gray-900 dark:text-white">
                         <Check size={18} />
                       </div>
                     </div>
@@ -369,8 +371,8 @@ export default function InterviewPage() {
                 <Target size={14} className="text-teal-400" />
                 <span className="text-[10px] font-black text-teal-300 uppercase tracking-widest">Field of Interest</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Choose Your Stream</h2>
-              <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 2: Define your specialization</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Choose Your Stream</h2>
+              <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 2: Define your specialization</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {streams.map((stream) => (
@@ -380,7 +382,7 @@ export default function InterviewPage() {
                     "h-20 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all px-6 border backdrop-blur-sm",
                     formData.stream === stream 
                         ? "bg-teal-500/20 text-teal-400 border-teal-500/40 shadow-lg shadow-teal-500/10" 
-                        : "bg-white/[0.03] text-white/40 border-white/5 hover:border-white/20"
+                        : "bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/40 dark:border-purple-900/40"
                   )}
                   onClick={() => { updateForm({ stream }); }}
                 >
@@ -389,13 +391,13 @@ export default function InterviewPage() {
               ))}
             </div>
             <div className="flex gap-4 max-w-4xl mx-auto pt-8">
-              <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+              <button onClick={handleBack} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
                 <ChevronLeft size={20} /> Back
               </button>
               <button 
                 onClick={handleNext} 
                 disabled={!formData.stream}
-                className="btn-primary flex-[2] h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:shadow-lg hover:opacity-90 transition-all rounded-xl flex-[2] h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2"
               >
                 Continue <ChevronRight size={20} />
               </button>
@@ -410,40 +412,40 @@ export default function InterviewPage() {
                 <MapPin size={14} className="text-amber-400" />
                 <span className="text-[10px] font-black text-amber-300 uppercase tracking-widest">Geographical Preference</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Your Location</h2>
-              <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 3: Residency and target region</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Your Location</h2>
+              <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 3: Residency and target region</p>
             </div>
-            <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-12 space-y-8 shadow-2xl relative overflow-hidden">
+            <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-12 opacity-[0.02] pointer-events-none">
                   <MapPin size={240} className="text-amber-500" />
                 </div>
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">Current State</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Current State</label>
                     <select 
-                        className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
+                        className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
                         value={formData.state}
                         onChange={(e) => updateForm({ state: e.target.value, district: "" })}
                     >
-                        {Object.keys(stateDistricts).map(s => <option key={s} value={s} className="bg-[#0a0d14]">{s}</option>)}
+                        {Object.keys(stateDistricts).map(s => <option key={s} value={s} className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-gray-900 dark:text-white">{s}</option>)}
                     </select>
                 </div>
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">Home District</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Home District</label>
                     <select 
-                        className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
+                        className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
                         value={formData.district}
                         onChange={(e) => updateForm({ district: e.target.value })}
                     >
-                        <option value="" className="bg-[#0a0d14]">Select District</option>
-                        {(stateDistricts[formData.state!] || []).map(d => <option key={d} value={d} className="bg-[#0a0d14]">{d}</option>)}
+                        <option value="" className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-gray-900 dark:text-white">Select District</option>
+                        {(stateDistricts[formData.state!] || []).map(d => <option key={d} value={d} className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-gray-900 dark:text-white">{d}</option>)}
                     </select>
                 </div>
                 <div className="flex gap-4 mt-4">
-                  <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                  <button onClick={handleBack} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
                     <ChevronLeft size={20} /> Back
                   </button>
                   <button 
-                      className="btn-primary flex-[2] h-16 text-lg group flex items-center justify-center gap-3 font-black uppercase tracking-widest"
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:shadow-lg hover:opacity-90 transition-all rounded-xl flex-[2] h-16 text-lg group flex items-center justify-center gap-3 font-black uppercase tracking-widest"
                       onClick={handleNext} 
                       disabled={!formData.district}
                   >
@@ -465,12 +467,12 @@ export default function InterviewPage() {
                 <BookOpen size={14} className="text-purple-400" />
                 <span className="text-[10px] font-black text-purple-300 uppercase tracking-widest">{levelKey} Academic Records</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">{levelKey} Standards</h2>
-              <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step {step}: Academic performance verification</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">{levelKey} Standards</h2>
+              <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step {step}: Academic performance verification</p>
             </div>
-            <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-12 space-y-8 shadow-2xl">
+            <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl">
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">Board of Education</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Board of Education</label>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {BOARDS.map(b => (
                             <button
@@ -479,7 +481,7 @@ export default function InterviewPage() {
                                     "h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border",
                                     formData[`marks${levelKey}Board`] === b 
                                       ? "bg-purple-500/20 text-purple-300 border-purple-500/40" 
-                                      : "bg-white/[0.05] text-white/30 border-white/5 hover:border-white/10"
+                                      : "bg-white/50 dark:bg-white/[0.05] text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/30 dark:border-purple-900/30"
                                 )}
                                 onClick={() => {
                                   let outOf = is12th ? 600 : 500;
@@ -497,12 +499,12 @@ export default function InterviewPage() {
                     <div className="space-y-6">
                         {formData[`marks${levelKey}Board`] === "IGCSE" ? (
                            <div className="space-y-4">
-                              <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">Overall Grade</label>
+                              <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Overall Grade</label>
                               <div className="grid grid-cols-5 gap-2">
                                 {['A*', 'A', 'B', 'C', 'D'].map(g => (
                                   <button
                                     key={g}
-                                    className={cn("h-14 rounded-xl font-black transition-all border", formData[`marks${levelKey}Grade`] === g ? "bg-purple-500/20 text-purple-300 border-purple-500/40" : "bg-white/5 text-white/30 border-white/5")}
+                                    className={cn("h-14 rounded-xl font-black transition-all border", formData[`marks${levelKey}Grade`] === g ? "bg-purple-500/20 text-purple-300 border-purple-500/40" : "bg-white/5 text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20")}
                                     onClick={() => updateForm({ [`marks${levelKey}Grade`]: g } as any)}
                                   >{g}</button>
                                 ))}
@@ -510,10 +512,10 @@ export default function InterviewPage() {
                            </div>
                         ) : formData[`useCgpa${levelKey}`] && formData[`marks${levelKey}Board`] === "CBSE" ? (
                            <div className="space-y-4">
-                              <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">CGPA (Out of 10)</label>
+                              <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">CGPA (Out of 10)</label>
                               <input 
                                   type="number" min="0" max="10" step="0.1"
-                                  className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white text-2xl font-black outline-none focus:border-purple-500/50"
+                                  className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white text-2xl font-black outline-none focus:border-purple-500/50"
                                   value={formData[`cgpa${levelKey}`]}
                                   onChange={(e) => updateForm({ [`cgpa${levelKey}`]: e.target.value } as any)}
                                   placeholder="e.g. 9.2"
@@ -522,13 +524,13 @@ export default function InterviewPage() {
                         ) : (
                            <div className="space-y-4">
                               <div className="flex justify-between items-end">
-                                <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">Total Marks</label>
-                                <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Out of {formData[`marks${levelKey}OutOf`]}</span>
+                                <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Total Marks</label>
+                                <span className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-widest">Out of {formData[`marks${levelKey}OutOf`]}</span>
                               </div>
                               <input 
                                   type="number" min="0" max={formData[`marks${levelKey}OutOf`]}
                                   disabled={is12th && formData.marks12SubjectWise}
-                                  className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white text-2xl font-black outline-none focus:border-purple-500/50 disabled:opacity-50"
+                                  className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white text-2xl font-black outline-none focus:border-purple-500/50 disabled:opacity-50"
                                   value={formData[`marks${levelKey}`]}
                                   onChange={(e) => updateForm({ [`marks${levelKey}`]: Number(e.target.value) } as any)}
                                   placeholder={`Total out of ${formData[`marks${levelKey}OutOf`]}`}
@@ -549,11 +551,11 @@ export default function InterviewPage() {
                         )}
                         
                         {is12th && formData.marks12SubjectWise && (
-                          <div className="grid grid-cols-2 gap-4 mt-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                          <div className="grid grid-cols-2 gap-4 mt-4 p-4 rounded-2xl bg-white/5 border border-purple-250/20 dark:border-purple-900/20">
                             {['Language', 'English', 'Maths/Bio', 'Physics', 'Chemistry', 'Optional'].map((sub, i) => (
                               <div key={i}>
-                                <label className="text-[9px] font-black text-white/30 uppercase tracking-widest block mb-1">{sub}</label>
-                                <input type="number" min="0" max="100" className="w-full h-10 bg-white/5 rounded-lg px-3 text-white text-sm font-bold outline-none focus:border-purple-500/50 border border-transparent"
+                                <label className="text-[9px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest block mb-1">{sub}</label>
+                                <input type="number" min="0" max="100" className="w-full h-10 bg-white/5 rounded-lg px-3 text-gray-900 dark:text-white text-sm font-bold outline-none focus:border-purple-500/50 border border-transparent"
                                   value={(formData.marks12Subjects as any)[`subject${i+1}`]}
                                   onChange={e => updateForm({ marks12Subjects: { ...formData.marks12Subjects, [`subject${i+1}`]: Number(e.target.value) } })}
                                 />
@@ -564,7 +566,7 @@ export default function InterviewPage() {
                     </div>
 
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">Live Percentage</label>
+                        <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Live Percentage</label>
                         <div className={cn("h-40 rounded-3xl border flex flex-col items-center justify-center p-6 text-center transition-all", pColor.bg, pColor.border)}>
                           <span className={cn("text-5xl font-black tabular-nums tracking-tighter", pColor.color)}>
                             {formData[`percentage${levelKey}`]}%
@@ -577,11 +579,11 @@ export default function InterviewPage() {
                 </div>
 
                 <div className="flex gap-4 mt-4">
-                  <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                  <button onClick={handleBack} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
                     <ChevronLeft size={20} /> Back
                   </button>
                   <button 
-                      className="btn-primary flex-[2] h-16 text-lg flex items-center justify-center gap-3 font-black uppercase tracking-widest"
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:shadow-lg hover:opacity-90 transition-all rounded-xl flex-[2] h-16 text-lg flex items-center justify-center gap-3 font-black uppercase tracking-widest"
                       onClick={() => {
                         if (!formData[`percentage${levelKey}`] || formData[`percentage${levelKey}`] === 0) {
                           toast.error("Please enter your marks");
@@ -605,17 +607,17 @@ export default function InterviewPage() {
                 <Sparkles size={14} className="text-indigo-400" />
                 <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">Competitive Edge</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Your Subject Marks</h2>
-              <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 6: We'll calculate your cutoff automatically</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Your Subject Marks</h2>
+              <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 6: We'll calculate your cutoff automatically</p>
             </div>
-            <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-12 space-y-8 shadow-2xl">
+            <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl">
                 
                 {formData.courseLevel === "PG" ? (
                     <div className="space-y-4 max-w-xl mx-auto">
-                        <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">UG CGPA (Out of 10)</label>
+                        <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">UG CGPA (Out of 10)</label>
                         <input 
                             type="number" step="0.01"
-                            className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white text-3xl font-black outline-none focus:border-indigo-500/50 text-center"
+                            className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white text-3xl font-black outline-none focus:border-indigo-500/50 text-center"
                             value={formData.ugCgpa}
                             onChange={(e) => updateForm({ ugCgpa: Number(e.target.value) })}
                             placeholder="8.5"
@@ -623,10 +625,10 @@ export default function InterviewPage() {
                     </div>
                 ) : formData.manualCutoffMode ? (
                     <div className="space-y-4 max-w-xl mx-auto text-center">
-                        <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">Manual Cutoff Mark</label>
+                        <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Manual Cutoff Mark</label>
                         <input 
                             type="number" step="0.01"
-                            className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white text-3xl font-black outline-none focus:border-indigo-500/50 text-center"
+                            className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white text-3xl font-black outline-none focus:border-indigo-500/50 text-center"
                             value={formData.cutoffMark}
                             onChange={(e) => updateForm({ cutoffMark: Number(e.target.value) })}
                             placeholder="e.g. 185.5"
@@ -636,36 +638,36 @@ export default function InterviewPage() {
                 ) : (
                     <div className="space-y-8">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="rounded-3xl bg-white/5 border border-white/5 p-6 space-y-3">
+                        <div className="rounded-3xl bg-white/5 border border-purple-250/20 dark:border-purple-900/20 p-6 space-y-3">
                           <div>
-                            <h4 className="font-black text-white text-lg">Mathematics</h4>
-                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Out of 100</p>
+                            <h4 className="font-black text-gray-900 dark:text-gray-900 dark:text-white text-lg">Mathematics</h4>
+                            <p className="text-[10px] font-bold text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest">Out of 100</p>
                           </div>
-                          <input type="number" min="0" max="100" className="w-full h-14 bg-white/5 border border-white/10 rounded-xl px-4 text-white font-black text-xl outline-none focus:border-indigo-500/50" value={formData.mathsMark} onChange={e => updateForm({ mathsMark: Number(e.target.value) })} />
+                          <input type="number" min="0" max="100" className="w-full h-14 bg-white/5 border border-purple-250/30 dark:border-purple-900/30 rounded-xl px-4 text-gray-900 dark:text-white font-black text-xl outline-none focus:border-indigo-500/50" value={formData.mathsMark} onChange={e => updateForm({ mathsMark: Number(e.target.value) })} />
                           <div className="flex justify-between items-center text-[10px] font-bold">
-                            <span className="text-white/40">× 1 (full)</span>
+                            <span className="text-gray-900 dark:text-gray-500 dark:text-slate-400">× 1 (full)</span>
                             <span className="text-indigo-400">{formData.mathsMark || 0} marks</span>
                           </div>
                         </div>
-                        <div className="rounded-3xl bg-white/5 border border-white/5 p-6 space-y-3">
+                        <div className="rounded-3xl bg-white/5 border border-purple-250/20 dark:border-purple-900/20 p-6 space-y-3">
                           <div>
-                            <h4 className="font-black text-white text-lg">Physics</h4>
-                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Out of 100</p>
+                            <h4 className="font-black text-gray-900 dark:text-gray-900 dark:text-white text-lg">Physics</h4>
+                            <p className="text-[10px] font-bold text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest">Out of 100</p>
                           </div>
-                          <input type="number" min="0" max="100" className="w-full h-14 bg-white/5 border border-white/10 rounded-xl px-4 text-white font-black text-xl outline-none focus:border-indigo-500/50" value={formData.physicsMark} onChange={e => updateForm({ physicsMark: Number(e.target.value) })} />
+                          <input type="number" min="0" max="100" className="w-full h-14 bg-white/5 border border-purple-250/30 dark:border-purple-900/30 rounded-xl px-4 text-gray-900 dark:text-white font-black text-xl outline-none focus:border-indigo-500/50" value={formData.physicsMark} onChange={e => updateForm({ physicsMark: Number(e.target.value) })} />
                           <div className="flex justify-between items-center text-[10px] font-bold">
-                            <span className="text-white/40">÷ 2 (half)</span>
+                            <span className="text-gray-900 dark:text-gray-500 dark:text-slate-400">÷ 2 (half)</span>
                             <span className="text-indigo-400">{((Number(formData.physicsMark)||0)/2).toFixed(1)} marks</span>
                           </div>
                         </div>
-                        <div className="rounded-3xl bg-white/5 border border-white/5 p-6 space-y-3">
+                        <div className="rounded-3xl bg-white/5 border border-purple-250/20 dark:border-purple-900/20 p-6 space-y-3">
                           <div>
-                            <h4 className="font-black text-white text-lg">Chemistry</h4>
-                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Out of 100</p>
+                            <h4 className="font-black text-gray-900 dark:text-gray-900 dark:text-white text-lg">Chemistry</h4>
+                            <p className="text-[10px] font-bold text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest">Out of 100</p>
                           </div>
-                          <input type="number" min="0" max="100" className="w-full h-14 bg-white/5 border border-white/10 rounded-xl px-4 text-white font-black text-xl outline-none focus:border-indigo-500/50" value={formData.chemistryMark} onChange={e => updateForm({ chemistryMark: Number(e.target.value) })} />
+                          <input type="number" min="0" max="100" className="w-full h-14 bg-white/5 border border-purple-250/30 dark:border-purple-900/30 rounded-xl px-4 text-gray-900 dark:text-white font-black text-xl outline-none focus:border-indigo-500/50" value={formData.chemistryMark} onChange={e => updateForm({ chemistryMark: Number(e.target.value) })} />
                           <div className="flex justify-between items-center text-[10px] font-bold">
-                            <span className="text-white/40">÷ 2 (half)</span>
+                            <span className="text-gray-900 dark:text-gray-500 dark:text-slate-400">÷ 2 (half)</span>
                             <span className="text-indigo-400">{((Number(formData.chemistryMark)||0)/2).toFixed(1)} marks</span>
                           </div>
                         </div>
@@ -674,7 +676,7 @@ export default function InterviewPage() {
                       <div className={cn("rounded-3xl border flex flex-col md:flex-row items-center justify-between p-8 transition-all", cColor.bg, cColor.border)}>
                         <div className="text-center md:text-left mb-4 md:mb-0">
                           <p className={cn("text-[10px] font-black uppercase tracking-widest mb-1", cColor.color)}>Calculated TNEA Cutoff</p>
-                          <p className="text-white/50 text-xs font-mono font-bold tracking-tight">
+                          <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 text-xs font-mono font-bold tracking-tight">
                             {formData.mathsMark||0} + {((Number(formData.physicsMark)||0)/2).toFixed(1)} + {((Number(formData.chemistryMark)||0)/2).toFixed(1)} = 
                           </p>
                         </div>
@@ -689,15 +691,15 @@ export default function InterviewPage() {
                       </div>
                       
                       <div className="text-center">
-                        <button onClick={() => updateForm({ manualCutoffMode: true })} className="text-[11px] font-bold text-white/40 hover:text-white/80 transition-colors">
+                        <button onClick={() => updateForm({ manualCutoffMode: true })} className="text-[11px] font-bold text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:text-white/80 transition-colors">
                           I know my cutoff directly &rarr;
                         </button>
                       </div>
                     </div>
                 )}
                 
-                <div className="space-y-4 pt-8 border-t border-white/5">
-                    <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">Analysis Strategy</label>
+                <div className="space-y-4 pt-8 border-t border-purple-250/20 dark:border-purple-900/20">
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Analysis Strategy</label>
                     <div className="grid grid-cols-3 gap-3">
                         {[
                             { val: "-10", label: "Safety", color: "text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/20" },
@@ -710,7 +712,7 @@ export default function InterviewPage() {
                                     "h-16 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all border",
                                     formData.cutoffRange === r.val 
                                       ? `${r.bg} ${r.color} ${r.border} shadow-lg` 
-                                      : "bg-white/[0.03] text-white/30 border-white/5 hover:border-white/10"
+                                      : "bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/30 dark:border-purple-900/30"
                                 )}
                                 onClick={() => updateForm({ cutoffRange: r.val as any })}
                             >
@@ -721,11 +723,11 @@ export default function InterviewPage() {
                 </div>
 
                 <div className="flex gap-4 mt-4">
-                  <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                  <button onClick={handleBack} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
                     <ChevronLeft size={20} /> Back
                   </button>
                   <button 
-                      className="btn-primary flex-[2] h-16 text-lg flex items-center justify-center gap-3 font-black uppercase tracking-widest"
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:shadow-lg hover:opacity-90 transition-all rounded-xl flex-[2] h-16 text-lg flex items-center justify-center gap-3 font-black uppercase tracking-widest"
                       onClick={() => {
                         if (!formData.cutoffMark && formData.courseLevel !== "PG") {
                           toast.error("Please enter or calculate your cutoff");
@@ -748,12 +750,12 @@ export default function InterviewPage() {
                 <Users size={14} className="text-blue-400" />
                 <span className="text-[10px] font-black text-blue-300 uppercase tracking-widest">Demographics</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Social Profile</h2>
-              <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 7: Category and background</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Social Profile</h2>
+              <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 7: Category and background</p>
             </div>
-            <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-12 space-y-8 shadow-2xl">
+            <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl">
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">Admission Category (Quota)</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Admission Category (Quota)</label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {QUOTAS.map(q => (
                             <button
@@ -762,7 +764,7 @@ export default function InterviewPage() {
                                     "h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border",
                                     formData.quota === q 
                                       ? "bg-blue-500/20 text-blue-300 border-blue-500/40" 
-                                      : "bg-white/[0.05] text-white/30 border-white/5 hover:border-white/10"
+                                      : "bg-white/50 dark:bg-white/[0.05] text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/30 dark:border-purple-900/30"
                                 )}
                                 onClick={() => updateForm({ quota: q })}
                             >
@@ -772,7 +774,7 @@ export default function InterviewPage() {
                     </div>
                 </div>
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1">Religion</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Religion</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                         {RELIGIONS.map(r => (
                             <button
@@ -781,7 +783,7 @@ export default function InterviewPage() {
                                     "h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border",
                                     formData.religion === r 
                                       ? "bg-blue-500/20 text-blue-300 border-blue-500/40" 
-                                      : "bg-white/[0.05] text-white/30 border-white/5 hover:border-white/10"
+                                      : "bg-white/50 dark:bg-white/[0.05] text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/30 dark:border-purple-900/30"
                                 )}
                                 onClick={() => updateForm({ religion: r })}
                             >
@@ -791,11 +793,11 @@ export default function InterviewPage() {
                     </div>
                 </div>
                 <div className="flex gap-4 mt-4">
-                  <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                  <button onClick={handleBack} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
                     <ChevronLeft size={20} /> Back
                   </button>
                   <button 
-                      className="btn-primary flex-[2] h-16 text-lg flex items-center justify-center gap-3 font-black uppercase tracking-widest"
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:shadow-lg hover:opacity-90 transition-all rounded-xl flex-[2] h-16 text-lg flex items-center justify-center gap-3 font-black uppercase tracking-widest"
                       onClick={handleNext} 
                   >
                       Continue <ChevronRight size={20} />
@@ -812,10 +814,10 @@ export default function InterviewPage() {
                 <Wallet size={14} className="text-emerald-400" />
                 <span className="text-[10px] font-black text-emerald-300 uppercase tracking-widest">Financial Alignment</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Budget Policy</h2>
-              <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 8: Institutional type preference</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Budget Policy</h2>
+              <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 8: Institutional type preference</p>
             </div>
-            <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-12 space-y-4 shadow-2xl">
+            <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-4 shadow-2xl">
                 {["Government", "Private", "Both"].map((b) => (
                     <button
                       key={b}
@@ -823,7 +825,7 @@ export default function InterviewPage() {
                           "h-20 w-full rounded-[2rem] text-xl font-black uppercase tracking-widest transition-all border",
                           formData.budget === b 
                             ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-lg" 
-                            : "bg-white/[0.03] text-white/30 border-white/5 hover:border-white/10"
+                            : "bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/30 dark:border-purple-900/30"
                       )}
                       onClick={() => { updateForm({ budget: b as any }); }}
                     >
@@ -831,13 +833,13 @@ export default function InterviewPage() {
                     </button>
                 ))}
                 <div className="flex gap-4 pt-4">
-                  <button onClick={handleBack} className="btn-ghost flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                  <button onClick={handleBack} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
                     <ChevronLeft size={20} /> Back
                   </button>
                   <button 
                     onClick={handleNext} 
                     disabled={!formData.budget}
-                    className="btn-primary flex-[2] h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2"
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:shadow-lg hover:opacity-90 transition-all rounded-xl flex-[2] h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2"
                   >
                     Continue <ChevronRight size={20} />
                   </button>
@@ -853,8 +855,8 @@ export default function InterviewPage() {
                 <Sparkles size={14} className="text-indigo-400" />
                 <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">AI Synthesis</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">Ready for Analysis?</h2>
-              <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Step 9: Final predictive processing</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Ready for Analysis?</h2>
+              <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 9: Final predictive processing</p>
             </div>
             
             {noCollegesInDistrict ? (
@@ -865,15 +867,15 @@ export default function InterviewPage() {
                   <MapPin className="h-24 w-24 text-amber-400 mx-auto relative z-10" />
                 </div>
                 <div className="space-y-4">
-                  <h3 className="text-3xl font-black text-white tracking-tight">No Colleges Found in {formData.district}</h3>
-                  <p className="text-white/60 font-medium leading-relaxed max-w-md mx-auto text-base">
+                  <h3 className="text-3xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tight">No Colleges Found in {formData.district}</h3>
+                  <p className="text-gray-900 dark:text-gray-600 dark:text-slate-300 font-medium leading-relaxed max-w-md mx-auto text-base">
                     We couldn't find any colleges matching your criteria in <span className="text-amber-400 font-bold">{formData.district} district</span>. 
                     Would you like to explore colleges from other states?
                   </p>
                 </div>
                 <div className="flex flex-col gap-4">
                   <button 
-                    className="btn-primary h-20 text-xl group flex items-center justify-center gap-4" 
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:shadow-lg hover:opacity-90 transition-all rounded-xl h-20 text-xl group flex items-center justify-center gap-4" 
                     onClick={() => handleFinish(true)}
                     disabled={analyzing}
                   >
@@ -886,31 +888,31 @@ export default function InterviewPage() {
                   </button>
                   <button 
                     onClick={handleBack} 
-                    className="btn-ghost h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2"
+                    className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2"
                   >
                     <ChevronLeft size={24} /> Change District
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/5 rounded-[3.5rem] p-14 text-center space-y-8 relative overflow-hidden shadow-2xl">
+              <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3.5rem] p-14 text-center space-y-8 relative overflow-hidden shadow-2xl">
                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 to-teal-500" />
                 <div className="relative">
                   <div className="absolute inset-0 bg-indigo-500/20 blur-[60px] rounded-full pointer-events-none" />
                   <Sparkles className="h-24 w-24 text-indigo-400 mx-auto animate-pulse relative z-10" />
                 </div>
                 <div className="space-y-3">
-                  <h3 className="text-3xl font-black text-white tracking-tight">AI Engine Primed</h3>
-                  <p className="text-white/40 font-medium leading-relaxed max-w-xs mx-auto text-sm">
+                  <h3 className="text-3xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tight">AI Engine Primed</h3>
+                  <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-medium leading-relaxed max-w-xs mx-auto text-sm">
                     Our advanced matching engine is ready to process your academic profile against real colleges with verified fee structures.
                   </p>
                 </div>
                 <div className="flex gap-4">
-                  <button onClick={handleBack} className="btn-ghost flex-1 h-20 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                  <button onClick={handleBack} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all flex-1 h-20 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
                     <ChevronLeft size={24} /> Back
                   </button>
                   <button 
-                    className="btn-primary flex-[3] h-20 text-2xl group flex items-center justify-center gap-4" 
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:shadow-lg hover:opacity-90 transition-all rounded-xl flex-[3] h-20 text-2xl group flex items-center justify-center gap-4" 
                     onClick={() => handleFinish(false)}
                     disabled={analyzing}
                   >
@@ -934,8 +936,8 @@ export default function InterviewPage() {
                 <div className="absolute inset-0 bg-teal-500/20 blur-2xl rounded-full" />
                 <Sparkles size={48} className="animate-pulse relative z-10" />
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white tracking-tighter uppercase">AI Match Analysis</h2>
-              <p className="text-white/40 font-bold uppercase tracking-[0.3em] text-[11px] leading-relaxed max-w-xl mx-auto">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter uppercase">AI Match Analysis</h2>
+              <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.3em] text-[11px] leading-relaxed max-w-xl mx-auto">
                 Based on your <span className="text-teal-400">{formData.courseLevel} {formData.stream}</span> profile, we discovered <span className="text-indigo-400">{colleges.length} matches</span> tailored to your performance.
               </p>
               
@@ -962,7 +964,7 @@ export default function InterviewPage() {
                     moderateColleges: colleges.filter(c => (c.match_score || 0) > 60 && (c.match_score || 0) <= 80),
                     reachColleges: colleges.filter(c => (c.match_score || 0) <= 60),
                   })}
-                  className="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-white/[0.05] border border-white/10 text-teal-400 font-black text-[10px] uppercase tracking-widest hover:bg-white/[0.1] hover:-translate-y-1 transition-all shadow-xl shadow-teal-500/5"
+                  className="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 text-teal-400 font-black text-[10px] uppercase tracking-widest hover:bg-white/[0.1] hover:-translate-y-1 transition-all shadow-xl shadow-teal-500/5"
                 >
                   <FileDown size={18} />
                   Download Analysis Intelligence (PDF)
@@ -991,20 +993,20 @@ export default function InterviewPage() {
                     className={cn(
                       "absolute top-4 right-4 z-20 h-8 w-8 rounded-xl border-2 flex items-center justify-center transition-all shadow-lg",
                       isSelected
-                        ? "bg-indigo-500 border-indigo-400 text-white shadow-indigo-500/30"
+                        ? "bg-indigo-500 border-indigo-400 text-gray-900 dark:text-white shadow-indigo-500/30"
                         : isDisabled
-                        ? "bg-white/[0.03] border-white/10 text-white/20 cursor-not-allowed"
-                        : "bg-white/[0.05] border-white/20 text-white/40 hover:border-indigo-400 hover:bg-indigo-500/20 hover:text-indigo-300"
+                        ? "bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 border-purple-250/30 dark:border-purple-900/30 text-gray-900 dark:text-gray-400 dark:text-slate-500 cursor-not-allowed"
+                        : "bg-white/50 dark:bg-white/[0.05] border-purple-250/40 dark:border-purple-900/40 text-gray-900 dark:text-gray-500 dark:text-slate-400 hover:border-indigo-400 hover:bg-indigo-500/20 hover:text-indigo-300"
                     )}
                   >
                     {isSelected && <Check size={14} />}
                   </button>
 
                   <div className={cn(
-                    "h-full bg-white/[0.02] backdrop-blur-2xl border rounded-[3rem] p-10 transition-all relative overflow-hidden flex flex-col shadow-2xl",
+                    "h-full bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border rounded-[3rem] p-10 transition-all relative overflow-hidden flex flex-col shadow-2xl",
                     isSelected
                       ? "border-indigo-500/50 shadow-indigo-500/10"
-                      : "border-white/5 hover:border-indigo-500/30"
+                      : "border-purple-250/20 dark:border-purple-900/20 hover:border-indigo-500/30"
                   )}>
                     <div className="absolute top-0 right-0 p-10 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700">
                         <GraduationCap size={200} className="text-indigo-500" />
@@ -1013,8 +1015,8 @@ export default function InterviewPage() {
                     <div className="relative z-10 flex-1 flex flex-col">
                       <div className="flex justify-between items-start gap-6 mb-8">
                         <div className="space-y-2 flex-1 pr-8">
-                          <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white group-hover:text-indigo-400 transition-colors tracking-tight line-clamp-2 leading-tight">{college.name}</h3>
-                          <div className="flex items-center gap-2 text-white/30">
+                          <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 dark:text-gray-900 dark:text-white group-hover:text-indigo-400 transition-colors tracking-tight line-clamp-2 leading-tight">{college.name}</h3>
+                          <div className="flex items-center gap-2 text-gray-900 dark:text-gray-500 dark:text-slate-400">
                              <MapPin size={14} className="text-indigo-500" />
                              <span className="text-[10px] font-black uppercase tracking-widest">{college.location}, {college.state}</span>
                           </div>
@@ -1032,7 +1034,7 @@ export default function InterviewPage() {
 
                       <div className="flex flex-wrap gap-2 mb-6">
                         {[college.type, college.level || "UG", `Rank #${college.nirf_rank || "N/A"}`].map((tag, i) => (
-                          <span key={i} className="px-3 py-1 bg-white/[0.05] rounded-lg text-[9px] font-black text-white/40 border border-white/5 uppercase tracking-wider">{tag}</span>
+                          <span key={i} className="px-3 py-1 bg-white/50 dark:bg-white/[0.05] rounded-lg text-[9px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 border border-purple-250/20 dark:border-purple-900/20 uppercase tracking-wider">{tag}</span>
                         ))}
                       </div>
 
@@ -1050,15 +1052,15 @@ export default function InterviewPage() {
                       <div className="p-8 rounded-[2rem] bg-indigo-500/[0.03] border border-indigo-500/10 mb-10 flex-1 relative overflow-hidden group/box">
                         <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500/40" />
                         <p className="text-[9px] font-black text-indigo-400/50 uppercase tracking-widest mb-4">AI Reason for Selection</p>
-                        <p className="text-white/60 font-medium italic text-base leading-relaxed">
+                        <p className="text-gray-900 dark:text-gray-600 dark:text-slate-300 font-medium italic text-base leading-relaxed">
                             "{college.why_fit}"
                         </p>
                       </div>
                       
-                      <div className="mt-auto pt-8 border-t border-white/5">
+                      <div className="mt-auto pt-8 border-t border-purple-250/20 dark:border-purple-900/20">
                         <div className="flex gap-4">
                           <button 
-                            className="flex-1 h-14 bg-white/[0.05] border border-white/10 rounded-2xl text-white font-black text-[10px] uppercase tracking-widest hover:bg-white/[0.1] transition-all"
+                            className="flex-1 h-14 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl text-gray-900 dark:text-white font-black text-[10px] uppercase tracking-widest hover:bg-white/[0.1] transition-all"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCollegeClick(college);
@@ -1067,7 +1069,7 @@ export default function InterviewPage() {
                             Technical Breakdown
                           </button>
                           <Link href="/dashboard/contact" className="flex-1" onClick={(e) => e.stopPropagation()}>
-                            <button className="w-full h-14 bg-indigo-600 rounded-2xl text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-500/20 hover:bg-indigo-500 transition-all">
+                            <button className="w-full h-14 bg-indigo-600 rounded-2xl text-gray-900 dark:text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-500/20 hover:bg-indigo-500 transition-all">
                                 Direct Admission
                             </button>
                           </Link>
@@ -1083,10 +1085,10 @@ export default function InterviewPage() {
             {/* Rating Section */}
             {colleges.length > 0 && currentSessionId && (
               <div className="max-w-2xl mx-auto mb-8">
-                <div className="bg-white/[0.02] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-10 text-center space-y-6">
+                <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-10 text-center space-y-6">
                   <div className="space-y-2">
-                    <h3 className="text-xl font-black text-white tracking-tight">Are you happy with these results?</h3>
-                    <p className="text-white/30 font-bold text-[10px] uppercase tracking-widest">
+                    <h3 className="text-xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tight">Are you happy with these results?</h3>
+                    <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest">
                       Your feedback helps improve our matching accuracy
                     </p>
                   </div>
@@ -1103,13 +1105,13 @@ export default function InterviewPage() {
                     <div className="flex gap-4 justify-center pt-2">
                       <button
                         onClick={() => handleRating("happy")}
-                        className="flex items-center gap-3 px-8 py-4 bg-teal-500/10 border border-teal-500/20 rounded-2xl text-teal-400 font-black text-xs uppercase tracking-widest hover:bg-teal-500 hover:text-white transition-all duration-300 group"
+                        className="flex items-center gap-3 px-8 py-4 bg-teal-500/10 border border-teal-500/20 rounded-2xl text-teal-400 font-black text-xs uppercase tracking-widest hover:bg-teal-500 hover:text-gray-900 dark:text-white transition-all duration-300 group"
                       >
                         <span className="text-lg group-hover:scale-125 transition-transform duration-300">😊</span> Happy
                       </button>
                       <button
                         onClick={() => handleRating("bad")}
-                        className="flex items-center gap-3 px-8 py-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 font-black text-xs uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all duration-300 group"
+                        className="flex items-center gap-3 px-8 py-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 font-black text-xs uppercase tracking-widest hover:bg-red-500 hover:text-gray-900 dark:text-white transition-all duration-300 group"
                       >
                         <span className="text-lg group-hover:scale-125 transition-transform duration-300">😢</span> Bad
                       </button>
@@ -1122,10 +1124,10 @@ export default function InterviewPage() {
             {/* Share Card Section */}
             {colleges.length > 0 && (
               <div className="max-w-2xl mx-auto">
-                <div className="bg-white/[0.02] backdrop-blur-2xl border border-white/5 rounded-[3rem] p-10 space-y-6">
+                <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-10 space-y-6">
                   <div className="text-center space-y-2">
-                    <h3 className="text-xl font-black text-white tracking-tight">Share Your Results</h3>
-                    <p className="text-white/30 font-bold text-[10px] uppercase tracking-widest">
+                    <h3 className="text-xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tight">Share Your Results</h3>
+                    <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest">
                       Download your match card or share with friends
                     </p>
                   </div>
@@ -1141,7 +1143,7 @@ export default function InterviewPage() {
 
             <div className="text-center py-20">
               <button 
-                className="inline-flex items-center gap-3 px-10 py-5 bg-white/[0.05] border border-white/10 rounded-2xl text-white/40 font-black text-[10px] uppercase tracking-widest hover:bg-white/[0.1] hover:text-white transition-all"
+                className="inline-flex items-center gap-3 px-10 py-5 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl text-gray-900 dark:text-gray-500 dark:text-slate-400 font-black text-[10px] uppercase tracking-widest hover:bg-white/[0.1] hover:text-gray-900 dark:text-white transition-all"
                 onClick={() => router.push("/dashboard")}
               >
                 <History size={16} />
@@ -1156,7 +1158,9 @@ export default function InterviewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05071a] text-white relative overflow-hidden selection:bg-indigo-500/30">
+    <PageTransition>
+      <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] relative overflow-hidden selection:bg-indigo-500/30 pb-24">
+        <DashboardBackground />
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
         <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-indigo-500/5 rounded-full blur-[150px] animate-pulse" />
@@ -1174,23 +1178,23 @@ export default function InterviewPage() {
             <button 
                 onClick={handleBack} 
                 disabled={step === 1} 
-                className="flex items-center gap-2 text-white/20 font-black text-[10px] uppercase tracking-[0.3em] hover:text-white transition-all disabled:opacity-0"
+                className="flex items-center gap-2 text-gray-900 dark:text-gray-400 dark:text-slate-500 font-black text-[10px] uppercase tracking-[0.3em] hover:text-gray-900 dark:text-white transition-all disabled:opacity-0"
             >
               <ChevronLeft size={16} /> Back
             </button>
             <div className="flex flex-col items-center">
                 <span className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.4em] mb-1">Process Progress</span>
-                <span className="text-white font-black text-xl tracking-tighter">{step} <span className="text-white/20 font-medium">/</span> {totalSteps}</span>
+                <span className="text-gray-900 dark:text-white font-black text-xl tracking-tighter">{step} <span className="text-gray-900 dark:text-gray-400 dark:text-slate-500 font-medium">/</span> {totalSteps}</span>
             </div>
             <button 
                 onClick={handleNext} 
                 disabled={step === totalSteps}
-                className="flex items-center gap-2 text-white/20 font-black text-[10px] uppercase tracking-[0.3em] hover:text-white transition-all disabled:opacity-0"
+                className="flex items-center gap-2 text-gray-900 dark:text-gray-400 dark:text-slate-500 font-black text-[10px] uppercase tracking-[0.3em] hover:text-gray-900 dark:text-white transition-all disabled:opacity-0"
             >
               Next <ChevronRight size={16} />
             </button>
           </div>
-          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden backdrop-blur-sm border border-white/5">
+          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden backdrop-blur-sm border border-purple-250/20 dark:border-purple-900/20">
             <motion.div 
               className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-teal-500"
               initial={{ width: 0 }}
@@ -1227,7 +1231,7 @@ export default function InterviewPage() {
             <div className="flex items-center justify-between gap-4 px-6 py-4 rounded-[2rem] bg-indigo-600/90 backdrop-blur-xl border border-indigo-400/30 shadow-2xl shadow-indigo-500/30">
               <div className="flex items-center gap-3">
                 <GitCompareArrows size={20} className="text-indigo-200 shrink-0" />
-                <span className="text-white font-black text-sm uppercase tracking-widest">
+                <span className="text-gray-900 dark:text-white font-black text-sm uppercase tracking-widest">
                   Comparing {compareList.length} college{compareList.length > 1 ? "s" : ""}
                 </span>
               </div>
@@ -1241,6 +1245,7 @@ export default function InterviewPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </PageTransition>
   );
 }

@@ -75,7 +75,7 @@ function FloatingWireframeRing() {
 
 export default function HomepageBackground() {
   return (
-    <div className="fixed inset-0 -z-20 w-full h-full pointer-events-none overflow-hidden select-none bg-gradient-to-br from-slate-50 via-purple-50/30 to-indigo-50/20">
+    <div className="fixed inset-0 -z-10 w-full h-full pointer-events-none overflow-hidden select-none bg-gradient-to-br from-[#f0f4ff] via-purple-50/20 to-[#f0f4ff] dark:from-[#05071a] dark:via-[#0c0f2b] dark:to-[#05071a]">
       <Canvas
         camera={{ position: [0, 0, 6], fov: 60 }}
         style={{ pointerEvents: 'none' }}

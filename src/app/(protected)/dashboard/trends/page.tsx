@@ -14,6 +14,7 @@ import {
   Tooltip, ResponsiveContainer, Legend
 } from "recharts";
 import { cn } from "@/lib/utils";
+import DashboardBackground from "@/components/3D/DashboardBackground";
 
 type College = {
   id: string;
@@ -160,7 +161,8 @@ export default function TrendsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#05071a] text-white relative overflow-hidden selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] relative overflow-hidden selection:bg-indigo-500/30">
+      <DashboardBackground />
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 rounded-full blur-[150px] pointer-events-none" />
@@ -168,16 +170,16 @@ export default function TrendsPage() {
       </div>
 
       <div className="container mx-auto px-6 py-16 max-w-7xl relative z-10">
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mb-16 border-b border-white/5 pb-12">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mb-16 border-b border-purple-250/20 dark:border-purple-900/20 pb-12">
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20">
               <Activity size={14} className="text-indigo-400" />
               <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">Market Intelligence</span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-black text-white tracking-tighter flex items-center gap-4">
+            <h1 className="text-5xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tighter flex items-center gap-4">
                 Cutoff Trends
             </h1>
-            <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px]">Visualize year-over-year admission data and competitive shifts</p>
+            <p className="text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Visualize year-over-year admission data and competitive shifts</p>
           </div>
           
           <div className="bg-white/[0.05] p-1.5 rounded-2xl border border-white/10 flex backdrop-blur-md">
@@ -267,20 +269,20 @@ export default function TrendsPage() {
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 15 }}
-                            className="absolute top-full left-0 right-0 mt-6 bg-[#0a0d1e] border border-white/10 rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.5)] overflow-hidden z-50 max-h-96 overflow-y-auto backdrop-blur-3xl"
+                            className="absolute top-full left-0 right-0 mt-6 bg-white dark:bg-[#0a0d1e] border border-purple-250/30 dark:border-white/10 rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_100px_rgba(0,0,0,0.5)] overflow-hidden z-50 max-h-96 overflow-y-auto backdrop-blur-3xl"
                         >
                             {searching ? (
                                 <div className="p-12 text-center"><Loader2 className="h-10 w-10 animate-spin mx-auto text-indigo-500 opacity-50" /></div>
                             ) : results.length === 0 ? (
-                                <div className="p-12 text-center text-white/20 font-black text-[10px] uppercase tracking-widest">No matching entities found</div>
+                                <div className="p-12 text-center text-gray-400 dark:text-white/20 font-black text-[10px] uppercase tracking-widest">No matching entities found</div>
                             ) : results.map(c => (
                                 <button 
                                     key={c.id} 
                                     onClick={() => addCollege(c)}
-                                    className="w-full p-8 text-left hover:bg-white/[0.05] flex justify-between items-center group border-b border-white/5 last:border-0 transition-all"
+                                    className="w-full p-8 text-left hover:bg-white/[0.05] dark:hover:bg-white/[0.02] flex justify-between items-center group border-b border-purple-250/20 dark:border-white/5 last:border-0 transition-all"
                                 >
                                     <div className="space-y-1">
-                                        <p className="text-lg font-black text-white group-hover:text-indigo-400 transition-colors tracking-tight">{c.name}</p>
+                                        <p className="text-lg font-black text-gray-900 dark:text-white group-hover:text-indigo-400 transition-colors tracking-tight">{c.name}</p>
                                         <p className="text-[9px] text-white/20 uppercase font-black tracking-widest flex items-center gap-2">
                                           <MapPin size={10} className="text-indigo-500" /> {c.city}, {c.state}
                                         </p>

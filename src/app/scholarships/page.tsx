@@ -14,6 +14,7 @@ import {
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { cn } from "@/lib/utils";
+import DashboardBackground from "@/components/3D/DashboardBackground";
 
 const INDIAN_STATES = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
@@ -92,13 +93,14 @@ export default function ScholarshipFinder() {
   };
 
   if (authLoading) return (
-    <div className="min-h-screen bg-[#05071a] flex items-center justify-center">
-      <Loader2 className="h-10 w-10 text-indigo-400 animate-spin" />
+    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
+      <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#05071a] text-white relative overflow-hidden selection:bg-indigo-500/30 py-24">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] relative overflow-hidden selection:bg-indigo-500/30 py-24">
+      <DashboardBackground />
       {/* Background Ambience */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 rounded-full blur-[150px] pointer-events-none" />
@@ -115,10 +117,10 @@ export default function ScholarshipFinder() {
             <Banknote size={14} />
             Financial Intelligence
           </motion.div>
-          <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-tight">
+          <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white tracking-tighter leading-tight">
             Unlock Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-teal-400">Education Funds</span>
           </h1>
-          <p className="text-white/30 font-bold uppercase tracking-[0.2em] text-[10px] max-w-lg mx-auto">
+          <p className="text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] max-w-lg mx-auto">
             Our AI engine scans through 10,000+ government and private endowments to find your perfect matching grants.
           </p>
         </header>
@@ -149,9 +151,9 @@ export default function ScholarshipFinder() {
                   <select
                     value={formData[f.key as keyof typeof formData]}
                     onChange={(e) => setFormData({ ...formData, [f.key]: e.target.value })}
-                    className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-indigo-500/50 appearance-none transition-all cursor-pointer"
+                    className="w-full h-16 bg-white/70 dark:bg-white/[0.05] border border-purple-250/20 dark:border-white/10 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-indigo-500/50 appearance-none transition-all cursor-pointer"
                   >
-                    {f.options.map(o => <option key={o} value={o} className="bg-[#05071a]">{o}</option>)}
+                    {f.options.map(o => <option key={o} value={o} className="bg-white dark:bg-[#05071a] text-gray-900 dark:text-white">{o}</option>)}
                   </select>
                   <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" size={16} />
                 </div>
@@ -167,7 +169,7 @@ export default function ScholarshipFinder() {
                 placeholder="e.g. 85"
                 value={formData.percentage}
                 onChange={(e) => setFormData({ ...formData, percentage: e.target.value })}
-                className="w-full h-16 bg-white/[0.05] border border-white/10 rounded-2xl px-6 text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-white/10"
+                className="w-full h-16 bg-white/70 dark:bg-white/[0.05] border border-purple-250/20 dark:border-white/10 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-gray-400 dark:placeholder:text-white/10"
               />
             </div>
 
