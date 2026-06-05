@@ -64,8 +64,6 @@
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.184.0",
-    "three-bvh-csg": "^0.0.18",
-    "three-mesh-ui": "^6.5.4",
     "three-stdlib": "^2.36.1",
     "twilio": "^5.3.0",
     "zod": "^3.23.0",
