@@ -1,66 +1,60 @@
 'use client';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import * as THREE from 'three';
 
-function FlyingBox({ position, color }: { position: [number, number, number]; color: string }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const speedRef = useRef({
-    x: (Math.random() - 0.5) * 0.02,
-    y: (Math.random() - 0.5) * 0.02,
-    z: (Math.random() - 0.5) * 0.02,
-  });
+function SlowParticleDrift() {
+  const pointsRef = useRef<THREE.Points>(null);
+  const count = 40;
 
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.position.x += speedRef.current.x;
-      meshRef.current.position.y += speedRef.current.y;
-      meshRef.current.position.z += speedRef.current.z;
+  const positions = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 15;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 15;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 10;
+    }
+    return pos;
+  }, []);
 
-      // Bounce off walls
-      if (Math.abs(meshRef.current.position.x) > 5)
-        speedRef.current.x *= -1;
-      if (Math.abs(meshRef.current.position.y) > 5)
-        speedRef.current.y *= -1;
-      if (Math.abs(meshRef.current.position.z) > 5)
-        speedRef.current.z *= -1;
-
-      meshRef.current.rotation.x += 0.01;
-      meshRef.current.rotation.y += 0.015;
+  useFrame(({ clock }) => {
+    if (pointsRef.current) {
+      pointsRef.current.rotation.y = clock.getElapsedTime() * 0.008;
+      pointsRef.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.05) * 0.02;
     }
   });
 
   return (
-    <mesh ref={meshRef} position={position}>
-      <boxGeometry args={[0.5, 0.5, 0.5]} />
-      <meshPhongMaterial color={color} emissive={color} shininess={100} />
-    </mesh>
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={count}
+          array={positions}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.08}
+        color="#8b5cf6"
+        transparent
+        opacity={0.3}
+        sizeAttenuation
+      />
+    </points>
   );
 }
 
 export default function DashboardBackground() {
-  const colors = ['#7c3aed', '#2563eb', '#06b6d4', '#10b981', '#f59e0b'];
-
   return (
-    <div className="fixed inset-0 -z-10 w-full h-full pointer-events-none">
+    <div className="fixed inset-0 -z-20 w-full h-full pointer-events-none overflow-hidden select-none bg-gradient-to-br from-slate-50 via-purple-50/20 to-slate-50">
       <Canvas
-        camera={{ position: [0, 0, 8], fov: 75 }}
-        style={{ background: 'transparent' }}
+        camera={{ position: [0, 0, 6], fov: 60 }}
+        style={{ pointerEvents: 'none' }}
+        gl={{ antialias: true, powerPreference: "high-performance" }}
       >
-        <ambientLight intensity={0.4} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
-
-        {Array.from({ length: 12 }).map((_, i) => (
-          <FlyingBox
-            key={i}
-            position={[
-              (Math.random() - 0.5) * 8,
-              (Math.random() - 0.5) * 8,
-              (Math.random() - 0.5) * 8,
-            ]}
-            color={colors[i % colors.length]}
-          />
-        ))}
+        <ambientLight intensity={0.9} />
+        <SlowParticleDrift />
       </Canvas>
     </div>
   );

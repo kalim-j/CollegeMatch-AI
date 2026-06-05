@@ -1,129 +1,90 @@
 'use client';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, Preload } from '@react-three/drei';
-import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing';
-import { useRef, useState } from 'react';
+import { useRef, useMemo } from 'react';
 import * as THREE from 'three';
 
-function RotatingTorus() {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const [hovered, setHovered] = useState(false);
+function GlowingConstellation() {
+  const pointsRef = useRef<THREE.Points>(null);
+  const count = 80;
 
-  useFrame(() => {
-    if (meshRef.current) {
-      meshRef.current.rotation.x += hovered ? 0.01 : 0.005;
-      meshRef.current.rotation.y += hovered ? 0.015 : 0.008;
-      meshRef.current.scale.lerp(
-        new THREE.Vector3(hovered ? 1.2 : 1, hovered ? 1.2 : 1, hovered ? 1.2 : 1),
-        0.1
-      );
+  const [positions, sizes] = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const sz = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 12;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 12;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      sz[i] = Math.random() * 0.15 + 0.05;
     }
-  });
-
-  return (
-    <mesh
-      ref={meshRef}
-      position={[0, 0, 0]}
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
-    >
-      <torusGeometry args={[2, 0.6, 32, 100]} />
-      <meshPhongMaterial
-        color="#7c3aed"
-        emissive="#a78bfa"
-        shininess={100}
-        wireframe={false}
-      />
-    </mesh>
-  );
-}
-
-function DodecahedronParticles({ count = 15 }: { count?: number }) {
-  const particlesRef = useRef<THREE.Mesh[]>([]);
-
-  useFrame(() => {
-    particlesRef.current.forEach((particle) => {
-      if (particle) {
-        particle.rotation.x += 0.002;
-        particle.rotation.y += 0.003;
-        particle.position.y += Math.sin(Date.now() * 0.001) * 0.01;
-      }
-    });
-  });
-
-  return (
-    <>
-      {Array.from({ length: count }).map((_, i) => {
-        const x = (Math.random() - 0.5) * 10;
-        const y = (Math.random() - 0.5) * 10;
-        const z = (Math.random() - 0.5) * 10;
-        const scale = Math.random() * 0.5 + 0.3;
-
-        return (
-          <Float key={i} speed={Math.random() * 2} rotationIntensity={Math.random()}>
-            <mesh
-              ref={(el) => {
-                if (el) particlesRef.current[i] = el;
-              }}
-              position={[x, y, z]}
-              scale={scale}
-            >
-              <dodecahedronGeometry args={[1, 0]} />
-              <meshPhongMaterial
-                color={
-                  ['#2563eb', '#06b6d4', '#10b981', '#f59e0b'][
-                    Math.floor(Math.random() * 4)
-                  ]
-                }
-                emissive="#1e40af"
-                wireframe
-              />
-            </mesh>
-          </Float>
-        );
-      })}
-    </>
-  );
-}
-
-function AnimatedLights() {
-  const lightRef = useRef<THREE.PointLight>(null);
+    return [pos, sz];
+  }, []);
 
   useFrame(({ clock }) => {
-    if (lightRef.current) {
-      lightRef.current.position.x = Math.sin(clock.elapsedTime) * 5;
-      lightRef.current.position.y = Math.cos(clock.elapsedTime * 0.7) * 5;
+    if (pointsRef.current) {
+      pointsRef.current.rotation.y = clock.getElapsedTime() * 0.02;
+      pointsRef.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.1) * 0.05;
     }
   });
 
   return (
-    <>
-      <ambientLight intensity={0.5} />
-      <pointLight ref={lightRef} intensity={1.5} color="#7c3aed" />
-      <pointLight position={[-10, -10, 10]} intensity={1} color="#2563eb" />
-      <pointLight position={[10, 10, -10]} intensity={0.8} color="#06b6d4" />
-    </>
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={count}
+          array={positions}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.12}
+        color="#a78bfa"
+        transparent
+        opacity={0.6}
+        sizeAttenuation
+      />
+    </points>
+  );
+}
+
+function FloatingWireframeRing() {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame(({ clock }) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x = clock.getElapsedTime() * 0.03;
+      meshRef.current.rotation.y = clock.getElapsedTime() * 0.04;
+    }
+  });
+
+  return (
+    <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
+      <mesh ref={meshRef} position={[0, 0, -2]}>
+        <torusGeometry args={[3.2, 0.9, 16, 64]} />
+        <meshBasicMaterial
+          color="#8b5cf6"
+          wireframe
+          transparent
+          opacity={0.12}
+        />
+      </mesh>
+    </Float>
   );
 }
 
 export default function HomepageBackground() {
   return (
-    <div className="fixed inset-0 -z-10 w-full h-full pointer-events-none">
+    <div className="fixed inset-0 -z-20 w-full h-full pointer-events-none overflow-hidden select-none bg-gradient-to-br from-slate-50 via-purple-50/30 to-indigo-50/20">
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 75 }}
-        style={{ background: 'transparent' }}
+        camera={{ position: [0, 0, 6], fov: 60 }}
+        style={{ pointerEvents: 'none' }}
+        gl={{ antialias: true, powerPreference: "high-performance" }}
       >
-        <AnimatedLights />
-        <RotatingTorus />
-        <DodecahedronParticles count={20} />
-        <EffectComposer>
-          <Bloom
-            intensity={1}
-            luminanceThreshold={0.9}
-            luminanceSmoothing={0.9}
-          />
-          <ChromaticAberration offset={new THREE.Vector2(0.001, 0.001)} />
-        </EffectComposer>
+        <ambientLight intensity={0.8} />
+        <pointLight position={[5, 5, 5]} intensity={1.5} color="#c084fc" />
+        <FloatingWireframeRing />
+        <GlowingConstellation />
         <Preload all />
       </Canvas>
     </div>
