@@ -144,15 +144,7 @@ export default function LoginPage() {
         
         <HomepageBackground />
 
-        {/* Floating 3D element near title */}
-        <div className="fixed right-10 top-20 w-32 h-32 -z-10 hidden md:block">
-          <Canvas camera={{ position: [0, 0, 3], fov: 50 }}>
-            <ambientLight intensity={0.5} />
-            <pointLight position={[5, 5, 5]} intensity={1} />
-            <FloatingLoginIndicator />
-            <OrbitControls autoRotate autoRotateSpeed={1} enableZoom={false} />
-          </Canvas>
-        </div>
+
 
         <div className="relative w-full max-w-md px-4 py-8 z-10">
           <motion.div
