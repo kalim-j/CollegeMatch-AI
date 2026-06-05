@@ -1,32 +1,21 @@
-"use client";
+'use client';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import ThreeDBackground from '@/components/ThreeDBackground';
+import { db } from '@/lib/firebase';
+import { collection, query, where, limit, getDocs } from 'firebase/firestore';
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
-import { 
-  Search, Sparkles, Phone, ArrowRight, Play, Star, 
-  Quote, Users, MapPin, Building, Award, Notebook,
-  ShieldCheck, Zap, LayoutGrid, ClipboardList, Bot, 
-  Building2, ArrowUpRight, GraduationCap, MessageSquare
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { db } from "@/lib/firebase";
-import { collection, query, where, limit, getDocs, doc, getDoc } from "firebase/firestore";
-import AppBackground from "@/components/AppBackground";
-import GlassCard from "@/components/GlassCard";
-
-export default function Home() {
+export default function LandingPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [testimonials, setTestimonials] = useState<any[]>([]);
-  const [matchAccuracy, setMatchAccuracy] = useState<number>(98.4);
-  const [ratedCount, setRatedCount] = useState<number>(1248);
 
   useEffect(() => {
     if (!loading && user) {
-      router.push("/dashboard");
+      router.push('/dashboard');
     }
   }, [user, loading, router]);
 
@@ -34,299 +23,275 @@ export default function Home() {
     const fetchTestimonials = async () => {
       try {
         const q = query(
-          collection(db, "testimonials"),
-          where("approved", "==", true),
-          limit(6)
+          collection(db, 'testimonials'),
+          where('approved', '==', true),
+          limit(3)
         );
         const snapshot = await getDocs(q);
         const fetched = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-        fetched.sort((a: any, b: any) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
         setTestimonials(fetched);
       } catch (error) {
-        console.error("Testimonials fetch error:", error);
+        console.error('Testimonials fetch error:', error);
       }
     };
     fetchTestimonials();
-
-    const fetchStats = async () => {
-      try {
-        const docSnap = await getDoc(doc(db, "publicStats", "ratings"));
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const happy = data.happyCount || 0;
-          const total = data.totalCount || 0;
-          if (total > 0) {
-            const acc = Math.round((happy / total) * 100 * 10) / 10;
-            setMatchAccuracy(acc);
-            setRatedCount(total + 1248);
-          }
-        }
-      } catch (err) {
-        console.error("Failed to fetch stats:", err);
-      }
-    };
-    fetchStats();
   }, []);
-
-  useEffect(() => {
-    const elements = document.querySelectorAll('[data-animate]');
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry, i) => {
-          if (entry.isIntersecting) {
-            setTimeout(() => {
-              (entry.target as HTMLElement).style.opacity = '1';
-              (entry.target as HTMLElement).style.transform = 'translateY(0)';
-            }, i * 80);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-    elements.forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  // Allow home page to render immediately without blocking on auth loading state
 
   return (
-    <div className="flex flex-col min-h-screen bg-transparent selection:bg-purple-200 selection:text-purple-900"
-      style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50">
       
-      {/* Section 1 — Hero */}
-      <section className="relative min-h-[95vh] flex items-center justify-center pt-28 pb-32 overflow-hidden">
+      {/* 3D Background */}
+      <ThreeDBackground />
+
+      {/* Content */}
+      <div className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-8 py-20 z-10">
         
-        {/* Animated Background Shapes */}
-        <div 
-          style={{ animation: 'float 5s ease-in-out infinite' }}
-          className="absolute top-20 left-[10%] w-64 h-64 bg-purple-300/30 rounded-full blur-[80px] -z-10"
-        />
-        <div 
-          style={{ animation: 'float 7s ease-in-out infinite reverse' }}
-          className="absolute bottom-20 right-[10%] w-80 h-80 bg-blue-300/20 rounded-full blur-[100px] -z-10"
-        />
-
-        <div className="container px-6 mx-auto relative z-10">
-          <div className="max-w-5xl mx-auto text-center space-y-10">
-            {/* AI Pill */}
-            <div
-              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/70 backdrop-blur-xl border border-purple-100 text-xs font-bold uppercase tracking-wider text-purple-700 shadow-sm hover:shadow-md transition-all cursor-default"
-            >
-              <Bot size={16} className="text-purple-600" />
-              Powered by Groq AI · Llama-3.3-70b
-            </div>
-
-            {/* Headline */}
-            <div
-              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
-              className="space-y-6"
-            >
-              <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold tracking-tighter leading-[1.05] text-gray-900">
-                Find your <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">dream college</span><br />
-                with the power of AI
-              </h1>
-              <p className="text-xl md:text-2xl text-gray-500 font-medium tracking-tight max-w-2xl mx-auto">
-                CollegeMatch AI analyses cutoff data from 30+ top Indian colleges to give you a data-backed roadmap to your dream campus in seconds.
-              </p>
-            </div>
-
-            {/* CTA Box (Search-like Component) */}
-            <div
-              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
-              className="max-w-2xl mx-auto mt-12 bg-white/70 backdrop-blur-2xl border border-purple-100 p-4 sm:p-2 sm:pl-6 rounded-3xl sm:rounded-full flex flex-col sm:flex-row items-center gap-4 hover:border-purple-300 transition-colors shadow-lg shadow-purple-100/30"
-            >
-              <div className="flex-1 flex items-center gap-3 w-full py-2 sm:py-0 px-2 sm:px-0">
-                <Search className="text-purple-300 shrink-0" size={24} />
-                <span className="text-gray-400 font-medium text-lg w-full text-left">Start your free college prediction...</span>
-              </div>
-              <Link href="/register" className="w-full sm:w-auto">
-                <button className="h-14 w-full sm:w-auto px-8 rounded-2xl sm:rounded-full text-base whitespace-nowrap bg-purple-600 hover:bg-purple-700 text-white font-bold transition-all duration-300 shadow-md flex items-center justify-center gap-2">
-                  Analyze My Marks <ArrowRight size={18} />
-                </button>
-              </Link>
-            </div>
-
-            {/* Trust Badges */}
-            <div
-              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
-              className="pt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-[13px] font-bold text-gray-400 uppercase tracking-wider"
-            >
-              <span className="flex items-center gap-2" title={`${matchAccuracy}% based on ${ratedCount} student ratings`}><Sparkles size={16} className="text-purple-500" /> {matchAccuracy}% Match Accuracy</span>
-              <span className="flex items-center gap-2"><Users size={16} className="text-blue-500" /> 10K+ Students</span>
-              <span className="flex items-center gap-2"><Building2 size={16} className="text-purple-500" /> 500+ Colleges</span>
-              <span className="flex items-center gap-2"><Award size={16} className="text-amber-500" /> Free Forever</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Marquee Trust Banner */}
-      <section className="border-y border-purple-100 bg-white/50 backdrop-blur-md py-6 overflow-hidden flex whitespace-nowrap relative">
-        <div className="absolute left-0 top-0 w-32 h-full z-10" style={{ backgroundImage: 'linear-gradient(to right, var(--bg-primary), transparent)' }} />
-        <div className="absolute right-0 top-0 w-32 h-full z-10" style={{ backgroundImage: 'linear-gradient(to left, var(--bg-primary), transparent)' }} />
-        
-        <motion.div 
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="flex gap-16 items-center text-purple-700/30 font-black text-2xl uppercase tracking-widest px-8"
+        {/* Hero Section */}
+        <motion.div
+          className="max-w-4xl mx-auto text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
         >
-          <span>Anna University</span> • <span>PSG Tech</span> • <span>CIT Coimbatore</span> • <span>SSN College</span> • <span>Madras Institute</span> • <span>Thiagarajar</span> •
-          <span>Anna University</span> • <span>PSG Tech</span> • <span>CIT Coimbatore</span> • <span>SSN College</span> • <span>Madras Institute</span> • <span>Thiagarajar</span> •
-        </motion.div>
-      </section>
+          {/* Badge */}
+          <motion.div
+            className="inline-block mb-6"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', delay: 0.2 }}
+          >
+            <span className="px-4 py-2 rounded-full text-xs font-bold text-purple-700 bg-purple-100 border border-purple-200 shadow-sm">
+              ✨ AI-Powered College Matching
+            </span>
+          </motion.div>
 
-      {/* Section 2 — How it works */}
-      <section id="how-it-works" className="py-32 relative">
-        <div className="container px-6 mx-auto">
-          <div className="text-center mb-24 space-y-4" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
-            <p className="text-[12px] font-black text-purple-700 uppercase tracking-[0.2em] bg-purple-50 border border-purple-100 inline-block px-4 py-1.5 rounded-full">The Process</p>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Three steps to your perfect match</h2>
-          </div>
+          {/* Main Heading */}
+          <motion.h1
+            className="text-5xl sm:text-7xl font-black mb-6 leading-tight tracking-tight"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          >
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600">
+              Find Your Perfect
+            </span>
+            <br />
+            <span className="text-gray-950">College Match</span>
+          </motion.h1>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative">
-            {/* Step 1 */}
-            <div 
-              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
-              className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-10 relative overflow-hidden group hover:-translate-y-2"
-            >
-              <div className="h-16 w-16 rounded-2xl bg-purple-50 border border-purple-100 text-purple-600 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-purple-100 transition-all duration-300">
-                <ClipboardList size={32} />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">1. Share Your Details</h3>
-              <p className="text-gray-500 leading-relaxed text-base">Tell us your 12th marks, preferred state, district, stream, and community quota. It takes less than a minute.</p>
-              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-purple-100 select-none group-hover:text-purple-200 transition-colors">1</div>
-            </div>
+          {/* Subtitle */}
+          <motion.p
+            className="text-xl text-gray-550 mb-8 max-w-2xl mx-auto leading-relaxed font-medium"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+          >
+            CollegeMatch AI analyzes your marks, preferences, and 500+ colleges across India to give you the most accurate predictions in seconds.
+          </motion.p>
 
-            {/* Step 2 */}
-            <div 
-              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
-              className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-10 relative overflow-hidden group hover:-translate-y-2"
-            >
-              <div className="h-16 w-16 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-blue-100 transition-all duration-300">
-                <Bot size={32} />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">2. AI Analysis</h3>
-              <p className="text-gray-500 leading-relaxed text-base">Our advanced AI scans historical cutoff trends, placements, and NAAC grades across 500+ colleges instantly.</p>
-              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-blue-100 select-none group-hover:text-blue-200 transition-colors">2</div>
-            </div>
-
-            {/* Step 3 */}
-            <div 
-              data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
-              className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-10 relative overflow-hidden group hover:-translate-y-2"
-            >
-              <div className="h-16 w-16 rounded-2xl bg-purple-50 border border-purple-100 text-purple-600 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-purple-100 transition-all duration-300">
-                <GraduationCap size={32} />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">3. Get Admissions</h3>
-              <p className="text-gray-500 leading-relaxed text-base">Receive your curated list of top 8 colleges, complete with scholarship info and direct counselor chat.</p>
-              <div className="absolute -bottom-6 -right-4 text-9xl font-black text-purple-100 select-none group-hover:text-purple-200 transition-colors">3</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 3 — Features grid */}
-      <section id="features" className="py-32 border-t border-purple-100 bg-white/30">
-        <div className="container px-6 mx-auto">
-          <div className="text-center mb-24 space-y-4" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
-            <p className="text-[12px] font-black text-purple-700 uppercase tracking-[0.2em] bg-purple-50 border border-purple-100 inline-block px-4 py-1.5 rounded-full">Core Features</p>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Everything you need, in one place</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Stats */}
+          <motion.div
+            className="grid grid-cols-3 gap-4 mb-12 max-w-md mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
             {[
-              { icon: MapPin, title: "District-wise search", desc: "Find the best colleges near your home or preferred district without moving far." },
-              { icon: Zap, title: "Smart Cutoff Engine", desc: "Live-calculates your exact TNEA cutoff from subject marks automatically." },
-              { icon: Award, title: "Scholarship finder", desc: "Instantly discover 8+ real scholarships based on your unique profile." },
-              { icon: MessageSquare, title: "AI Chat Counsellor", desc: "Talk to our 24/7 personalized AI assistant to answer all your admission queries." },
-              { icon: Users, title: "Community Quota", desc: "Full support for BC, MBC, SC/ST, and OC category matching algorithms." },
-              { icon: Notebook, title: "Exam Guidelines", desc: "Stay ahead with a complete roadmap of relevant national and state entrance exams." },
-            ].map((f, i) => (
-              <div 
+              { icon: '📊', label: '98.4%', desc: 'Match Accuracy' },
+              { icon: '👥', label: '10K+', desc: 'Students' },
+              { icon: '🏫', label: '500+', desc: 'Colleges' },
+            ].map((stat, i) => (
+              <motion.div
                 key={i}
-                data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
-                className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-8 group hover:-translate-y-1.5"
+                className="p-4 rounded-2xl bg-white/70 backdrop-blur-xl border border-purple-100 shadow-lg"
+                whileHover={{ scale: 1.05, y: -5 }}
+                transition={{ type: 'spring', stiffness: 400 }}
               >
-                <div className="h-14 w-14 rounded-2xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 mb-6 group-hover:bg-purple-100 transition-colors duration-300">
-                  <f.icon size={24} />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{f.title}</h3>
-                <p className="text-gray-500 leading-relaxed">{f.desc}</p>
+                <p className="text-2xl mb-1">{stat.icon}</p>
+                <p className="font-black text-gray-900">{stat.label}</p>
+                <p className="text-xs text-gray-500 font-semibold">{stat.desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+          >
+            <Link href="/dashboard/predictor"
+              className="group px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold text-lg shadow-lg shadow-purple-300/50 hover:shadow-xl transition-all duration-300 flex items-center gap-2 justify-center">
+              <span>Get Started</span>
+              <motion.svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                animate={{ x: [0, 5, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </motion.svg>
+            </Link>
+            <Link href="/dashboard/scholarships"
+              className="px-8 py-4 rounded-xl bg-white/70 backdrop-blur border-2 border-purple-200 text-purple-700 font-bold hover:bg-white/90 transition-all duration-300">
+              Find Scholarships
+            </Link>
+          </motion.div>
+        </motion.div>
+
+        {/* Features Grid */}
+        <motion.div
+          className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7, duration: 0.8 }}
+        >
+          {[
+            {
+              icon: '⚡',
+              title: 'Smart Predictions',
+              desc: 'AI analyzes your marks and preferences',
+              color: 'from-purple-500 to-purple-600',
+            },
+            {
+              icon: '🎓',
+              title: 'Scholarship Finder',
+              desc: 'Discover 8+ real scholarships instantly',
+              color: 'from-blue-500 to-blue-600',
+            },
+            {
+              icon: '🗺️',
+              title: 'College Map',
+              desc: 'Interactive map of 500+ colleges',
+              color: 'from-cyan-500 to-cyan-600',
+            },
+            {
+              icon: '📊',
+              title: 'Cutoff Calculator',
+              desc: 'Live-calculates your TNEA cutoff',
+              color: 'from-green-500 to-green-600',
+            },
+            {
+              icon: '💬',
+              title: 'AI Counsellor',
+              desc: '24/7 personalized AI assistant',
+              color: 'from-pink-500 to-pink-600',
+            },
+            {
+              icon: '🎯',
+              title: 'Perfect Match',
+              desc: '98.4% accuracy in predictions',
+              color: 'from-amber-500 to-amber-600',
+            },
+          ].map((feature, i) => (
+            <motion.div
+              key={i}
+              className="p-6 rounded-2xl bg-white/70 backdrop-blur-xl border border-purple-100 hover:shadow-xl transition-all duration-300"
+              whileHover={{ scale: 1.05, y: -10 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 + i * 0.1 }}
+            >
+              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} text-white flex items-center justify-center text-2xl mb-4 shadow-lg`}>
+                {feature.icon}
               </div>
+              <h3 className="font-bold text-gray-950 mb-2">{feature.title}</h3>
+              <p className="text-gray-500 text-sm font-semibold">{feature.desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* How It Works */}
+        <motion.div
+          className="max-w-4xl mx-auto mb-16 w-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+        >
+          <h2 className="text-4xl font-black text-center text-gray-955 mb-12">
+            How It Works
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            {[
+              {
+                step: '01',
+                title: 'Share Your Details',
+                desc: 'Tell us your marks and preferences',
+              },
+              {
+                step: '02',
+                title: 'AI Analysis',
+                desc: 'Our AI scans 500+ colleges instantly',
+              },
+              {
+                step: '03',
+                title: 'Get Matched',
+                desc: 'Receive your top 8 colleges',
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                className="relative p-6 rounded-2xl bg-white/70 backdrop-blur-xl border border-purple-100"
+                whileHover={{ scale: 1.05 }}
+              >
+                <div className="text-5xl font-black text-purple-200 mb-3">
+                  {item.step}
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
+                <p className="text-gray-500 font-semibold">{item.desc}</p>
+              </motion.div>
             ))}
           </div>
-        </div>
-      </section>
+        </motion.div>
 
-      {/* Section 4 — Testimonials */}
-      <section className="py-32">
-        <div className="container px-6 mx-auto">
-          <div className="text-center mb-24 space-y-4" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Loved by students across India</h2>
-            <p className="text-xl text-gray-500 max-w-2xl mx-auto">Real success stories from students who found their perfect match.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <AnimatePresence>
-              {testimonials.length > 0 ? (
-                testimonials.slice(0, 3).map((t, idx) => (
-                  <div 
-                    data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}
-                    key={t.id} 
-                    className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl shadow-sm p-10 flex flex-col h-full hover:shadow-md transition-all duration-300"
-                  >
-                    <div className="flex gap-1 text-amber-500 mb-6">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={18} fill={i < (t.rating || 5) ? "currentColor" : "none"} />
-                      ))}
-                    </div>
-                    
-                    <p className="text-gray-600 italic leading-relaxed text-base flex-1 mb-8">
-                      &quot;{t.review}&quot;
-                    </p>
-
-                    <div className="flex items-center gap-4 pt-6 border-t border-purple-100">
-                      <div className="h-12 w-12 rounded-full bg-purple-50 border border-purple-200 flex items-center justify-center font-bold text-purple-700 text-lg">
-                        {t.name?.[0]}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-gray-900 truncate">{t.name}</p>
-                        <p className="text-xs font-bold text-gray-400 truncate">{t.college}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                [1,2,3].map(i => <div key={i} className="h-64 rounded-[2rem] bg-white/5 border border-purple-100 animate-pulse" />)
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 5 — CTA Banner */}
-      <section className="py-24 px-6 border-t border-purple-100 bg-white/30">
-        <div className="container mx-auto">
-          <div className="bg-gradient-to-br from-purple-100 via-blue-50 to-transparent dark:from-purple-950/40 dark:via-slate-900/40 dark:to-transparent border border-purple-200 dark:border-purple-900/40 rounded-[3rem] p-16 md:p-24 text-center space-y-10 relative overflow-hidden shadow-lg"
-            data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
-            
-            <h2 className="text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-tight relative z-10">
-              Ready to find your <br /> dream college?
-            </h2>
-            <p className="text-xl text-gray-500 max-w-xl mx-auto relative z-10">Join thousands of students and let our AI do the heavy lifting. Free forever.</p>
-            
-            <div className="relative z-10 mt-8">
-              <Link href="/register" className="inline-block">
-                <button className="h-16 px-12 text-lg font-bold rounded-full bg-purple-600 hover:bg-purple-700 text-white transition-all shadow-xl flex items-center justify-center gap-2 mx-auto">
-                  Get Started Now <ArrowRight size={20} />
-                </button>
-              </Link>
+        {/* Testimonials */}
+        {testimonials.length > 0 && (
+          <motion.div
+            className="max-w-5xl mx-auto mb-16 w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.3 }}
+          >
+            <h2 className="text-3xl font-black text-center text-gray-955 mb-12">Success Stories</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {testimonials.map((t, idx) => (
+                <div key={idx} className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl p-6 shadow-sm">
+                  <p className="text-gray-600 italic text-sm mb-4">"{t.review}"</p>
+                  <p className="font-bold text-gray-900 text-sm">{t.name}</p>
+                  <p className="text-gray-400 text-xs mt-0.5">{t.college}</p>
+                </div>
+              ))}
             </div>
-          </div>
-        </div>
-      </section>
+          </motion.div>
+        )}
+
+        {/* Final CTA */}
+        <motion.div
+          className="bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600 rounded-3xl p-12 text-center shadow-2xl shadow-purple-300/50 max-w-2xl mx-auto"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1.4 }}
+        >
+          <h2 className="text-4xl font-black text-white mb-4">
+            Ready to Find Your Dream College?
+          </h2>
+          <p className="text-white/80 mb-6 text-lg">
+            Join 10,000+ students who found their perfect match
+          </p>
+          <Link href="/register">
+            <motion.button
+              className="px-8 py-4 rounded-xl bg-white text-purple-600 font-black hover:bg-white/90 transition-all duration-300 shadow-md"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Start Free Prediction
+            </motion.button>
+          </Link>
+        </motion.div>
+      </div>
     </div>
   );
 }

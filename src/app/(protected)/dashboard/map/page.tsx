@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { collegesDatabase } from '@/data/collegesDatabase';
+import { supabase } from '@/lib/supabase';
 
 const CollegeMap = dynamic(
   () => import('@/components/CollegeMap'),
@@ -46,51 +47,67 @@ export default function MapPage() {
 
   useEffect(() => {
     const fetchColleges = async () => {
-      setLoading(true);
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('colleges')
+          .select('*')
+          .not('latitude', 'is', null)
+          .limit(500);
 
-      const stateCoords: Record<string, [number, number]> = {
-        'Tamil Nadu': [11.1271, 78.6569],
-        'Maharashtra': [19.7515, 75.7139],
-        'Karnataka': [15.3173, 75.7139],
-        'Kerala': [10.8505, 76.2711],
-        'Delhi': [28.7041, 77.1025],
-        'Gujarat': [22.2587, 71.1924],
-        'West Bengal': [22.9868, 87.8550],
-        'Uttar Pradesh': [26.8467, 80.9462],
-        'Andhra Pradesh': [15.9129, 79.7400],
-        'Telangana': [18.1124, 79.0193],
-      };
-
-      const processed = (collegesDatabase || []).map((c: any) => {
-        let lat = c.latitude;
-        let lng = c.longitude;
-
-        if (!lat || !lng) {
-          const base = stateCoords[c.state] || [20.5937, 78.9629];
-          const offsetLat = (Math.random() - 0.5) * 0.25;
-          const offsetLng = (Math.random() - 0.5) * 0.25;
-          lat = base[0] + offsetLat;
-          lng = base[1] + offsetLng;
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          setColleges(data as College[]);
+        } else {
+          throw new Error("No colleges found in Supabase, using local database fallback");
         }
-
-        return {
-          id: c.id,
-          name: c.name,
-          location: c.location,
-          state: c.state,
-          type: c.type,
-          cutoff_general: c.cutoff_general,
-          avg_package_lpa: c.avg_package_lpa,
-          nirf_rank: c.nirf_rank,
-          website: c.website,
-          latitude: lat,
-          longitude: lng,
-          district: c.district || '',
+      } catch (err) {
+        console.error('Error fetching colleges from Supabase, loading fallback:', err);
+        const stateCoords: Record<string, [number, number]> = {
+          'Tamil Nadu': [11.1271, 78.6569],
+          'Maharashtra': [19.7515, 75.7139],
+          'Karnataka': [15.3173, 75.7139],
+          'Kerala': [10.8505, 76.2711],
+          'Delhi': [28.7041, 77.1025],
+          'Gujarat': [22.2587, 71.1924],
+          'West Bengal': [22.9868, 87.8550],
+          'Uttar Pradesh': [26.8467, 80.9462],
+          'Andhra Pradesh': [15.9129, 79.7400],
+          'Telangana': [18.1124, 79.0193],
         };
-      });
 
-      setColleges(processed);
-      setLoading(false);
+        const processed = (collegesDatabase || []).map((c: any) => {
+          let lat = c.latitude;
+          let lng = c.longitude;
+
+          if (!lat || !lng) {
+            const base = stateCoords[c.state] || [20.5937, 78.9629];
+            const offsetLat = (Math.random() - 0.5) * 0.25;
+            const offsetLng = (Math.random() - 0.5) * 0.25;
+            lat = base[0] + offsetLat;
+            lng = base[1] + offsetLng;
+          }
+
+          return {
+            id: c.id,
+            name: c.name,
+            location: c.location,
+            state: c.state,
+            type: c.type,
+            cutoff_general: c.cutoff_general,
+            avg_package_lpa: c.avg_package_lpa,
+            nirf_rank: c.nirf_rank,
+            website: c.website,
+            latitude: lat,
+            longitude: lng,
+            district: c.district || '',
+          };
+        });
+        setColleges(processed);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchColleges();

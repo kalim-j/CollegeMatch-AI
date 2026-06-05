@@ -22,20 +22,66 @@ export default function ProfilePage() {
   });
 
 
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    if (authProfile) {
-      setProfile({
-        ...authProfile,
-        fullName: authProfile.fullName || "",
-        phone: authProfile.phone || "",
-        state: authProfile.state || "",
-        city: authProfile.city || "",
-        jeePercentile: authProfile.jeePercentile || "",
-        boardPercentage: authProfile.boardPercentage || "",
-        preferredCourse: authProfile.preferredCourse || "Computer Science"
-      });
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        // Try Firebase first
+        if (authProfile) {
+          setProfile({
+            ...authProfile,
+            fullName: authProfile.fullName || "",
+            phone: authProfile.phone || "",
+            state: authProfile.state || "",
+            city: authProfile.city || "",
+            jeePercentile: authProfile.jeePercentile || "",
+            boardPercentage: authProfile.boardPercentage || "",
+            preferredCourse: authProfile.preferredCourse || "Computer Science"
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Fallback: Try Supabase
+        const { supabase } = await import('@/lib/supabase');
+        const { data: { user: sUser } } = await supabase.auth.getUser();
+        if (sUser) {
+          const { data, error: sErr } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', sUser.id)
+            .single();
+
+          if (sErr) throw sErr;
+          if (data) {
+            setProfile({
+              fullName: data.full_name || "",
+              phone: data.phone || "",
+              state: data.state || "",
+              city: data.city || "",
+              jeePercentile: data.jee_percentile || "",
+              boardPercentage: data.board_percentage || "",
+              preferredCourse: data.preferred_course || "Computer Science"
+            });
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error('Profile load error:', err);
+        setError('Failed to load profile');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!authLoading) {
+      fetchProfile();
     }
-  }, [authProfile]);
+  }, [authProfile, authLoading]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +103,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (authLoading) {
+  if (authLoading && loading) {
     return (
       <div className="min-h-screen bg-[#0a0d14] flex items-center justify-center">
         <Loader2 className="h-10 w-10 text-purple-500 animate-spin" />

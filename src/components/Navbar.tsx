@@ -98,7 +98,7 @@ export function Navbar() {
   const tools = [
     { name: "Find Colleges", href: "/interview", icon: Search },
     { name: "Compare Colleges", href: "/dashboard/compare", icon: ArrowLeftRight },
-    { name: "Cutoff Predictor", href: "/dashboard/predict", icon: TrendingUp },
+    { name: "Cutoff Predictor", href: "/dashboard/predictor", icon: TrendingUp },
     { name: "College Map", href: "/dashboard/map", icon: MapPin },
     { name: "Scholarship Finder", href: "/dashboard/scholarships", icon: Award },
     { name: "Entrance Exam Guide", href: "/exams", icon: Briefcase },
@@ -133,7 +133,7 @@ export function Navbar() {
             
             <Link href="/interview" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/interview" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Find Colleges</Link>
             <Link href="/dashboard/compare" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/compare" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Compare</Link>
-            <Link href="/dashboard/predict" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/predict" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Predictor</Link>
+            <Link href="/dashboard/predictor" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/predictor" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Predictor</Link>
             <Link href="/dashboard/map" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/map" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Map</Link>
             <Link href="/dashboard/scholarships" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/scholarships" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Scholarships</Link>
             <Link href="/exams" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/exams" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Exams</Link>
