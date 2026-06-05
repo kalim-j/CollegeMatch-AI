@@ -1,6 +1,6 @@
 'use client';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Text, OrbitControls } from '@react-three/drei';
+import { Text } from '@react-three/drei';
 import { useRef } from 'react';
 import * as THREE from 'three';
 
@@ -45,6 +45,16 @@ function AnimatedBar({
   );
 }
 
+function AutoRotatingScene({ children }: { children: React.ReactNode }) {
+  const groupRef = useRef<THREE.Group>(null);
+  useFrame(() => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += 0.003;
+    }
+  });
+  return <group ref={groupRef}>{children}</group>;
+}
+
 export default function Chart3D({ data }: { data: Array<{ label: string; value: number; color: string }> }) {
   return (
     <div className="w-full h-80 rounded-2xl bg-white/70 backdrop-blur border border-purple-100 shadow-sm">
@@ -55,21 +65,21 @@ export default function Chart3D({ data }: { data: Array<{ label: string; value: 
         <ambientLight intensity={0.6} />
         <pointLight position={[5, 10, 5]} intensity={1} />
 
-        {/* Grid helper */}
-        <gridHelper args={[10, 10, '#cbd5e1', '#cbd5e1']} position={[0, -0.01, 0]} />
+        <AutoRotatingScene>
+          {/* Grid helper */}
+          <gridHelper args={[10, 10, '#cbd5e1', '#cbd5e1']} position={[0, -0.01, 0]} />
 
-        {/* Data bars */}
-        {data.map((item, i) => (
-          <AnimatedBar
-            key={i}
-            position={[i * 1.5 - (data.length - 1) * 0.75, 0, 0]}
-            height={Math.max(item.value / 10, 0.2)}
-            color={item.color}
-            label={item.label}
-          />
-        ))}
-
-        <OrbitControls autoRotate autoRotateSpeed={0.5} enableZoom={false} />
+          {/* Data bars */}
+          {data.map((item, i) => (
+            <AnimatedBar
+              key={i}
+              position={[i * 1.5 - (data.length - 1) * 0.75, 0, 0]}
+              height={Math.max(item.value / 10, 0.2)}
+              color={item.color}
+              label={item.label}
+            />
+          ))}
+        </AutoRotatingScene>
       </Canvas>
     </div>
   );

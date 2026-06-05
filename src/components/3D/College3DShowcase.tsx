@@ -1,6 +1,6 @@
 'use client';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Text, Float, OrbitControls } from '@react-three/drei';
+import { Text, Float } from '@react-three/drei';
 import { useRef, useState } from 'react';
 import * as THREE from 'three';
 import { motion } from 'framer-motion';
@@ -95,11 +95,6 @@ export default function College3DShowcase({
         <ambientLight intensity={0.6} />
         <pointLight position={[10, 10, 10]} intensity={1} />
         <College3DModel rank={rank} />
-        <OrbitControls
-          autoRotate
-          autoRotateSpeed={2}
-          enableZoom={false}
-        />
       </Canvas>
 
       {/* Overlay Info */}

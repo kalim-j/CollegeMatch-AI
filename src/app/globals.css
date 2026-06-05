@@ -209,11 +209,6 @@ body {
   .safe-bottom { padding-bottom:env(safe-area-inset-bottom); }
 }
 
-/* 3D Perspective */
-* {
-  perspective: 1000px;
-}
-
 html {
   scroll-behavior: smooth;
 }

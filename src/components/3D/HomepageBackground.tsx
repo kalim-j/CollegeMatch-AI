@@ -1,6 +1,6 @@
 'use client';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, OrbitControls, Preload } from '@react-three/drei';
+import { Float, Preload } from '@react-three/drei';
 import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing';
 import { useRef, useState } from 'react';
 import * as THREE from 'three';
@@ -116,12 +116,6 @@ export default function HomepageBackground() {
         <AnimatedLights />
         <RotatingTorus />
         <DodecahedronParticles count={20} />
-        <OrbitControls
-          autoRotate
-          enableZoom={false}
-          enablePan={false}
-          autoRotateSpeed={0.5}
-        />
         <EffectComposer>
           <Bloom
             intensity={1}

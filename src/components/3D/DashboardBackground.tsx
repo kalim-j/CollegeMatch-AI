@@ -1,6 +1,5 @@
 'use client';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
 import { useRef } from 'react';
 import * as THREE from 'three';
 
@@ -62,13 +61,6 @@ export default function DashboardBackground() {
             color={colors[i % colors.length]}
           />
         ))}
-
-        <OrbitControls
-          autoRotate
-          autoRotateSpeed={0.5}
-          enableZoom={false}
-          enablePan={false}
-        />
       </Canvas>
     </div>
   );

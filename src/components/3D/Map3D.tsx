@@ -1,6 +1,6 @@
 'use client';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, OrbitControls, Text } from '@react-three/drei';
+import { Float, Text } from '@react-three/drei';
 import { useRef } from 'react';
 import * as THREE from 'three';
 
@@ -53,6 +53,16 @@ function IndiaBoundary() {
   );
 }
 
+function AutoRotatingScene({ children }: { children: React.ReactNode }) {
+  const groupRef = useRef<THREE.Group>(null);
+  useFrame(() => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += 0.003;
+    }
+  });
+  return <group ref={groupRef}>{children}</group>;
+}
+
 export default function Map3D() {
   const colleges = [
     { pos: [0, 2, 0], color: '#7c3aed', name: 'IIT Delhi' },
@@ -71,23 +81,23 @@ export default function Map3D() {
         <ambientLight intensity={0.6} />
         <pointLight position={[10, 10, 10]} intensity={1} />
 
-        <IndiaBoundary />
+        <AutoRotatingScene>
+          <IndiaBoundary />
 
-        {colleges.map((college, i) => (
-          <Float
-            key={i}
-            speed={Math.random() * 2 + 1}
-            rotationIntensity={0.3}
-          >
-            <AnimatedMarker
-              position={college.pos as [number, number, number]}
-              color={college.color}
-              label={college.name}
-            />
-          </Float>
-        ))}
-
-        <OrbitControls autoRotate autoRotateSpeed={0.5} enableZoom={false} />
+          {colleges.map((college, i) => (
+            <Float
+              key={i}
+              speed={Math.random() * 2 + 1}
+              rotationIntensity={0.3}
+            >
+              <AnimatedMarker
+                position={college.pos as [number, number, number]}
+                color={college.color}
+                label={college.name}
+              />
+            </Float>
+          ))}
+        </AutoRotatingScene>
       </Canvas>
     </div>
   );
