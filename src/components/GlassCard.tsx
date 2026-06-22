@@ -12,7 +12,7 @@ export default function GlassCard({ children, className = '', delay }: GlassCard
   const delayStyle = delay ? { animationDelay: `${delay}ms` } : {};
   return (
     <div
-      className={cn('glass-card animate-fadeUp', className)}
+      className={cn('glass-card glass animate-fadeUp', className)}
       style={delayStyle as React.CSSProperties}
     >
       {children}

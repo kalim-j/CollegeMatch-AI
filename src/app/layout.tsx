@@ -115,6 +115,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.svg" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="shortcut icon" href="/icons/icon-96x96.svg" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/themify-icons@1.0.1/css/themify-icons.css" />
       </head>
       <body className={cn(jakarta.variable, syne.variable, dmSans.variable, "min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased")}>
         <script
