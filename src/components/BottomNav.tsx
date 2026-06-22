@@ -6,13 +6,13 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'Home', icon: '🏠' },
   { href: '/dashboard/predictor', label: 'Predict', icon: '⚡' },
   { href: '/dashboard/scholarships', label: 'Scholarships', icon: '🎓' },
-  { href: '/dashboard/map', label: 'Map', icon: '🗺️' },
-  { href: '/dashboard/profile', label: 'Profile', icon: '👤' },
+  { href: '/colleges/map', label: 'Map', icon: '🗺️' },
+  { href: '/profile', label: 'Profile', icon: '👤' },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
-  if (!pathname?.startsWith('/dashboard')) return null;
+  if (!pathname?.startsWith('/dashboard') && !pathname?.startsWith('/colleges')) return null;
 
   return (
     <nav

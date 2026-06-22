@@ -20,6 +20,7 @@ import { auth, db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { isAdminEmail } from "@/lib/admin";
 import { toast } from "sonner";
+import Logo from '@/components/Logo';
 
 function FloatingLoginIndicator() {
   const groupRef = useRef<THREE.Group>(null);
@@ -155,24 +156,12 @@ export default function LoginPage() {
           >
             {/* Logo & Title */}
             <motion.div
-              className="text-center mb-8"
+              className="text-center mb-8 flex flex-col items-center"
               variants={itemVariants}
               transition={{ delay: 0.1 }}
             >
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <motion.div
-                  className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white font-black text-xl shadow-lg"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                >
-                  CM
-                </motion.div>
-                <div className="text-left">
-                  <h1 className="text-2xl font-black text-gray-900 leading-none">
-                    CollegeMatch <span className="text-purple-600 font-extrabold">AI</span>
-                  </h1>
-                  <p className="text-xs text-gray-500 mt-1">AI College Predictor India</p>
-                </div>
+              <div className="mb-6 flex justify-center">
+                <Logo size="md" showTagline={false} theme="light" />
               </div>
 
               <h2 className="text-3xl font-black text-gray-900 mb-2">Welcome Back</h2>

@@ -6,7 +6,7 @@ import {
   GraduationCap, Sparkles, Zap, Loader2,
   BrainCircuit, TrendingUp, History, ArrowRight,
   BookOpen, Target, Award, Lightbulb, CheckCircle2,
-  School
+  School, MapPin
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -124,6 +124,7 @@ export default function Dashboard() {
 
   const navCards = [
     { href: "/history", label: "Analysis History", desc: "Review all past AI college analyses and their recommendations.", icon: History, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 border border-purple-250", hover: "hover:border-purple-300", cta: "View History" },
+    { href: "/colleges/map", label: "College Map", desc: "Explore top colleges across India on an interactive map.", icon: MapPin, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 border border-blue-250", hover: "hover:border-blue-300", cta: "Explore Map" },
     { href: "/dashboard/scholarships", label: "Scholarship Finder", desc: "Discover scholarships and financial aid tailored to your profile.", icon: Award, color: "text-teal-600 dark:text-teal-400", bg: "bg-teal-50 border border-teal-250", hover: "hover:border-teal-300", cta: "Find Scholarships" },
     { href: "/exams", label: "Entrance Exams", desc: "Track important entrance exam dates, results and cutoffs.", icon: BookOpen, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 border border-amber-250", hover: "hover:border-amber-300", cta: "Track Exams" },
   ];

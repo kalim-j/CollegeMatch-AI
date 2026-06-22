@@ -10,6 +10,7 @@ import GlassCard from '@/components/GlassCard';
 import StreamResultCard from '@/components/StreamResultCard';
 import DiscoveryLoadingScreen from '@/components/DiscoveryLoadingScreen';
 import { DiscoveryResult, StreamRecommendation } from '@/types/discovery';
+import Logo from '@/components/Logo';
 
 export default function DiscoverPage() {
   const router = useRouter();
@@ -130,45 +131,58 @@ export default function DiscoverPage() {
   if (currentStep === 0) {
     return (
       <div className="container mx-auto px-4 py-12 md:py-20 flex justify-center items-center min-h-[80vh]">
-        <GlassCard className="max-w-2xl w-full p-8 md:p-12 text-center animate-fadeUp relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/20 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl"></div>
+        <GlassCard className="max-w-2xl w-full p-8 md:p-12 text-center animate-fadeUp relative overflow-hidden bg-white/80 dark:bg-[#0a0d24]/85 border-purple-100 dark:border-purple-900/30">
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl"></div>
           
-          <div className="relative z-10">
-            <div className="w-20 h-20 mx-auto bg-teal-500/10 border border-teal-500/30 rounded-2xl flex items-center justify-center mb-6 transform rotate-3">
-              <i className="ti-stars text-4xl text-teal-400 drop-shadow-[0_0_8px_rgba(45,212,191,0.5)]"></i>
+          <div className="relative z-10 flex flex-col items-center">
+            {/* CollegeMatch-AI Logo with Float Animation */}
+            <div 
+              style={{
+                marginBottom: '20px',
+                animation: 'logoFloat 3s ease-in-out infinite',
+              }}
+              className="flex justify-center"
+            >
+              <Logo size="lg" showTagline={true} theme="light" />
             </div>
             
-            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight">
-              Let's find your <span className="bg-gradient-to-r from-teal-400 to-indigo-400 bg-clip-text text-transparent">perfect stream</span>
+            <h1 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight" style={{ color: '#1a1340' }}>
+              Let's find your <span className="bg-gradient-to-r from-[#0F6E56] to-[#1D9E75] bg-clip-text text-transparent">perfect</span> <span style={{ color: '#185FA5' }}>stream</span>
             </h1>
             
-            <h2 className="text-xl md:text-2xl text-gray-300 font-medium mb-6">
+            <h2 className="text-xl md:text-2xl font-medium mb-6" style={{ color: '#4a4370' }}>
               You just finished 12th. That's a big moment. Now the real question: what next?
             </h2>
             
-            <p className="text-gray-400 mb-8 leading-relaxed text-lg max-w-lg mx-auto">
+            <p className="mb-8 leading-relaxed text-lg max-w-lg mx-auto" style={{ color: '#5a5380' }}>
               Don't worry if you have no idea. Most students feel exactly the same way. 
               I'll ask you 10 simple questions about what you enjoy, what you're good at, 
               and what kind of life you want to build. No right or wrong answers. 
               Just be honest — and I'll suggest the best stream and career paths for you.
             </p>
             
-            <div className="mb-8 p-4 bg-white/5 border border-white/10 rounded-xl inline-block">
-              <p className="text-teal-300 font-medium">
+            <div className="mb-8 p-4 rounded-xl inline-block bg-[#e8f4f0] border border-[#1D9E75]/20">
+              <p className="font-semibold" style={{ color: '#0F6E56', margin: 0 }}>
                 Ready, {user.displayName?.split(' ')[0] || 'there'}? Let's figure this out.
               </p>
             </div>
             
             <button
               onClick={handleStart}
-              className="w-full md:w-auto px-12 py-4 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-400 hover:to-teal-500 text-white font-bold text-lg rounded-xl transition-all shadow-lg shadow-teal-500/25 flex items-center justify-center gap-2 mx-auto"
+              className="w-full md:w-auto px-12 py-4 text-white font-bold text-lg rounded-xl transition-all duration-200 shadow-lg flex items-center justify-center gap-2 mx-auto hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
+              style={{
+                background: 'linear-gradient(135deg, #1D9E75, #0F6E56)',
+                boxShadow: '0 8px 24px rgba(29,158,117,0.35)',
+                border: 'none',
+                cursor: 'pointer',
+              }}
             >
               <span>Let's go</span>
               <i className="ti-arrow-right"></i>
             </button>
             
-            <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-500">
+            <div className="mt-6 flex items-center justify-center gap-2 text-sm" style={{ color: '#7a7399' }}>
               <i className="ti-clock"></i>
               <span>Takes about 3 minutes · Completely free</span>
             </div>

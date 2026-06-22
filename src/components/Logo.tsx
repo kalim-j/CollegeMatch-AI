@@ -1,25 +1,90 @@
-import React from 'react';
-import { GraduationCap, Sparkles } from 'lucide-react';
+'use client';
 
-export default function Logo() {
+interface LogoProps {
+  size?: 'sm' | 'md' | 'lg';
+  showTagline?: boolean;
+  theme?: 'dark' | 'light';
+}
+
+export default function Logo({
+  size = 'md',
+  showTagline = false,
+  theme = 'dark',
+}: LogoProps) {
+  const sizes = {
+    sm: { box: 36, emoji: '20px', name: '14px', tag: '10px' },
+    md: { box: 52, emoji: '28px', name: '17px', tag: '11px' },
+    lg: { box: 72, emoji: '36px', name: '22px', tag: '12px' },
+  };
+  const s = sizes[size] || sizes.md;
+  const textColor = theme === 'dark'
+    ? 'rgba(255,255,255,0.95)'
+    : '#1a1340';
+  const mutedColor = theme === 'dark'
+    ? 'rgba(255,255,255,0.5)'
+    : '#7a7399';
+
   return (
-    <div className="flex items-center gap-4 group cursor-pointer">
-      <div className="relative">
-        <div className="absolute inset-0 bg-indigo-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="relative h-12 w-12 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-teal-500 flex items-center justify-center shadow-2xl group-hover:scale-105 transition-transform duration-300">
-          <GraduationCap className="text-white" size={26} />
-          <div className="absolute -top-1 -right-1 h-4 w-4 bg-teal-400 rounded-full border-2 border-[#05071a] flex items-center justify-center">
-            <Sparkles size={8} className="text-[#05071a] fill-current" />
-          </div>
-        </div>
+    <div style={{
+      display: 'flex',
+      flexDirection: size === 'lg' ? 'column' : 'row',
+      alignItems: 'center',
+      gap: '10px',
+    }}>
+      <div style={{
+        width: s.box,
+        height: s.box,
+        borderRadius: s.box * 0.27,
+        background: 'linear-gradient(135deg, #7F77DD, #1D9E75)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: s.emoji,
+        boxShadow: '0 4px 20px rgba(127,119,221,0.3)',
+        flexShrink: 0,
+      }}>
+        🎓
       </div>
-      <div className="flex flex-col">
-        <span className="text-xl font-black text-[var(--text-primary)] tracking-tighter leading-none group-hover:text-indigo-400 transition-colors">
-          CollegeMatch<span className="text-indigo-500">.AI</span>
-        </span>
-        <span className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mt-1.5 leading-none">
-          Institutional Intelligence
-        </span>
+      <div style={{
+        textAlign: size === 'lg' ? 'center' : 'left',
+      }}>
+        <p style={{
+          fontSize: s.name,
+          fontWeight: 700,
+          background: 'linear-gradient(90deg, #a89ef8, #5DCAA5)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          lineHeight: 1.2,
+          letterSpacing: '-0.02em',
+          margin: 0,
+        }}>
+          CollegeMatch-AI
+        </p>
+        <p style={{
+          fontSize: s.tag,
+          color: mutedColor,
+          letterSpacing: '0.04em',
+          marginTop: '2px',
+          marginRight: 0,
+          marginBottom: 0,
+          marginLeft: 0,
+        }}>
+          India's smartest college advisor
+        </p>
+        {showTagline && (
+          <p style={{
+            fontSize: '10px',
+            color: mutedColor,
+            opacity: 0.7,
+            marginTop: '1px',
+            marginRight: 0,
+            marginBottom: 0,
+            marginLeft: 0,
+          }}>
+            AI-powered · Free · Trusted by students
+          </p>
+        )}
       </div>
     </div>
   );

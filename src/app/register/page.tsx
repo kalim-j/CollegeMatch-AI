@@ -164,6 +164,9 @@ export default function RegisterPage() {
         >
           <div className="glass-card p-10 md:p-12 space-y-10 border-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
             <div className="space-y-2 text-center lg:text-left">
+              <div className="mb-6 lg:hidden flex justify-center">
+                <Logo size="md" showTagline={false} theme="dark" />
+              </div>
               <h2 className="text-3xl font-black text-white tracking-tight">
                 {showOTP ? "Verify Email" : "Create Account"}
               </h2>
