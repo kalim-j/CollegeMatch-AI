@@ -540,10 +540,13 @@ export default function DiscoverPage() {
                         transition: 'background 0.25s',
                         boxShadow: isSelected ? `0 4px 16px ${cat.from}50` : 'none',
                       }}>
-                        <i
-                          className={`ti ${option.icon}`}
-                          style={{ color: isSelected ? '#fff' : 'rgba(255,255,255,0.5)' }}
-                        />
+                        <span
+                          style={{ fontSize: 24, lineHeight: 1 }}
+                          role="img"
+                          aria-label={option.label}
+                        >
+                          {option.icon}
+                        </span>
                       </div>
 
                       {/* Text */}
