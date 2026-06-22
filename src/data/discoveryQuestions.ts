@@ -7,14 +7,14 @@ export const discoveryQuestions = [
     options: [
       {
         id: 'a',
-        icon: 'ti-code',
+        icon: 'ti-settings',
         label: 'Building or fixing things',
         sub: 'Apps, gadgets, machines, or DIY projects',
         streams: ['Engineering', 'Architecture', 'Polytechnic'],
       },
       {
         id: 'b',
-        icon: 'ti-heart-rate-monitor',
+        icon: 'ti-heart',
         label: 'Helping people around me',
         sub: 'Friends, family, community, health',
         streams: ['Medical', 'Nursing', 'Social Work', 'Education'],
@@ -28,7 +28,7 @@ export const discoveryQuestions = [
       },
       {
         id: 'd',
-        icon: 'ti-chart-bar',
+        icon: 'ti-bar-chart',
         label: 'Planning, calculating, organising',
         sub: 'Budgets, strategies, lists, numbers',
         streams: ['Commerce', 'MBA', 'Accountancy', 'Finance'],
@@ -43,14 +43,14 @@ export const discoveryQuestions = [
     options: [
       {
         id: 'a',
-        icon: 'ti-math-function',
+        icon: 'ti-calculator',
         label: 'Maths and Physics',
         sub: 'Numbers, formulas, logic puzzles',
         streams: ['Engineering', 'Architecture', 'BSc Maths', 'Data Science'],
       },
       {
         id: 'b',
-        icon: 'ti-microscope',
+        icon: 'ti-eye',
         label: 'Biology and Chemistry',
         sub: 'Living things, reactions, experiments',
         streams: ['Medical', 'Pharmacy', 'Nursing', 'Biotechnology', 'Agriculture'],
@@ -64,7 +64,7 @@ export const discoveryQuestions = [
       },
       {
         id: 'd',
-        icon: 'ti-currency-rupee',
+        icon: 'ti-money',
         label: 'Accountancy, Economics, Business',
         sub: 'Money, markets, business logic',
         streams: ['Commerce', 'MBA', 'CA', 'Finance', 'Economics'],
@@ -79,21 +79,21 @@ export const discoveryQuestions = [
     options: [
       {
         id: 'a',
-        icon: 'ti-building-skyscraper',
+        icon: 'ti-desktop',
         label: 'In an office solving complex problems',
         sub: 'Tech, engineering, finance, consulting',
         streams: ['Engineering', 'Commerce', 'MBA', 'Data Science'],
       },
       {
         id: 'b',
-        icon: 'ti-stethoscope',
+        icon: 'ti-medall',
         label: 'In a hospital or clinic helping patients',
         sub: 'Medicine, nursing, therapy, pharmacy',
         streams: ['Medical', 'Nursing', 'Pharmacy', 'Physiotherapy'],
       },
       {
         id: 'c',
-        icon: 'ti-users',
+        icon: 'ti-user',
         label: 'Teaching, training, or guiding others',
         sub: 'School, college, coaching, social work',
         streams: ['Education', 'Arts', 'Social Work', 'Law'],
@@ -115,14 +115,14 @@ export const discoveryQuestions = [
     options: [
       {
         id: 'a',
-        icon: 'ti-device-laptop',
+        icon: 'ti-panel',
         label: 'Writing code and building apps',
         sub: 'Websites, games, software, AI tools',
         streams: ['Engineering', 'BCA', 'Data Science', 'MCA'],
       },
       {
         id: 'b',
-        icon: 'ti-plant',
+        icon: 'ti-leaf',
         label: 'Working with plants, animals, or nature',
         sub: 'Farms, forests, animals, environment',
         streams: ['Agriculture', 'Veterinary', 'Fisheries', 'Environmental Science'],
@@ -136,7 +136,7 @@ export const discoveryQuestions = [
       },
       {
         id: 'd',
-        icon: 'ti-building',
+        icon: 'ti-home',
         label: 'Designing buildings or spaces',
         sub: 'Houses, offices, cities, interiors',
         streams: ['Architecture', 'Interior Design', 'Civil Engineering'],
@@ -151,28 +151,28 @@ export const discoveryQuestions = [
     options: [
       {
         id: 'a',
-        icon: 'ti-cash',
+        icon: 'ti-credit-card',
         label: 'High salary and financial security',
         sub: 'Earning well and living comfortably',
         streams: ['Engineering', 'Medical', 'MBA', 'Finance', 'Data Science'],
       },
       {
         id: 'b',
-        icon: 'ti-heart',
-        label: 'Making a difference in people\'s lives',
+        icon: 'ti-thumb-up',
+        label: "Making a difference in people's lives",
         sub: 'Helping, healing, teaching, serving',
         streams: ['Medical', 'Education', 'Social Work', 'Nursing', 'Law'],
       },
       {
         id: 'c',
-        icon: 'ti-flame',
+        icon: 'ti-light-bulb',
         label: 'Passion and creativity in my work',
         sub: 'Doing what I love every single day',
         streams: ['Design', 'Arts', 'Media', 'Music', 'Film'],
       },
       {
         id: 'd',
-        icon: 'ti-trophy',
+        icon: 'ti-star',
         label: 'Status, respect, and recognition',
         sub: 'Being known and valued in my field',
         streams: ['Medical', 'Law', 'Civil Services', 'Engineering', 'MBA'],
@@ -187,28 +187,28 @@ export const discoveryQuestions = [
     options: [
       {
         id: 'a',
-        icon: 'ti-brain',
+        icon: 'ti-layout-grid2',
         label: 'I analyse it step by step logically',
         sub: 'Systematic, methodical, data-driven',
         streams: ['Engineering', 'Data Science', 'Finance', 'Architecture'],
       },
       {
         id: 'b',
-        icon: 'ti-messages',
+        icon: 'ti-comment',
         label: 'I talk to people and ask for help',
         sub: 'Collaborative, communicative, empathetic',
         streams: ['Education', 'Social Work', 'Nursing', 'Law', 'MBA'],
       },
       {
         id: 'c',
-        icon: 'ti-bulb',
+        icon: 'ti-spray',
         label: 'I come up with creative new solutions',
         sub: 'Innovative, experimental, out-of-the-box',
         streams: ['Design', 'Architecture', 'Media', 'Engineering', 'Arts'],
       },
       {
         id: 'd',
-        icon: 'ti-checklist',
+        icon: 'ti-check-box',
         label: 'I make a plan and follow it carefully',
         sub: 'Organised, disciplined, structured',
         streams: ['Commerce', 'CA', 'MBA', 'Law', 'Civil Services'],
@@ -223,28 +223,28 @@ export const discoveryQuestions = [
     options: [
       {
         id: 'a',
-        icon: 'ti-clock-hour-4',
+        icon: 'ti-flag',
         label: '5+ years — I am ready for a long journey',
         sub: 'MBBS, UPSC, CA, LLB — big commitment',
         streams: ['Medical', 'Law', 'CA', 'Civil Services', 'PhD'],
       },
       {
         id: 'b',
-        icon: 'ti-clock-hour-8',
+        icon: 'ti-agenda',
         label: '3–4 years — standard degree duration',
         sub: 'BTech, BCA, BSc, BCom, BA, BBA',
         streams: ['Engineering', 'Arts', 'Commerce', 'Science', 'Agriculture'],
       },
       {
         id: 'c',
-        icon: 'ti-clock-hour-12',
+        icon: 'ti-timer',
         label: '1–2 years — I want to start working fast',
         sub: 'Diploma, polytechnic, short courses',
         streams: ['Polytechnic', 'Diploma', 'Hotel Management', 'ITI'],
       },
       {
         id: 'd',
-        icon: 'ti-trending-up',
+        icon: 'ti-arrow-up',
         label: 'I want to study and earn at the same time',
         sub: 'Part-time, distance learning, online',
         streams: ['Commerce', 'Arts', 'BBA', 'Distance Education'],
@@ -259,7 +259,7 @@ export const discoveryQuestions = [
     options: [
       {
         id: 'a',
-        icon: 'ti-cpu',
+        icon: 'ti-server',
         label: 'Technology, AI, space, science',
         sub: 'How things work, future tech, innovations',
         streams: ['Engineering', 'Data Science', 'Physics', 'Aerospace'],
@@ -280,7 +280,7 @@ export const discoveryQuestions = [
       },
       {
         id: 'd',
-        icon: 'ti-activity',
+        icon: 'ti-pulse',
         label: 'Health, fitness, food, mental wellness',
         sub: 'Medicine, nutrition, sports, psychology',
         streams: ['Medical', 'Nursing', 'Pharmacy', 'Sports Science', 'Psychology'],
@@ -295,7 +295,7 @@ export const discoveryQuestions = [
     options: [
       {
         id: 'a',
-        icon: 'ti-math-symbols',
+        icon: 'ti-vector',
         label: 'Science fairs, Maths olympiads, coding clubs',
         sub: 'Competitions, technical challenges',
         streams: ['Engineering', 'Data Science', 'Science', 'Research'],
@@ -316,7 +316,7 @@ export const discoveryQuestions = [
       },
       {
         id: 'd',
-        icon: 'ti-run',
+        icon: 'ti-direction',
         label: 'Sports, NCC, social service, NSS',
         sub: 'Physical activity, discipline, teamwork',
         streams: ['Sports Science', 'Nursing', 'Military', 'Physical Education'],
@@ -331,21 +331,21 @@ export const discoveryQuestions = [
     options: [
       {
         id: 'a',
-        icon: 'ti-robot',
+        icon: 'ti-bolt',
         label: 'Build technology that changes the world',
         sub: 'Apps, robots, AI, space, clean energy',
         streams: ['Engineering', 'Data Science', 'Aerospace', 'Research'],
       },
       {
         id: 'b',
-        icon: 'ti-first-aid-kit',
+        icon: 'ti-shield',
         label: 'Save lives and heal people',
         sub: 'Doctor, surgeon, nurse, therapist',
         streams: ['Medical', 'Nursing', 'Pharmacy', 'Psychology'],
       },
       {
         id: 'c',
-        icon: 'ti-school',
+        icon: 'ti-book',
         label: 'Teach, guide, and inspire others',
         sub: 'Teacher, mentor, counsellor, coach',
         streams: ['Education', 'Arts', 'Social Work', 'Law'],

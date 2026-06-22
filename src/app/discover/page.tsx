@@ -1,26 +1,27 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { discoveryQuestions } from '@/data/discoveryQuestions';
-import GlassCard from '@/components/GlassCard';
 import StreamResultCard from '@/components/StreamResultCard';
 import DiscoveryLoadingScreen from '@/components/DiscoveryLoadingScreen';
 import { DiscoveryResult, StreamRecommendation } from '@/types/discovery';
 import Logo from '@/components/Logo';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function DiscoverPage() {
   const router = useRouter();
   const { user } = useAuth();
-  
+
   const [currentStep, setCurrentStep] = useState(0); // 0 = welcome, 1-10 = questions, 11 = loading, 12 = results
   const [answers, setAnswers] = useState<Record<number, { optionId: string; streams: string[] }>>({});
   const [results, setResults] = useState<DiscoveryResult | null>(null);
   const [discoveryId, setDiscoveryId] = useState<string | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
 
   // Protected route check
   useEffect(() => {
@@ -29,9 +30,12 @@ export default function DiscoverPage() {
     }
   }, [user, router]);
 
-  if (!user) return null; // or a simple loader
+  if (!user) return null;
 
-  const handleStart = () => setCurrentStep(1);
+  const handleStart = () => {
+    setDirection(1);
+    setCurrentStep(1);
+  };
 
   const handleOptionSelect = (questionId: number, optionId: string, streams: string[]) => {
     setAnswers(prev => ({
@@ -42,11 +46,11 @@ export default function DiscoverPage() {
 
   const handleNext = async () => {
     if (currentStep < 10) {
+      setDirection(1);
       setCurrentStep(prev => prev + 1);
     } else if (currentStep === 10) {
-      // Submit
       setAiError(null);
-      setCurrentStep(11); // Loading
+      setCurrentStep(11);
       try {
         const answersArray = Object.entries(answers).map(([qId, data]) => ({
           questionId: parseInt(qId),
@@ -67,13 +71,11 @@ export default function DiscoverPage() {
           const errorData = await res.json().catch(() => null);
           throw new Error(errorData?.error || 'Failed to fetch results');
         }
-        
+
         const data = await res.json();
-        
+
         if (data.results) {
           setResults(data.results);
-          
-          // Save to Firestore
           const newDocRef = doc(collection(db, `discoveries/${user.uid}/sessions`));
           await setDoc(newDocRef, {
             timestamp: serverTimestamp(),
@@ -81,9 +83,8 @@ export default function DiscoverPage() {
             results: data.results,
             selectedStream: null
           });
-          
           setDiscoveryId(newDocRef.id);
-          setCurrentStep(12); // Results
+          setCurrentStep(12);
         }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Unknown error';
@@ -95,6 +96,7 @@ export default function DiscoverPage() {
   };
 
   const handleBack = () => {
+    setDirection(-1);
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
     } else {
@@ -107,7 +109,6 @@ export default function DiscoverPage() {
     try {
       const docRef = doc(db, `discoveries/${user.uid}/sessions`, discoveryId);
       await setDoc(docRef, { selectedStream: stream.stream }, { merge: true });
-      
       sessionStorage.setItem('selectedStream', stream.stream);
       router.push(`/interview?stream=${encodeURIComponent(stream.stream)}&fromDiscover=true`);
     } catch (error) {
@@ -127,267 +128,526 @@ export default function DiscoverPage() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
-  // Welcome Screen
+  // ── WELCOME SCREEN ──────────────────────────────────────────────────────────
   if (currentStep === 0) {
     return (
-      <div className="container mx-auto px-4 py-12 md:py-20 flex justify-center items-center min-h-[80vh]">
-        <GlassCard className="max-w-2xl w-full p-8 md:p-12 text-center animate-fadeUp relative overflow-hidden bg-white/80 dark:bg-[#0a0d24]/85 border-purple-100 dark:border-purple-900/30">
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl"></div>
-          
-          <div className="relative z-10 flex flex-col items-center">
-            {/* CollegeMatch-AI Logo with Float Animation */}
-            <div 
-              style={{
-                marginBottom: '20px',
-                animation: 'logoFloat 3s ease-in-out infinite',
-              }}
-              className="flex justify-center"
-            >
-              <Logo size="lg" showTagline={true} theme="light" />
-            </div>
-            
-            <h1 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight" style={{ color: '#1a1340' }}>
-              Let's find your <span className="bg-gradient-to-r from-[#0F6E56] to-[#1D9E75] bg-clip-text text-transparent">perfect</span> <span style={{ color: '#185FA5' }}>stream</span>
-            </h1>
-            
-            <h2 className="text-xl md:text-2xl font-medium mb-6" style={{ color: '#4a4370' }}>
-              You just finished 12th. That's a big moment. Now the real question: what next?
-            </h2>
-            
-            <p className="mb-8 leading-relaxed text-lg max-w-lg mx-auto" style={{ color: '#5a5380' }}>
-              Don't worry if you have no idea. Most students feel exactly the same way. 
-              I'll ask you 10 simple questions about what you enjoy, what you're good at, 
-              and what kind of life you want to build. No right or wrong answers. 
-              Just be honest — and I'll suggest the best stream and career paths for you.
+      <div
+        style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #0a0d24 0%, #0f0b2a 60%, #05071a 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '48px 16px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Background ambient blobs */}
+        <div style={{ position: 'absolute', top: '-15%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(127,119,221,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-15%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(29,158,117,0.10) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            maxWidth: 600,
+            width: '100%',
+            background: 'rgba(255,255,255,0.04)',
+            backdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 28,
+            padding: '56px 48px',
+            textAlign: 'center',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)',
+            position: 'relative',
+            zIndex: 10,
+          }}
+        >
+          {/* Logo with float animation */}
+          <motion.div
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ marginBottom: 28, display: 'flex', justifyContent: 'center' }}
+          >
+            <Logo size="lg" showTagline={true} theme="dark" />
+          </motion.div>
+
+          <h1 style={{ fontSize: 'clamp(26px, 5vw, 40px)', fontWeight: 900, color: '#fff', letterSpacing: '-0.03em', lineHeight: 1.15, marginBottom: 14 }}>
+            Let&apos;s find your{' '}
+            <span style={{ background: 'linear-gradient(90deg, #a89ef8, #5DCAA5)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              perfect stream
+            </span>
+          </h1>
+
+          <h2 style={{ fontSize: 16, fontWeight: 500, color: 'rgba(255,255,255,0.55)', marginBottom: 20, lineHeight: 1.6 }}>
+            You just finished 12th. That&apos;s a big moment. Now the real question: <strong style={{ color: 'rgba(255,255,255,0.85)' }}>what next?</strong>
+          </h2>
+
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, marginBottom: 28, maxWidth: 440, margin: '0 auto 28px' }}>
+            Don&apos;t worry if you have no idea. I&apos;ll ask you <strong style={{ color: 'rgba(255,255,255,0.7)' }}>10 simple questions</strong> about what you enjoy and what kind of life you want to build. No right or wrong answers. Just be honest.
+          </p>
+
+          <div style={{ marginBottom: 32, padding: '14px 20px', borderRadius: 14, background: 'rgba(29,158,117,0.1)', border: '1px solid rgba(29,158,117,0.25)', display: 'inline-block' }}>
+            <p style={{ color: '#5DCAA5', fontWeight: 700, margin: 0, fontSize: 14 }}>
+              Ready, {user.displayName?.split(' ')[0] || 'there'}? Let&apos;s figure this out. 🎯
             </p>
-            
-            <div className="mb-8 p-4 rounded-xl inline-block bg-[#e8f4f0] border border-[#1D9E75]/20">
-              <p className="font-semibold" style={{ color: '#0F6E56', margin: 0 }}>
-                Ready, {user.displayName?.split(' ')[0] || 'there'}? Let's figure this out.
-              </p>
-            </div>
-            
-            <button
-              onClick={handleStart}
-              className="w-full md:w-auto px-12 py-4 text-white font-bold text-lg rounded-xl transition-all duration-200 shadow-lg flex items-center justify-center gap-2 mx-auto hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
-              style={{
-                background: 'linear-gradient(135deg, #1D9E75, #0F6E56)',
-                boxShadow: '0 8px 24px rgba(29,158,117,0.35)',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              <span>Let's go</span>
-              <i className="ti-arrow-right"></i>
-            </button>
-            
-            <div className="mt-6 flex items-center justify-center gap-2 text-sm" style={{ color: '#7a7399' }}>
-              <i className="ti-clock"></i>
-              <span>Takes about 3 minutes · Completely free</span>
-            </div>
           </div>
-        </GlassCard>
+
+          <motion.button
+            onClick={handleStart}
+            whileHover={{ scale: 1.03, boxShadow: '0 12px 40px rgba(29,158,117,0.45)' }}
+            whileTap={{ scale: 0.97 }}
+            style={{
+              width: '100%',
+              padding: '16px 32px',
+              background: 'linear-gradient(135deg, #1D9E75, #0F6E56)',
+              border: 'none',
+              borderRadius: 16,
+              color: '#fff',
+              fontSize: 17,
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 10,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            <span>Let&apos;s go</span>
+            <i className="ti ti-arrow-right" />
+          </motion.button>
+
+          <p style={{ marginTop: 16, fontSize: 12, color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <i className="ti ti-clock" />
+            Takes about 3 minutes · Completely free
+          </p>
+        </motion.div>
       </div>
     );
   }
 
-  // Loading Screen
+  // ── LOADING SCREEN ──────────────────────────────────────────────────────────
   if (currentStep === 11) {
     return <DiscoveryLoadingScreen />;
   }
 
-  // Results Screen
+  // ── RESULTS SCREEN ──────────────────────────────────────────────────────────
   if (currentStep === 12 && results) {
     return (
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        {/* Personal Insight */}
-        <GlassCard className="p-6 md:p-8 mb-8 border-t-4 border-t-teal-500">
-          <h2 className="text-2xl font-bold text-white mb-4">
-            Here's what we found about you, {user.displayName?.split(' ')[0] || ''}
-          </h2>
-          <p className="text-gray-400 italic mb-4">
-            {results.overall_personality}
-          </p>
-          <p className="text-gray-300 mb-6">
-            {results.strength_summary}
-          </p>
-          <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-            <p className="text-indigo-300 font-medium">
-              {results.encouragement}
-            </p>
-          </div>
-        </GlassCard>
+      <div
+        style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #0a0d24 0%, #0f0b2a 60%, #05071a 100%)',
+          padding: '48px 16px 80px',
+        }}
+      >
+        <div style={{ maxWidth: 800, margin: '0 auto' }}>
 
-        {/* Top 3 Streams */}
-        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-          <i className="ti-crown text-yellow-400"></i>
-          Your Top Recommendations
-        </h3>
-        
-        <div className="space-y-6">
-          {results.streams.map((stream, idx) => (
-            <StreamResultCard
-              key={idx}
-              stream={stream}
-              onSelect={() => handleSelectStream(stream)}
-              onExplore={() => handleExploreStream(stream)}
-            />
-          ))}
-        </div>
+          {/* Header */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', marginBottom: 40 }}>
+            <Logo size="md" theme="dark" showTagline={false} />
+            <h1 style={{ fontSize: 'clamp(22px, 4vw, 34px)', fontWeight: 900, color: '#fff', marginTop: 20, marginBottom: 8 }}>
+              Here&apos;s what we found about you,{' '}
+              <span style={{ background: 'linear-gradient(90deg, #a89ef8, #5DCAA5)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                {user.displayName?.split(' ')[0] || 'you'}
+              </span>
+            </h1>
+          </motion.div>
 
-        {/* Bottom Actions */}
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button
-            onClick={() => {
-              setAnswers({});
-              setCurrentStep(1);
+          {/* Personal Insight */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderTop: '4px solid #5DCAA5',
+              borderRadius: 20,
+              padding: '28px 32px',
+              marginBottom: 32,
             }}
-            className="px-6 py-3 rounded-lg border border-white/10 hover:bg-white/5 text-gray-300 transition-colors"
           >
-            Not sure? Retake the quiz
-          </button>
-          <button
-            onClick={shareResult}
-            className="px-6 py-3 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/30 transition-colors flex items-center gap-2"
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontStyle: 'italic', marginBottom: 10, fontSize: 14 }}>{results.overall_personality}</p>
+            <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: 16, lineHeight: 1.7 }}>{results.strength_summary}</p>
+            <div style={{ padding: '12px 16px', borderRadius: 12, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}>
+              <p style={{ color: '#a89ef8', fontWeight: 500, margin: 0 }}>{results.encouragement}</p>
+            </div>
+          </motion.div>
+
+          {/* Top Streams */}
+          <h3 style={{ fontSize: 20, fontWeight: 800, color: '#fff', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <i className="ti ti-crown" style={{ color: '#FBBF24' }} />
+            Your Top Recommendations
+          </h3>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {results.streams.map((stream, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 + idx * 0.1 }}
+              >
+                <StreamResultCard
+                  stream={stream}
+                  onSelect={() => handleSelectStream(stream)}
+                  onExplore={() => handleExploreStream(stream)}
+                />
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Bottom Actions */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            style={{ marginTop: 48, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}
           >
-            <i className="ti-brand-whatsapp"></i>
-            Share my result
-          </button>
+            <button
+              onClick={() => {
+                setAnswers({});
+                setDirection(1);
+                setCurrentStep(1);
+              }}
+              style={{
+                padding: '12px 24px',
+                borderRadius: 12,
+                border: '1px solid rgba(255,255,255,0.15)',
+                background: 'rgba(255,255,255,0.05)',
+                color: 'rgba(255,255,255,0.7)',
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontSize: 14,
+              }}
+            >
+              Not sure? Retake the quiz
+            </button>
+            <button
+              onClick={shareResult}
+              style={{
+                padding: '12px 24px',
+                borderRadius: 12,
+                border: '1px solid rgba(34,197,94,0.3)',
+                background: 'rgba(34,197,94,0.08)',
+                color: '#4ade80',
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontSize: 14,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <i className="ti ti-brand-whatsapp" />
+              Share my result
+            </button>
+          </motion.div>
         </div>
       </div>
     );
   }
 
-  // Quiz Screen (Steps 1-10)
+  // ── QUIZ SCREEN (Steps 1–10) ─────────────────────────────────────────────────
   const currentQuestionIndex = currentStep - 1;
   const question = discoveryQuestions[currentQuestionIndex];
   const hasAnswered = !!answers[question.id];
+  const progress = (currentStep / 10) * 100;
+
+  // Category → gradient mapping for the icon bg
+  const catColor: Record<string, { from: string; to: string; text: string }> = {
+    interest:    { from: '#7F77DD', to: '#a89ef8', text: '#c4b5fd' },
+    strength:    { from: '#1D9E75', to: '#5DCAA5', text: '#6ee7b7' },
+    personality: { from: '#3b82f6', to: '#60a5fa', text: '#93c5fd' },
+    values:      { from: '#f59e0b', to: '#fbbf24', text: '#fde68a' },
+    lifestyle:   { from: '#ec4899', to: '#f472b6', text: '#fbcfe8' },
+    goal:        { from: '#8b5cf6', to: '#a78bfa', text: '#ddd6fe' },
+  };
+  const cat = catColor[question.category] || catColor.interest;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl min-h-[80vh] flex flex-col">
-      {/* Progress */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-400">Question {currentStep} of 10</span>
-          <span className="text-xs font-bold text-teal-400 bg-teal-500/10 px-2 py-1 rounded">
-            {Math.round((currentStep / 10) * 100)}%
-          </span>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #0a0d24 0%, #0f0b2a 60%, #05071a 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '0 16px 80px',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Ambient blobs */}
+      <div style={{ position: 'fixed', top: '-20%', right: '-15%', width: '55%', height: '55%', background: `radial-gradient(circle, ${cat.from}18 0%, transparent 70%)`, pointerEvents: 'none', transition: 'background 0.5s ease' }} />
+      <div style={{ position: 'fixed', bottom: '-20%', left: '-10%', width: '45%', height: '45%', background: `radial-gradient(circle, ${cat.to}12 0%, transparent 70%)`, pointerEvents: 'none', transition: 'background 0.5s ease' }} />
+
+      {/* Top bar */}
+      <div style={{ maxWidth: 720, width: '100%', margin: '0 auto', paddingTop: 24, paddingBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <Logo size="sm" theme="dark" showTagline={false} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>Question {currentStep} of 10</span>
+            <span style={{
+              fontSize: 11, fontWeight: 800, color: cat.text,
+              background: `${cat.from}25`, padding: '3px 10px',
+              borderRadius: 20, border: `1px solid ${cat.from}40`,
+              letterSpacing: '0.04em',
+            }}>
+              {Math.round(progress)}%
+            </span>
+          </div>
         </div>
-        <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-teal-400 to-indigo-500 transition-all duration-500 ease-out"
-            style={{ width: `${(currentStep / 10) * 100}%` }}
-          ></div>
+
+        {/* Progress bar */}
+        <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 6, overflow: 'hidden' }}>
+          <motion.div
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            style={{
+              height: '100%',
+              borderRadius: 6,
+              background: `linear-gradient(90deg, ${cat.from}, ${cat.to})`,
+            }}
+          />
         </div>
       </div>
 
-      {aiError && (
-        <div style={{
-          margin: '20px auto',
-          maxWidth: '500px',
-          background: 'rgba(226,75,74,0.12)',
-          border: '1px solid rgba(226,75,74,0.35)',
-          borderRadius: '14px',
-          padding: '20px',
-          textAlign: 'center',
-        }}>
-          <p style={{ color: '#F09595', fontSize: '15px',
-            fontWeight: 500, marginBottom: '8px' }}>
-            Something went wrong
-          </p>
-          <p style={{ color: 'rgba(255,255,255,0.55)',
-            fontSize: '13px', marginBottom: '14px' }}>
-            {aiError}
-          </p>
-          <button onClick={() => { setAiError(null); }}
+      {/* Question card with AnimatePresence slide */}
+      <div style={{ maxWidth: 720, width: '100%', margin: '0 auto', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+
+        {aiError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
             style={{
-              background: 'rgba(127,119,221,0.2)',
-              border: '1px solid rgba(127,119,221,0.4)',
-              borderRadius: '10px', color: '#a89ef8',
-              padding: '8px 20px', cursor: 'pointer',
-              fontSize: '13px',
-            }}>
-            Try again
-          </button>
-        </div>
-      )}
+              marginBottom: 20, background: 'rgba(239,68,68,0.1)',
+              border: '1px solid rgba(239,68,68,0.3)', borderRadius: 14,
+              padding: '16px 20px', textAlign: 'center',
+            }}
+          >
+            <p style={{ color: '#fca5a5', fontWeight: 600, marginBottom: 6 }}>Something went wrong</p>
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, marginBottom: 12 }}>{aiError}</p>
+            <button onClick={() => setAiError(null)} style={{ background: 'rgba(127,119,221,0.2)', border: '1px solid rgba(127,119,221,0.4)', borderRadius: 10, color: '#a89ef8', padding: '8px 20px', cursor: 'pointer' }}>
+              Try again
+            </button>
+          </motion.div>
+        )}
 
-      {/* Question Card */}
-      <div className="flex-1">
-        <GlassCard className="p-6 md:p-8 animate-fadeUp">
-          <div className="mb-8 text-center">
-            <span className="inline-block px-3 py-1 mb-4 rounded-full bg-white/5 border border-white/10 text-xs text-gray-400 uppercase tracking-wider">
-              {question.category}
-            </span>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
-              {question.question}
-            </h2>
-            <p className="text-gray-400">
-              {question.subtitle}
-            </p>
-          </div>
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={currentStep}
+            custom={direction}
+            initial={{ opacity: 0, x: direction * 60, rotateY: direction * 8 }}
+            animate={{ opacity: 1, x: 0, rotateY: 0 }}
+            exit={{ opacity: 0, x: direction * -60, rotateY: direction * -8 }}
+            transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+            style={{ perspective: '1200px' }}
+          >
+            {/* Main question card */}
+            <div
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                backdropFilter: 'blur(24px)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 24,
+                padding: '36px 32px 32px',
+                boxShadow: '0 24px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)',
+              }}
+            >
+              {/* Category badge */}
+              <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                <span style={{
+                  display: 'inline-block', padding: '5px 16px',
+                  borderRadius: 20, fontSize: 10, fontWeight: 800,
+                  letterSpacing: '0.15em', textTransform: 'uppercase',
+                  color: cat.text,
+                  background: `${cat.from}20`,
+                  border: `1px solid ${cat.from}35`,
+                }}>
+                  {question.category}
+                </span>
 
-          <div className="grid md:grid-cols-2 gap-4">
-            {question.options.map((option) => {
-              const isSelected = answers[question.id]?.optionId === option.id;
-              
-              return (
-                <button
-                  key={option.id}
-                  onClick={() => handleOptionSelect(question.id, option.id, option.streams)}
-                  className={`relative p-4 rounded-xl border text-left transition-all duration-200 group flex items-start gap-4 ${
-                    isSelected 
-                      ? 'bg-indigo-500/10 border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.2)]' 
-                      : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-indigo-500/50 hover:scale-[1.01]'
-                  }`}
-                >
-                  <div className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
-                    isSelected ? 'bg-indigo-500/20' : 'bg-white/5 group-hover:bg-indigo-500/10'
-                  }`}>
-                    <i className={`${option.icon} text-2xl ${isSelected ? 'text-indigo-400' : 'text-gray-400 group-hover:text-indigo-300'}`}></i>
-                  </div>
-                  <div>
-                    <h4 className={`font-bold mb-1 ${isSelected ? 'text-indigo-300' : 'text-gray-200 group-hover:text-white'}`}>
-                      {option.label}
-                    </h4>
-                    <p className={`text-xs ${isSelected ? 'text-indigo-200/70' : 'text-gray-500 group-hover:text-gray-400'}`}>
-                      {option.sub}
-                    </p>
-                  </div>
-                  {isSelected && (
-                    <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center">
-                      <i className="ti-check text-white text-sm"></i>
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </GlassCard>
+                <h2 style={{
+                  fontSize: 'clamp(18px, 3.5vw, 28px)',
+                  fontWeight: 900,
+                  color: '#fff',
+                  marginTop: 16,
+                  marginBottom: 8,
+                  lineHeight: 1.25,
+                  letterSpacing: '-0.02em',
+                }}>
+                  {question.question}
+                </h2>
+                <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', fontStyle: 'italic' }}>
+                  {question.subtitle}
+                </p>
+              </div>
+
+              {/* Options grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
+                {question.options.map((option, oIdx) => {
+                  const isSelected = answers[question.id]?.optionId === option.id;
+                  return (
+                    <motion.button
+                      key={option.id}
+                      onClick={() => handleOptionSelect(question.id, option.id, option.streams)}
+                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ delay: oIdx * 0.07, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      whileHover={{
+                        scale: 1.025,
+                        y: -4,
+                        boxShadow: isSelected
+                          ? `0 12px 32px ${cat.from}40`
+                          : '0 8px 24px rgba(0,0,0,0.3)',
+                      }}
+                      whileTap={{ scale: 0.975 }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 14,
+                        padding: '18px 16px',
+                        borderRadius: 16,
+                        border: `1.5px solid ${isSelected ? cat.from : 'rgba(255,255,255,0.1)'}`,
+                        background: isSelected
+                          ? `linear-gradient(135deg, ${cat.from}20, ${cat.to}12)`
+                          : 'rgba(255,255,255,0.04)',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'border-color 0.2s, background 0.2s',
+                        position: 'relative',
+                        boxShadow: isSelected ? `0 0 20px ${cat.from}25` : 'none',
+                      }}
+                    >
+                      {/* Icon box */}
+                      <div style={{
+                        flexShrink: 0,
+                        width: 46,
+                        height: 46,
+                        borderRadius: 14,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: isSelected
+                          ? `linear-gradient(135deg, ${cat.from}, ${cat.to})`
+                          : 'rgba(255,255,255,0.07)',
+                        fontSize: 22,
+                        transition: 'background 0.25s',
+                        boxShadow: isSelected ? `0 4px 16px ${cat.from}50` : 'none',
+                      }}>
+                        <i
+                          className={`ti ${option.icon}`}
+                          style={{ color: isSelected ? '#fff' : 'rgba(255,255,255,0.5)' }}
+                        />
+                      </div>
+
+                      {/* Text */}
+                      <div style={{ flex: 1 }}>
+                        <h4 style={{
+                          fontSize: 14,
+                          fontWeight: 700,
+                          color: isSelected ? '#fff' : 'rgba(255,255,255,0.85)',
+                          marginBottom: 4,
+                          lineHeight: 1.3,
+                        }}>
+                          {option.label}
+                        </h4>
+                        <p style={{
+                          fontSize: 12,
+                          color: isSelected ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.35)',
+                          lineHeight: 1.4,
+                          margin: 0,
+                        }}>
+                          {option.sub}
+                        </p>
+                      </div>
+
+                      {/* Selected checkmark */}
+                      {isSelected && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                          style={{
+                            position: 'absolute',
+                            top: 12,
+                            right: 12,
+                            width: 22,
+                            height: 22,
+                            borderRadius: '50%',
+                            background: `linear-gradient(135deg, ${cat.from}, ${cat.to})`,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <i className="ti ti-check" style={{ color: '#fff', fontSize: 12 }} />
+                        </motion.div>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Navigation */}
-      <div className="mt-8 flex justify-between items-center">
-        <button
+      <div style={{ maxWidth: 720, width: '100%', margin: '20px auto 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <motion.button
           onClick={handleBack}
-          className="px-6 py-3 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors flex items-center gap-2"
+          whileHover={{ x: -3 }}
+          whileTap={{ scale: 0.95 }}
+          style={{
+            padding: '12px 24px',
+            borderRadius: 14,
+            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.04)',
+            color: 'rgba(255,255,255,0.55)',
+            fontWeight: 600,
+            cursor: 'pointer',
+            fontSize: 14,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
         >
-          <i className="ti-arrow-left"></i>
+          <i className="ti ti-arrow-left" />
           Back
-        </button>
-        <button
+        </motion.button>
+
+        <motion.button
           onClick={handleNext}
           disabled={!hasAnswered}
-          className={`px-8 py-3 rounded-lg font-bold flex items-center gap-2 transition-all ${
-            hasAnswered
-              ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/25'
-              : 'bg-white/5 text-gray-500 cursor-not-allowed'
-          }`}
+          whileHover={hasAnswered ? { scale: 1.04, boxShadow: `0 8px 28px ${cat.from}50` } : {}}
+          whileTap={hasAnswered ? { scale: 0.96 } : {}}
+          style={{
+            padding: '12px 32px',
+            borderRadius: 14,
+            border: 'none',
+            background: hasAnswered
+              ? `linear-gradient(135deg, ${cat.from}, ${cat.to})`
+              : 'rgba(255,255,255,0.06)',
+            color: hasAnswered ? '#fff' : 'rgba(255,255,255,0.25)',
+            fontWeight: 800,
+            cursor: hasAnswered ? 'pointer' : 'not-allowed',
+            fontSize: 15,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            boxShadow: hasAnswered ? `0 4px 20px ${cat.from}35` : 'none',
+            transition: 'background 0.3s, box-shadow 0.3s, color 0.3s',
+          }}
         >
-          {currentStep === 10 ? 'See my stream' : 'Next'}
-          <i className="ti-arrow-right"></i>
-        </button>
+          {currentStep === 10 ? 'See my stream ✨' : 'Next'}
+          <i className="ti ti-arrow-right" />
+        </motion.button>
       </div>
     </div>
   );
