@@ -113,6 +113,18 @@ export function Navbar() {
             <button onClick={() => handleNavClick("how-it-works")} className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">How it works</button>
             <button onClick={() => handleNavClick("features")} className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">Features</button>
             <Link href="/cutoff-calculator" className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">Cutoff Calculator</Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors flex items-center gap-1 focus:outline-none">
+                2026 Resources <ChevronDown size={14} />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white dark:bg-[#0a0d14] border-gray-200 dark:border-white/10 mt-2 z-[200]">
+                <DropdownMenuItem asChild><Link href="/nep-guide" className="cursor-pointer">NEP 2026 Guide</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/placements" className="cursor-pointer">Placement Explorer</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/loan-calculator" className="cursor-pointer">Loan Calculator</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/first-gen" className="cursor-pointer">First-Gen Student</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/parent-guide" className="cursor-pointer">Parent Guide</Link></DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Link href="/contact" className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">Contact</Link>
           </>
         ) : (
@@ -128,6 +140,18 @@ export function Navbar() {
             <Link href="/testimonial" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/testimonial" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Submit Review</Link>
 
             <Link href="/history" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/history" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>History</Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors flex items-center gap-1 focus:outline-none">
+                2026 Resources <ChevronDown size={14} />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white dark:bg-[#0a0d14] border-gray-200 dark:border-white/10 mt-2 z-[200]">
+                <DropdownMenuItem asChild><Link href="/nep-guide" className="cursor-pointer w-full">NEP 2026 Guide</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/placements" className="cursor-pointer w-full">Placement Explorer</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/loan-calculator" className="cursor-pointer w-full">Loan Calculator</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/first-gen" className="cursor-pointer w-full">First-Gen Student</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/parent-guide" className="cursor-pointer w-full">Parent Guide</Link></DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Link href="/contact" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/contact" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Contact</Link>
           </>
         )}
@@ -213,6 +237,16 @@ export function Navbar() {
                  </div>
                  
                  <Link href="/history" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">History</Link>
+                 <div className="py-4 border-b border-white/5">
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">2026 Resources</p>
+                   <div className="space-y-1">
+                     <Link href="/nep-guide" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">NEP 2026 Guide</Link>
+                     <Link href="/placements" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Placement Explorer</Link>
+                     <Link href="/loan-calculator" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Loan Calculator</Link>
+                     <Link href="/first-gen" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">First-Gen Student</Link>
+                     <Link href="/parent-guide" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Parent Guide</Link>
+                   </div>
+                 </div>
                  <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Contact</Link>
                  {isAdmin && (
                    <Link href="/admin" onClick={() => setIsOpen(false)} className="text-lg font-bold text-red-400 py-3 border-b border-white/5 flex items-center justify-between">
@@ -235,6 +269,16 @@ export function Navbar() {
                  <button onClick={() => handleNavClick("how-it-works")} className="text-left text-lg font-bold text-slate-300 py-3 border-b border-white/5">How it works</button>
                  <button onClick={() => handleNavClick("features")} className="text-left text-lg font-bold text-slate-300 py-3 border-b border-white/5">Features</button>
                  <Link href="/cutoff-calculator" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Cutoff Calculator</Link>
+                 <div className="py-4 border-b border-white/5">
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">2026 Resources</p>
+                   <div className="space-y-1">
+                     <Link href="/nep-guide" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">NEP 2026 Guide</Link>
+                     <Link href="/placements" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Placement Explorer</Link>
+                     <Link href="/loan-calculator" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Loan Calculator</Link>
+                     <Link href="/first-gen" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">First-Gen Student</Link>
+                     <Link href="/parent-guide" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Parent Guide</Link>
+                   </div>
+                 </div>
                  <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Contact</Link>
                  <div className="flex flex-col gap-3 pt-6">
                     <Link href="/login" onClick={() => setIsOpen(false)} className="w-full"><Button variant="outline" className="w-full h-12">Login</Button></Link>

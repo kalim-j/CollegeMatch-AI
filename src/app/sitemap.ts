@@ -49,6 +49,36 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     // Content pages
     {
+      url: `${baseUrl}/nep-guide`,
+      lastModified: CONTENT_UPDATE,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/placements`,
+      lastModified: CONTENT_UPDATE,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/loan-calculator`,
+      lastModified: CONTENT_UPDATE,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/first-gen`,
+      lastModified: CONTENT_UPDATE,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/parent-guide`,
+      lastModified: CONTENT_UPDATE,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/blog`,
       lastModified: CONTENT_UPDATE,
       changeFrequency: "weekly",
