@@ -40,7 +40,7 @@ export default function LandingPage() {
 
   return (
     <PageTransition>
-      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50">
+      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-purple-50 to-slate-50 dark:from-[#05071a] dark:via-[#0a0d24] dark:to-[#05071a]">
         
         {/* 3D Background */}
         <HomepageBackground />
