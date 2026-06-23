@@ -62,7 +62,7 @@ export default function LandingPage() {
               animate={{ scale: 1 }}
               transition={{ type: 'spring', delay: 0.2 }}
             >
-              <span className="px-4 py-2 rounded-full text-xs font-bold text-purple-700 bg-purple-100 border border-purple-200 shadow-sm">
+              <span className="px-4 py-2 rounded-full text-xs font-bold bg-[#f0eeff] dark:bg-[rgba(127,119,221,0.15)] text-[#534AB7] dark:text-[#a89ef8] border border-[rgba(127,119,221,0.3)] shadow-sm">
                 ✨ AI-Powered College Matching
               </span>
             </motion.div>
@@ -74,16 +74,16 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
             >
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600">
+              <span className="text-[#534AB7] dark:text-[#a89ef8]">
                 Find Your Perfect
               </span>
               <br />
-              <span className="text-gray-950">College Match</span>
+              <span className="text-[#1a1340] dark:text-white">College Match</span>
             </motion.h1>
 
             {/* Subtitle */}
             <motion.p
-              className="text-xl text-gray-550 mb-8 max-w-2xl mx-auto leading-relaxed font-medium"
+              className="text-xl text-[#4a4370] dark:text-[rgba(255,255,255,0.72)] mb-8 max-w-2xl mx-auto leading-relaxed font-medium"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.8 }}
@@ -105,13 +105,13 @@ export default function LandingPage() {
               ].map((stat, i) => (
                 <motion.div
                   key={i}
-                  className="p-4 rounded-2xl bg-white/70 backdrop-blur-xl border border-purple-100 shadow-lg"
+                  className="p-4 rounded-2xl bg-white dark:bg-[rgba(255,255,255,0.05)] border border-[rgba(127,119,221,0.12)] dark:border-[rgba(255,255,255,0.10)] shadow-lg backdrop-blur-xl"
                   whileHover={{ scale: 1.05, y: -5 }}
                   transition={{ type: 'spring', stiffness: 400 }}
                 >
                   <p className="text-2xl mb-1">{stat.icon}</p>
-                  <p className="font-black text-gray-900">{stat.label}</p>
-                  <p className="text-xs text-gray-500 font-semibold">{stat.desc}</p>
+                  <p className="font-black text-[#1a1340] dark:text-white">{stat.label}</p>
+                  <p className="text-xs text-[#6b6894] dark:text-[rgba(255,255,255,0.55)] font-semibold">{stat.desc}</p>
                 </motion.div>
               ))}
             </motion.div>
@@ -138,7 +138,7 @@ export default function LandingPage() {
                 </motion.svg>
               </Link>
               <Link href="/dashboard/scholarships"
-                className="px-8 py-4 rounded-xl bg-white/70 backdrop-blur border-2 border-purple-200 text-purple-700 font-bold hover:bg-white/90 transition-all duration-300">
+                className="px-8 py-4 rounded-xl backdrop-blur font-bold transition-all duration-300 text-[#534AB7] dark:text-white border border-[#534AB7] dark:border-[rgba(255,255,255,0.25)] hover:bg-[rgba(83,74,183,0.08)] dark:hover:bg-[rgba(255,255,255,0.08)]">
                 Find Scholarships
               </Link>
             </motion.div>
@@ -191,7 +191,7 @@ export default function LandingPage() {
             ].map((feature, i) => (
               <motion.div
                 key={i}
-                className="p-6 rounded-2xl bg-white/70 backdrop-blur-xl border border-purple-100 hover:shadow-xl transition-all duration-300"
+                className="p-6 rounded-2xl bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-purple-100 dark:border-[rgba(255,255,255,0.10)] hover:shadow-xl transition-all duration-300"
                 whileHover={{ scale: 1.05, y: -10 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -200,8 +200,8 @@ export default function LandingPage() {
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} text-white flex items-center justify-center text-2xl mb-4 shadow-lg`}>
                   {feature.icon}
                 </div>
-                <h3 className="font-bold text-gray-950 mb-2">{feature.title}</h3>
-                <p className="text-gray-500 text-sm font-semibold">{feature.desc}</p>
+                <h3 className="font-bold text-gray-950 dark:text-white mb-2">{feature.title}</h3>
+                <p className="text-gray-500 dark:text-[rgba(255,255,255,0.72)] text-sm font-semibold">{feature.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -213,7 +213,7 @@ export default function LandingPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
           >
-            <h2 className="text-4xl font-black text-center text-gray-955 mb-12">
+            <h2 className="text-4xl font-black text-center text-gray-955 dark:text-white mb-12">
               How It Works
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
@@ -236,14 +236,14 @@ export default function LandingPage() {
               ].map((item, i) => (
                 <motion.div
                   key={i}
-                  className="relative p-6 rounded-2xl bg-white/70 backdrop-blur-xl border border-purple-100"
+                  className="relative p-6 rounded-2xl bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-purple-100 dark:border-[rgba(255,255,255,0.10)]"
                   whileHover={{ scale: 1.05 }}
                 >
-                  <div className="text-5xl font-black text-purple-200 mb-3">
+                  <div className="text-5xl font-black text-purple-200 dark:text-purple-400 mb-3">
                     {item.step}
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
-                  <p className="text-gray-500 font-semibold">{item.desc}</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
+                  <p className="text-gray-500 dark:text-[rgba(255,255,255,0.72)] font-semibold">{item.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -257,13 +257,13 @@ export default function LandingPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 1.3 }}
             >
-              <h2 className="text-3xl font-black text-center text-gray-955 mb-12">Success Stories</h2>
+              <h2 className="text-3xl font-black text-center text-gray-955 dark:text-white mb-12">Success Stories</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {testimonials.map((t, idx) => (
-                  <div key={idx} className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-2xl p-6 shadow-sm">
-                    <p className="text-gray-600 italic text-sm mb-4">"{t.review}"</p>
-                    <p className="font-bold text-gray-900 text-sm">{t.name}</p>
-                    <p className="text-gray-400 text-xs mt-0.5">{t.college}</p>
+                  <div key={idx} className="bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-purple-100 dark:border-[rgba(255,255,255,0.10)] rounded-2xl p-6 shadow-sm">
+                    <p className="text-gray-600 dark:text-[rgba(255,255,255,0.72)] italic text-sm mb-4">"{t.review}"</p>
+                    <p className="font-bold text-gray-900 dark:text-white text-sm">{t.name}</p>
+                    <p className="text-gray-400 dark:text-[rgba(255,255,255,0.55)] text-xs mt-0.5">{t.college}</p>
                   </div>
                 ))}
               </div>

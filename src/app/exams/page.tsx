@@ -96,7 +96,7 @@ export default function EntranceExamGuide() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] text-gray-900 relative overflow-hidden selection:bg-purple-200 py-24">
+    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] dark:from-[#05071a] dark:to-[#0a0d24] text-gray-900 relative overflow-hidden selection:bg-purple-200 py-24">
       <div className="container mx-auto px-6 max-w-7xl relative z-10">
         <header className="text-center space-y-6 mb-20">
           <motion.div
@@ -107,10 +107,10 @@ export default function EntranceExamGuide() {
             <Award size={14} />
             Admission Benchmarks
           </motion.div>
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-950 tracking-tight">
-            Master Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">Admissions Journey</span>
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-950 dark:text-white tracking-tight">
+            Master Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400">Admissions Journey</span>
           </h1>
-          <p className="text-gray-500 font-bold uppercase tracking-[0.2em] text-[10px] max-w-lg mx-auto">
+          <p className="text-gray-500 dark:text-[rgba(255,255,255,0.72)] font-bold uppercase tracking-[0.2em] text-[10px] max-w-lg mx-auto">
             Find every national, state, and university-level entrance benchmark required to secure your placement in elite institutions.
           </p>
         </header>
@@ -119,36 +119,36 @@ export default function EntranceExamGuide() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-3xl p-8 md:p-12 shadow-sm mb-16 relative overflow-hidden group"
+          className="bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-purple-100 dark:border-[rgba(255,255,255,0.10)] rounded-3xl p-8 md:p-12 shadow-sm mb-16 relative overflow-hidden group"
         >
           <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-2 gap-10 items-end relative z-10">
             <div className="space-y-3">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+              <label className="text-[10px] font-black text-gray-400 dark:text-gray-300 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                 <GraduationCap size={12} className="text-purple-600" /> Academic Level
               </label>
               <div className="relative">
                 <select
                   value={formData.level}
                   onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                  className="w-full h-16 bg-white border border-purple-200 rounded-2xl px-6 text-gray-900 font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 appearance-none cursor-pointer transition-all"
+                  className="w-full h-16 bg-white dark:bg-[#05071a] border border-purple-200 dark:border-[rgba(255,255,255,0.10)] rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 appearance-none cursor-pointer transition-all"
                 >
-                  {COURSE_LEVELS.map(l => <option key={l} value={l} className="bg-white text-gray-800">{l}</option>)}
+                  {COURSE_LEVELS.map(l => <option key={l} value={l} className="bg-white dark:bg-[#05071a] text-gray-800 dark:text-white">{l}</option>)}
                 </select>
                 <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
               </div>
             </div>
 
             <div className="space-y-3">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+              <label className="text-[10px] font-black text-gray-400 dark:text-gray-300 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                 <BookOpen size={12} className="text-purple-600" /> Subject Stream
               </label>
               <div className="relative">
                 <select
                   value={formData.stream}
                   onChange={(e) => setFormData({ ...formData, stream: e.target.value })}
-                  className="w-full h-16 bg-white border border-purple-200 rounded-2xl px-6 text-gray-900 font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 appearance-none cursor-pointer transition-all"
+                  className="w-full h-16 bg-white dark:bg-[#05071a] border border-purple-200 dark:border-[rgba(255,255,255,0.10)] rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 appearance-none cursor-pointer transition-all"
                 >
-                  {STREAMS.map(s => <option key={s} value={s} className="bg-white text-gray-800">{s}</option>)}
+                  {STREAMS.map(s => <option key={s} value={s} className="bg-white dark:bg-[#05071a] text-gray-800 dark:text-white">{s}</option>)}
                 </select>
                 <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
               </div>
@@ -169,9 +169,9 @@ export default function EntranceExamGuide() {
 
         {/* Intelligence Filters */}
         {results.length > 0 && (
-          <div className="flex flex-col xl:flex-row justify-between items-center gap-8 bg-white/70 backdrop-blur-xl border border-purple-100 p-6 rounded-3xl mb-12 shadow-sm">
+          <div className="flex flex-col xl:flex-row justify-between items-center gap-8 bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-purple-100 dark:border-[rgba(255,255,255,0.10)] p-6 rounded-3xl mb-12 shadow-sm">
             <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="flex items-center gap-2 text-gray-400 text-[10px] font-black uppercase tracking-widest">
+              <div className="flex items-center gap-2 text-gray-400 dark:text-gray-300 text-[10px] font-black uppercase tracking-widest">
                 <Filter size={14} className="text-purple-600" /> Geographic Scope:
               </div>
               <div className="flex flex-wrap gap-2 justify-center">
@@ -183,7 +183,7 @@ export default function EntranceExamGuide() {
                       "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
                       filterLevel === lvl 
                         ? "bg-purple-600 border-purple-500 text-white shadow-md shadow-purple-200" 
-                        : "bg-white border-purple-100 text-gray-500 hover:bg-purple-50 hover:text-purple-700"
+                        : "bg-white dark:bg-transparent border-purple-100 dark:border-[rgba(255,255,255,0.2)] text-gray-500 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-white/10 hover:text-purple-700 dark:hover:text-white"
                     )}
                   >
                     {lvl}
@@ -193,17 +193,17 @@ export default function EntranceExamGuide() {
             </div>
 
             <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2 text-gray-400 text-[10px] font-black uppercase tracking-widest">
+              <div className="flex items-center gap-2 text-gray-400 dark:text-gray-300 text-[10px] font-black uppercase tracking-widest">
                 <ArrowUpDown size={14} className="text-purple-600" /> Sequence Logic:
               </div>
               <div className="relative">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-white border border-purple-200 rounded-xl px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-900 outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 appearance-none cursor-pointer"
+                  className="bg-white dark:bg-[#05071a] border border-purple-200 dark:border-[rgba(255,255,255,0.2)] rounded-xl px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 appearance-none cursor-pointer"
                 >
-                  <option value="importance" className="bg-white text-gray-800">Impact Priority</option>
-                  <option value="name" className="bg-white text-gray-800">Alphabetic Sequence</option>
+                  <option value="importance" className="bg-white dark:bg-[#05071a] text-gray-800 dark:text-white">Impact Priority</option>
+                  <option value="name" className="bg-white dark:bg-[#05071a] text-gray-800 dark:text-white">Alphabetic Sequence</option>
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
               </div>
@@ -220,11 +220,11 @@ export default function EntranceExamGuide() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-3xl p-8 space-y-8 hover:border-purple-300 transition-all group relative overflow-hidden shadow-sm"
+                className="bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-purple-100 dark:border-[rgba(255,255,255,0.10)] rounded-3xl p-8 space-y-8 hover:border-purple-300 transition-all group relative overflow-hidden shadow-sm"
               >
                 <div className="space-y-3 relative z-10">
                   <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-                    <h3 className="text-2xl font-bold text-purple-700 tracking-tight group-hover:text-purple-900 transition-colors leading-none">
+                    <h3 className="text-2xl font-bold text-purple-700 dark:text-purple-300 tracking-tight group-hover:text-purple-900 dark:group-hover:text-purple-200 transition-colors leading-none">
                       {exam.short_name}
                     </h3>
                     <div className={cn(
@@ -234,39 +234,39 @@ export default function EntranceExamGuide() {
                       {exam.importance} Priority
                     </div>
                   </div>
-                  <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">{exam.name}</p>
+                  <p className="text-sm font-bold text-gray-400 dark:text-[rgba(255,255,255,0.55)] uppercase tracking-widest">{exam.name}</p>
                 </div>
 
                 <div className="flex flex-wrap gap-2 relative z-10">
                   <span className={cn("px-4 py-1.5 border text-[9px] font-black uppercase tracking-widest rounded-lg", levelColor(exam.level))}>
                     {exam.level} Scope
                   </span>
-                  <span className="px-4 py-1.5 bg-white border border-purple-100 text-gray-500 text-[9px] font-black uppercase tracking-widest rounded-lg">
+                  <span className="px-4 py-1.5 bg-white dark:bg-transparent border border-purple-100 dark:border-[rgba(255,255,255,0.2)] text-gray-500 dark:text-[rgba(255,255,255,0.72)] text-[9px] font-black uppercase tracking-widest rounded-lg">
                     {exam.mode}
                   </span>
-                  <span className="px-4 py-1.5 bg-white border border-purple-100 text-gray-500 text-[9px] font-black uppercase tracking-widest rounded-lg">
+                  <span className="px-4 py-1.5 bg-white dark:bg-transparent border border-purple-100 dark:border-[rgba(255,255,255,0.2)] text-gray-500 dark:text-[rgba(255,255,255,0.72)] text-[9px] font-black uppercase tracking-widest rounded-lg">
                     {exam.frequency}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6 p-6 rounded-2xl bg-white/60 border border-purple-100/50 relative z-10 shadow-sm">
+                <div className="grid grid-cols-2 gap-6 p-6 rounded-2xl bg-white/60 dark:bg-[rgba(255,255,255,0.02)] border border-purple-100/50 dark:border-[rgba(255,255,255,0.05)] relative z-10 shadow-sm">
                   <div className="space-y-2">
                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                       <Calendar size={12} className="text-purple-600" /> Examination Window
                     </p>
-                    <p className="text-base font-black text-gray-900 tabular-nums">{exam.exam_date}</p>
+                    <p className="text-base font-black text-gray-900 dark:text-white tabular-nums">{exam.exam_date}</p>
                   </div>
                   <div className="space-y-2">
                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                       <Clock size={12} className="text-purple-600" /> Registration Baseline
                     </p>
-                    <p className="text-base font-black text-gray-900 tabular-nums">{exam.registration_start}</p>
+                    <p className="text-base font-black text-gray-900 dark:text-white tabular-nums">{exam.registration_start}</p>
                   </div>
                 </div>
 
                 <div className="space-y-4 relative z-10">
-                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Eligibility Protocol</p>
-                   <p className="text-base text-gray-600 font-medium italic leading-relaxed pl-4 border-l-2 border-purple-300">
+                   <p className="text-[10px] font-black text-gray-400 dark:text-gray-300 uppercase tracking-widest">Eligibility Protocol</p>
+                   <p className="text-base text-gray-600 dark:text-[rgba(255,255,255,0.72)] font-medium italic leading-relaxed pl-4 border-l-2 border-purple-300">
                      &quot;{exam.eligibility}&quot;
                    </p>
                 </div>
@@ -284,11 +284,11 @@ export default function EntranceExamGuide() {
                   </div>
                 </div>
 
-                <div className="bg-emerald-50/60 border border-emerald-100 p-6 rounded-3xl relative z-10 overflow-hidden shadow-sm">
-                  <div className="flex items-center gap-2 text-[10px] font-black text-emerald-700 uppercase tracking-widest mb-3">
+                <div className="bg-emerald-50/60 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800/50 p-6 rounded-3xl relative z-10 overflow-hidden shadow-sm">
+                  <div className="flex items-center gap-2 text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mb-3">
                     <Zap size={14} className="animate-pulse" /> Expert Intelligence Tip
                   </div>
-                  <p className="text-sm font-medium text-gray-600 leading-relaxed relative z-10">
+                  <p className="text-sm font-medium text-gray-600 dark:text-emerald-200 leading-relaxed relative z-10">
                     {exam.tip}
                   </p>
                 </div>
@@ -310,13 +310,13 @@ export default function EntranceExamGuide() {
         {results.length === 0 && !loading && (
           <div className="text-center py-32 space-y-8">
             <div className="relative inline-block">
-              <div className="h-32 w-32 bg-white/70 backdrop-blur-xl rounded-[3rem] flex items-center justify-center mx-auto border border-purple-100 text-purple-600 relative z-10 shadow-sm animate-pulse">
+              <div className="h-32 w-32 bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-[3rem] flex items-center justify-center mx-auto border border-purple-100 dark:border-[rgba(255,255,255,0.10)] text-purple-600 dark:text-purple-400 relative z-10 shadow-sm animate-pulse">
                 <Target size={56} />
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-gray-950 font-bold text-xl tracking-tight">Intelligence Matrix Ready</p>
-              <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[9px]">Select your academic parameters to discover exams</p>
+              <p className="text-gray-950 dark:text-white font-bold text-xl tracking-tight">Intelligence Matrix Ready</p>
+              <p className="text-gray-400 dark:text-gray-500 font-bold uppercase tracking-[0.2em] text-[9px]">Select your academic parameters to discover exams</p>
             </div>
           </div>
         )}

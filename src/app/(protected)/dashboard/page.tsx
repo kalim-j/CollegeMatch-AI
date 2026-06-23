@@ -117,7 +117,7 @@ export default function Dashboard() {
 
   const stats = [
     { label: "Stream Discovered", value: discoveredStreamName, icon: Lightbulb, color: "text-teal-600 dark:text-teal-400", bg: "bg-teal-50 border border-teal-200", border: "border-purple-100", href: "/history?tab=streams" },
-    { label: "AI Analyses Run", value: analysesCount.toString(), icon: BrainCircuit, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-550 border border-purple-200", border: "border-purple-100", href: "/history?tab=colleges" },
+    { label: "AI Analyses Run", value: analysesCount.toString(), icon: BrainCircuit, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 border border-purple-200", border: "border-purple-100", href: "/history?tab=colleges" },
     { label: "Colleges Matched", value: collegesCount.toString(), icon: Target, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 border border-purple-200", border: "border-purple-100", href: "/history?tab=colleges" },
     { label: "Scholarship Alerts", value: scholarshipsCount.toString(), icon: Award, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 border border-amber-200", border: "border-purple-100", href: "/dashboard/scholarships" },
   ];

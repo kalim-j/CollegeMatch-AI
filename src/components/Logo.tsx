@@ -17,12 +17,8 @@ export default function Logo({
     lg: { box: 72, emoji: '36px', name: '22px', tag: '12px' },
   };
   const s = sizes[size] || sizes.md;
-  const textColor = theme === 'dark'
-    ? 'rgba(255,255,255,0.95)'
-    : '#1a1340';
-  const mutedColor = theme === 'dark'
-    ? 'rgba(255,255,255,0.5)'
-    : '#7a7399';
+  const textColor = 'var(--color-text-hero-primary)';
+  const mutedColor = 'var(--color-text-label)';
 
   return (
     <div style={{

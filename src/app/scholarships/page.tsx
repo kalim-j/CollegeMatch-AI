@@ -144,7 +144,7 @@ export default function ScholarshipFinder() {
               { label: "Annual Income", key: "income", options: INCOME_RANGES, icon: Wallet }
             ].map((f) => (
               <div key={f.key} className="space-y-3">
-                <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+                <label className="text-[10px] font-black text-gray-500 dark:text-gray-300 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                   <f.icon size={12} className="text-indigo-500" /> {f.label}
                 </label>
                 <div className="relative">
@@ -161,7 +161,7 @@ export default function ScholarshipFinder() {
             ))}
 
             <div className="space-y-3">
-              <label className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
+              <label className="text-[10px] font-black text-gray-500 dark:text-gray-300 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                 <Activity size={12} className="text-indigo-500" /> Academic Percentage (%)
               </label>
               <input
@@ -195,7 +195,7 @@ export default function ScholarshipFinder() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-white/[0.02] border border-white/5 rounded-[3rem] p-10 space-y-8 hover:border-indigo-500/30 transition-all group backdrop-blur-md relative overflow-hidden"
+                className="bg-white dark:bg-[rgba(255,255,255,0.04)] border border-gray-200 dark:border-white/5 rounded-[3rem] p-10 space-y-8 hover:border-indigo-500/30 transition-all group backdrop-blur-md relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 p-10 opacity-[0.02] pointer-events-none group-hover:scale-110 transition-transform duration-700">
                     <Award size={150} className="text-indigo-500" />
@@ -203,15 +203,15 @@ export default function ScholarshipFinder() {
                 
                 <div className="flex justify-between items-start gap-6 relative z-10">
                   <div className="space-y-2">
-                    <h3 className="text-2xl font-black text-indigo-400 group-hover:text-white transition-colors leading-tight tracking-tight">
+                    <h3 className="text-2xl font-black text-gray-900 dark:text-white group-hover:text-indigo-500 transition-colors leading-tight tracking-tight">
                       {item.name}
                     </h3>
-                    <div className="flex items-center gap-2 text-[10px] font-black text-white/30 uppercase tracking-widest">
+                    <div className="flex items-center gap-2 text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">
                       <Building size={14} className="text-indigo-500" />
                       {item.provider}
                     </div>
                   </div>
-                  <div className="text-3xl font-black text-teal-400 tabular-nums shadow-teal-500/20 drop-shadow-xl">
+                  <div className="text-3xl font-black text-teal-600 dark:text-teal-400 tabular-nums shadow-teal-500/20 drop-shadow-xl">
                     {item.amount}
                   </div>
                 </div>
@@ -232,10 +232,10 @@ export default function ScholarshipFinder() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-6 pt-4 border-t border-white/5 relative z-10">
-                  <div className="flex items-center gap-2 text-white/30 text-[10px] font-black uppercase tracking-widest">
+                <div className="flex items-center gap-6 pt-4 border-t border-gray-200 dark:border-white/5 relative z-10">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-[10px] font-black uppercase tracking-widest">
                     <Calendar size={14} className="text-indigo-500" />
-                    Deadline: <span className="text-white">{item.deadline}</span>
+                    Deadline: <span className="text-gray-900 dark:text-white">{item.deadline}</span>
                   </div>
                 </div>
 

@@ -16,16 +16,12 @@ import {
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "./ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import Logo from "./Logo";
 import { isAdminEmail } from "@/lib/admin";
+import { useTheme } from "next-themes";
 
 export function Navbar() {
   const { user, profile } = useAuth();
@@ -34,25 +30,17 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [pendingLeads, setPendingLeads] = useState(0);
   const [scrolled, setScrolled] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
+  const { theme, setTheme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("theme") as "light" | "dark" | null;
-    if (saved) {
-      setTheme(saved);
-      document.documentElement.classList.toggle("dark", saved === "dark");
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setTheme(prefersDark ? "dark" : "light");
-      document.documentElement.classList.toggle("dark", prefersDark);
-    }
+    setMounted(true);
   }, []);
 
   const toggleTheme = () => {
-    const next = theme === "light" ? "dark" : "light";
+    const currentTheme = theme === "system" ? systemTheme : theme;
+    const next = currentTheme === "light" ? "dark" : "light";
     setTheme(next);
-    localStorage.setItem("theme", next);
-    document.documentElement.classList.toggle("dark", next === "dark");
   };
 
   useEffect(() => {
@@ -109,10 +97,10 @@ export function Navbar() {
 
   return (
     <nav className={cn(
-      "sticky top-0 z-[100] w-full border-b px-6 transition-all duration-300 flex items-center justify-between",
+      "sticky top-0 z-[100] w-full border-b px-6 transition-all duration-300 flex items-center justify-between backdrop-blur-xl",
       scrolled 
-        ? "bg-[var(--bg-card)] backdrop-blur-[16px] border-[var(--border-hover)] shadow-md shadow-purple-500/5 h-14" 
-        : "bg-[var(--bg-card)] backdrop-blur-[24px] border-[var(--border-color)] shadow-sm h-16"
+        ? "bg-white/95 dark:bg-[rgba(5,7,26,0.95)] border-black/8 dark:border-white/8 shadow-md h-14" 
+        : "bg-white/95 dark:bg-[rgba(5,7,26,0.95)] border-transparent h-16"
     )}>
       <Link href="/" className="hover:opacity-90 transition-opacity">
         <Logo />
@@ -122,37 +110,37 @@ export function Navbar() {
       <div className="hidden lg:flex items-center gap-8">
         {!user ? (
           <>
-            <button onClick={() => handleNavClick("how-it-works")} className="text-[13px] font-medium text-gray-500 hover:text-purple-600 transition-colors">How it works</button>
-            <button onClick={() => handleNavClick("features")} className="text-[13px] font-medium text-gray-500 hover:text-purple-600 transition-colors">Features</button>
-            <Link href="/cutoff-calculator" className="text-[13px] font-medium text-gray-500 hover:text-purple-600 transition-colors">Cutoff Calculator</Link>
-            <Link href="/contact" className="text-[13px] font-medium text-gray-500 hover:text-purple-600 transition-colors">Contact</Link>
+            <button onClick={() => handleNavClick("how-it-works")} className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">How it works</button>
+            <button onClick={() => handleNavClick("features")} className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">Features</button>
+            <Link href="/cutoff-calculator" className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">Cutoff Calculator</Link>
+            <Link href="/contact" className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">Contact</Link>
           </>
         ) : (
           <>
-            <Link href="/dashboard" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Dashboard</Link>
+            <Link href="/dashboard" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/dashboard" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Dashboard</Link>
             
-            <Link href="/interview" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/interview" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Find Colleges</Link>
-            <Link href="/dashboard/compare" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/compare" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Compare</Link>
-            <Link href="/dashboard/predictor" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/predictor" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Predictor</Link>
-            <Link href="/colleges/map" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/colleges/map" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Map</Link>
-            <Link href="/dashboard/scholarships" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/dashboard/scholarships" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Scholarships</Link>
-            <Link href="/exams" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/exams" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Exams</Link>
-            <Link href="/testimonial" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/testimonial" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Submit Review</Link>
+            <Link href="/interview" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/interview" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Find Colleges</Link>
+            <Link href="/dashboard/compare" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/dashboard/compare" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Compare</Link>
+            <Link href="/dashboard/predictor" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/dashboard/predictor" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Predictor</Link>
+            <Link href="/colleges/map" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/colleges/map" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Map</Link>
+            <Link href="/dashboard/scholarships" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/dashboard/scholarships" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Scholarships</Link>
+            <Link href="/exams" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/exams" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Exams</Link>
+            <Link href="/testimonial" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/testimonial" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Submit Review</Link>
 
-            <Link href="/history" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/history" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>History</Link>
-            <Link href="/contact" className={cn("text-[13px] font-medium transition-colors hover:text-purple-700", pathname === "/contact" ? "text-purple-700 border-b-2 border-purple-600 pb-1" : "text-gray-500")}>Contact</Link>
+            <Link href="/history" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/history" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>History</Link>
+            <Link href="/contact" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/contact" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Contact</Link>
           </>
         )}
       </div>
 
       <div className="flex items-center gap-4">
-        {theme !== null && (
+        {mounted && (
           <button
             onClick={toggleTheme}
-            className="p-2.5 rounded-xl border border-purple-100/80 hover:bg-purple-50 text-gray-500 hover:text-purple-600 transition-all dark:border-white/10 dark:hover:bg-white/5 dark:text-gray-400 dark:hover:text-purple-400"
+            className="p-2.5 rounded-xl text-[#1a1340] dark:text-white hover:text-[#534AB7] dark:hover:text-[#a89ef8] transition-colors duration-200"
             aria-label="Toggle theme"
           >
-            {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+            {theme === "light" || (theme === "system" && !window.matchMedia("(prefers-color-scheme: dark)").matches) ? <Moon size={18} /> : <Sun size={18} />}
           </button>
         )}
 
@@ -186,8 +174,8 @@ export function Navbar() {
           </div>
         ) : (
           <div className="hidden sm:flex items-center gap-3">
-            <Link href="/login" className="btn-ghost !py-2 !px-5 !text-[13px] !text-gray-700 !border-purple-200 hover:!bg-purple-50">Login</Link>
-            <Link href="/register" className="btn-primary !py-2 !px-5 !text-[13px] !bg-purple-600 hover:!bg-purple-700">Get Started</Link>
+            <Link href="/login" className="btn-ghost !py-2 !px-5 !text-[13px] text-[#1a1340] dark:text-[rgba(255,255,255,0.80)] !border-purple-200 hover:!bg-purple-50 dark:hover:!bg-white/10">Login</Link>
+            <Link href="/register" className="btn-primary !py-2 !px-5 !text-[13px] !bg-[#534AB7] hover:!bg-[#433b9c]">Get Started</Link>
           </div>
         )}
 

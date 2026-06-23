@@ -320,7 +320,7 @@ export default function InterviewPage() {
                 <GraduationCap size={14} className="text-indigo-400" />
                 <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">Educational Level</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter leading-tight">Your Academic Path</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter leading-tight">Your Academic Path</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 1: Select your target degree level</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -346,7 +346,7 @@ export default function InterviewPage() {
                   )}>
                     <GraduationCap size={40} />
                   </div>
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-gray-900 dark:text-white mb-2">{level.label}</h3>
+                  <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-2">{level.label}</h3>
                   <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest leading-relaxed">
                     {level.desc}
                   </p>
@@ -371,7 +371,7 @@ export default function InterviewPage() {
                 <Target size={14} className="text-teal-400" />
                 <span className="text-[10px] font-black text-teal-300 uppercase tracking-widest">Field of Interest</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Choose Your Stream</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Choose Your Stream</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 2: Define your specialization</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -412,7 +412,7 @@ export default function InterviewPage() {
                 <MapPin size={14} className="text-amber-400" />
                 <span className="text-[10px] font-black text-amber-300 uppercase tracking-widest">Geographical Preference</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Your Location</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Your Location</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 3: Residency and target region</p>
             </div>
             <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl relative overflow-hidden">
@@ -420,24 +420,24 @@ export default function InterviewPage() {
                   <MapPin size={240} className="text-amber-500" />
                 </div>
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Current State</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Current State</label>
                     <select 
                         className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
                         value={formData.state}
                         onChange={(e) => updateForm({ state: e.target.value, district: "" })}
                     >
-                        {Object.keys(stateDistricts).map(s => <option key={s} value={s} className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-gray-900 dark:text-white">{s}</option>)}
+                        {Object.keys(stateDistricts).map(s => <option key={s} value={s} className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-white">{s}</option>)}
                     </select>
                 </div>
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Home District</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Home District</label>
                     <select 
                         className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
                         value={formData.district}
                         onChange={(e) => updateForm({ district: e.target.value })}
                     >
-                        <option value="" className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-gray-900 dark:text-white">Select District</option>
-                        {(stateDistricts[formData.state!] || []).map(d => <option key={d} value={d} className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-gray-900 dark:text-white">{d}</option>)}
+                        <option value="" className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-white">Select District</option>
+                        {(stateDistricts[formData.state!] || []).map(d => <option key={d} value={d} className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-white">{d}</option>)}
                     </select>
                 </div>
                 <div className="flex gap-4 mt-4">
@@ -467,12 +467,12 @@ export default function InterviewPage() {
                 <BookOpen size={14} className="text-purple-400" />
                 <span className="text-[10px] font-black text-purple-300 uppercase tracking-widest">{levelKey} Academic Records</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">{levelKey} Standards</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">{levelKey} Standards</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step {step}: Academic performance verification</p>
             </div>
             <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl">
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Board of Education</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Board of Education</label>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {BOARDS.map(b => (
                             <button
@@ -499,7 +499,7 @@ export default function InterviewPage() {
                     <div className="space-y-6">
                         {formData[`marks${levelKey}Board`] === "IGCSE" ? (
                            <div className="space-y-4">
-                              <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Overall Grade</label>
+                              <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Overall Grade</label>
                               <div className="grid grid-cols-5 gap-2">
                                 {['A*', 'A', 'B', 'C', 'D'].map(g => (
                                   <button
@@ -512,7 +512,7 @@ export default function InterviewPage() {
                            </div>
                         ) : formData[`useCgpa${levelKey}`] && formData[`marks${levelKey}Board`] === "CBSE" ? (
                            <div className="space-y-4">
-                              <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">CGPA (Out of 10)</label>
+                              <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">CGPA (Out of 10)</label>
                               <input 
                                   type="number" min="0" max="10" step="0.1"
                                   className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white text-2xl font-black outline-none focus:border-purple-500/50"
@@ -524,8 +524,8 @@ export default function InterviewPage() {
                         ) : (
                            <div className="space-y-4">
                               <div className="flex justify-between items-end">
-                                <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Total Marks</label>
-                                <span className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-widest">Out of {formData[`marks${levelKey}OutOf`]}</span>
+                                <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Total Marks</label>
+                                <span className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-widest">Out of {formData[`marks${levelKey}OutOf`]}</span>
                               </div>
                               <input 
                                   type="number" min="0" max={formData[`marks${levelKey}OutOf`]}
@@ -554,7 +554,7 @@ export default function InterviewPage() {
                           <div className="grid grid-cols-2 gap-4 mt-4 p-4 rounded-2xl bg-white/5 border border-purple-250/20 dark:border-purple-900/20">
                             {['Language', 'English', 'Maths/Bio', 'Physics', 'Chemistry', 'Optional'].map((sub, i) => (
                               <div key={i}>
-                                <label className="text-[9px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest block mb-1">{sub}</label>
+                                <label className="text-[9px] font-black text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest block mb-1">{sub}</label>
                                 <input type="number" min="0" max="100" className="w-full h-10 bg-white/5 rounded-lg px-3 text-gray-900 dark:text-white text-sm font-bold outline-none focus:border-purple-500/50 border border-transparent"
                                   value={(formData.marks12Subjects as any)[`subject${i+1}`]}
                                   onChange={e => updateForm({ marks12Subjects: { ...formData.marks12Subjects, [`subject${i+1}`]: Number(e.target.value) } })}
@@ -566,7 +566,7 @@ export default function InterviewPage() {
                     </div>
 
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Live Percentage</label>
+                        <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Live Percentage</label>
                         <div className={cn("h-40 rounded-3xl border flex flex-col items-center justify-center p-6 text-center transition-all", pColor.bg, pColor.border)}>
                           <span className={cn("text-5xl font-black tabular-nums tracking-tighter", pColor.color)}>
                             {formData[`percentage${levelKey}`]}%
@@ -607,14 +607,14 @@ export default function InterviewPage() {
                 <Sparkles size={14} className="text-indigo-400" />
                 <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">Competitive Edge</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Your Subject Marks</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Your Subject Marks</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 6: We'll calculate your cutoff automatically</p>
             </div>
             <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl">
                 
                 {formData.courseLevel === "PG" ? (
                     <div className="space-y-4 max-w-xl mx-auto">
-                        <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">UG CGPA (Out of 10)</label>
+                        <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">UG CGPA (Out of 10)</label>
                         <input 
                             type="number" step="0.01"
                             className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white text-3xl font-black outline-none focus:border-indigo-500/50 text-center"
@@ -625,7 +625,7 @@ export default function InterviewPage() {
                     </div>
                 ) : formData.manualCutoffMode ? (
                     <div className="space-y-4 max-w-xl mx-auto text-center">
-                        <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Manual Cutoff Mark</label>
+                        <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Manual Cutoff Mark</label>
                         <input 
                             type="number" step="0.01"
                             className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white text-3xl font-black outline-none focus:border-indigo-500/50 text-center"
@@ -640,8 +640,8 @@ export default function InterviewPage() {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="rounded-3xl bg-white/5 border border-purple-250/20 dark:border-purple-900/20 p-6 space-y-3">
                           <div>
-                            <h4 className="font-black text-gray-900 dark:text-gray-900 dark:text-white text-lg">Mathematics</h4>
-                            <p className="text-[10px] font-bold text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest">Out of 100</p>
+                            <h4 className="font-black text-gray-900 dark:text-white text-lg">Mathematics</h4>
+                            <p className="text-[10px] font-bold text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest">Out of 100</p>
                           </div>
                           <input type="number" min="0" max="100" className="w-full h-14 bg-white/5 border border-purple-250/30 dark:border-purple-900/30 rounded-xl px-4 text-gray-900 dark:text-white font-black text-xl outline-none focus:border-indigo-500/50" value={formData.mathsMark} onChange={e => updateForm({ mathsMark: Number(e.target.value) })} />
                           <div className="flex justify-between items-center text-[10px] font-bold">
@@ -651,8 +651,8 @@ export default function InterviewPage() {
                         </div>
                         <div className="rounded-3xl bg-white/5 border border-purple-250/20 dark:border-purple-900/20 p-6 space-y-3">
                           <div>
-                            <h4 className="font-black text-gray-900 dark:text-gray-900 dark:text-white text-lg">Physics</h4>
-                            <p className="text-[10px] font-bold text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest">Out of 100</p>
+                            <h4 className="font-black text-gray-900 dark:text-white text-lg">Physics</h4>
+                            <p className="text-[10px] font-bold text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest">Out of 100</p>
                           </div>
                           <input type="number" min="0" max="100" className="w-full h-14 bg-white/5 border border-purple-250/30 dark:border-purple-900/30 rounded-xl px-4 text-gray-900 dark:text-white font-black text-xl outline-none focus:border-indigo-500/50" value={formData.physicsMark} onChange={e => updateForm({ physicsMark: Number(e.target.value) })} />
                           <div className="flex justify-between items-center text-[10px] font-bold">
@@ -662,8 +662,8 @@ export default function InterviewPage() {
                         </div>
                         <div className="rounded-3xl bg-white/5 border border-purple-250/20 dark:border-purple-900/20 p-6 space-y-3">
                           <div>
-                            <h4 className="font-black text-gray-900 dark:text-gray-900 dark:text-white text-lg">Chemistry</h4>
-                            <p className="text-[10px] font-bold text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest">Out of 100</p>
+                            <h4 className="font-black text-gray-900 dark:text-white text-lg">Chemistry</h4>
+                            <p className="text-[10px] font-bold text-gray-900 dark:text-gray-500 dark:text-slate-400 uppercase tracking-widest">Out of 100</p>
                           </div>
                           <input type="number" min="0" max="100" className="w-full h-14 bg-white/5 border border-purple-250/30 dark:border-purple-900/30 rounded-xl px-4 text-gray-900 dark:text-white font-black text-xl outline-none focus:border-indigo-500/50" value={formData.chemistryMark} onChange={e => updateForm({ chemistryMark: Number(e.target.value) })} />
                           <div className="flex justify-between items-center text-[10px] font-bold">
@@ -691,7 +691,7 @@ export default function InterviewPage() {
                       </div>
                       
                       <div className="text-center">
-                        <button onClick={() => updateForm({ manualCutoffMode: true })} className="text-[11px] font-bold text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:text-white/80 transition-colors">
+                        <button onClick={() => updateForm({ manualCutoffMode: true })} className="text-[11px] font-bold text-gray-900 dark:text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:text-white/80 transition-colors">
                           I know my cutoff directly &rarr;
                         </button>
                       </div>
@@ -699,7 +699,7 @@ export default function InterviewPage() {
                 )}
                 
                 <div className="space-y-4 pt-8 border-t border-purple-250/20 dark:border-purple-900/20">
-                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Analysis Strategy</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Analysis Strategy</label>
                     <div className="grid grid-cols-3 gap-3">
                         {[
                             { val: "-10", label: "Safety", color: "text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/20" },
@@ -750,12 +750,12 @@ export default function InterviewPage() {
                 <Users size={14} className="text-blue-400" />
                 <span className="text-[10px] font-black text-blue-300 uppercase tracking-widest">Demographics</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Social Profile</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Social Profile</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 7: Category and background</p>
             </div>
             <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl">
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Admission Category (Quota)</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Admission Category (Quota)</label>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {QUOTAS.map(q => (
                             <button
@@ -774,7 +774,7 @@ export default function InterviewPage() {
                     </div>
                 </div>
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Religion</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Religion</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                         {RELIGIONS.map(r => (
                             <button
@@ -814,7 +814,7 @@ export default function InterviewPage() {
                 <Wallet size={14} className="text-emerald-400" />
                 <span className="text-[10px] font-black text-emerald-300 uppercase tracking-widest">Financial Alignment</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Budget Policy</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Budget Policy</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 8: Institutional type preference</p>
             </div>
             <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-4 shadow-2xl">
@@ -855,7 +855,7 @@ export default function InterviewPage() {
                 <Sparkles size={14} className="text-indigo-400" />
                 <span className="text-[10px] font-black text-indigo-300 uppercase tracking-widest">AI Synthesis</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter">Ready for Analysis?</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Ready for Analysis?</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 9: Final predictive processing</p>
             </div>
             
@@ -867,7 +867,7 @@ export default function InterviewPage() {
                   <MapPin className="h-24 w-24 text-amber-400 mx-auto relative z-10" />
                 </div>
                 <div className="space-y-4">
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tight">No Colleges Found in {formData.district}</h3>
+                  <h3 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">No Colleges Found in {formData.district}</h3>
                   <p className="text-gray-900 dark:text-gray-600 dark:text-slate-300 font-medium leading-relaxed max-w-md mx-auto text-base">
                     We couldn't find any colleges matching your criteria in <span className="text-amber-400 font-bold">{formData.district} district</span>. 
                     Would you like to explore colleges from other states?
@@ -902,7 +902,7 @@ export default function InterviewPage() {
                   <Sparkles className="h-24 w-24 text-indigo-400 mx-auto animate-pulse relative z-10" />
                 </div>
                 <div className="space-y-3">
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tight">AI Engine Primed</h3>
+                  <h3 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">AI Engine Primed</h3>
                   <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-medium leading-relaxed max-w-xs mx-auto text-sm">
                     Our advanced matching engine is ready to process your academic profile against real colleges with verified fee structures.
                   </p>
@@ -936,7 +936,7 @@ export default function InterviewPage() {
                 <div className="absolute inset-0 bg-teal-500/20 blur-2xl rounded-full" />
                 <Sparkles size={48} className="animate-pulse relative z-10" />
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tighter uppercase">AI Match Analysis</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">AI Match Analysis</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.3em] text-[11px] leading-relaxed max-w-xl mx-auto">
                 Based on your <span className="text-teal-400">{formData.courseLevel} {formData.stream}</span> profile, we discovered <span className="text-indigo-400">{colleges.length} matches</span> tailored to your performance.
               </p>
@@ -1015,7 +1015,7 @@ export default function InterviewPage() {
                     <div className="relative z-10 flex-1 flex flex-col">
                       <div className="flex justify-between items-start gap-6 mb-8">
                         <div className="space-y-2 flex-1 pr-8">
-                          <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 dark:text-gray-900 dark:text-white group-hover:text-indigo-400 transition-colors tracking-tight line-clamp-2 leading-tight">{college.name}</h3>
+                          <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 dark:text-white group-hover:text-indigo-400 transition-colors tracking-tight line-clamp-2 leading-tight">{college.name}</h3>
                           <div className="flex items-center gap-2 text-gray-900 dark:text-gray-500 dark:text-slate-400">
                              <MapPin size={14} className="text-indigo-500" />
                              <span className="text-[10px] font-black uppercase tracking-widest">{college.location}, {college.state}</span>
@@ -1034,7 +1034,7 @@ export default function InterviewPage() {
 
                       <div className="flex flex-wrap gap-2 mb-6">
                         {[college.type, college.level || "UG", `Rank #${college.nirf_rank || "N/A"}`].map((tag, i) => (
-                          <span key={i} className="px-3 py-1 bg-white/50 dark:bg-white/[0.05] rounded-lg text-[9px] font-black text-gray-900 dark:text-gray-900 dark:text-gray-500 dark:text-slate-400 border border-purple-250/20 dark:border-purple-900/20 uppercase tracking-wider">{tag}</span>
+                          <span key={i} className="px-3 py-1 bg-white/50 dark:bg-white/[0.05] rounded-lg text-[9px] font-black text-gray-900 dark:text-gray-500 dark:text-slate-400 border border-purple-250/20 dark:border-purple-900/20 uppercase tracking-wider">{tag}</span>
                         ))}
                       </div>
 
@@ -1087,7 +1087,7 @@ export default function InterviewPage() {
               <div className="max-w-2xl mx-auto mb-8">
                 <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-10 text-center space-y-6">
                   <div className="space-y-2">
-                    <h3 className="text-xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tight">Are you happy with these results?</h3>
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Are you happy with these results?</h3>
                     <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest">
                       Your feedback helps improve our matching accuracy
                     </p>
@@ -1126,7 +1126,7 @@ export default function InterviewPage() {
               <div className="max-w-2xl mx-auto">
                 <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-10 space-y-6">
                   <div className="text-center space-y-2">
-                    <h3 className="text-xl font-black text-gray-900 dark:text-gray-900 dark:text-white tracking-tight">Share Your Results</h3>
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Share Your Results</h3>
                     <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest">
                       Download your match card or share with friends
                     </p>

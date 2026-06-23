@@ -10,6 +10,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        brand: {
+          indigo: '#7F77DD',
+          'indigo-dark': '#534AB7',
+          'indigo-light': '#a89ef8',
+          teal: '#1D9E75',
+          'teal-dark': '#0F6E56',
+          'teal-light': '#5DCAA5',
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

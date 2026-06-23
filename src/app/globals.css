@@ -3,6 +3,35 @@
 @tailwind utilities;
 
 :root {
+  /* Light mode defaults */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f5f3ff;
+  --color-bg-card: #ffffff;
+  --color-bg-card-hover: #f0eeff;
+
+  --color-text-hero-primary: #1a1340;
+  --color-text-hero-secondary: #2d2560;
+  --color-text-body: #4a4370;
+  --color-text-muted: #6b6894;
+  --color-text-label: #7a7399;
+
+  --color-border-card: rgba(127,119,221,0.15);
+  --color-border-button: rgba(127,119,221,0.4);
+
+  --color-btn-ghost-text: #534AB7;
+  --color-btn-ghost-border: #534AB7;
+  --color-btn-ghost-hover-bg: rgba(83,74,183,0.08);
+
+  --color-stat-card-bg: #ffffff;
+  --color-stat-card-border: rgba(127,119,221,0.12);
+  --color-stat-value: #1a1340;
+  --color-stat-label: #6b6894;
+
+  --color-navbar-bg: rgba(255,255,255,0.95);
+  --color-navbar-text: #1a1340;
+  --color-navbar-link: #4a4370;
+  --color-navbar-border: rgba(0,0,0,0.08);
+
   --bg-primary: #f0f4ff;
   --bg-secondary: #e8eeff;
   --bg-card: rgba(255, 255, 255, 0.7);
@@ -21,6 +50,35 @@
 }
 
 .dark {
+  /* Dark mode overrides */
+  --color-bg-primary: #05071a;
+  --color-bg-secondary: #0d1230;
+  --color-bg-card: rgba(255,255,255,0.04);
+  --color-bg-card-hover: rgba(255,255,255,0.07);
+
+  --color-text-hero-primary: rgba(255,255,255,0.97);
+  --color-text-hero-secondary: rgba(255,255,255,0.97);
+  --color-text-body: rgba(255,255,255,0.72);
+  --color-text-muted: rgba(255,255,255,0.55);
+  --color-text-label: rgba(255,255,255,0.50);
+
+  --color-border-card: rgba(255,255,255,0.10);
+  --color-border-button: rgba(255,255,255,0.25);
+
+  --color-btn-ghost-text: rgba(255,255,255,0.9);
+  --color-btn-ghost-border: rgba(255,255,255,0.25);
+  --color-btn-ghost-hover-bg: rgba(255,255,255,0.08);
+
+  --color-stat-card-bg: rgba(255,255,255,0.05);
+  --color-stat-card-border: rgba(255,255,255,0.10);
+  --color-stat-value: rgba(255,255,255,0.95);
+  --color-stat-label: rgba(255,255,255,0.55);
+
+  --color-navbar-bg: rgba(5,7,26,0.95);
+  --color-navbar-text: rgba(255,255,255,0.95);
+  --color-navbar-link: rgba(255,255,255,0.70);
+  --color-navbar-border: rgba(255,255,255,0.08);
+
   --bg-primary: #05071a;
   --bg-secondary: #0a0d24;
   --bg-card: rgba(10, 13, 36, 0.7);
@@ -364,3 +422,5 @@ canvas {
   animation: fadeUpAnim 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+.dark .bg-purple-50 { background-color: rgba(168, 85, 247, 0.1) !important; } .dark .text-gray-950 { color: var(--text-primary) !important; }
+.dark .bg-teal-50, .dark .bg-amber-50, .dark .bg-indigo-50, .dark .bg-blue-50, .dark .bg-gray-100, .dark .bg-gray-250 { background-color: rgba(255, 255, 255, 0.05) !important; } .dark .border-teal-100, .dark .border-amber-100, .dark .border-indigo-150 { border-color: var(--border-color) !important; }
