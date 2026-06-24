@@ -1,18 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { groq } from '@/lib/groq';
 
 export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
-  const key = process.env.OPENROUTER_API_KEY;
-
-  if (!key) {
-    console.error('FATAL: OPENROUTER_API_KEY not set');
-    return NextResponse.json(
-      { error: 'OPENROUTER_API_KEY is not configured in Vercel' },
-      { status: 500 }
-    );
-  }
-
   let body: { answers?: unknown[]; studentName?: string } = {};
   try {
     body = await req.json();
@@ -126,54 +117,19 @@ Replace the 3 stream examples above with the actual best streams
 for ${studentName} based on their interests: ${freqStr}`;
 
   try {
-    console.log('Calling OpenRouter...');
+    console.log('Calling Groq API...');
 
-    const res = await fetch(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${key}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://collegematch-ai.vercel.app',
-          'X-Title': 'CollegeMatch-AI',
-        },
-        body: JSON.stringify({
-          models: [
-            'google/gemma-4-26b-a4b-it:free',
-            'meta-llama/llama-3.3-70b-instruct:free',
-            'poolside/laguna-xs.2:free'
-          ],
-          messages: [{ role: 'user', content: prompt }],
-          max_tokens: 3000,
-          temperature: 0.7,
-        }),
-      }
-    );
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: "system", content: "You output only valid JSON. Do not use markdown blocks." },
+        { role: "user", content: prompt }
+      ],
+      model: "llama3-8b-8192",
+      temperature: 0.7,
+      response_format: { type: "json_object" }
+    });
 
-    const rawText = await res.text();
-    console.log('OpenRouter status:', res.status);
-
-    if (!res.ok) {
-      console.error('OpenRouter error:', res.status, rawText);
-      return NextResponse.json(
-        { error: `OpenRouter ${res.status}: ${rawText}` },
-        { status: 500 }
-      );
-    }
-
-    const data = JSON.parse(rawText);
-    const content: string = data?.choices?.[0]?.message?.content ?? '';
-
-    if (!content) {
-      console.error('Empty content from OpenRouter');
-      return NextResponse.json(
-        { error: 'AI returned empty response' },
-        { status: 500 }
-      );
-    }
-
-    console.log('AI content received, length:', content.length);
+    const content = chatCompletion.choices[0]?.message?.content || "{}";
 
     // Strip markdown fences
     const cleaned = content
@@ -181,20 +137,7 @@ for ${studentName} based on their interests: ${freqStr}`;
       .replace(/```\s*/gi, '')
       .trim();
 
-    // Extract JSON object
-    const start = cleaned.indexOf('{');
-    const end = cleaned.lastIndexOf('}');
-
-    if (start === -1 || end === -1) {
-      console.error('No JSON found in:', cleaned.slice(0, 300));
-      return NextResponse.json(
-        { error: 'AI did not return valid JSON' },
-        { status: 500 }
-      );
-    }
-
-    const jsonStr = cleaned.slice(start, end + 1);
-    const parsed = JSON.parse(jsonStr);
+    const parsed = JSON.parse(cleaned);
 
     console.log('Successfully parsed AI response');
     return NextResponse.json({ results: parsed });
