@@ -30,7 +30,7 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [pendingLeads, setPendingLeads] = useState(0);
   const [scrolled, setScrolled] = useState(false);
-  const { theme, setTheme, systemTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export function Navbar() {
   }, []);
 
   const toggleTheme = () => {
-    const currentTheme = theme === "system" ? systemTheme : theme;
+    const currentTheme = resolvedTheme;
     const next = currentTheme === "light" ? "dark" : "light";
     setTheme(next);
   };
@@ -95,7 +95,7 @@ export function Navbar() {
 
   const isAdmin = isAdminEmail(user?.email);
 
-  const isDark = theme === "dark" || (theme === "system" && typeof window !== 'undefined' && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const isDark = mounted && resolvedTheme === "dark";
 
   return (
     <nav style={{
@@ -109,7 +109,7 @@ export function Navbar() {
       zIndex: 100,
       backdropFilter: 'blur(24px)',
       WebkitBackdropFilter: 'blur(24px)',
-      borderBottom: isDark ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.05)',
+      borderBottom: isDark ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.08)',
       background: isDark
         ? 'rgba(5,7,26,0.92)'
         : 'rgba(255,255,255,0.92)',
@@ -136,7 +136,7 @@ export function Navbar() {
           <>
             <button onClick={() => handleNavClick("how-it-works")} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 400, background: 'none', border: 'none', cursor: 'pointer' }}>How it works</button>
             <button onClick={() => handleNavClick("features")} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 400, background: 'none', border: 'none', cursor: 'pointer' }}>Features</button>
-            <Link href="/cutoff-calculator" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: pathname === '/cutoff-calculator' ? 600 : 400 }}>Cutoff</Link>
+            <Link href="/cutoff-calculator" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === '/cutoff-calculator' ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === '/cutoff-calculator' ? 600 : 400, borderBottom: pathname === '/cutoff-calculator' ? '2px solid #7F77DD' : 'none' }}>Cutoff</Link>
             <DropdownMenu>
               <DropdownMenuTrigger style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 2026 Resources <ChevronDown size={14} />
@@ -149,7 +149,7 @@ export function Navbar() {
                 <DropdownMenuItem asChild><Link href="/parent-guide" className="cursor-pointer">Parent Guide</Link></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link href="/contact" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: pathname === '/contact' ? 600 : 400 }}>Contact</Link>
+            <Link href="/contact" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === '/contact' ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === '/contact' ? 600 : 400, borderBottom: pathname === '/contact' ? '2px solid #7F77DD' : 'none' }}>Contact</Link>
           </>
         ) : (
           <>
@@ -164,7 +164,7 @@ export function Navbar() {
               { label: 'Review', href: '/testimonial' },
               { label: 'History', href: '/history' }
             ].map(link => (
-              <Link key={link.href} href={link.href} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: pathname === link.href ? 600 : 400 }}>
+              <Link key={link.href} href={link.href} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === link.href ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === link.href ? 600 : 400, borderBottom: pathname === link.href ? '2px solid #7F77DD' : 'none' }}>
                 {link.label}
               </Link>
             ))}
@@ -180,7 +180,7 @@ export function Navbar() {
                 <DropdownMenuItem asChild><Link href="/parent-guide" className="cursor-pointer w-full">Parent Guide</Link></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link href="/contact" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: pathname === '/contact' ? 600 : 400 }}>Contact</Link>
+            <Link href="/contact" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === '/contact' ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === '/contact' ? 600 : 400, borderBottom: pathname === '/contact' ? '2px solid #7F77DD' : 'none' }}>Contact</Link>
           </>
         )}
       </div>
@@ -188,7 +188,7 @@ export function Navbar() {
       {/* RIGHT — Actions */}
       <div style={{ display:'flex', alignItems:'center', gap:'12px', flexShrink:0 }}>
         {mounted && (
-          <button onClick={toggleTheme} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', color: isDark ? 'white' : '#1a1340', background: 'none', border: 'none', cursor: 'pointer' }} aria-label="Toggle theme">
+          <button onClick={toggleTheme} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', color: isDark ? 'rgba(255,255,255,0.7)' : '#4a4370', background: 'none', border: 'none', cursor: 'pointer' }} aria-label="Toggle theme">
             {isDark ? <Moon size={16} /> : <Sun size={16} />}
           </button>
         )}

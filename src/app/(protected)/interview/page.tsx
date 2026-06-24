@@ -24,8 +24,8 @@ import ShareCard from "@/components/ShareCard";
 
 const UG_STREAMS = ["Engineering", "Medical", "Arts & Science", "Commerce", "Law", "Agriculture", "Architecture", "Pharmacy", "Nursing", "Education", "Hotel Management", "Design", "MBA (Integrated)", "Other"];
 const PG_STREAMS = ["ME/MTech", "MD/MS", "MSc", "MA", "MBA", "MCA", "LLM", "MPharm", "MEd", "Other"];
-const QUOTAS = ["General", "OBC", "MBC", "BC", "SC", "ST", "NRI", "Management"];
-const RELIGIONS = ["Hindu", "Muslim", "Christian", "Sikh", "Jain", "Other"];
+const QUOTAS = ["General", "OBC", "SC", "ST", "EWS"];
+const RELIGIONS = ["Hindu", "Muslim", "Christian", "Sikh", "Buddhist", "Jain", "Other"];
 const BOARDS = ["State Board", "CBSE", "ICSE", "IGCSE", "Other"];
 
 export default function InterviewPage() {
@@ -420,7 +420,7 @@ export default function InterviewPage() {
                   <MapPin size={240} className="text-amber-500" />
                 </div>
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Current State</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">College State</label>
                     <select 
                         className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
                         value={formData.state}

@@ -101,7 +101,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <meta name="application-name" content="CollegeMatch AI" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

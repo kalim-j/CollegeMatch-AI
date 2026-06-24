@@ -1,31 +1,10 @@
-'use client';
+import re
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { db } from '@/lib/firebase';
-import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import StreamResultCard from '@/components/StreamResultCard';
-import DiscoveryLoadingScreen from '@/components/DiscoveryLoadingScreen';
-import { DiscoveryResult, StreamRecommendation } from '@/types/discovery';
-import Logo from '@/components/Logo';
-import { motion, AnimatePresence } from 'framer-motion';
+with open(r'd:\CollegeMatch-AI\src\app\discover\page.tsx', 'r', encoding='utf-8') as f:
+    code = f.read()
 
-// Category colour palette — used for accents on both themes
-const catColor: Record<string, { from: string; to: string; shadow: string }> = {
-  interest:    { from: '#7F77DD', to: '#a89ef8', shadow: 'rgba(127,119,221,0.35)' },
-  strength:    { from: '#1D9E75', to: '#5DCAA5', shadow: 'rgba(29,158,117,0.35)' },
-  personality: { from: '#3b82f6', to: '#60a5fa', shadow: 'rgba(59,130,246,0.35)' },
-  values:      { from: '#f59e0b', to: '#fbbf24', shadow: 'rgba(245,158,11,0.35)' },
-  lifestyle:   { from: '#ec4899', to: '#f472b6', shadow: 'rgba(236,72,153,0.35)' },
-  goal:        { from: '#8b5cf6', to: '#a78bfa', shadow: 'rgba(139,92,246,0.35)' },
-};
-
-export default function DiscoverPage() {
-  const router = useRouter();
-  const { user } = useAuth();
-
-  const [currentStep, setCurrentStep] = useState(0);
+# We'll replace the state declarations
+state_repl = """  const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<any[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<any>(null);
   const [loadingQuestion, setLoadingQuestion] = useState(false);
@@ -36,15 +15,12 @@ export default function DiscoverPage() {
   const [results, setResults] = useState<DiscoveryResult | null>(null);
   const [discoveryId, setDiscoveryId] = useState<string | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
-  const [direction, setDirection] = useState(1);
+  const [direction, setDirection] = useState(1);"""
 
-  useEffect(() => {
-    if (user === null) router.push('/login?redirect=/discover');
-  }, [user, router]);
+code = re.sub(r'  const \[currentStep, setCurrentStep\] = useState\(0\);.*?  const \[direction, setDirection\] = useState\(1\);', state_repl, code, flags=re.DOTALL)
 
-  if (!user) return null;
-
-  const handleStart = () => {
+# Handle Start function
+start_repl = """  const handleStart = () => {
     setDirection(1); 
     setCurrentStep(1);
     setCurrentQuestion({
@@ -56,9 +32,15 @@ export default function DiscoverPage() {
         { id: "other", label: "Other", icon: "✍️" }
       ]
     });
-  };
+  };"""
 
-  const handleOptionSelect = async (optionId: string, label: string) => {
+code = re.sub(r'  const handleStart = \(\) => \{ setDirection\(1\); setCurrentStep\(1\); \};', start_repl, code)
+
+# We need to replace handleOptionSelect and handleNext entirely, since auto-advance replaces handleNext for most steps.
+# According to BUG 3: Stream selection auto-advance (remove Continue)
+# "On the Stream selection screens (Questions), as soon as the user selects an option (or types "Other" and hits Enter), it should auto-advance to the next question."
+
+funcs_repl = """  const handleOptionSelect = async (optionId: string, label: string) => {
     setSelectedOption(optionId);
     
     if (optionId === 'other') {
@@ -128,154 +110,15 @@ export default function DiscoverPage() {
         setCurrentStep(10);
       }
     }
-  };
+  };"""
 
-  const handleBack = () => {
-    setDirection(-1);
-    setCurrentStep(prev => (prev > 1 ? prev - 1 : 0));
-  };
+code = re.sub(r'  const handleOptionSelect = .*?  const handleNext = async \(\) => \{.*?\n  \};\n', funcs_repl + '\n', code, flags=re.DOTALL)
 
-  const handleSelectStream = async (stream: StreamRecommendation) => {
-    if (!discoveryId) return;
-    await setDoc(doc(db, `discoveries/${user.uid}/sessions`, discoveryId), { selectedStream: stream.stream }, { merge: true });
-    sessionStorage.setItem('selectedStream', stream.stream);
-    router.push(`/interview?stream=${encodeURIComponent(stream.stream)}&fromDiscover=true`);
-  };
+# Remove discoveryQuestions import if it's there
+code = re.sub(r"import \{ discoveryQuestions \} from '@/data/discoveryQuestions';\n", "", code)
 
-  const handleExploreStream = (stream: StreamRecommendation) => {
-    router.push(`/stream/${stream.stream.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`);
-  };
-
-  const shareResult = () => {
-    if (!results) return;
-    const text = `I just used CollegeMatch-AI and found my perfect stream: ${results.streams[0].stream}! Find yours at ${window.location.origin}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-  };
-
-  // ── CSS variable shorthands ──────────────────────────────────────────────────
-  const bgPage    = 'var(--bg-primary)';
-  const bgCard    = 'var(--bg-card)';
-  const bgCardH   = 'var(--bg-card-hover)';
-  const border    = 'var(--border-color)';
-  const borderH   = 'var(--border-hover)';
-  const txtPri    = 'var(--text-primary)';
-  const txtMuted  = 'var(--text-muted)';
-  const txtSec    = 'var(--text-secondary)';
-
-  // ── WELCOME SCREEN ──────────────────────────────────────────────────────────
-  if (currentStep === 0) {
-    return (
-      <div style={{ minHeight: '100vh', background: bgPage, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '-15%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(127,119,221,0.1) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', bottom: '-15%', left: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(29,158,117,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-        <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          style={{ maxWidth: 580, width: '100%', background: bgCard, backdropFilter: 'blur(24px)', border: `1px solid ${border}`, borderRadius: 28, padding: '52px 44px', textAlign: 'center', boxShadow: '0 24px 64px rgba(0,0,0,0.08)', position: 'relative', zIndex: 10 }}
-        >
-          <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }} style={{ marginBottom: 28, display: 'flex', justifyContent: 'center' }}>
-            <Logo size="lg" showTagline={true} />
-          </motion.div>
-
-          <h1 style={{ fontSize: 'clamp(24px, 5vw, 38px)', fontWeight: 900, color: txtPri, letterSpacing: '-0.03em', lineHeight: 1.15, marginBottom: 12 }}>
-            Let&apos;s find your{' '}
-            <span style={{ background: 'linear-gradient(90deg, #7F77DD, #5DCAA5)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              perfect stream
-            </span>
-          </h1>
-
-          <p style={{ fontSize: 16, color: txtMuted, marginBottom: 16, lineHeight: 1.7, maxWidth: 420, margin: '0 auto 16px' }}>
-            You just finished 12th. I&apos;ll ask <strong style={{ color: txtPri }}>10 simple questions</strong> to find the right path for you. No right or wrong — just be honest.
-          </p>
-
-          <div style={{ marginBottom: 28, padding: '12px 20px', borderRadius: 14, background: 'rgba(29,158,117,0.08)', border: '1px solid rgba(29,158,117,0.2)', display: 'inline-block' }}>
-            <p style={{ color: '#1D9E75', fontWeight: 700, margin: 0, fontSize: 14 }}>
-              Ready, {user.displayName?.split(' ')[0] || 'there'}? Let&apos;s figure this out 🎯
-            </p>
-          </div>
-
-          <motion.button
-            onClick={handleStart}
-            whileHover={{ scale: 1.03, boxShadow: '0 12px 36px rgba(29,158,117,0.3)' }}
-            whileTap={{ scale: 0.97 }}
-            style={{ width: '100%', padding: '15px 32px', background: 'linear-gradient(135deg, #1D9E75, #0F6E56)', border: 'none', borderRadius: 16, color: '#fff', fontSize: 17, fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}
-          >
-            Let&apos;s go <i className="ti ti-arrow-right" />
-          </motion.button>
-
-          <p style={{ marginTop: 14, fontSize: 12, color: txtMuted, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-            <i className="ti ti-clock" /> Takes about 3 minutes · Completely free
-          </p>
-        </motion.div>
-      </div>
-    );
-  }
-
-  // ── LOADING ──────────────────────────────────────────────────────────────────
-  if (currentStep === 11) return <DiscoveryLoadingScreen />;
-
-  // ── RESULTS ──────────────────────────────────────────────────────────────────
-  if (currentStep === 12 && results) {
-    return (
-      <div style={{ minHeight: '100vh', background: bgPage, padding: '48px 16px 80px' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto' }}>
-
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', marginBottom: 40 }}>
-            <Logo size="md" showTagline={false} />
-            <h1 style={{ fontSize: 'clamp(20px, 4vw, 32px)', fontWeight: 900, color: txtPri, marginTop: 20, marginBottom: 8 }}>
-              Here&apos;s what we found about you,{' '}
-              <span style={{ background: 'linear-gradient(90deg, #7F77DD, #5DCAA5)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                {user.displayName?.split(' ')[0] || 'you'}
-              </span>
-            </h1>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            style={{ background: bgCard, backdropFilter: 'blur(20px)', border: `1px solid ${border}`, borderTop: '4px solid #5DCAA5', borderRadius: 20, padding: '28px 32px', marginBottom: 32 }}
-          >
-            <p style={{ color: txtMuted, fontStyle: 'italic', marginBottom: 10, fontSize: 14 }}>{results.overall_personality}</p>
-            <p style={{ color: txtPri, marginBottom: 16, lineHeight: 1.7 }}>{results.strength_summary}</p>
-            <div style={{ padding: '12px 16px', borderRadius: 12, background: 'rgba(127,119,221,0.08)', border: '1px solid rgba(127,119,221,0.2)' }}>
-              <p style={{ color: txtSec, fontWeight: 500, margin: 0 }}>{results.encouragement}</p>
-            </div>
-          </motion.div>
-
-          <h3 style={{ fontSize: 20, fontWeight: 800, color: txtPri, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <i className="ti ti-crown" style={{ color: '#FBBF24' }} /> Your Top Recommendations
-          </h3>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {results.streams.map((stream, idx) => (
-              <motion.div key={idx} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 + idx * 0.1 }}>
-                <StreamResultCard stream={stream} onSelect={() => handleSelectStream(stream)} onExplore={() => handleExploreStream(stream)} />
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-            style={{ marginTop: 48, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}
-          >
-            <button
-              onClick={() => { setAnswers({}); setDirection(1); setCurrentStep(1); }}
-              style={{ padding: '12px 24px', borderRadius: 12, border: `1px solid ${border}`, background: bgCard, color: txtMuted, fontWeight: 600, cursor: 'pointer', fontSize: 14 }}
-            >
-              Not sure? Retake the quiz
-            </button>
-            <button
-              onClick={shareResult}
-              style={{ padding: '12px 24px', borderRadius: 12, border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.06)', color: '#16a34a', fontWeight: 600, cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', gap: 8 }}
-            >
-              <i className="ti ti-brand-whatsapp" /> Share my result
-            </button>
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
-
-  // ── QUIZ SCREEN (Steps 1–10) ─────────────────────────────────────────────────
+# Update the render portion for Step 1-10
+render_repl = """  // ── QUIZ SCREEN (Steps 1–10) ─────────────────────────────────────────────────
   const progress = (currentStep / 10) * 100;
   const cat = { from: '#7F77DD', to: '#a89ef8', shadow: 'rgba(127,119,221,0.35)' };
 
@@ -459,4 +302,10 @@ export default function DiscoverPage() {
       </div>
     </div>
   );
-}
+}"""
+
+code = re.sub(r'  // ── QUIZ SCREEN \(Steps 1–10\) ─────────────────────────────────────────────────.*\}', render_repl, code, flags=re.DOTALL)
+
+with open(r'd:\CollegeMatch-AI\src\app\discover\page.tsx', 'w', encoding='utf-8') as f:
+    f.write(code)
+
