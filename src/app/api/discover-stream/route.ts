@@ -46,7 +46,7 @@ ${rawAnswersStr}
 Their explicit stream interests (based on predefined options they picked):
 ${freqStr || 'None explicit'}
 
-Recommend exactly 3 streams. Return ONLY raw JSON — no markdown,
+Recommend up to 3 streams that genuinely match their interests. If no streams genuinely match (e.g. they provided joke answers or contradictory information), return an empty array for streams []. Return ONLY raw JSON — no markdown,
 no backticks, no explanation. Start with { immediately.
 
 {
@@ -71,49 +71,11 @@ no backticks, no explanation. Start with { immediately.
       "inspirational_quote": "The computer was born to solve problems that did not exist before.",
       "famous_people": ["Sundar Pichai", "Satya Nadella", "N. R. Narayana Murthy"],
       "next_step": "Register for JEE Main at jeemain.nta.nic.in this week"
-    },
-    {
-      "rank": 2,
-      "stream": "Medicine / MBBS",
-      "short_name": "Medical",
-      "match_score": 82,
-      "why_fits": "why this fits",
-      "career_paths": ["Doctor", "Surgeon", "Radiologist",
-        "Psychiatrist", "Medical Researcher"],
-      "top_companies": ["AIIMS", "Apollo", "Fortis",
-        "Manipal Hospitals", "Government hospitals"],
-      "average_salary": "₹6L–₹25L per year",
-      "course_duration": "5.5 years MBBS",
-      "difficulty_level": "Very competitive",
-      "entrance_exams": ["NEET UG"],
-      "best_for_personality": "Empathetic people who want to heal others",
-      "inspirational_quote": "Wherever the art of medicine is loved, there is also a love of humanity.",
-      "famous_people": ["Dr. APJ Abdul Kalam", "Devi Shetty", "Naresh Trehan"],
-      "next_step": "Start NEET preparation with Biology focus immediately"
-    },
-    {
-      "rank": 3,
-      "stream": "Commerce / Business",
-      "short_name": "BCom / BBA",
-      "match_score": 74,
-      "why_fits": "why this fits",
-      "career_paths": ["CA", "Business Analyst",
-        "Banker", "Entrepreneur", "Financial Advisor"],
-      "top_companies": ["Deloitte", "KPMG", "HDFC Bank",
-        "Reliance", "Tata Group"],
-      "average_salary": "₹4L–₹15L per year",
-      "course_duration": "3 years BCom or BBA",
-      "difficulty_level": "Easy to get in",
-      "entrance_exams": ["CUET", "IPMAT", "SET"],
-      "best_for_personality": "Organised minds who love numbers and strategy",
-      "inspirational_quote": "Business opportunities are like buses, there is always another one coming.",
-      "famous_people": ["Ratan Tata", "Mukesh Ambani", "Kiran Mazumdar-Shaw"],
-      "next_step": "Research BCom colleges in your state and check CUET dates"
     }
   ]
 }
 
-Replace the 3 stream examples above with the actual best streams
+Replace the 1 stream example above with the actual best streams (up to 3)
 for ${studentName} based on their interests: ${freqStr}`;
 
   try {
@@ -124,7 +86,7 @@ for ${studentName} based on their interests: ${freqStr}`;
         { role: "system", content: "You output only valid JSON. Do not use markdown blocks." },
         { role: "user", content: prompt }
       ],
-      model: "llama3-8b-8192",
+      model: "llama-3.1-8b-instant",
       temperature: 0.7,
       response_format: { type: "json_object" }
     });

@@ -236,11 +236,27 @@ export default function DiscoverPage() {
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {results.streams.map((stream, idx) => (
-              <motion.div key={idx} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 + idx * 0.1 }}>
-                <StreamResultCard stream={stream} onSelect={() => handleSelectStream(stream)} onExplore={() => handleExploreStream(stream)} />
+            {results.streams && results.streams.length > 0 ? (
+              results.streams.map((stream, idx) => (
+                <motion.div key={idx} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 + idx * 0.1 }}>
+                  <StreamResultCard stream={stream} onSelect={() => handleSelectStream(stream)} onExplore={() => handleExploreStream(stream)} />
+                </motion.div>
+              ))
+            ) : (
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                style={{ padding: '32px 24px', textAlign: 'center', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 16 }}>
+                <i className="ti ti-alert-circle" style={{ fontSize: 32, color: '#ef4444', marginBottom: 12, display: 'inline-block' }} />
+                <h4 style={{ color: txtPri, fontSize: 18, fontWeight: 700, marginBottom: 8 }}>No perfect stream match found</h4>
+                <p style={{ color: txtMuted, fontSize: 14, lineHeight: 1.6, maxWidth: 400, margin: '0 auto' }}>
+                  Based on your unique answers, we couldn't confidently recommend a traditional stream. You might have very diverse interests, or some of your answers were contradictory!
+                </p>
+                <button
+                  onClick={() => { setAnswers([]); setDirection(1); setCurrentStep(1); }}
+                  style={{ marginTop: 20, padding: '10px 20px', borderRadius: 10, background: '#ef4444', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+                  Retake the Quiz
+                </button>
               </motion.div>
-            ))}
+            )}
           </div>
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
