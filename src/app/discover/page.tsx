@@ -258,7 +258,7 @@ export default function DiscoverPage() {
             style={{ marginTop: 48, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}
           >
             <button
-              onClick={() => { setAnswers({}); setDirection(1); setCurrentStep(1); }}
+              onClick={() => { setAnswers([]); setDirection(1); setCurrentStep(1); }}
               style={{ padding: '12px 24px', borderRadius: 12, border: `1px solid ${border}`, background: bgCard, color: txtMuted, fontWeight: 600, cursor: 'pointer', fontSize: 14 }}
             >
               Not sure? Retake the quiz
