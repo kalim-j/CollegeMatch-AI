@@ -1,74 +1,28 @@
-'use client';
-import { useState } from 'react';
-import Link from 'next/link';
-import ScrollReveal3D from '@/components/ScrollReveal3D';
-
 export default function LoanCalculatorPage() {
-  const [amount, setAmount] = useState(800000);
-  
-  const calculateEMI = (principal: number, rate: number, years: number) => {
-    const r = rate / 12 / 100;
-    const n = years * 12;
-    if (r === 0) return principal / n;
-    const emi = (principal * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-    return Math.round(emi);
-  };
-
-  const rates = [
-    { label: 'Govt Bank (SBI/PNB)', rate: 8.5, color: 'text-emerald-400' },
-    { label: 'Private Bank (HDFC/ICICI)', rate: 11.0, color: 'text-amber-400' },
-    { label: 'NBFC (Avanse/Credila)', rate: 14.0, color: 'text-rose-400' },
-  ];
-
   return (
-    <div className="bg-[#05071a] min-h-screen text-white pt-24 pb-12 px-4 font-sans overflow-hidden">
-      <div className="max-w-5xl mx-auto">
-        <ScrollReveal3D direction="up">
-          <Link href="/" className="text-[#a89ef8] text-sm font-bold hover:underline mb-8 inline-block">&larr; Back to Home</Link>
-          <h1 className="text-4xl sm:text-5xl font-black mb-6 text-3d">Education Loan Calculator</h1>
-          <p className="text-[rgba(255,255,255,0.7)] text-lg mb-12">Compare EMI options across Government banks, Private banks, and NBFCs.</p>
-        </ScrollReveal3D>
+    <div className="bg-white dark:bg-[#05071a] min-h-screen pt-32 pb-24 px-4 relative overflow-hidden transition-colors duration-300">
+      <div className="max-w-4xl mx-auto text-center relative z-10">
+        <h1 className="text-4xl md:text-6xl font-black mb-6 text-[#1a1340] dark:text-white">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#7F77DD] to-[#1D9E75]">Loan</span> Calculator
+        </h1>
+        <p className="text-[#5a5380] dark:text-white/60 text-lg md:text-xl max-w-2xl mx-auto mb-16">
+          Plan your educational finances with our advanced 2026 loan predictor.
+        </p>
 
-        <ScrollReveal3D direction="scale">
-          <div className="glass-3d p-8 mb-12">
-            <label className="block text-sm font-bold text-white/60 mb-4">Total Loan Amount (₹)</label>
-            <input 
-              type="range" 
-              min="100000" 
-              max="3000000" 
-              step="50000" 
-              value={amount} 
-              onChange={e => setAmount(Number(e.target.value))}
-              className="w-full accent-[#7F77DD] mb-4"
-            />
-            <div className="text-4xl font-black text-[#a89ef8]">₹{amount.toLocaleString('en-IN')}</div>
+        <div className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.03)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.1)] backdrop-blur-xl rounded-3xl p-12 shadow-2xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4">
+             <span className="px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-widest border border-indigo-500/20">
+               Coming Soon
+             </span>
           </div>
-        </ScrollReveal3D>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {rates.map((r, i) => (
-            <ScrollReveal3D key={i} direction="up" delay={i * 100}>
-              <div className="glass-3d p-6 h-full border-t-2 border-t-white/10 hover:border-t-[#7F77DD] transition-colors">
-                <h3 className="font-bold text-lg mb-2">{r.label}</h3>
-                <div className={`text-3xl font-black ${r.color} mb-6`}>{r.rate}% <span className="text-sm font-normal text-white/50">p.a.</span></div>
-                
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-white/60">5 Years</span>
-                    <span className="font-bold">₹{calculateEMI(amount, r.rate, 5).toLocaleString('en-IN')}/mo</span>
-                  </div>
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-white/60">7 Years</span>
-                    <span className="font-bold">₹{calculateEMI(amount, r.rate, 7).toLocaleString('en-IN')}/mo</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-white/60">10 Years</span>
-                    <span className="font-bold">₹{calculateEMI(amount, r.rate, 10).toLocaleString('en-IN')}/mo</span>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal3D>
-          ))}
+          <div className="w-20 h-20 mx-auto bg-[rgba(127,119,221,0.1)] dark:bg-white/5 rounded-2xl flex items-center justify-center mb-8 border border-[rgba(127,119,221,0.2)] dark:border-white/10 group-hover:scale-110 transition-transform duration-500">
+            <span className="text-4xl">💰</span>
+          </div>
+          <h2 className="text-2xl font-bold text-[#1a1340] dark:text-white mb-4">Under Development</h2>
+          <p className="text-[#5a5380] dark:text-white/40">
+            Our research team is currently compiling the latest data and regulations for the 2026 admissions cycle.
+            Check back in a few weeks!
+          </p>
         </div>
       </div>
     </div>

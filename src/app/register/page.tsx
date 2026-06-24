@@ -162,15 +162,15 @@ export default function RegisterPage() {
           transition={{ duration: 0.8 }}
           className="w-full max-w-[480px] mx-auto"
         >
-          <div className="glass-card p-10 md:p-12 space-y-10 border-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
+          <div className="bg-white dark:bg-[rgba(13,18,48,0.95)] border border-[rgba(127,119,221,0.15)] dark:border-[rgba(127,119,221,0.25)] backdrop-blur-xl shadow-2xl p-10 md:p-12 space-y-10 rounded-3xl w-full mx-auto">
             <div className="space-y-2 text-center lg:text-left">
               <div className="mb-6 lg:hidden flex justify-center">
                 <Logo size="md" showTagline={false} theme="dark" />
               </div>
-              <h2 className="text-3xl font-black text-white tracking-tight">
+              <h2 className="text-[#1a1340] dark:text-white font-bold text-3xl tracking-tight">
                 {showOTP ? "Verify Email" : "Create Account"}
               </h2>
-              <p className="text-white/40 font-medium">
+              <p className="text-[#5a5380] dark:text-[rgba(255,255,255,0.6)] font-medium text-sm">
                 {showOTP ? `We sent a code to ${email}` : "Join India's smartest admission engine"}
               </p>
             </div>
@@ -179,7 +179,7 @@ export default function RegisterPage() {
               <div className="space-y-8">
                 <button
                   onClick={handleGoogleLogin}
-                  className="w-full h-14 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 active:scale-[0.98] rounded-2xl flex items-center justify-center gap-3 transition-all group"
+                  className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.08)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.12)] text-[#1a1340] dark:text-white rounded-xl h-14 w-full font-medium flex items-center justify-center gap-3 hover:bg-[rgba(127,119,221,0.1)] dark:hover:bg-[rgba(255,255,255,0.12)] transition-all duration-200 text-sm active:scale-[0.98]"
                 >
                   <svg className="h-5 w-5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -191,51 +191,51 @@ export default function RegisterPage() {
                 </button>
 
                 <div className="relative flex items-center py-2">
-                  <div className="flex-grow border-t border-white/5"></div>
-                  <span className="flex-shrink mx-4 text-[10px] font-black text-white/20 uppercase tracking-widest">or email</span>
-                  <div className="flex-grow border-t border-white/5"></div>
+                  <div className="flex-grow border-t border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.1)]"></div>
+                  <span className="flex-shrink mx-4 text-xs text-[#7a7399] dark:text-[rgba(255,255,255,0.35)] font-semibold tracking-widest uppercase">or email</span>
+                  <div className="flex-grow border-t border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.1)]"></div>
                 </div>
 
                 <form onSubmit={handleSendOTP} className="space-y-5">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">Full Name</label>
+                    <label className="text-[#534AB7] dark:text-[#a89ef8] text-xs font-semibold tracking-widest uppercase mb-2 block">Full Name</label>
                     <div className="relative">
-                      <User className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399] dark:text-[rgba(255,255,255,0.35)]" size={18} />
                       <input
                         type="text"
                         required
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Your name"
-                        className="w-full h-14 bg-white/5 border border-white/10 focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl pl-12 pr-5 text-white outline-none transition-all placeholder:text-white/20 font-medium"
+                        className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(127,119,221,0.25)] text-[#1a1340] dark:text-white placeholder:text-[#7a7399] dark:placeholder:text-[rgba(255,255,255,0.35)] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] dark:focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">Email Address</label>
+                    <label className="text-[#534AB7] dark:text-[#a89ef8] text-xs font-semibold tracking-widest uppercase mb-2 block">Email Address</label>
                     <div className="relative">
-                      <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399] dark:text-[rgba(255,255,255,0.35)]" size={18} />
                       <input
                         type="email"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="email@example.com"
-                        className="w-full h-14 bg-white/5 border border-white/10 focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl pl-12 pr-5 text-white outline-none transition-all placeholder:text-white/20 font-medium"
+                        className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(127,119,221,0.25)] text-[#1a1340] dark:text-white placeholder:text-[#7a7399] dark:placeholder:text-[rgba(255,255,255,0.35)] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] dark:focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">Password</label>
+                    <label className="text-[#534AB7] dark:text-[#a89ef8] text-xs font-semibold tracking-widest uppercase mb-2 block">Password</label>
                     <div className="relative">
-                      <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399] dark:text-[rgba(255,255,255,0.35)]" size={18} />
                       <input
                         type="password"
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full h-14 bg-white/5 border border-white/10 focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 rounded-2xl pl-12 pr-5 text-white outline-none transition-all placeholder:text-white/20 font-medium"
+                        className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(127,119,221,0.25)] text-[#1a1340] dark:text-white placeholder:text-[#7a7399] dark:placeholder:text-[rgba(255,255,255,0.35)] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] dark:focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
                       />
                     </div>
                   </div>
@@ -243,7 +243,7 @@ export default function RegisterPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="btn-primary w-full h-16 text-lg group relative overflow-hidden flex items-center justify-center gap-3"
+                    className="w-full py-3.5 rounded-xl font-bold text-white text-sm bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg flex items-center justify-center gap-2 h-14"
                   >
                     {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <span>Verify Email</span>}
                     {!loading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
@@ -252,36 +252,36 @@ export default function RegisterPage() {
               </div>
             ) : (
               <div className="space-y-8">
-                <div className="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl text-center">
-                  <p className="text-white font-bold text-sm">Enter 6-digit code</p>
-                  <p className="text-white/40 text-[11px] mt-1 uppercase tracking-widest font-medium">Sent to your inbox</p>
+                <div className="p-4 bg-[#f0eeff] dark:bg-indigo-500/10 border border-[rgba(127,119,221,0.2)] dark:border-indigo-500/20 rounded-2xl text-center">
+                  <p className="text-[#1a1340] dark:text-white font-bold text-sm">Enter 6-digit code</p>
+                  <p className="text-[#7a7399] dark:text-white/40 text-[11px] mt-1 uppercase tracking-widest font-medium">Sent to your inbox</p>
                 </div>
                 <input
                   type="text"
                   maxLength={6}
                   value={otpInput}
                   onChange={(e) => setOtpInput(e.target.value)}
-                  className="w-full h-20 bg-white/5 border border-white/10 focus:border-indigo-500/50 rounded-2xl text-center text-3xl font-black text-white tracking-[12px] outline-none"
+                  className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(127,119,221,0.25)] text-[#1a1340] dark:text-white placeholder:text-[#7a7399] dark:placeholder:text-[rgba(255,255,255,0.35)] w-full h-20 focus:border-[rgba(127,119,221,0.6)] dark:focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] rounded-2xl text-center text-3xl font-black tracking-[12px] outline-none transition-all"
                 />
                 <button
                   onClick={handleVerifyAndRegister}
                   disabled={verifying}
-                  className="btn-primary w-full h-16 text-lg shadow-[0_0_30px_rgba(34,197,94,0.2)] bg-gradient-to-br from-green-500 to-green-600 border-green-400/30"
+                  className="w-full py-3.5 rounded-xl font-bold text-white text-sm bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg flex items-center justify-center gap-2 h-14"
                 >
                   {verifying ? <Loader2 className="h-6 w-6 animate-spin mx-auto" /> : "Verify & Complete"}
                 </button>
                 <button 
                   onClick={() => setShowOTP(false)}
-                  className="w-full text-center text-sm font-bold text-white/30 hover:text-white transition-colors"
+                  className="w-full text-center text-sm font-bold text-[#5a5380] dark:text-white/30 hover:text-[#1a1340] dark:hover:text-white transition-colors"
                 >
                   Edit information
                 </button>
               </div>
             )}
 
-            <p className="text-center text-sm font-medium text-white/30">
+            <p className="text-center text-sm font-medium text-[#5a5380] dark:text-[rgba(255,255,255,0.55)]">
               Already have an account?{" "}
-              <Link href="/login" className="text-white hover:text-indigo-400 transition-colors font-bold ml-1">
+              <Link href="/login" className="text-[#534AB7] dark:text-[#a89ef8] hover:opacity-80 transition-colors font-bold ml-1">
                 Sign in
               </Link>
             </p>

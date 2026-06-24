@@ -1,38 +1,28 @@
-'use client';
-import Link from 'next/link';
-import ScrollReveal3D from '@/components/ScrollReveal3D';
-
 export default function FirstGenPage() {
   return (
-    <div className="bg-[#05071a] min-h-screen text-white pt-24 pb-12 px-4 font-sans overflow-hidden">
-      <div className="max-w-4xl mx-auto">
-        <ScrollReveal3D direction="up">
-          <Link href="/" className="text-[#a89ef8] text-sm font-bold hover:underline mb-8 inline-block">&larr; Back to Home</Link>
-          <h1 className="text-4xl sm:text-5xl font-black mb-6 text-3d">First-Generation Student Guide</h1>
-          <p className="text-[rgba(255,255,255,0.7)] text-lg mb-12">You're making history in your family. Let our AI be your guidance counselor.</p>
-        </ScrollReveal3D>
+    <div className="bg-white dark:bg-[#05071a] min-h-screen pt-32 pb-24 px-4 relative overflow-hidden transition-colors duration-300">
+      <div className="max-w-4xl mx-auto text-center relative z-10">
+        <h1 className="text-4xl md:text-6xl font-black mb-6 text-[#1a1340] dark:text-white">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#7F77DD] to-[#1D9E75]">First-Gen</span> Student
+        </h1>
+        <p className="text-[#5a5380] dark:text-white/60 text-lg md:text-xl max-w-2xl mx-auto mb-16">
+          A dedicated guide and scholarship repository for first-generation college students.
+        </p>
 
-        <div className="grid gap-6">
-          <ScrollReveal3D direction="up" delay={100}>
-            <div className="glass-3d p-8">
-              <h2 className="text-2xl font-bold mb-2">Step 1: Understand the Admission Process</h2>
-              <p className="text-white/60">We break down counseling processes like TNEA into simple, actionable steps. No jargon. No confusion. Just clear dates and document checklists.</p>
-            </div>
-          </ScrollReveal3D>
-
-          <ScrollReveal3D direction="up" delay={200}>
-            <div className="glass-3d p-8">
-              <h2 className="text-2xl font-bold mb-2">Step 2: Free AI Counselling 24/7</h2>
-              <p className="text-white/60">Have a question at 2 AM? Our AI counselor is trained on years of historical admission data to answer your questions accurately without any consulting fees.</p>
-            </div>
-          </ScrollReveal3D>
-
-          <ScrollReveal3D direction="up" delay={300}>
-            <div className="glass-3d p-8">
-              <h2 className="text-2xl font-bold mb-2">Step 3: Secure Scholarships First</h2>
-              <p className="text-white/60">Money shouldn't stop your education. We scan over 1000+ government and private scholarships to find the ones you qualify for instantly.</p>
-            </div>
-          </ScrollReveal3D>
+        <div className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.03)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.1)] backdrop-blur-xl rounded-3xl p-12 shadow-2xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4">
+             <span className="px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-widest border border-indigo-500/20">
+               Coming Soon
+             </span>
+          </div>
+          <div className="w-20 h-20 mx-auto bg-[rgba(127,119,221,0.1)] dark:bg-white/5 rounded-2xl flex items-center justify-center mb-8 border border-[rgba(127,119,221,0.2)] dark:border-white/10 group-hover:scale-110 transition-transform duration-500">
+            <span className="text-4xl">🌟</span>
+          </div>
+          <h2 className="text-2xl font-bold text-[#1a1340] dark:text-white mb-4">Under Development</h2>
+          <p className="text-[#5a5380] dark:text-white/40">
+            Our research team is currently compiling the latest data and regulations for the 2026 admissions cycle.
+            Check back in a few weeks!
+          </p>
         </div>
       </div>
     </div>

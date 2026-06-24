@@ -95,26 +95,50 @@ export function Navbar() {
 
   const isAdmin = isAdminEmail(user?.email);
 
+  const isDark = theme === "dark" || (theme === "system" && typeof window !== 'undefined' && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
   return (
-    <nav className={cn(
-      "sticky top-0 z-[100] w-full border-b px-6 transition-all duration-300 flex items-center justify-between backdrop-blur-xl",
-      scrolled 
-        ? "bg-white/95 dark:bg-[rgba(5,7,26,0.95)] border-black/8 dark:border-white/8 shadow-md h-14" 
-        : "bg-white/95 dark:bg-[rgba(5,7,26,0.95)] border-transparent h-16"
-    )}>
-      <Link href="/" className="hover:opacity-90 transition-opacity">
-        <Logo />
+    <nav style={{
+      height: '64px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 24px',
+      position: 'sticky',
+      top: 0,
+      zIndex: 100,
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+      borderBottom: isDark ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.05)',
+      background: isDark
+        ? 'rgba(5,7,26,0.92)'
+        : 'rgba(255,255,255,0.92)',
+      gap: '0',
+    }}>
+      {/* LEFT — Logo */}
+      <Link href="/" style={{ display:'flex', alignItems:'center', gap:'10px', flexShrink:0, textDecoration: 'none', width: 'auto' }}>
+        <div style={{ width:36, height:36, borderRadius:10, background:'linear-gradient(135deg,#7F77DD,#1D9E75)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'18px', flexShrink:0, boxShadow: '0 4px 12px rgba(127,119,221,0.2)' }}>
+          🎓
+        </div>
+        <div style={{ display:'flex', flexDirection:'column', justifyContent:'center', lineHeight:1.2 }}>
+          <span style={{ fontSize:'15px', fontWeight:600, color: isDark ? 'white' : '#1a1340', whiteSpace:'nowrap' }}>
+            CollegeMatch-AI
+          </span>
+          <span style={{ fontSize:'10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.45)' : '#7a7399', marginTop: 0 }}>
+            India's smartest college advisor
+          </span>
+        </div>
       </Link>
 
-      {/* Desktop Navigation */}
-      <div className="hidden lg:flex items-center gap-8">
+      {/* CENTER — Nav links */}
+      <div style={{ display:'flex', alignItems:'center', gap:'4px', flex:1, justifyContent:'center', flexWrap:'nowrap', overflow:'hidden' }} className="hidden lg:flex">
         {!user ? (
           <>
-            <button onClick={() => handleNavClick("how-it-works")} className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">How it works</button>
-            <button onClick={() => handleNavClick("features")} className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">Features</button>
-            <Link href="/cutoff-calculator" className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">Cutoff Calculator</Link>
+            <button onClick={() => handleNavClick("how-it-works")} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 400, background: 'none', border: 'none', cursor: 'pointer' }}>How it works</button>
+            <button onClick={() => handleNavClick("features")} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 400, background: 'none', border: 'none', cursor: 'pointer' }}>Features</button>
+            <Link href="/cutoff-calculator" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: pathname === '/cutoff-calculator' ? 600 : 400 }}>Cutoff</Link>
             <DropdownMenu>
-              <DropdownMenuTrigger className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors flex items-center gap-1 focus:outline-none">
+              <DropdownMenuTrigger style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 2026 Resources <ChevronDown size={14} />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white dark:bg-[#0a0d14] border-gray-200 dark:border-white/10 mt-2 z-[200]">
@@ -125,24 +149,28 @@ export function Navbar() {
                 <DropdownMenuItem asChild><Link href="/parent-guide" className="cursor-pointer">Parent Guide</Link></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link href="/contact" className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors">Contact</Link>
+            <Link href="/contact" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: pathname === '/contact' ? 600 : 400 }}>Contact</Link>
           </>
         ) : (
           <>
-            <Link href="/dashboard" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/dashboard" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Dashboard</Link>
-            
-            <Link href="/interview" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/interview" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Find Colleges</Link>
-            <Link href="/dashboard/compare" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/dashboard/compare" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Compare</Link>
-            <Link href="/dashboard/predictor" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/dashboard/predictor" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Predictor</Link>
-            <Link href="/colleges/map" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/colleges/map" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Map</Link>
-            <Link href="/dashboard/scholarships" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/dashboard/scholarships" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Scholarships</Link>
-            <Link href="/exams" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/exams" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Exams</Link>
-            <Link href="/testimonial" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/testimonial" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Submit Review</Link>
-
-            <Link href="/history" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/history" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>History</Link>
+            {[
+              { label: 'Dashboard', href: '/dashboard' },
+              { label: 'Colleges', href: '/interview' },
+              { label: 'Compare', href: '/dashboard/compare' },
+              { label: 'Predictor', href: '/dashboard/predictor' },
+              { label: 'Map', href: '/colleges/map' },
+              { label: 'Scholarships', href: '/dashboard/scholarships' },
+              { label: 'Exams', href: '/exams' },
+              { label: 'Review', href: '/testimonial' },
+              { label: 'History', href: '/history' }
+            ].map(link => (
+              <Link key={link.href} href={link.href} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: pathname === link.href ? 600 : 400 }}>
+                {link.label}
+              </Link>
+            ))}
             <DropdownMenu>
-              <DropdownMenuTrigger className="text-[13px] font-medium text-[#4a4370] dark:text-[rgba(255,255,255,0.70)] hover:text-[#534AB7] dark:hover:text-white transition-colors flex items-center gap-1 focus:outline-none">
-                2026 Resources <ChevronDown size={14} />
+              <DropdownMenuTrigger style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                2026 <ChevronDown size={14} />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white dark:bg-[#0a0d14] border-gray-200 dark:border-white/10 mt-2 z-[200]">
                 <DropdownMenuItem asChild><Link href="/nep-guide" className="cursor-pointer w-full">NEP 2026 Guide</Link></DropdownMenuItem>
@@ -152,60 +180,56 @@ export function Navbar() {
                 <DropdownMenuItem asChild><Link href="/parent-guide" className="cursor-pointer w-full">Parent Guide</Link></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link href="/contact" className={cn("text-[13px] font-medium transition-colors hover:text-[#534AB7] dark:hover:text-white", pathname === "/contact" ? "text-[#534AB7] dark:text-white border-b-2 border-[#534AB7] dark:border-white pb-1" : "text-[#4a4370] dark:text-[rgba(255,255,255,0.70]")}>Contact</Link>
+            <Link href="/contact" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: pathname === '/contact' ? 600 : 400 }}>Contact</Link>
           </>
         )}
       </div>
 
-      <div className="flex items-center gap-4">
+      {/* RIGHT — Actions */}
+      <div style={{ display:'flex', alignItems:'center', gap:'12px', flexShrink:0 }}>
         {mounted && (
-          <button
-            onClick={toggleTheme}
-            className="p-2.5 rounded-xl text-[#1a1340] dark:text-white hover:text-[#534AB7] dark:hover:text-[#a89ef8] transition-colors duration-200"
-            aria-label="Toggle theme"
-          >
-            {theme === "light" || (theme === "system" && !window.matchMedia("(prefers-color-scheme: dark)").matches) ? <Moon size={18} /> : <Sun size={18} />}
+          <button onClick={toggleTheme} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', color: isDark ? 'white' : '#1a1340', background: 'none', border: 'none', cursor: 'pointer' }} aria-label="Toggle theme">
+            {isDark ? <Moon size={16} /> : <Sun size={16} />}
           </button>
         )}
 
         {user ? (
-          <div className="flex items-center gap-4">
+          <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
             {isAdmin && (
-              <Link href="/admin" className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-600 text-[10px] font-black uppercase tracking-wider relative">
+              <Link href="/admin" style={{ padding: '4px 10px', borderRadius: 9999, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', position: 'relative', textDecoration: 'none' }}>
                 Admin
                 {pendingLeads > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 h-4 min-w-[16px] px-1 bg-amber-500 text-white text-[8px] font-black rounded-full flex items-center justify-center animate-pulse border border-purple-200">
+                  <span style={{ position: 'absolute', top: -4, right: -4, height: 16, minWidth: 16, padding: '0 4px', background: '#f59e0b', color: 'white', fontSize: 8, fontWeight: 900, borderRadius: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #fbcfe8' }}>
                     {pendingLeads}
                   </span>
                 )}
               </Link>
             )}
-            <Link href="/profile" className="flex items-center gap-3 group">
-              <div className="flex flex-col items-end hidden sm:flex">
-                <span className="text-[12px] font-bold text-gray-800 dark:text-slate-200 leading-tight">{profile?.fullName?.split(' ')[0] || user.email?.split('@')[0]}</span>
-                <span className="text-[10px] text-gray-400 leading-tight">Student Profile</span>
+            <Link href="/profile" style={{ display:'flex', alignItems:'center', gap:'8px', textDecoration: 'none' }}>
+              <div className="hidden sm:flex" style={{ flexDirection:'column', alignItems:'flex-end' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: isDark ? '#e2e8f0' : '#1f2937', lineHeight: 1 }}>{profile?.fullName?.split(' ')[0] || user.email?.split('@')[0]}</span>
+                <span style={{ fontSize: '10px', color: '#9ca3af', lineHeight: 1.2, marginTop: '2px' }}>Student Profile</span>
               </div>
-              <Avatar className="h-10 w-10 border border-purple-200 group-hover:border-purple-500 transition-all">
+              <Avatar style={{ width: 32, height: 32, flexShrink: 0, border: '1px solid rgba(127,119,221,0.3)' }}>
                 <AvatarImage src={profile?.avatarUrl} />
-                <AvatarFallback className="bg-purple-50 text-purple-700 font-bold">
+                <AvatarFallback style={{ background: 'rgba(127,119,221,0.1)', color: '#7F77DD', fontSize: 12, fontWeight: 700 }}>
                   {profile?.fullName?.charAt(0) || user.email?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
             </Link>
-            <button onClick={handleSignOut} className="hidden sm:block p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+            <button onClick={handleSignOut} className="hidden sm:flex" style={{ width: 20, height: 20, alignItems: 'center', justifyContent: 'center', color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <LogOut size={20} />
             </button>
           </div>
         ) : (
-          <div className="hidden sm:flex items-center gap-3">
-            <Link href="/login" className="btn-ghost !py-2 !px-5 !text-[13px] text-[#1a1340] dark:text-[rgba(255,255,255,0.80)] !border-purple-200 hover:!bg-purple-50 dark:hover:!bg-white/10">Login</Link>
-            <Link href="/register" className="btn-primary !py-2 !px-5 !text-[13px] !bg-[#534AB7] hover:!bg-[#433b9c]">Get Started</Link>
+          <div className="hidden sm:flex" style={{ alignItems:'center', gap:'10px' }}>
+            <Link href="/login" style={{ fontSize: '12px', fontWeight: 600, color: isDark ? 'rgba(255,255,255,0.8)' : '#1a1340', padding: '6px 12px', textDecoration: 'none' }}>Login</Link>
+            <Link href="/register" style={{ fontSize: '12px', fontWeight: 700, color: 'white', background: '#534AB7', padding: '6px 16px', borderRadius: 8, textDecoration: 'none' }}>Sign Up</Link>
           </div>
         )}
 
-        {/* Mobile Toggle */}
-        <button className="lg:hidden p-2 text-[var(--text-primary)]" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        <button className="lg:hidden" onClick={() => setIsOpen(!isOpen)} style={{ color: isDark ? 'white' : '#1a1340', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px' }}>
+          {isOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 

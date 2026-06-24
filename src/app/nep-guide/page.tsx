@@ -1,38 +1,28 @@
-'use client';
-import Link from 'next/link';
-import ScrollReveal3D from '@/components/ScrollReveal3D';
-
 export default function NEPGuidePage() {
   return (
-    <div className="bg-[#05071a] min-h-screen text-white pt-24 pb-12 px-4 font-sans overflow-hidden">
-      <div className="max-w-4xl mx-auto">
-        <ScrollReveal3D direction="up">
-          <Link href="/" className="text-[#a89ef8] text-sm font-bold hover:underline mb-8 inline-block">&larr; Back to Home</Link>
-          <h1 className="text-4xl sm:text-5xl font-black mb-6 text-3d">NEP 2026: Student Guide</h1>
-          <p className="text-[rgba(255,255,255,0.7)] text-lg mb-12">How the National Education Policy affects your college admission and studies in 2026.</p>
-        </ScrollReveal3D>
+    <div className="bg-white dark:bg-[#05071a] min-h-screen pt-32 pb-24 px-4 relative overflow-hidden transition-colors duration-300">
+      <div className="max-w-4xl mx-auto text-center relative z-10">
+        <h1 className="text-4xl md:text-6xl font-black mb-6 text-[#1a1340] dark:text-white">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#7F77DD] to-[#1D9E75]">NEP 2026</span> Guide
+        </h1>
+        <p className="text-[#5a5380] dark:text-white/60 text-lg md:text-xl max-w-2xl mx-auto mb-16">
+          Everything you need to know about the New Education Policy taking full effect in 2026.
+        </p>
 
-        <div className="space-y-6">
-          <ScrollReveal3D direction="up" delay={100}>
-            <div className="glass-3d p-8">
-              <h2 className="text-2xl font-bold mb-4">1. Multiple Entry and Exit Options</h2>
-              <p className="text-white/60 leading-relaxed">Students can now exit their degree after 1 year with a certificate, 2 years with a diploma, or complete 4 years for a full honors degree. This offers unprecedented flexibility if you need to pause your studies.</p>
-            </div>
-          </ScrollReveal3D>
-
-          <ScrollReveal3D direction="up" delay={200}>
-            <div className="glass-3d p-8">
-              <h2 className="text-2xl font-bold mb-4">2. Academic Bank of Credits (ABC)</h2>
-              <p className="text-white/60 leading-relaxed">Your credits are now stored digitally. If you transfer colleges or take a break, your earned credits remain valid, allowing you to resume your education seamlessly.</p>
-            </div>
-          </ScrollReveal3D>
-
-          <ScrollReveal3D direction="up" delay={300}>
-            <div className="glass-3d p-8">
-              <h2 className="text-2xl font-bold mb-4">3. Multidisciplinary Choices</h2>
-              <p className="text-white/60 leading-relaxed">Engineering students can now minor in Music, Economics, or History. Colleges are removing rigid stream boundaries, giving you the freedom to build a unique skill set.</p>
-            </div>
-          </ScrollReveal3D>
+        <div className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.03)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.1)] backdrop-blur-xl rounded-3xl p-12 shadow-2xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4">
+             <span className="px-4 py-1.5 rounded-full bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-widest border border-indigo-500/20">
+               Coming Soon
+             </span>
+          </div>
+          <div className="w-20 h-20 mx-auto bg-[rgba(127,119,221,0.1)] dark:bg-white/5 rounded-2xl flex items-center justify-center mb-8 border border-[rgba(127,119,221,0.2)] dark:border-white/10 group-hover:scale-110 transition-transform duration-500">
+            <span className="text-4xl">📚</span>
+          </div>
+          <h2 className="text-2xl font-bold text-[#1a1340] dark:text-white mb-4">Under Development</h2>
+          <p className="text-[#5a5380] dark:text-white/40">
+            Our research team is currently compiling the latest data and regulations for the 2026 admissions cycle.
+            Check back in a few weeks!
+          </p>
         </div>
       </div>
     </div>

@@ -164,10 +164,43 @@ export default function LandingPage() {
             ✨ India's #1 AI College Advisor · 2026
           </div>
 
-          <h1 className="text-5xl sm:text-7xl font-black mb-4 leading-tight tracking-tight flex flex-col items-center">
-            <span className="text-white text-3d opacity-0 animate-[fadeUpAnim_0.8s_0.1s_forwards]">Find Your</span>
-            <span className="shimmer-text text-6xl sm:text-8xl py-2 opacity-0 animate-[fadeUpAnim_0.8s_0.2s_forwards]">Dream College</span>
-            <span className="text-white text-3d opacity-0 animate-[fadeUpAnim_0.8s_0.3s_forwards]">with AI</span>
+          <h1 style={{
+            fontSize: 'clamp(40px, 7vw, 80px)',
+            fontWeight: 800,
+            lineHeight: 1.1,
+            textAlign: 'center',
+          }}>
+            {/* Line 1 */}
+            <span style={{
+              display: 'block',
+              color: 'rgba(255,255,255,0.97)',
+              textShadow: '2px 2px 0 rgba(83,74,183,0.3), 4px 4px 0 rgba(83,74,183,0.15)',
+            }} className="opacity-0 animate-[fadeUpAnim_0.8s_0.1s_forwards]">
+              Find Your
+            </span>
+
+            {/* Line 2 — FIXED with solid fallback color */}
+            <span style={{
+              display: 'block',
+              background: 'linear-gradient(135deg, #a89ef8 0%, #7F77DD 30%, #5DCAA5 70%, #1D9E75 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              color: '#a89ef8', /* CRITICAL fallback — prevents invisible text */
+              textShadow: 'none', /* remove shadow when using gradient text */
+              filter: 'drop-shadow(0 0 20px rgba(127,119,221,0.4))',
+            }} className="py-2 opacity-0 animate-[fadeUpAnim_0.8s_0.2s_forwards]">
+              Dream College
+            </span>
+
+            {/* Line 3 */}
+            <span style={{
+              display: 'block',
+              color: 'rgba(255,255,255,0.97)',
+              textShadow: '2px 2px 0 rgba(83,74,183,0.3), 4px 4px 0 rgba(83,74,183,0.15)',
+            }} className="opacity-0 animate-[fadeUpAnim_0.8s_0.3s_forwards]">
+              with AI
+            </span>
           </h1>
 
           <p className="text-xl sm:text-2xl text-[rgba(255,255,255,0.72)] mb-10 h-8 font-medium">

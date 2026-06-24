@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import GlobalChatWrapper from "@/components/GlobalChatWrapper";
 import InstallPrompt from "@/components/InstallPrompt";
 import BottomNav from "@/components/BottomNav";
+import PageCanvas3D from "@/components/PageCanvas3D";
 
 const jakarta = Plus_Jakarta_Sans({ 
   subsets: ["latin"],
@@ -133,6 +134,7 @@ export default function RootLayout({
 `}} />
 
         <Providers>
+          <PageCanvas3D />
           <div className="relative flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">

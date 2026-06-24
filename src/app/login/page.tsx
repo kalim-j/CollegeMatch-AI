@@ -164,14 +164,14 @@ export default function LoginPage() {
                 <Logo size="md" showTagline={false} theme="light" />
               </div>
 
-              <h2 className="text-3xl font-black text-gray-900 mb-2">Welcome Back</h2>
-              <p className="text-gray-600 font-semibold">Sign in to continue your college journey</p>
+              <h2 className="text-[#1a1340] dark:text-white font-bold text-3xl mb-2">Welcome Back</h2>
+              <p className="text-[#5a5380] dark:text-[rgba(255,255,255,0.6)] text-sm font-semibold">Sign in to continue your college journey</p>
             </motion.div>
 
             {/* Login Form */}
             <motion.form
               onSubmit={handleLogin}
-              className="bg-white/80 backdrop-blur-2xl rounded-3xl p-8 shadow-2xl shadow-purple-200/30 border border-purple-200/50"
+              className="bg-white dark:bg-[rgba(13,18,48,0.95)] border border-[rgba(127,119,221,0.15)] dark:border-[rgba(127,119,221,0.25)] backdrop-blur-xl shadow-2xl rounded-3xl p-8"
               variants={itemVariants}
               transition={{ delay: 0.2 }}
             >
@@ -181,7 +181,7 @@ export default function LoginPage() {
                 variants={itemVariants}
                 transition={{ delay: 0.3 }}
               >
-                <label className="block text-sm font-bold text-gray-750 mb-2 uppercase tracking-wider text-purple-700">
+                <label className="text-[#534AB7] dark:text-[#a89ef8] text-xs font-semibold tracking-widest uppercase mb-2 block">
                   Email Address
                 </label>
                 <motion.input
@@ -190,7 +190,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full px-5 py-3.5 rounded-xl bg-white/70 backdrop-blur border-2 border-purple-200 text-gray-950 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-250/20 transition-all duration-300 font-medium text-sm"
+                  className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(127,119,221,0.25)] text-[#1a1340] dark:text-white placeholder:text-[#7a7399] dark:placeholder:text-[rgba(255,255,255,0.35)] rounded-xl px-4 py-3 w-full outline-none focus:border-[rgba(127,119,221,0.6)] dark:focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
                   whileFocus={{ scale: 1.02 }}
                 />
               </motion.div>
@@ -201,7 +201,7 @@ export default function LoginPage() {
                 variants={itemVariants}
                 transition={{ delay: 0.4 }}
               >
-                <label className="block text-sm font-bold text-gray-750 mb-2 uppercase tracking-wider text-purple-700">
+                <label className="text-[#534AB7] dark:text-[#a89ef8] text-xs font-semibold tracking-widest uppercase mb-2 block">
                   Password
                 </label>
                 <div className="relative">
@@ -211,7 +211,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full px-5 py-3.5 rounded-xl bg-white/70 backdrop-blur border-2 border-purple-200 text-gray-955 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-250/20 transition-all duration-300 font-medium text-sm"
+                    className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(127,119,221,0.25)] text-[#1a1340] dark:text-white placeholder:text-[#7a7399] dark:placeholder:text-[rgba(255,255,255,0.35)] rounded-xl px-4 py-3 w-full outline-none focus:border-[rgba(127,119,221,0.6)] dark:focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
                     whileFocus={{ scale: 1.02 }}
                   />
                   <motion.button
@@ -275,16 +275,16 @@ export default function LoginPage() {
                 variants={itemVariants}
                 transition={{ delay: 0.5 }}
               >
-                <div className="flex-1 h-[1px] bg-purple-200" />
-                <span className="text-xs text-gray-505 font-semibold">OR</span>
-                <div className="flex-1 h-[1px] bg-purple-200" />
+                <div className="flex-1 border-t border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.1)]" />
+                <span className="text-[#7a7399] dark:text-[rgba(255,255,255,0.35)] text-xs">OR</span>
+                <div className="flex-1 border-t border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.1)]" />
               </motion.div>
 
               {/* Google Login */}
               <motion.button
                 type="button"
                 onClick={handleGoogleLogin}
-                className="w-full py-3 rounded-xl text-sm font-bold text-gray-900 bg-white border-2 border-purple-200 hover:bg-purple-50 transition-all duration-300 flex items-center justify-center gap-3"
+                className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.08)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.12)] text-[#1a1340] dark:text-white rounded-xl py-3 w-full font-medium flex items-center justify-center gap-3 hover:bg-[rgba(127,119,221,0.1)] dark:hover:bg-[rgba(255,255,255,0.12)] transition-all duration-200 text-sm"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 variants={itemVariants}
@@ -302,12 +302,12 @@ export default function LoginPage() {
 
             {/* Sign Up Link */}
             <motion.p
-              className="text-center mt-6 text-gray-650"
+              className="text-center mt-6 text-[#5a5380] dark:text-[rgba(255,255,255,0.55)] text-sm"
               variants={itemVariants}
               transition={{ delay: 0.7 }}
             >
               Don't have an account?{' '}
-              <Link href="/register" className="text-purple-600 font-bold hover:text-purple-755 transition">
+              <Link href="/register" className="text-[#534AB7] dark:text-[#a89ef8] font-medium hover:opacity-80 transition">
                 Sign up now
               </Link>
             </motion.p>
