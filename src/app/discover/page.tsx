@@ -10,6 +10,7 @@ import DiscoveryLoadingScreen from '@/components/DiscoveryLoadingScreen';
 import { DiscoveryResult, StreamRecommendation } from '@/types/discovery';
 import Logo from '@/components/Logo';
 import { motion, AnimatePresence } from 'framer-motion';
+import { discoveryQuestions } from '@/data/discoveryQuestions';
 
 // Category colour palette — used for accents on both themes
 const catColor: Record<string, { from: string; to: string; shadow: string }> = {
@@ -47,14 +48,10 @@ export default function DiscoverPage() {
   const handleStart = () => {
     setDirection(1); 
     setCurrentStep(1);
+    const q = discoveryQuestions[0];
     setCurrentQuestion({
-      question: "What's your favourite subject in school right now?",
-      options: [
-        { id: "math", label: "Mathematics", icon: "📐" },
-        { id: "science", label: "Science (Physics/Chem/Bio)", icon: "🔬" },
-        { id: "computers", label: "Computer Science", icon: "💻" },
-        { id: "other", label: "Other", icon: "✍️" }
-      ]
+      ...q,
+      options: [...q.options, { id: 'other', label: 'Other', icon: '✍️', streams: [] }]
     });
   };
 
@@ -66,7 +63,8 @@ export default function DiscoverPage() {
       return; // wait for text input
     }
     
-    await submitAnswer(label);
+    const selectedOpt = currentQuestion.options.find((o:any) => o.id === optionId);
+    await submitAnswer(label, selectedOpt?.streams || []);
   };
 
   const handleOtherSubmit = async (e: React.KeyboardEvent | React.FocusEvent) => {
@@ -74,36 +72,27 @@ export default function DiscoverPage() {
     if ('key' in e && e.key !== 'Enter') return;
     
     if (otherText.trim().length > 0) {
-      await submitAnswer(otherText.trim());
+      await submitAnswer(otherText.trim(), []);
     }
   };
 
-  const submitAnswer = async (answerText: string) => {
-    const newAnswers = [...answers, { q: currentQuestion.question, a: answerText }];
+  const submitAnswer = async (answerText: string, streams: string[] = []) => {
+    const newAnswers = [...answers, { q: currentQuestion.question, a: answerText, streams }];
     setAnswers(newAnswers);
     
     // Auto-advance logic
     if (currentStep < 10) {
       setDirection(1);
       setCurrentStep(prev => prev + 1);
-      setLoadingQuestion(true);
       setShowOtherInput(false);
       setOtherText('');
       setSelectedOption(null);
       
-      try {
-        const res = await fetch('/api/generate-question', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ previousAnswers: newAnswers, step: currentStep + 1 })
-        });
-        const data = await res.json();
-        setCurrentQuestion(data.nextQuestion);
-      } catch(err) {
-        setAiError("Failed to generate next question");
-      } finally {
-        setLoadingQuestion(false);
-      }
+      const nextQ = discoveryQuestions[currentStep];
+      setCurrentQuestion({
+        ...nextQ,
+        options: [...nextQ.options, { id: 'other', label: 'Other', icon: '✍️', streams: [] }]
+      });
     } else {
       // Final step -> generate result
       setDirection(1);

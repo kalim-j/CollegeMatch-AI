@@ -42,11 +42,18 @@ export async function POST(req: NextRequest) {
     .map(([s, c]) => `${s}(${c})`)
     .join(', ');
 
+  const rawAnswersStr = Array.isArray(answers) 
+    ? answers.map((a: any) => `Q: ${a.q}\nA: ${a.a}`).join('\n\n')
+    : 'No explicit answers provided.';
+
   const prompt = `You are an Indian education counsellor helping a student
 named ${studentName} choose what to study after 12th grade.
 
-Their interest analysis shows these streams ranked by frequency:
-${freqStr || 'General interests'}
+Here is what they answered to our quiz:
+${rawAnswersStr}
+
+Their explicit stream interests (based on predefined options they picked):
+${freqStr || 'None explicit'}
 
 Recommend exactly 3 streams. Return ONLY raw JSON — no markdown,
 no backticks, no explanation. Start with { immediately.
