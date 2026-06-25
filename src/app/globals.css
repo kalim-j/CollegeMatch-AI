@@ -632,3 +632,47 @@ canvas {
     -webkit-text-fill-color: #a89ef8 !important;
   }
 }
+
+@keyframes cardSelectPulse {
+  0% {
+    transform: scale(1);
+    border-color: rgba(127,119,221,0.3);
+  }
+  40% {
+    transform: scale(0.97);
+    border-color: rgba(127,119,221,1);
+    background: rgba(127,119,221,0.25);
+    box-shadow: 0 0 24px rgba(127,119,221,0.4);
+  }
+  70% { transform: scale(1.01); }
+  100% {
+    transform: scale(1);
+    border-color: rgba(127,119,221,0.8);
+    background: rgba(127,119,221,0.2);
+  }
+}
+
+.card-selecting {
+  animation: cardSelectPulse 0.38s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.step-enter {
+  animation: slideInRight 0.35s cubic-bezier(0.22,1,0.36,1) forwards;
+}

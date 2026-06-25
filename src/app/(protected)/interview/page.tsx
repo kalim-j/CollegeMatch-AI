@@ -24,8 +24,18 @@ import ShareCard from "@/components/ShareCard";
 
 const UG_STREAMS = ["Engineering", "Medical", "Arts & Science", "Commerce", "Law", "Agriculture", "Architecture", "Pharmacy", "Nursing", "Education", "Hotel Management", "Design", "MBA (Integrated)", "Other"];
 const PG_STREAMS = ["ME/MTech", "MD/MS", "MSc", "MA", "MBA", "MCA", "LLM", "MPharm", "MEd", "Other"];
-const QUOTAS = ["General", "OBC", "SC", "ST", "EWS"];
-const RELIGIONS = ["Hindu", "Muslim", "Christian", "Sikh", "Buddhist", "Jain", "Other"];
+const QUOTA_RELIGION_MAP: Record<string, { religions: string[]; note: string; }> = {
+  GENERAL: { religions: ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Buddhist', 'Jain', 'Parsi', 'Jewish', 'Other'], note: 'All religions eligible under General category' },
+  OBC: { religions: ['Hindu', 'Muslim', 'Buddhist', 'Sikh', 'Jain', 'Christian', 'Other'], note: 'OBC reservation applies to Hindus, Muslims, Buddhists, Sikhs' },
+  MBC: { religions: ['Hindu', 'Muslim', 'Christian', 'Other'], note: 'Most Backward Class — Hindu, Muslim, Christian communities' },
+  BC: { religions: ['Hindu', 'Muslim', 'Christian', 'Other'], note: 'Backward Class — Hindu, Muslim, Christian communities' },
+  SC: { religions: ['Hindu', 'Sikh', 'Buddhist', 'Other'], note: 'SC reservation applies only to Hindu, Sikh, Buddhist communities' },
+  ST: { religions: ['Hindu', 'Christian', 'Buddhist', 'Traditional / Animist', 'Other'], note: 'ST reservation available across religions' },
+  EWS: { religions: ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Buddhist', 'Jain', 'Parsi', 'Other'], note: 'EWS available for all religions except those already covered by OBC/SC/ST' },
+  NRI: { religions: ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Buddhist', 'Jain', 'Other'], note: 'NRI quota available across all religions' },
+  MANAGEMENT: { religions: ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Buddhist', 'Jain', 'Other'], note: 'Management quota — no religion restriction' }
+};
+const QUOTAS = ["GENERAL", "OBC", "SC", "ST", "EWS", "MBC", "BC", "NRI", "MANAGEMENT"];
 const BOARDS = ["State Board", "CBSE", "ICSE", "IGCSE", "Other"];
 
 export default function InterviewPage() {
@@ -33,6 +43,21 @@ export default function InterviewPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const totalSteps = 9;
+
+  const [selectingItem, setSelectingItem] = useState<{ step: number, value: string } | null>(null);
+  const [availableReligions, setAvailableReligions] = useState<string[]>(QUOTA_RELIGION_MAP.GENERAL.religions);
+  const [quotaNote, setQuotaNote] = useState<string>(QUOTA_RELIGION_MAP.GENERAL.note);
+
+  const autoAdvance = (key: string, value: string) => {
+    setSelectingItem({ step, value });
+    updateForm({ [key]: value } as any);
+    setTimeout(() => {
+      setStep(prev => prev + 1);
+      setSelectingItem(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 380);
+  };
+
   
     const [formData, setFormData] = useState<any>({
     courseLevel: "UG",
@@ -63,7 +88,7 @@ export default function InterviewPage() {
     manualCutoffMode: false,
     cutoffRange: "exact",
     budget: "Both",
-    quota: "General",
+    quota: "GENERAL",
     religion: "Hindu"
   });
 
@@ -334,11 +359,11 @@ export default function InterviewPage() {
                   whileTap={{ scale: 0.98 }}
                   className={cn(
                     "cursor-pointer transition-all border-2 rounded-[3rem] p-12 text-center relative overflow-hidden backdrop-blur-xl group",
-                    formData.courseLevel === level.id 
+                    (selectingItem?.step === 1 && selectingItem?.value === level.id) ? "card-selecting" : formData.courseLevel === level.id 
                         ? "border-indigo-500 bg-indigo-500/10 shadow-2xl shadow-indigo-500/10" 
                         : "border-purple-250/20 dark:border-purple-900/20 bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 hover:border-purple-250/40 dark:border-purple-900/40"
                   )}
-                  onClick={() => { updateForm({ courseLevel: level.id as any }); handleNext(); }}
+                  onClick={() => autoAdvance('courseLevel', level.id)}
                 >
                   <div className={cn(
                       "h-20 w-20 rounded-3xl mx-auto mb-8 flex items-center justify-center transition-all",
@@ -380,26 +405,19 @@ export default function InterviewPage() {
                   key={stream}
                   className={cn(
                     "h-20 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all px-6 border backdrop-blur-sm",
-                    formData.stream === stream 
+                    (selectingItem?.step === 2 && selectingItem?.value === stream) ? "card-selecting" : formData.stream === stream 
                         ? "bg-teal-500/20 text-teal-400 border-teal-500/40 shadow-lg shadow-teal-500/10" 
                         : "bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/40 dark:border-purple-900/40"
                   )}
-                  onClick={() => { updateForm({ stream }); }}
+                  onClick={() => autoAdvance('stream', stream)}
                 >
                   {stream}
                 </button>
               ))}
             </div>
-            <div className="flex gap-4 max-w-4xl mx-auto pt-8">
-              <button onClick={handleBack} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+            <div className="flex gap-4 max-w-4xl mx-auto pt-8 justify-start">
+              <button onClick={handleBack} style={{ padding: '14px 28px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', color: 'rgba(255,255,255,0.7)', background: 'transparent', cursor: 'pointer' }} className="flex items-center gap-2 font-bold hover:bg-white/5 transition-all">
                 <ChevronLeft size={20} /> Back
-              </button>
-              <button 
-                onClick={handleNext} 
-                disabled={!formData.stream}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:shadow-lg hover:opacity-90 transition-all rounded-xl flex-[2] h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2"
-              >
-                Continue <ChevronRight size={20} />
               </button>
             </div>
           </div>
@@ -412,15 +430,15 @@ export default function InterviewPage() {
                 <MapPin size={14} className="text-amber-400" />
                 <span className="text-[10px] font-black text-amber-300 uppercase tracking-widest">Geographical Preference</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Your Location</h2>
-              <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 3: Residency and target region</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Where to Study?</h2>
+              <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">STEP 3: CHOOSE YOUR COLLEGE REGION</p>
             </div>
             <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-12 opacity-[0.02] pointer-events-none">
                   <MapPin size={240} className="text-amber-500" />
                 </div>
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">College State</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">COLLEGE STATE</label>
                     <select 
                         className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
                         value={formData.state}
@@ -430,16 +448,26 @@ export default function InterviewPage() {
                     </select>
                 </div>
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Home District</label>
+                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">COLLEGE DISTRICT</label>
                     <select 
                         className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
                         value={formData.district}
                         onChange={(e) => updateForm({ district: e.target.value })}
                     >
-                        <option value="" className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-white">Select District</option>
+                        <option value="" className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-white">District where you want to study</option>
                         {(stateDistricts[formData.state!] || []).map(d => <option key={d} value={d} className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-white">{d}</option>)}
                     </select>
                 </div>
+                <p style={{
+                  fontSize: '12px',
+                  color: 'rgba(255,255,255,0.4)',
+                  textAlign: 'center',
+                  marginTop: '12px',
+                  lineHeight: 1.5,
+                }}>
+                  💡 Select the state and district where you want to study. AI will prioritise colleges in your chosen area.
+                </p>
+
                 <div className="flex gap-4 mt-4">
                   <button onClick={handleBack} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
                     <ChevronLeft size={20} /> Back
@@ -710,11 +738,11 @@ export default function InterviewPage() {
                                 key={r.val}
                                 className={cn(
                                     "h-16 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all border",
-                                    formData.cutoffRange === r.val 
+                                    (selectingItem?.step === 6 && selectingItem?.value === r.val) ? "card-selecting border-indigo-500" : formData.cutoffRange === r.val 
                                       ? `${r.bg} ${r.color} ${r.border} shadow-lg` 
                                       : "bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/30 dark:border-purple-900/30"
                                 )}
-                                onClick={() => updateForm({ cutoffRange: r.val as any })}
+                                onClick={() => autoAdvance('cutoffRange', r.val)}
                             >
                                 {r.label}
                             </button>
@@ -722,21 +750,9 @@ export default function InterviewPage() {
                     </div>
                 </div>
 
-                <div className="flex gap-4 mt-4">
-                  <button onClick={handleBack} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                <div className="flex gap-4 mt-4 justify-start">
+                  <button onClick={handleBack} style={{ padding: '14px 28px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', color: 'rgba(255,255,255,0.7)', background: 'transparent', cursor: 'pointer' }} className="flex items-center gap-2 font-bold hover:bg-white/5 transition-all">
                     <ChevronLeft size={20} /> Back
-                  </button>
-                  <button 
-                      className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:shadow-lg hover:opacity-90 transition-all rounded-xl flex-[2] h-16 text-lg flex items-center justify-center gap-3 font-black uppercase tracking-widest"
-                      onClick={() => {
-                        if (!formData.cutoffMark && formData.courseLevel !== "PG") {
-                          toast.error("Please enter or calculate your cutoff");
-                          return;
-                        }
-                        handleNext();
-                      }} 
-                  >
-                      Continue <ChevronRight size={20} />
                   </button>
                 </div>
             </div>
@@ -756,35 +772,70 @@ export default function InterviewPage() {
             <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl">
                 <div className="space-y-4">
                     <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Admission Category (Quota)</label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         {QUOTAS.map(q => (
                             <button
                                 key={q}
-                                className={cn(
-                                    "h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border",
-                                    formData.quota === q 
-                                      ? "bg-blue-500/20 text-blue-300 border-blue-500/40" 
-                                      : "bg-white/50 dark:bg-white/[0.05] text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/30 dark:border-purple-900/30"
-                                )}
-                                onClick={() => updateForm({ quota: q })}
+                                style={{
+                                  padding: '12px 18px',
+                                  borderRadius: '12px',
+                                  background: formData.quota === q ? 'rgba(127,119,221,0.22)' : 'rgba(255,255,255,0.04)',
+                                  border: formData.quota === q ? '1px solid rgba(127,119,221,0.85)' : '1px solid rgba(255,255,255,0.10)',
+                                  color: formData.quota === q ? '#a89ef8' : 'rgba(255,255,255,0.7)',
+                                  fontWeight: formData.quota === q ? 600 : 400,
+                                  boxShadow: formData.quota === q ? '0 0 16px rgba(127,119,221,0.2)' : 'none',
+                                  fontSize: '12px',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s ease',
+                                }}
+                                onClick={() => {
+                                  const config = QUOTA_RELIGION_MAP[q] || QUOTA_RELIGION_MAP.GENERAL;
+                                  setAvailableReligions(config.religions);
+                                  setQuotaNote(config.note);
+                                  updateForm({ quota: q });
+                                  if (!config.religions.includes(formData.religion)) {
+                                    updateForm({ religion: config.religions[0] });
+                                  }
+                                }}
                             >
                                 {q}
                             </button>
                         ))}
                     </div>
+                    <p style={{
+                      fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '8px', padding: '6px 10px',
+                      background: 'rgba(127,119,221,0.08)', borderRadius: '8px', lineHeight: 1.5, transition: 'all 0.3s ease',
+                    }}>
+                      ℹ️ {quotaNote}
+                    </p>
                 </div>
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Religion</label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {RELIGIONS.map(r => (
+                    {availableReligions.length > 1 && (
+                      <p style={{
+                        fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
+                        color: 'rgba(255,255,255,0.4)', marginBottom: '10px', marginTop: '20px',
+                      }}>
+                        Religion
+                      </p>
+                    )}
+                    <div key={formData.quota} style={{ display:'flex', gap:'8px', flexWrap:'wrap' }}>
+                        {availableReligions.map((r, index) => (
                             <button
                                 key={r}
-                                className={cn(
-                                    "h-14 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border",
-                                    formData.religion === r 
-                                      ? "bg-blue-500/20 text-blue-300 border-blue-500/40" 
-                                      : "bg-white/50 dark:bg-white/[0.05] text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/30 dark:border-purple-900/30"
-                                )}
+                                style={{
+                                  padding: '10px 16px',
+                                  borderRadius: '10px',
+                                  border: formData.religion === r ? '1px solid rgba(29,158,117,0.8)' : '1px solid rgba(255,255,255,0.10)',
+                                  background: formData.religion === r ? 'rgba(29,158,117,0.18)' : 'rgba(255,255,255,0.04)',
+                                  color: formData.religion === r ? '#5DCAA5' : 'rgba(255,255,255,0.65)',
+                                  fontSize: '13px',
+                                  fontWeight: formData.religion === r ? 600 : 400,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s ease',
+                                  animation: 'fadeUp 0.3s ease forwards',
+                                  animationDelay: `${index * 0.04}s`,
+                                  opacity: 0,
+                                }}
                                 onClick={() => updateForm({ religion: r })}
                             >
                                 {r}
@@ -823,25 +874,18 @@ export default function InterviewPage() {
                       key={b}
                       className={cn(
                           "h-20 w-full rounded-[2rem] text-xl font-black uppercase tracking-widest transition-all border",
-                          formData.budget === b 
+                          (selectingItem?.step === 8 && selectingItem?.value === b) ? "card-selecting border-emerald-500" : formData.budget === b 
                             ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-lg" 
                             : "bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/30 dark:border-purple-900/30"
                       )}
-                      onClick={() => { updateForm({ budget: b as any }); }}
+                      onClick={() => autoAdvance('budget', b)}
                     >
                       {b}
                     </button>
                 ))}
-                <div className="flex gap-4 pt-4">
-                  <button onClick={handleBack} className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-purple-700 dark:text-purple-300 font-bold hover:bg-purple-100 dark:hover:bg-purple-950/50 rounded-xl transition-all flex-1 h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                <div className="flex gap-4 pt-4 justify-start">
+                  <button onClick={handleBack} style={{ padding: '14px 28px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', color: 'rgba(255,255,255,0.7)', background: 'transparent', cursor: 'pointer' }} className="flex items-center gap-2 font-bold hover:bg-white/5 transition-all">
                     <ChevronLeft size={20} /> Back
-                  </button>
-                  <button 
-                    onClick={handleNext} 
-                    disabled={!formData.budget}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:shadow-lg hover:opacity-90 transition-all rounded-xl flex-[2] h-16 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-2"
-                  >
-                    Continue <ChevronRight size={20} />
                   </button>
                 </div>
             </div>

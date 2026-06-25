@@ -220,9 +220,9 @@ function generateWhyFit(college: any, profile: any, matchScore: number): string 
   const reasons = [];
 
   if (college.district.toLowerCase() === profile.district.toLowerCase()) {
-    reasons.push(`Located in your home district ${profile.district}`);
+    reasons.push(`Prioritize colleges located IN ${profile.district} district of ${profile.state} — this is where the student wants to attend college`);
   } else if (college.state.toLowerCase() === profile.state.toLowerCase()) {
-    reasons.push(`Located in ${college.state}, your home state`);
+    reasons.push(`Student wants to study in ${college.state}, ${profile.district}`);
   }
 
   if (college.type === "Government") {
@@ -254,6 +254,10 @@ function generateWhyFit(college: any, profile: any, matchScore: number): string 
 
   if (reasons.length === 0) {
     reasons.push(`offers quality ${profile.stream} education with good infrastructure`);
+  }
+  
+  if (profile.quota && profile.religion) {
+    reasons.push(`Community category: ${profile.quota}, Religion: ${profile.religion}. Apply ${profile.quota} reservation rules when suggesting government college cutoffs.`);
   }
 
   return reasons.slice(0, 3).join(", ") + ".";
