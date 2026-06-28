@@ -1,261 +1,845 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import College3DShowcase from '@/components/3D/College3DShowcase';
-import PageTransition from '@/components/3D/PageTransition';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
+import { useTheme } from 'next-themes';
+
+interface College {
+  id: string;
+  name: string;
+  short?: string;
+  state: string;
+  city: string;
+  type: string;
+  level: string[];
+  streams: string[];
+  nirf_rank: number | null;
+  naac_grade: string;
+  established: number;
+  avg_package: string;
+  placement_pct: number;
+  ug_cutoff: Record<string, number> | null;
+  pg_cutoff: Record<string, number> | null;
+  annual_fee_ug: string | null;
+  annual_fee_pg: string | null;
+  website: string;
+  image_query: string;
+  courses_ug?: string[];
+  courses_pg?: string[];
+  about: string;
+  admissionChance?: { chance: string; color: string; pct: number };
+  ai_insight?: string;
+  best_course?: string;
+  insider_tip?: string;
+}
+
+function FormField({ label, children }: { label: string, children: React.ReactNode }) {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+  return (
+    <div className="mb-6">
+      <label style={{ 
+        display: 'block', 
+        fontSize: '14px', 
+        fontWeight: 'bold', 
+        color: isDark ? '#a89ef8' : '#534AB7', 
+        marginBottom: '8px', 
+        textTransform: 'uppercase', 
+        letterSpacing: '0.05em' 
+      }}>
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
 
 export default function PredictorPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
 
-  const [marks, setMarks] = useState('');
+  const [view, setView] = useState<'form' | 'results'>('form');
+  const [results, setResults] = useState<College[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const [level, setLevel] = useState<'UG' | 'PG'>('UG');
+  const [percentage, setPercentage] = useState('');
+  const [cutoffMark, setCutoffMark] = useState('');
+  const [gateScore, setGateScore] = useState('');
+  const [catPercentile, setCatPercentile] = useState('');
   const [state, setState] = useState('');
   const [category, setCategory] = useState('');
-  const [colleges, setColleges] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(0);
+  const [stream, setStream] = useState('');
+  const [budget, setBudget] = useState('');
 
+  // Protect route
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
 
+  // Browser back button support
+  useEffect(() => {
+    if (view === 'results') {
+      window.history.pushState({ view: 'results' }, '');
+    }
+  }, [view]);
+
+  useEffect(() => {
+    const handlePop = () => {
+      setView('form');
+      setResults([]);
+    };
+    window.addEventListener('popstate', handlePop);
+    return () => window.removeEventListener('popstate', handlePop);
+  }, []);
+
+  function calcAdmissionChance(
+    college: College,
+    studentCutoff: number,
+    cat: string,
+    lvl: string
+  ): { chance: string; color: string; pct: number } {
+    const cutoffs = lvl === 'UG' ? college.ug_cutoff : college.pg_cutoff;
+
+    if (!cutoffs) return { chance: 'Check eligibility', color: '#6b6894', pct: 50 };
+
+    const collegeCutoff = cutoffs[cat] || cutoffs['General'] || cutoffs['OBC'] || 150;
+    const diff = studentCutoff - collegeCutoff;
+
+    if (diff >= 10) return { chance: 'Very High', color: '#1D9E75', pct: 95 };
+    if (diff >= 5) return { chance: 'High', color: '#2ECC71', pct: 85 };
+    if (diff >= 0) return { chance: 'Good', color: '#5DCAA5', pct: 75 };
+    if (diff >= -5) return { chance: 'Moderate', color: '#BA7517', pct: 55 };
+    if (diff >= -10) return { chance: 'Low', color: '#E24B4A', pct: 30 };
+    return { chance: 'Very Low', color: '#A32D2D', pct: 10 };
+  }
+
   const handlePredict = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setStep(1);
+    setIsLoading(true);
+    setView('results');
 
     try {
-      const response = await fetch('/api/predict', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ marks: Number(marks), state, category }),
+      // Load college database
+      const dbRes = await fetch('/data/colleges-db.json');
+      const allColleges = await dbRes.json();
+
+      // Parse student score
+      const studentCutoff = cutoffMark
+        ? parseFloat(cutoffMark)
+        : percentage
+        ? (parseFloat(percentage) / 100) * 200
+        : gateScore
+        ? parseFloat(gateScore) / 5
+        : catPercentile
+        ? parseFloat(catPercentile) * 2
+        : 150;
+
+      // Filter colleges
+      let filtered = allColleges.filter((c: College) => {
+        const matchLevel = c.level.includes(level);
+        const matchState = !state || c.state === state;
+        const matchStream = !stream || c.streams.some((s: string) => s.toLowerCase().includes(stream.toLowerCase()));
+        const matchBudget = !budget || (() => {
+          const fee = level === 'UG'
+            ? parseInt(c.annual_fee_ug?.replace(/[^\d]/g,'') || '0')
+            : parseInt(c.annual_fee_pg?.replace(/[^\d]/g,'') || '0');
+          if (budget === 'govt') return fee < 100000;
+          if (budget === 'medium') return fee < 200000;
+          if (budget === 'high') return fee < 500000;
+          return true;
+        })();
+
+        return matchLevel && matchState && matchStream && matchBudget;
       });
 
-      const data = await response.json();
-      setColleges(data.colleges || []);
-      setStep(2);
-    } catch (error) {
-      console.error('Prediction failed:', error);
-      setStep(0);
+      // Calculate admission chances
+      filtered = filtered.map((c: College) => {
+        const chance = calcAdmissionChance(c, studentCutoff, category || 'General', level);
+        return { ...c, admissionChance: chance };
+      });
+
+      // Sort by admission chance
+      filtered.sort((a: College & {admissionChance: {pct: number}},
+        b: College & {admissionChance: {pct: number}}) =>
+        b.admissionChance.pct - a.admissionChance.pct
+      );
+
+      const top8 = filtered.slice(0, 8);
+
+      // Get AI insights for top 5
+      if (top8.length > 0) {
+        const aiRes = await fetch('/api/predict-smart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cutoff: studentCutoff,
+            percentage,
+            category: category || 'General',
+            state,
+            stream,
+            level,
+            topColleges: top8.slice(0, 5),
+          }),
+        });
+        
+        let aiInsights: any[] = [];
+        if (aiRes.ok) {
+           aiInsights = await aiRes.json();
+        }
+
+        // Merge AI insights into college data
+        const withInsights = top8.map((c: College) => {
+          const insight = aiInsights.find(
+            (a: {name: string}) => c.name.toLowerCase().includes(a.name.toLowerCase().split(' ')[0])
+          );
+          return {
+            ...c,
+            ai_insight: insight?.recommendation,
+            best_course: insight?.best_course,
+            insider_tip: insight?.insider_tip,
+          };
+        });
+
+        setResults(withInsights);
+      } else {
+        setResults(top8);
+      }
+    } catch (err) {
+      console.error('Predict error:', err);
+      setError('Something went wrong. Please try again.');
+      setView('form');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
       </div>
     );
   }
 
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 sm:p-8 pb-24 sm:pb-8">
-        <div className="max-w-6xl mx-auto">
+    <div style={{
+      minHeight: '100vh',
+      background: isDark ? '#05071a' : '#f8f7ff',
+      position: 'relative',
+      padding: '24px 16px',
+    }}>
+      <div className="max-w-4xl mx-auto pt-8">
+        
+        {view === 'results' && (
+          <button
+            onClick={() => {
+              setView('form');
+              setResults([]);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: isDark ? '#a89ef8' : '#534AB7',
+              fontSize: '14px',
+              cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              padding: '8px 0',
+              marginBottom: '24px',
+              fontWeight: 500,
+            }}>
+            ← Back to search
+          </button>
+        )}
 
-          {/* Header */}
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 mb-3">
-              🎯 Find Your Perfect College
-            </h1>
-            <p className="text-gray-600 text-lg font-medium">
-              Let our AI analyze your profile and find your best match
-            </p>
-          </motion.div>
+        <div className="text-center mb-12">
+          {view === 'form' ? (
+            <>
+              <h1 style={{
+                fontSize: '2.5rem',
+                fontWeight: 900,
+                color: isDark ? '#a89ef8' : '#534AB7',
+                marginBottom: '12px'
+              }}>
+                Find Your Perfect College
+              </h1>
+              <p style={{
+                fontSize: '1.125rem',
+                color: isDark ? 'rgba(255,255,255,0.55)' : '#6b6894',
+                fontWeight: 500
+              }}>
+                Let our AI analyze your profile and find your best match
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 style={{
+                fontSize: '2.5rem',
+                fontWeight: 900,
+                color: isDark ? '#5DCAA5' : '#0F6E56',
+                marginBottom: '12px'
+              }}>
+                Perfect Match Found!
+              </h1>
+              <p style={{
+                fontSize: '1.125rem',
+                color: isDark ? 'rgba(255,255,255,0.55)' : '#6b6894',
+                fontWeight: 500
+              }}>
+                Here are your top colleges based on your profile
+              </p>
+            </>
+          )}
+        </div>
 
-          {step === 0 ? (
-            /* Form */
-            <motion.form
-              onSubmit={handlePredict}
-              className="max-w-2xl mx-auto bg-white/80 backdrop-blur-2xl rounded-3xl p-8 border border-purple-200 shadow-2xl"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6 }}
-            >
-              {/* Marks Input */}
-              <motion.div
-                className="mb-6"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
-                  Your 12th Marks (%)
-                </label>
-                <motion.input
-                  type="number"
-                  min="0"
-                  max="100"
-                  required
-                  value={marks}
-                  onChange={(e) => setMarks(e.target.value)}
-                  placeholder="Enter your percentage..."
-                  className="w-full px-5 py-3.5 rounded-xl bg-white/70 backdrop-blur border-2 border-purple-200 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all font-semibold text-sm"
-                  whileFocus={{ scale: 1.02 }}
-                />
-              </motion.div>
+        {view === 'form' ? (
+          <div style={{
+            background: isDark ? 'rgba(255,255,255,0.04)' : 'white',
+            border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(127,119,221,0.15)',
+            borderRadius: '20px',
+            backdropFilter: isDark ? 'blur(20px)' : 'none',
+            padding: '32px',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.05)',
+          }}>
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
 
-              {/* State Select */}
-              <motion.div
-                className="mb-6"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
-                  State
-                </label>
-                <motion.select
-                  value={state}
-                  required
-                  onChange={(e) => setState(e.target.value)}
-                  className="w-full px-5 py-3.5 rounded-xl bg-white/70 backdrop-blur border-2 border-purple-200 text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 font-semibold text-sm"
-                  whileFocus={{ scale: 1.02 }}
-                >
-                  <option value="">Select your state...</option>
+            <div style={{
+              display: 'flex',
+              background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(127,119,221,0.08)',
+              borderRadius: '14px',
+              padding: '4px',
+              marginBottom: '24px',
+              width: 'fit-content',
+              margin: '0 auto 24px',
+            }}>
+              {(['UG', 'PG'] as const).map(l => (
+                <button
+                  key={l}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setLevel(l);
+                    setCutoffMark('');
+                    setGateScore('');
+                    setCatPercentile('');
+                    setPercentage('');
+                  }}
+                  style={{
+                    padding: '10px 32px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: level === l ? 'linear-gradient(135deg,#7F77DD,#534AB7)' : 'transparent',
+                    color: level === l ? 'white' : isDark ? 'rgba(255,255,255,0.55)' : '#6b6894',
+                    fontWeight: level === l ? 600 : 400,
+                    fontSize: '15px',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease',
+                    boxShadow: level === l ? '0 4px 15px rgba(127,119,221,0.35)' : 'none',
+                  }}>
+                  {l === 'UG' ? '🎓 UG' : '🎓 PG'}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={handlePredict}>
+              {level === 'UG' && (
+                <>
+                  <FormField label="YOUR 12TH PERCENTAGE (%)">
+                    <input
+                      type="number"
+                      min="0" max="100" step="0.01"
+                      value={percentage}
+                      onChange={e => setPercentage(e.target.value)}
+                      placeholder="e.g. 87.5"
+                      className="glass-input"
+                      style={{
+                        background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
+                        color: isDark ? 'white' : '#1a1340',
+                      }}
+                    />
+                  </FormField>
+
+                  <FormField label="TAMIL NADU CUTOFF MARK (optional)">
+                    <input
+                      type="number"
+                      min="0" max="200" step="0.01"
+                      value={cutoffMark}
+                      onChange={e => setCutoffMark(e.target.value)}
+                      placeholder="e.g. 185 (Maths + Physics/2 + Chem/2)"
+                      className="glass-input"
+                      style={{
+                        background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
+                        color: isDark ? 'white' : '#1a1340',
+                      }}
+                    />
+                    <p style={{ fontSize: '11px', color: isDark ? 'rgba(255,255,255,0.35)' : '#7a7399', marginTop: '4px' }}>
+                      💡 Don't know your cutoff?
+                      <a href="/cutoff-calculator" style={{ color: isDark ? '#a89ef8' : '#534AB7', marginLeft: '4px', textDecoration: 'none' }}>
+                        Calculate it →
+                      </a>
+                    </p>
+                  </FormField>
+                </>
+              )}
+
+              {level === 'PG' && (
+                <>
+                  <FormField label="STREAM / EXAM TYPE">
+                    <select value={stream}
+                      onChange={e => setStream(e.target.value)}
+                      className="glass-select"
+                      style={{
+                        background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
+                        color: isDark ? 'white' : '#1a1340',
+                        filter: isDark ? 'invert(1)' : 'none',
+                      }}>
+                      <option value="">Select your PG stream...</option>
+                      <option value="Engineering">Engineering (GATE/TANCET)</option>
+                      <option value="Management">Management (CAT/MAT/XAT)</option>
+                      <option value="Science">Science (JAM/CUET-PG)</option>
+                      <option value="Medical">Medical (NEET-PG/MD)</option>
+                      <option value="Computer">Computer (MCA/NIMCET)</option>
+                      <option value="Law">Law (CLAT-PG/AILET-PG)</option>
+                    </select>
+                  </FormField>
+
+                  {stream === 'Engineering' && (
+                    <FormField label="GATE / TANCET SCORE">
+                      <input type="number"
+                        value={gateScore}
+                        onChange={e => setGateScore(e.target.value)}
+                        placeholder="GATE score (out of 1000) or TANCET marks"
+                        className="glass-input" 
+                        style={{
+                          background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
+                          color: isDark ? 'white' : '#1a1340',
+                        }}
+                      />
+                    </FormField>
+                  )}
+
+                  {stream === 'Management' && (
+                    <FormField label="CAT PERCENTILE">
+                      <input type="number" min="0" max="100" step="0.01"
+                        value={catPercentile}
+                        onChange={e => setCatPercentile(e.target.value)}
+                        placeholder="e.g. 95.4"
+                        className="glass-input" 
+                        style={{
+                          background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
+                          color: isDark ? 'white' : '#1a1340',
+                        }}
+                      />
+                    </FormField>
+                  )}
+
+                  {!stream && (
+                    <FormField label="YOUR GRADUATION PERCENTAGE (%)">
+                      <input type="number" min="0" max="100" step="0.01"
+                        value={percentage}
+                        onChange={e => setPercentage(e.target.value)}
+                        placeholder="e.g. 78"
+                        className="glass-input" 
+                        style={{
+                          background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
+                          color: isDark ? 'white' : '#1a1340',
+                        }}
+                      />
+                    </FormField>
+                  )}
+                </>
+              )}
+
+              {level === 'UG' && (
+                <FormField label="STREAM (OPTIONAL)">
+                  <select value={stream}
+                    onChange={e => setStream(e.target.value)}
+                    className="glass-select"
+                    style={{
+                      background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
+                      color: isDark ? 'white' : '#1a1340',
+                      filter: isDark ? 'invert(1)' : 'none',
+                    }}>
+                    <option value="">All streams</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Medical">Medical / MBBS</option>
+                    <option value="Arts">Arts & Science</option>
+                    <option value="Commerce">Commerce / BBA</option>
+                    <option value="Management">Management</option>
+                    <option value="Law">Law</option>
+                    <option value="Architecture">Architecture</option>
+                    <option value="Pharmacy">Pharmacy</option>
+                    <option value="Nursing">Nursing</option>
+                  </select>
+                </FormField>
+              )}
+
+              <FormField label="PREFERRED STATE">
+                <select value={state}
+                  onChange={e => setState(e.target.value)}
+                  className="glass-select"
+                  style={{
+                    background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
+                    color: isDark ? 'white' : '#1a1340',
+                    filter: isDark ? 'invert(1)' : 'none',
+                  }}>
+                  <option value="">All India</option>
                   <option value="Tamil Nadu">Tamil Nadu</option>
                   <option value="Karnataka">Karnataka</option>
                   <option value="Maharashtra">Maharashtra</option>
                   <option value="Delhi">Delhi</option>
+                  <option value="Andhra Pradesh">Andhra Pradesh</option>
                   <option value="Telangana">Telangana</option>
-                </motion.select>
-              </motion.div>
+                  <option value="Kerala">Kerala</option>
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                  <option value="West Bengal">West Bengal</option>
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                </select>
+              </FormField>
 
-              {/* Category Select */}
-              <motion.div
-                className="mb-8"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
-                  Category
-                </label>
-                <motion.select
-                  value={category}
-                  required
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-5 py-3.5 rounded-xl bg-white/70 backdrop-blur border-2 border-purple-200 text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 font-semibold text-sm"
-                  whileFocus={{ scale: 1.02 }}
-                >
-                  <option value="">Select your category...</option>
-                  <option value="General">General (OC)</option>
+              <FormField label="CATEGORY / QUOTA">
+                <select value={category}
+                  onChange={e => setCategory(e.target.value)}
+                  className="glass-select"
+                  style={{
+                    background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
+                    color: isDark ? 'white' : '#1a1340',
+                    filter: isDark ? 'invert(1)' : 'none',
+                  }}>
+                  <option value="">Select category...</option>
+                  <option value="General">General / OC</option>
                   <option value="OBC">OBC</option>
+                  <option value="BC">BC (Tamil Nadu)</option>
+                  <option value="MBC">MBC (Tamil Nadu)</option>
                   <option value="SC">SC</option>
                   <option value="ST">ST</option>
-                </motion.select>
-              </motion.div>
+                  <option value="EWS">EWS</option>
+                  <option value="NRI">NRI</option>
+                </select>
+              </FormField>
 
-              {/* Submit Button */}
-              <motion.button
+              <FormField label="BUDGET PREFERENCE">
+                <select value={budget}
+                  onChange={e => setBudget(e.target.value)}
+                  className="glass-select"
+                  style={{
+                    background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
+                    color: isDark ? 'white' : '#1a1340',
+                    filter: isDark ? 'invert(1)' : 'none',
+                  }}>
+                  <option value="">Any budget</option>
+                  <option value="govt">Government only (&lt; ₹1L/year)</option>
+                  <option value="medium">Medium (₹1L - ₹2L/year)</option>
+                  <option value="high">Private (₹2L - ₹5L/year)</option>
+                  <option value="premium">Premium (&gt; ₹5L/year)</option>
+                </select>
+              </FormField>
+
+              <button
                 type="submit"
-                disabled={!marks || !state || !category || loading}
-                className="w-full py-4 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {loading ? (
-                  <>
-                    <div className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    ⚡ Find My Colleges
-                  </>
-                )}
-              </motion.button>
-            </motion.form>
-          ) : step === 1 ? (
-            /* Loading State */
-            <motion.div
-              className="flex flex-col items-center justify-center py-20"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <motion.div
-                className="relative w-32 h-32"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-              >
-                <div className="absolute inset-0 rounded-full border-4 border-purple-200" />
-                <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-purple-600 border-r-blue-600" />
-              </motion.div>
-              <motion.p
-                className="mt-8 text-xl font-bold text-gray-700"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                🔮 Our AI is analyzing your profile...
-              </motion.p>
-            </motion.div>
-          ) : (
-            /* Results */
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
-            >
-              <motion.div
-                className="text-center mb-12"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600 mb-2">
-                  ✓ Perfect Match Found!
-                </h2>
-                <p className="text-gray-600 font-semibold">
-                  Here are your top colleges based on your profile
-                </p>
-              </motion.div>
-
-              {colleges.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                  {colleges.map((college: any) => (
-                    <College3DShowcase
-                      key={college.id}
-                      name={college.name}
-                      rank={college.nirf_rank}
-                      package={college.avg_package_lpa}
-                      onClick={() => {
-                        const slug = college.name.toLowerCase().replace(/ /g, "-");
-                        // Store matches in sessionStorage so details page can retrieve it
-                        sessionStorage.setItem('eduanalytics_results', JSON.stringify(colleges));
-                        router.push(`/colleges/${slug}`);
+                disabled={!category || (!percentage && !cutoffMark && !gateScore && !catPercentile)}
+                style={{
+                  width: '100%',
+                  padding: '16px',
+                  borderRadius: '14px',
+                  background: 'linear-gradient(135deg,#7F77DD,#534AB7)',
+                  color: 'white',
+                  border: 'none',
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  cursor: (!category || (!percentage && !cutoffMark && !gateScore && !catPercentile)) ? 'not-allowed' : 'pointer',
+                  marginTop: '8px',
+                  boxShadow: '0 6px 24px rgba(127,119,221,0.35)',
+                  opacity: (!category || (!percentage && !cutoffMark && !gateScore && !catPercentile)) ? 0.6 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                }}>
+                {isLoading ? <Loader2 className="animate-spin" size={20} /> : `⚡ Find My ${level} Colleges`}
+              </button>
+            </form>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {isLoading ? (
+              <div className="col-span-full flex flex-col items-center justify-center py-24">
+                <Loader2 className="w-12 h-12 text-purple-600 animate-spin mb-4" />
+                <p style={{ color: isDark ? 'rgba(255,255,255,0.7)' : '#6b6894' }}>AI is analyzing your profile...</p>
+              </div>
+            ) : results.length > 0 ? (
+              results.map(college => (
+                <div key={college.id} style={{
+                  background: isDark ? 'rgba(255,255,255,0.04)' : 'white',
+                  border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(127,119,221,0.15)',
+                  borderRadius: '20px',
+                  overflow: 'hidden',
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer',
+                }}>
+                  <div style={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '180px',
+                    borderRadius: '16px 16px 0 0',
+                    overflow: 'hidden',
+                    background: 'linear-gradient(135deg, #1a1060, #0d0835)',
+                  }}>
+                    <img
+                      src={`https://source.unsplash.com/400x240/?${encodeURIComponent(college.image_query)}`}
+                      alt={college.name}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.removeAttribute('hidden');
+                      }}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
                       }}
                     />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center bg-white border border-purple-100 rounded-3xl p-12 mb-12">
-                  <p className="text-gray-500 font-bold mb-4">No matching colleges found for your search criteria.</p>
-                </div>
-              )}
 
-              <motion.button
-                onClick={() => setStep(0)}
-                className="w-full py-4 rounded-xl font-bold text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:opacity-90 transition-all shadow-md"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                ← Try Another Prediction
-              </motion.button>
-            </motion.div>
-          )}
-        </div>
+                    <div hidden style={{
+                      position: 'absolute',
+                      inset: 0,
+                      background: `linear-gradient(135deg, hsl(${college.nirf_rank ? (college.nirf_rank * 7) % 360 : 250}, 60%, 25%), hsl(${college.nirf_rank ? (college.nirf_rank * 7 + 60) % 360 : 165}, 60%, 20%))`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexDirection: 'column',
+                      gap: '8px',
+                    }}>
+                      <span style={{
+                        fontSize: '42px',
+                        fontWeight: 800,
+                        color: 'rgba(255,255,255,0.9)',
+                        letterSpacing: '-2px',
+                      }}>
+                        {college.short || college.name.substring(0, 3).toUpperCase()}
+                      </span>
+                      <span style={{
+                        fontSize: '11px',
+                        color: 'rgba(255,255,255,0.5)',
+                        letterSpacing: '0.1em',
+                        textTransform: 'uppercase',
+                      }}>
+                        Est. {college.established}
+                      </span>
+                    </div>
+
+                    {college.nirf_rank && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        background: 'rgba(0,0,0,0.7)',
+                        backdropFilter: 'blur(8px)',
+                        borderRadius: '20px',
+                        padding: '4px 10px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: '#FAC775',
+                        border: '1px solid rgba(250,199,117,0.3)',
+                      }}>
+                        NIRF #{college.nirf_rank}
+                      </div>
+                    )}
+
+                    <div style={{
+                      position: 'absolute',
+                      top: '10px',
+                      left: '10px',
+                      background: college.type === 'Government' ? 'rgba(29,158,117,0.85)' : college.type === 'Deemed' ? 'rgba(127,119,221,0.85)' : 'rgba(186,117,23,0.85)',
+                      backdropFilter: 'blur(8px)',
+                      borderRadius: '20px',
+                      padding: '4px 10px',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      color: 'white',
+                    }}>
+                      {college.type}
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '16px 18px' }}>
+                    <h3 style={{
+                      fontSize: '16px',
+                      fontWeight: 600,
+                      color: isDark ? 'white' : '#1a1340',
+                      marginBottom: '4px',
+                      lineHeight: 1.3,
+                    }}>
+                      {college.name}
+                    </h3>
+
+                    <p style={{
+                      fontSize: '12px',
+                      color: isDark ? 'rgba(255,255,255,0.5)' : '#6b6894',
+                      marginBottom: '10px',
+                    }}>
+                      📍 {college.city}, {college.state}
+                    </p>
+
+                    {college.admissionChance && (
+                      <div style={{ marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                          <span style={{ fontSize: '11px', color: isDark ? 'rgba(255,255,255,0.5)' : '#6b6894' }}>
+                            Admission Chance
+                          </span>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: college.admissionChance.color }}>
+                            {college.admissionChance.chance}
+                          </span>
+                        </div>
+                        <div style={{
+                          height: '5px',
+                          background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(127,119,221,0.1)',
+                          borderRadius: '20px',
+                          overflow: 'hidden',
+                        }}>
+                          <div style={{
+                            height: '100%',
+                            width: `${college.admissionChance.pct}%`,
+                            background: college.admissionChance.color,
+                            borderRadius: '20px',
+                            transition: 'width 0.8s cubic-bezier(0.4,0,0.2,1)',
+                          }} />
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr 1fr',
+                      gap: '8px',
+                      marginBottom: '12px',
+                    }}>
+                      {[
+                        ['NAAC', college.naac_grade],
+                        ['Avg Pkg', college.avg_package],
+                        ['Placed', `${college.placement_pct}%`],
+                      ].map(([label, value]) => (
+                        <div key={label} style={{
+                          background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(127,119,221,0.06)',
+                          borderRadius: '8px',
+                          padding: '6px 8px',
+                          textAlign: 'center',
+                        }}>
+                          <p style={{
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            color: isDark ? 'white' : '#1a1340',
+                            margin: 0,
+                          }}>{value}</p>
+                          <p style={{
+                            fontSize: '10px',
+                            color: isDark ? 'rgba(255,255,255,0.4)' : '#7a7399',
+                            margin: '2px 0 0',
+                            letterSpacing: '0.03em',
+                          }}>{label}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {college.ai_insight && (
+                      <p style={{
+                        fontSize: '12px',
+                        color: isDark ? 'rgba(255,255,255,0.6)' : '#4a4370',
+                        fontStyle: 'italic',
+                        lineHeight: 1.5,
+                        marginBottom: '12px',
+                        padding: '8px 10px',
+                        background: isDark ? 'rgba(29,158,117,0.08)' : 'rgba(29,158,117,0.06)',
+                        borderRadius: '8px',
+                        borderLeft: '2px solid #1D9E75',
+                      }}>
+                        {college.ai_insight}
+                      </p>
+                    )}
+
+                    <div style={{
+                      display: 'flex',
+                      gap: '5px',
+                      flexWrap: 'wrap',
+                      marginBottom: '14px',
+                    }}>
+                      {(level === 'UG' ? college.courses_ug : college.courses_pg)?.slice(0, 4).map(course => (
+                        <span key={course} style={{
+                          fontSize: '11px',
+                          padding: '2px 8px',
+                          borderRadius: '20px',
+                          background: isDark ? 'rgba(127,119,221,0.15)' : 'rgba(127,119,221,0.1)',
+                          color: isDark ? '#a89ef8' : '#534AB7',
+                          border: '1px solid rgba(127,119,221,0.2)',
+                        }}>
+                          {course}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <a
+                        href={college.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          flex: 1,
+                          padding: '8px',
+                          textAlign: 'center',
+                          borderRadius: '10px',
+                          background: 'linear-gradient(135deg,#7F77DD,#534AB7)',
+                          color: 'white',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          textDecoration: 'none',
+                        }}>
+                        Visit Site →
+                      </a>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/compare?college=${college.id}`);
+                        }}
+                        style={{
+                          padding: '8px 12px',
+                          borderRadius: '10px',
+                          background: 'transparent',
+                          border: `1px solid ${isDark ? 'rgba(255,255,255,0.15)' : 'rgba(127,119,221,0.3)'}`,
+                          color: isDark ? 'rgba(255,255,255,0.7)' : '#534AB7',
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                        }}>
+                        Compare
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-20">
+                <p style={{ color: isDark ? 'rgba(255,255,255,0.6)' : '#6b6894' }}>
+                  No matching colleges found. Try adjusting your criteria.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-    </PageTransition>
+    </div>
   );
 }
