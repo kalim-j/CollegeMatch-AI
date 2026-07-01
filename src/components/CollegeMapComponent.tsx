@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { useTheme } from 'next-themes';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -88,6 +89,8 @@ export default function CollegeMapComponent() {
   const [colleges, setColleges] = useState<College[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [mapReady, setMapReady] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
 
   useEffect(() => {
     fetch('/data/colleges-map.json')
@@ -111,7 +114,7 @@ export default function CollegeMapComponent() {
         <div
           style={{
             position: 'absolute', inset: 0, zIndex: 20,
-            background: 'linear-gradient(135deg, #1a1340 0%, #0f0b2a 100%)',
+            background: isDark ? 'linear-gradient(135deg, #1a1340 0%, #0f0b2a 100%)' : 'linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%)',
             borderRadius: 16, display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center', gap: 16,
           }}
@@ -121,7 +124,7 @@ export default function CollegeMapComponent() {
             borderTopColor: '#7F77DD', borderRadius: '50%',
             animation: 'spin 0.9s linear infinite',
           }} />
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600 }}>
+          <p style={{ color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', fontSize: 13, fontWeight: 600 }}>
             Loading college map…
           </p>
         </div>
@@ -131,7 +134,7 @@ export default function CollegeMapComponent() {
       <div
         style={{
           height: 500, borderRadius: 16, overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
           opacity: mapReady ? 1 : 0,
           transition: 'opacity 0.6s ease',
           animation: mapReady ? 'mapFadeIn 0.6s ease both' : 'none',
@@ -145,7 +148,11 @@ export default function CollegeMapComponent() {
           whenReady={() => setMapReady(true)}
         >
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            key={isDark ? 'dark' : 'light'}
+            url={isDark 
+              ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            }
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
           />
           {colleges.length > 0 && <AutoFitBounds colleges={colleges} />}
@@ -185,8 +192,8 @@ export default function CollegeMapComponent() {
       {mapReady && (
         <div style={{
           position: 'absolute', bottom: 12, left: 12, zIndex: 10,
-          background: 'rgba(10,13,36,0.85)', backdropFilter: 'blur(8px)',
-          borderRadius: 10, padding: '8px 12px', border: '1px solid rgba(255,255,255,0.1)',
+          background: isDark ? 'rgba(10,13,36,0.85)' : 'rgba(255,255,255,0.85)', backdropFilter: 'blur(8px)',
+          borderRadius: 10, padding: '8px 12px', border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
           display: 'flex', gap: 12,
         }}>
           {[
@@ -196,7 +203,7 @@ export default function CollegeMapComponent() {
           ].map(({ label, color }) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: color }} />
-              <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>{label}</span>
+              <span style={{ fontSize: 10, color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)', fontWeight: 600 }}>{label}</span>
             </div>
           ))}
         </div>

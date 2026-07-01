@@ -61,7 +61,7 @@ export default function CollegeMapPage() {
   const [showFilters, setShowFilters] = useState(false);
 
   return (
-    <div className="min-h-screen relative" style={{ background: 'linear-gradient(135deg, #0a0d24 0%, #0f0b2a 100%)' }}>
+    <div className="min-h-screen relative bg-gradient-to-br from-indigo-50 to-white dark:from-[#0a0d24] dark:to-[#0f0b2a]">
       <DashboardBackground />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-10 pb-24">
@@ -75,7 +75,7 @@ export default function CollegeMapPage() {
         >
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors text-sm font-semibold"
+            className="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors text-sm font-semibold"
           >
             ← Back to Dashboard
           </Link>
@@ -90,29 +90,27 @@ export default function CollegeMapPage() {
         >
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-3"
-                style={{ background: 'rgba(127,119,221,0.15)', border: '1px solid rgba(127,119,221,0.3)' }}>
-                <MapPin size={13} className="text-purple-400" />
-                <span className="text-xs font-bold text-purple-300 uppercase tracking-widest">Interactive Map</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-3 bg-purple-100 border border-purple-200 dark:bg-purple-900/20 dark:border-purple-500/30">
+                <MapPin size={13} className="text-purple-600 dark:text-purple-400" />
+                <span className="text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-widest">Interactive Map</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-black text-white mb-2">
+              <h1 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-2">
                 College Map{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400">
                   Explorer
                 </span>
               </h1>
-              <p className="text-slate-400 font-medium max-w-lg">
+              <p className="text-gray-600 dark:text-slate-400 font-medium max-w-lg">
                 Explore top colleges across India on an interactive map. Click any pin to see details.
               </p>
             </div>
             <button
               onClick={() => setShowFilters(f => !f)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all"
-              style={{
-                background: showFilters ? 'rgba(127,119,221,0.25)' : 'rgba(255,255,255,0.06)',
-                border: `1px solid ${showFilters ? 'rgba(127,119,221,0.5)' : 'rgba(255,255,255,0.1)'}`,
-                color: showFilters ? '#a78bfa' : 'rgba(255,255,255,0.7)',
-              }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all border ${
+                showFilters 
+                ? "bg-purple-100 border-purple-300 text-purple-700 dark:bg-purple-900/30 dark:border-purple-500/50 dark:text-purple-300"
+                : "bg-white border-gray-200 text-gray-700 dark:bg-white/5 dark:border-white/10 dark:text-white/70 shadow-sm dark:shadow-none"
+              }`}
             >
               {showFilters ? <X size={15} /> : <Filter size={15} />}
               {showFilters ? 'Hide' : 'Filter'} Streams
@@ -130,11 +128,10 @@ export default function CollegeMapPage() {
           {STATS.map((s) => (
             <div
               key={s.label}
-              className="rounded-2xl p-4 text-center"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+              className="rounded-2xl p-4 text-center bg-white border border-gray-200 dark:bg-white/5 dark:border-white/10 shadow-sm dark:shadow-none"
             >
-              <p className="text-2xl font-black text-white">{s.value}</p>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-0.5">{s.label}</p>
+              <p className="text-2xl font-black text-gray-900 dark:text-white">{s.value}</p>
+              <p className="text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase tracking-widest mt-0.5">{s.label}</p>
             </div>
           ))}
         </motion.div>
@@ -153,15 +150,11 @@ export default function CollegeMapPage() {
                 <button
                   key={id}
                   onClick={() => setActiveStream(id)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all"
-                  style={{
-                    background: activeStream === id
-                      ? 'rgba(127,119,221,0.3)'
-                      : 'rgba(255,255,255,0.05)',
-                    border: `1px solid ${activeStream === id ? 'rgba(127,119,221,0.6)' : 'rgba(255,255,255,0.1)'}`,
-                    color: activeStream === id ? '#c4b5fd' : 'rgba(255,255,255,0.55)',
-                    transform: activeStream === id ? 'scale(1.03)' : 'scale(1)',
-                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
+                    activeStream === id
+                      ? 'bg-purple-100 border-purple-300 text-purple-700 dark:bg-purple-900/40 dark:border-purple-500/60 dark:text-purple-300 scale-[1.03] shadow-md dark:shadow-none'
+                      : 'bg-white border-gray-200 text-gray-600 dark:bg-white/5 dark:border-white/10 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/10 scale-100 shadow-sm dark:shadow-none'
+                  }`}
                 >
                   <Icon size={13} />
                   {label}
@@ -176,10 +169,7 @@ export default function CollegeMapPage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="rounded-2xl overflow-hidden"
-          style={{
-            boxShadow: '0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(127,119,221,0.15)',
-          }}
+          className="rounded-2xl overflow-hidden shadow-xl dark:shadow-[0_24px_64px_rgba(0,0,0,0.5),0_0_0_1px_rgba(127,119,221,0.15)] border border-gray-200 dark:border-none"
         >
           <CollegeMapComponent />
         </motion.div>
@@ -198,13 +188,12 @@ export default function CollegeMapPage() {
           ].map(({ icon, label, desc }) => (
             <div
               key={label}
-              className="flex items-center gap-3 rounded-xl p-4"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+              className="flex items-center gap-3 rounded-xl p-4 bg-white border border-gray-200 dark:bg-white/5 dark:border-white/10 shadow-sm dark:shadow-none"
             >
               <span className="text-2xl">{icon}</span>
               <div>
-                <p className="text-sm font-bold text-white">{label}</p>
-                <p className="text-xs text-slate-500">{desc}</p>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">{label}</p>
+                <p className="text-xs text-gray-600 dark:text-slate-500">{desc}</p>
               </div>
             </div>
           ))}
@@ -215,14 +204,10 @@ export default function CollegeMapPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9 }}
-          className="mt-8 p-6 rounded-2xl text-center"
-          style={{
-            background: 'linear-gradient(135deg, rgba(127,119,221,0.2) 0%, rgba(59,130,246,0.15) 100%)',
-            border: '1px solid rgba(127,119,221,0.3)',
-          }}
+          className="mt-8 p-6 rounded-2xl text-center bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 dark:from-purple-900/20 dark:to-blue-900/15 dark:border-purple-500/30 shadow-sm dark:shadow-none"
         >
-          <h3 className="text-xl font-bold text-white mb-2">Ready to find your college?</h3>
-          <p className="text-slate-400 text-sm mb-4">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Ready to find your college?</h3>
+          <p className="text-gray-600 dark:text-slate-400 text-sm mb-4">
             Let our AI analyze your marks, preferences, and budget to recommend the best colleges for you.
           </p>
           <Link
