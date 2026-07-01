@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
+import SelectField from "@/components/SelectField";
 
 export default function ContactPage() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -116,18 +117,18 @@ export default function ContactPage() {
                       <Zap size={12} className="text-purple-600" /> Intelligence Subject
                     </label>
                     <div className="relative">
-                      <select 
+                      <SelectField
                           value={formData.subject}
-                          onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                          className="w-full h-14 bg-white border border-purple-200 rounded-2xl px-6 text-gray-900 font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 appearance-none cursor-pointer transition-all"
-                      >
-                          <option className="bg-white text-gray-800">General Inquiry</option>
-                          <option className="bg-white text-gray-800">Direct Admission Help</option>
-                          <option className="bg-white text-gray-800">JEE/TNEA Counseling</option>
-                          <option className="bg-white text-gray-800">Bug Report</option>
-                          <option className="bg-white text-gray-800">Other</option>
-                      </select>
-                      <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={18} />
+                          onChange={(v) => setFormData({...formData, subject: v})}
+                          options={[
+                            { value: "General Inquiry", label: "General Inquiry" },
+                            { value: "Direct Admission Help", label: "Direct Admission Help" },
+                            { value: "JEE/TNEA Counseling", label: "JEE/TNEA Counseling" },
+                            { value: "Bug Report", label: "Bug Report" },
+                            { value: "Other", label: "Other" }
+                          ]}
+                          placeholder="Select subject"
+                      />
                     </div>
                 </div>
 

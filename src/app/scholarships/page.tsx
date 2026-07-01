@@ -15,6 +15,7 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 import DashboardBackground from "@/components/3D/DashboardBackground";
+import SelectField from "@/components/SelectField";
 
 const INDIAN_STATES = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
@@ -147,16 +148,11 @@ export default function ScholarshipFinder() {
                 <label className="text-[10px] font-black text-gray-500 dark:text-gray-300 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                   <f.icon size={12} className="text-indigo-500" /> {f.label}
                 </label>
-                <div className="relative">
-                  <select
-                    value={formData[f.key as keyof typeof formData]}
-                    onChange={(e) => setFormData({ ...formData, [f.key]: e.target.value })}
-                    className="w-full h-16 bg-white/70 dark:bg-white/[0.05] border border-purple-250/20 dark:border-white/10 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-indigo-500/50 appearance-none transition-all cursor-pointer"
-                  >
-                    {f.options.map(o => <option key={o} value={o} className="bg-white dark:bg-[#05071a] text-gray-900 dark:text-white">{o}</option>)}
-                  </select>
-                  <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" size={16} />
-                </div>
+                <SelectField
+                  value={formData[f.key as keyof typeof formData]}
+                  onChange={(v) => setFormData({ ...formData, [f.key]: v })}
+                  options={f.options.map(o => ({ value: o, label: o }))}
+                />
               </div>
             ))}
 

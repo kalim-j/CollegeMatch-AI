@@ -21,6 +21,7 @@ import { College, StudentProfile } from "@/types";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import ShareCard from "@/components/ShareCard";
+import SelectField from "@/components/SelectField";
 
 const UG_STREAMS = ["Engineering", "Medical", "Arts & Science", "Commerce", "Law", "Agriculture", "Architecture", "Pharmacy", "Nursing", "Education", "Hotel Management", "Design", "MBA (Integrated)", "Other"];
 const PG_STREAMS = ["ME/MTech", "MD/MS", "MSc", "MA", "MBA", "MCA", "LLM", "MPharm", "MEd", "Other"];
@@ -439,24 +440,21 @@ export default function InterviewPage() {
                 </div>
                 <div className="space-y-4">
                     <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">COLLEGE STATE</label>
-                    <select 
-                        className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
+                    <SelectField
                         value={formData.state}
-                        onChange={(e) => updateForm({ state: e.target.value, district: "" })}
-                    >
-                        {Object.keys(stateDistricts).map(s => <option key={s} value={s} className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-white">{s}</option>)}
-                    </select>
+                        onChange={(v) => updateForm({ state: v, district: "" })}
+                        options={Object.keys(stateDistricts).map(s => ({ value: s, label: s }))}
+                        placeholder="Select a state"
+                    />
                 </div>
                 <div className="space-y-4">
                     <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">COLLEGE DISTRICT</label>
-                    <select 
-                        className="w-full h-16 bg-white/50 dark:bg-white/[0.05] border border-purple-250/30 dark:border-purple-900/30 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-amber-500/50 appearance-none cursor-pointer"
+                    <SelectField
                         value={formData.district}
-                        onChange={(e) => updateForm({ district: e.target.value })}
-                    >
-                        <option value="" className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-white">District where you want to study</option>
-                        {(stateDistricts[formData.state!] || []).map(d => <option key={d} value={d} className="bg-white dark:bg-[#0a0d14] text-gray-900 dark:text-white">{d}</option>)}
-                    </select>
+                        onChange={(v) => updateForm({ district: v })}
+                        options={(stateDistricts[formData.state] || []).map((d: string) => ({ value: d, label: d }))}
+                        placeholder="District where you want to study"
+                    />
                 </div>
                 <p style={{
                   fontSize: '12px',

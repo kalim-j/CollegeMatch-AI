@@ -12,6 +12,7 @@ import {
   CheckCircle2, Lightbulb, Target, ShieldCheck, Zap
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import SelectField from "@/components/SelectField";
 
 const STREAMS = [
   "Engineering & Technology", "Medical & Health Sciences", "Science & Research",
@@ -126,32 +127,22 @@ export default function EntranceExamGuide() {
               <label className="text-[10px] font-black text-gray-400 dark:text-gray-300 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                 <GraduationCap size={12} className="text-purple-600" /> Academic Level
               </label>
-              <div className="relative">
-                <select
-                  value={formData.level}
-                  onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                  className="w-full h-16 bg-white dark:bg-[#05071a] border border-purple-200 dark:border-[rgba(255,255,255,0.10)] rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 appearance-none cursor-pointer transition-all"
-                >
-                  {COURSE_LEVELS.map(l => <option key={l} value={l} className="bg-white dark:bg-[#05071a] text-gray-800 dark:text-white">{l}</option>)}
-                </select>
-                <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-              </div>
+              <SelectField
+                value={formData.level}
+                onChange={(v) => setFormData({ ...formData, level: v })}
+                options={COURSE_LEVELS.map(l => ({ value: l, label: l }))}
+              />
             </div>
 
             <div className="space-y-3">
               <label className="text-[10px] font-black text-gray-400 dark:text-gray-300 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
                 <BookOpen size={12} className="text-purple-600" /> Subject Stream
               </label>
-              <div className="relative">
-                <select
-                  value={formData.stream}
-                  onChange={(e) => setFormData({ ...formData, stream: e.target.value })}
-                  className="w-full h-16 bg-white dark:bg-[#05071a] border border-purple-200 dark:border-[rgba(255,255,255,0.10)] rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 appearance-none cursor-pointer transition-all"
-                >
-                  {STREAMS.map(s => <option key={s} value={s} className="bg-white dark:bg-[#05071a] text-gray-800 dark:text-white">{s}</option>)}
-                </select>
-                <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-              </div>
+              <SelectField
+                value={formData.stream}
+                onChange={(v) => setFormData({ ...formData, stream: v })}
+                options={STREAMS.map(s => ({ value: s, label: s }))}
+              />
             </div>
 
             <div className="md:col-span-2 pt-6">
@@ -196,16 +187,15 @@ export default function EntranceExamGuide() {
               <div className="flex items-center gap-2 text-gray-400 dark:text-gray-300 text-[10px] font-black uppercase tracking-widest">
                 <ArrowUpDown size={14} className="text-purple-600" /> Sequence Logic:
               </div>
-              <div className="relative">
-                <select
+              <div style={{ width: '200px' }}>
+                <SelectField
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-white dark:bg-[#05071a] border border-purple-200 dark:border-[rgba(255,255,255,0.2)] rounded-xl px-6 py-2.5 text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 appearance-none cursor-pointer"
-                >
-                  <option value="importance" className="bg-white dark:bg-[#05071a] text-gray-800 dark:text-white">Impact Priority</option>
-                  <option value="name" className="bg-white dark:bg-[#05071a] text-gray-800 dark:text-white">Alphabetic Sequence</option>
-                </select>
-                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
+                  onChange={setSortBy}
+                  options={[
+                    { value: 'importance', label: 'Impact Priority' },
+                    { value: 'name', label: 'Alphabetic Sequence' }
+                  ]}
+                />
               </div>
             </div>
           </div>

@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import SelectField from '@/components/SelectField';
 
 interface College {
   id: string;
@@ -397,24 +398,21 @@ export default function PredictorPage() {
 
               {level === 'PG' && (
                 <>
-                  <FormField label="STREAM / EXAM TYPE">
-                    <select value={stream}
-                      onChange={e => setStream(e.target.value)}
-                      className="glass-select"
-                      style={{
-                        background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
-                        color: isDark ? 'white' : '#1a1340',
-                        filter: isDark ? 'invert(1)' : 'none',
-                      }}>
-                      <option value="">Select your PG stream...</option>
-                      <option value="Engineering">Engineering (GATE/TANCET)</option>
-                      <option value="Management">Management (CAT/MAT/XAT)</option>
-                      <option value="Science">Science (JAM/CUET-PG)</option>
-                      <option value="Medical">Medical (NEET-PG/MD)</option>
-                      <option value="Computer">Computer (MCA/NIMCET)</option>
-                      <option value="Law">Law (CLAT-PG/AILET-PG)</option>
-                    </select>
-                  </FormField>
+                  <SelectField
+                    label="STREAM / EXAM TYPE"
+                    value={stream}
+                    onChange={setStream}
+                    placeholder="Select your PG stream..."
+                    options={[
+                      { value: '', label: 'Select your PG stream...', disabled: true },
+                      { value: 'Engineering', label: 'Engineering (GATE/TANCET)' },
+                      { value: 'Management', label: 'Management (CAT/MAT/XAT)' },
+                      { value: 'Science', label: 'Science (JAM/CUET-PG)' },
+                      { value: 'Medical', label: 'Medical (NEET-PG/MD)' },
+                      { value: 'Computer', label: 'Computer (MCA/NIMCET)' },
+                      { value: 'Law', label: 'Law (CLAT-PG/AILET-PG)' },
+                    ]}
+                  />
 
                   {stream === 'Engineering' && (
                     <FormField label="GATE / TANCET SCORE">
@@ -464,90 +462,78 @@ export default function PredictorPage() {
               )}
 
               {level === 'UG' && (
-                <FormField label="STREAM (OPTIONAL)">
-                  <select value={stream}
-                    onChange={e => setStream(e.target.value)}
-                    className="glass-select"
-                    style={{
-                      background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
-                      color: isDark ? 'white' : '#1a1340',
-                      filter: isDark ? 'invert(1)' : 'none',
-                    }}>
-                    <option value="">All streams</option>
-                    <option value="Engineering">Engineering</option>
-                    <option value="Medical">Medical / MBBS</option>
-                    <option value="Arts">Arts & Science</option>
-                    <option value="Commerce">Commerce / BBA</option>
-                    <option value="Management">Management</option>
-                    <option value="Law">Law</option>
-                    <option value="Architecture">Architecture</option>
-                    <option value="Pharmacy">Pharmacy</option>
-                    <option value="Nursing">Nursing</option>
-                  </select>
-                </FormField>
+                <SelectField
+                  label="STREAM (OPTIONAL)"
+                  value={stream}
+                  onChange={setStream}
+                  placeholder="All streams"
+                  options={[
+                    { value: '', label: 'All streams' },
+                    { value: 'Engineering', label: 'Engineering' },
+                    { value: 'Medical', label: 'Medical / MBBS' },
+                    { value: 'Arts', label: 'Arts & Science' },
+                    { value: 'Commerce', label: 'Commerce / BBA' },
+                    { value: 'Management', label: 'Management' },
+                    { value: 'Law', label: 'Law' },
+                    { value: 'Architecture', label: 'Architecture' },
+                    { value: 'Pharmacy', label: 'Pharmacy' },
+                    { value: 'Nursing', label: 'Nursing' },
+                  ]}
+                />
               )}
 
-              <FormField label="PREFERRED STATE">
-                <select value={state}
-                  onChange={e => setState(e.target.value)}
-                  className="glass-select"
-                  style={{
-                    background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
-                    color: isDark ? 'white' : '#1a1340',
-                    filter: isDark ? 'invert(1)' : 'none',
-                  }}>
-                  <option value="">All India</option>
-                  <option value="Tamil Nadu">Tamil Nadu</option>
-                  <option value="Karnataka">Karnataka</option>
-                  <option value="Maharashtra">Maharashtra</option>
-                  <option value="Delhi">Delhi</option>
-                  <option value="Andhra Pradesh">Andhra Pradesh</option>
-                  <option value="Telangana">Telangana</option>
-                  <option value="Kerala">Kerala</option>
-                  <option value="Gujarat">Gujarat</option>
-                  <option value="Rajasthan">Rajasthan</option>
-                  <option value="West Bengal">West Bengal</option>
-                  <option value="Uttar Pradesh">Uttar Pradesh</option>
-                </select>
-              </FormField>
+              <SelectField
+                label="PREFERRED STATE"
+                value={state}
+                onChange={setState}
+                placeholder="All India"
+                options={[
+                  { value: '', label: 'All India' },
+                  { value: 'Tamil Nadu', label: 'Tamil Nadu' },
+                  { value: 'Karnataka', label: 'Karnataka' },
+                  { value: 'Maharashtra', label: 'Maharashtra' },
+                  { value: 'Delhi', label: 'Delhi' },
+                  { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
+                  { value: 'Telangana', label: 'Telangana' },
+                  { value: 'Kerala', label: 'Kerala' },
+                  { value: 'Gujarat', label: 'Gujarat' },
+                  { value: 'Rajasthan', label: 'Rajasthan' },
+                  { value: 'West Bengal', label: 'West Bengal' },
+                  { value: 'Uttar Pradesh', label: 'Uttar Pradesh' },
+                ]}
+              />
 
-              <FormField label="CATEGORY / QUOTA">
-                <select value={category}
-                  onChange={e => setCategory(e.target.value)}
-                  className="glass-select"
-                  style={{
-                    background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
-                    color: isDark ? 'white' : '#1a1340',
-                    filter: isDark ? 'invert(1)' : 'none',
-                  }}>
-                  <option value="">Select category...</option>
-                  <option value="General">General / OC</option>
-                  <option value="OBC">OBC</option>
-                  <option value="BC">BC (Tamil Nadu)</option>
-                  <option value="MBC">MBC (Tamil Nadu)</option>
-                  <option value="SC">SC</option>
-                  <option value="ST">ST</option>
-                  <option value="EWS">EWS</option>
-                  <option value="NRI">NRI</option>
-                </select>
-              </FormField>
+              <SelectField
+                label="CATEGORY / QUOTA"
+                value={category}
+                onChange={setCategory}
+                placeholder="Select category..."
+                options={[
+                  { value: '', label: 'Select category...', disabled: true },
+                  { value: 'General', label: 'General / OC' },
+                  { value: 'OBC', label: 'OBC' },
+                  { value: 'BC', label: 'BC (Tamil Nadu)' },
+                  { value: 'MBC', label: 'MBC (Tamil Nadu)' },
+                  { value: 'SC', label: 'SC' },
+                  { value: 'ST', label: 'ST' },
+                  { value: 'EWS', label: 'EWS' },
+                  { value: 'NRI', label: 'NRI' },
+                ]}
+              />
 
-              <FormField label="BUDGET PREFERENCE">
-                <select value={budget}
-                  onChange={e => setBudget(e.target.value)}
-                  className="glass-select"
-                  style={{
-                    background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
-                    color: isDark ? 'white' : '#1a1340',
-                    filter: isDark ? 'invert(1)' : 'none',
-                  }}>
-                  <option value="">Any budget</option>
-                  <option value="govt">Government only (&lt; ₹1L/year)</option>
-                  <option value="medium">Medium (₹1L - ₹2L/year)</option>
-                  <option value="high">Private (₹2L - ₹5L/year)</option>
-                  <option value="premium">Premium (&gt; ₹5L/year)</option>
-                </select>
-              </FormField>
+              <SelectField
+                label="BUDGET PREFERENCE"
+                value={budget}
+                onChange={setBudget}
+                placeholder="Any budget"
+                options={[
+                  { value: '', label: 'Any budget' },
+                  { value: 'govt', label: 'Government only (< ₹1L/year)' },
+                  { value: 'medium', label: 'Medium (₹1L - ₹2L/year)' },
+                  { value: 'high', label: 'Private (₹2L - ₹5L/year)' },
+                  { value: 'premium', label: 'Premium (> ₹5L/year)' },
+                ]}
+              />
 
               <button
                 type="submit"

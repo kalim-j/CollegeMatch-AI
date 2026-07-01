@@ -21,6 +21,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { stateDistricts } from "@/data/stateDistricts";
+import SelectField from "@/components/SelectField";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -100,57 +101,6 @@ const VERDICT_CONFIG = {
   },
 };
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function SelectField({
-  label,
-  value,
-  onChange,
-  options,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  options: string[];
-  placeholder?: string;
-}) {
-  return (
-    <div className="space-y-2">
-      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-        {label}
-      </label>
-      <div className="relative">
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className={cn(
-            "w-full h-14 px-5 pr-10 rounded-2xl appearance-none",
-            "bg-white/80 border border-purple-200 text-gray-900",
-            "focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 focus:outline-none",
-            "transition-all font-bold text-sm",
-            !value && "text-gray-400"
-          )}
-        >
-          {placeholder && (
-            <option value="" disabled className="bg-white text-gray-400">
-              {placeholder}
-            </option>
-          )}
-          {options.map((opt) => (
-            <option key={opt} value={opt} className="bg-white text-gray-800">
-              {opt}
-            </option>
-          ))}
-        </select>
-        <ChevronDown
-          size={14}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-        />
-      </div>
-    </div>
-  );
-}
 
 // ─── Input Field ──────────────────────────────────────────────────────────────
 
@@ -405,7 +355,7 @@ export default function PredictPage() {
                 label="Community"
                 value={form.community}
                 onChange={setField("community")}
-                options={COMMUNITIES}
+                options={COMMUNITIES.map(c => ({ value: c, label: c }))}
                 placeholder="Select community"
               />
             </div>
@@ -416,14 +366,14 @@ export default function PredictPage() {
                 label="Stream"
                 value={form.stream}
                 onChange={setField("stream")}
-                options={STREAMS}
+                options={STREAMS.map(s => ({ value: s, label: s }))}
                 placeholder="Select stream"
               />
               <SelectField
                 label="State"
                 value={form.state}
                 onChange={setField("state")}
-                options={STATE_OPTIONS}
+                options={STATE_OPTIONS.map(s => ({ value: s, label: s }))}
                 placeholder="Select state"
               />
             </div>
