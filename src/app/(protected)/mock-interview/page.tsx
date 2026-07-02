@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Mic, MicOff, Send, UserCircle, Bot, Loader2, Sparkles, CheckCircle2, PlayCircle } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import PageTransition from '@/components/3D/PageTransition';
+import { toast } from 'sonner';
 
 interface Message {
   role: 'system' | 'user' | 'interviewer';
@@ -54,8 +55,10 @@ export default function MockInterviewPage() {
       const data = await res.json();
       
       setMessages(prev => [...prev, { role: 'interviewer', content: data.question }]);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      toast.error(err.message || 'Failed to connect to AI');
+      setSessionActive(false);
     } finally {
       setLoading(false);
     }
@@ -98,8 +101,9 @@ export default function MockInterviewPage() {
         setMessages(prev => [...prev, { role: 'system', content: 'Interview completed! Great job.' }]);
         setSessionActive(false);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      toast.error(err.message || 'Failed to evaluate answer');
     } finally {
       setLoading(false);
     }

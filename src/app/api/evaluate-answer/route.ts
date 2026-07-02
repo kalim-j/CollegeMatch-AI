@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { callOpenRouter, parseJSON } from '@/lib/openrouter';
+import { groq } from '@/lib/groq';
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,13 +22,29 @@ Evaluate the answer. Provide your response strictly as a JSON object with this s
 
 Ensure the response is ONLY valid JSON without markdown wrapping.`;
 
-    const rawResponse = await callOpenRouter(
-      'You are a precise evaluator who only outputs JSON.', 
-      prompt,
-      1500
-    );
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: 'system', content: 'You are a precise evaluator who only outputs JSON. DO NOT wrap with markdown, just return the raw JSON braces.' },
+        { role: 'user', content: prompt }
+      ],
+      model: 'llama3-70b-8192',
+      temperature: 0.2,
+      max_tokens: 1500,
+    });
     
-    const parsedData = parseJSON(rawResponse);
+    let rawResponse = chatCompletion.choices[0]?.message?.content || "{}";
+    rawResponse = rawResponse.replace(/```json\n?/gi,'').replace(/```\n?/gi,'').trim();
+    const start = rawResponse.search(/[\[{]/);
+    const end = Math.max(rawResponse.lastIndexOf('}'), rawResponse.lastIndexOf(']'));
+    let parsedData = { score: 5, feedback: "Unable to parse feedback properly, but keep practicing!", ideal_points: [] };
+    if (start !== -1 && end !== -1) {
+      try {
+        parsedData = JSON.parse(rawResponse.slice(start, end+1));
+      } catch (e) {
+        console.error("JSON parse error", e, rawResponse);
+      }
+    }
+
     return NextResponse.json(parsedData);
     
   } catch (error: any) {
