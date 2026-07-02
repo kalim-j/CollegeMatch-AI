@@ -18,7 +18,7 @@ export default function SOPGeneratorPage() {
   const sopRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
-    fullName: profile?.name || '',
+    fullName: profile?.fullName || '',
     course: 'M.S. in Computer Science',
     university: 'Stanford University',
     background: 'B.Tech in Information Technology with 8.5 CGPA from XYZ University. Completed internships at TechCorp.',
