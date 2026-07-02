@@ -323,8 +323,16 @@ export default function MockInterviewPage() {
                   <SelectField
                     value={stream}
                     onChange={setStream}
-                    options={['Engineering', 'Medical', 'Commerce', 'Arts', 'Law', 'Management', 'Other']}
                     placeholder="Select your target stream"
+                    options={[
+                      { label: 'Engineering', value: 'Engineering' },
+                      { label: 'Medical', value: 'Medical' },
+                      { label: 'Commerce', value: 'Commerce' },
+                      { label: 'Arts', value: 'Arts' },
+                      { label: 'Law', value: 'Law' },
+                      { label: 'Management', value: 'Management' },
+                      { label: 'Other', value: 'Other' }
+                    ]}
                     icon={<BookOpen size={16} />}
                   />
                 </div>
