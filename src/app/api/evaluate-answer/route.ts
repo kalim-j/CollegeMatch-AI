@@ -27,7 +27,7 @@ Ensure the response is ONLY valid JSON without markdown wrapping.`;
         { role: 'system', content: 'You are a precise evaluator who only outputs JSON. DO NOT wrap with markdown, just return the raw JSON braces.' },
         { role: 'user', content: prompt }
       ],
-      model: 'llama3-70b-8192',
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.2,
       max_tokens: 1500,
     });

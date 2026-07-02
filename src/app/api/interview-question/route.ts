@@ -19,7 +19,7 @@ DO NOT include any pleasantries, greetings, or other text. ONLY return the exact
         { role: 'system', content: 'You are an admissions interviewer. Only output the question.' },
         { role: 'user', content: prompt }
       ],
-      model: 'llama3-70b-8192',
+      model: 'llama-3.3-70b-versatile',
       temperature: 0.7,
       max_tokens: 500,
     });

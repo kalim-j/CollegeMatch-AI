@@ -1,7 +1,7 @@
 import { groq } from '@/lib/groq';
 
-export const PRIMARY_MODEL = 'llama3-70b-8192';
-export const FALLBACK_MODELS = ['llama3-8b-8192'];
+export const PRIMARY_MODEL = 'llama-3.3-70b-versatile';
+export const FALLBACK_MODELS = ['llama-3.1-8b-instant'];
 
 export async function callOpenRouter(
   systemPrompt: string,
