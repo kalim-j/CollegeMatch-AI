@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { callOpenRouter } from '@/lib/openrouter';
 
 export async function GET() {
   const key = process.env.OPENROUTER_API_KEY;
@@ -11,46 +12,13 @@ export async function GET() {
   }
 
   try {
-    const res = await fetch(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${key}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://collegematch-ai.vercel.app',
-          'X-Title': 'CollegeMatch-AI',
-        },
-        body: JSON.stringify({
-          models: [
-            'google/gemma-4-26b-a4b-it:free',
-            'meta-llama/llama-3.3-70b-instruct:free',
-            'poolside/laguna-xs.2:free'
-          ],
-          messages: [{ role: 'user', content: 'Say: working' }],
-          max_tokens: 10,
-        }),
-      }
-    );
-
-    const text = await res.text();
-
-    if (!res.ok) {
-      return NextResponse.json({
-        success: false,
-        status: res.status,
-        body: text,
-        keyPreview: key.slice(0, 15) + '...',
-      });
-    }
-
-    const data = JSON.parse(text);
+    const reply = await callOpenRouter('You are a test assistant.', 'Say: working', 10);
     return NextResponse.json({
       success: true,
-      reply: data.choices?.[0]?.message?.content,
+      reply,
       keyPreview: key.slice(0, 15) + '...',
     });
-  } catch (e) {
-    return NextResponse.json({ success: false, error: String(e) });
+  } catch (e: any) {
+    return NextResponse.json({ success: false, error: e.message || String(e) });
   }
 }

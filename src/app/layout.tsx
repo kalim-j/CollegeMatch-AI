@@ -10,6 +10,7 @@ import GlobalChatWrapper from "@/components/GlobalChatWrapper";
 import InstallPrompt from "@/components/InstallPrompt";
 import BottomNav from "@/components/BottomNav";
 import PageCanvas3D from "@/components/PageCanvas3D";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
 
 const jakarta = Plus_Jakarta_Sans({ 
   subsets: ["latin"],
@@ -145,6 +146,7 @@ export default function RootLayout({
           <Toaster position="top-center" richColors />
           <GlobalChatWrapper />
           <InstallPrompt />
+          <WhatsAppWidget />
           <BottomNav />
         </Providers>
       </body>

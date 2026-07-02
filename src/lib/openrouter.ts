@@ -1,121 +1,57 @@
-const OPENROUTER_BASE = 'https://openrouter.ai/api/v1';
-
-// Working free models on OpenRouter as of 2026
-// Listed in priority order — first one is tried first
-export const FREE_MODELS = [
-  'deepseek/deepseek-v4-flash:free',
-  'minimax/minimax-m2.5:free',
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'google/gemma-4-31b-it:free',
-  'qwen/qwen3-coder:free',
-  'nousresearch/hermes-3-llama-3.1-405b:free',
+export const PRIMARY_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
+export const FALLBACK_MODELS = [
+  'meta-llama/llama-3.1-8b-instruct:free',
+  'mistralai/mistral-7b-instruct:free',
+  'google/gemma-2-9b-it:free',
 ];
-
-export const PRIMARY_MODEL = FREE_MODELS[0];
 
 export async function callOpenRouter(
   systemPrompt: string,
   userMessage: string,
-  model: string = PRIMARY_MODEL
+  maxTokens = 2000,
+  model = PRIMARY_MODEL,
+  history: { role: string; content: string }[] = []
 ): Promise<string> {
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  const key = process.env.OPENROUTER_API_KEY;
+  if (!key) throw new Error('OPENROUTER_API_KEY not set');
 
-  if (!apiKey) {
-    throw new Error('OPENROUTER_API_KEY is not set in environment variables');
-  }
-
-  const response = await fetch(`${OPENROUTER_BASE}/chat/completions`, {
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
+      Authorization: `Bearer ${key}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': 'https://collegematch-ai.vercel.app',
       'X-Title': 'CollegeMatch-AI',
     },
     body: JSON.stringify({
-      model: model,
+      model,
       messages: [
         { role: 'system', content: systemPrompt },
+        ...history,
         { role: 'user', content: userMessage },
       ],
-      max_tokens: 4000,
+      max_tokens: maxTokens,
       temperature: 0.7,
     }),
   });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`OpenRouter error with model ${model}:`, errorText);
-
-    // Ultimate fallback to Groq if the OpenRouter request fails (to prevent 10s Vercel timeouts)
-    if (process.env.GROQ_API_KEY) {
-      console.log('OpenRouter model failed. Falling back to Groq immediately to prevent timeout...');
-      try {
-        const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userMessage },
-            ],
-            temperature: 0.7,
-            max_tokens: 4000,
-          }),
-
-        });
-
-        if (groqResponse.ok) {
-          const groqData = await groqResponse.json();
-          if (groqData.choices && groqData.choices.length > 0) {
-            console.log('Groq fallback successful!');
-            return groqData.choices[0].message.content;
-          }
-        } else {
-          console.error('Groq fallback failed status:', groqResponse.status, await groqResponse.text());
-        }
-      } catch (groqError) {
-        console.error('Groq fallback error:', groqError);
-      }
+  if (!res.ok) {
+    const err = await res.text();
+    if (res.status === 404 && model !== FALLBACK_MODELS[FALLBACK_MODELS.length-1]) {
+      const next = FALLBACK_MODELS[FALLBACK_MODELS.indexOf(model)+1] || FALLBACK_MODELS[0];
+      return callOpenRouter(systemPrompt, userMessage, maxTokens, next);
     }
-
-    // Try fallback OpenRouter models only if Groq key isn't set
-    const modelIndex = FREE_MODELS.indexOf(model);
-    if (modelIndex !== -1 && modelIndex < FREE_MODELS.length - 1) {
-      const nextModel = FREE_MODELS[modelIndex + 1];
-      console.log(`Trying fallback model: ${nextModel}`);
-      return callOpenRouter(systemPrompt, userMessage, nextModel);
-    }
-
-    throw new Error(`OpenRouter API error: ${response.status} ${errorText}`);
+    throw new Error(`OpenRouter ${res.status}: ${err}`);
   }
 
-
-
-
-  const data = await response.json();
-
-  if (!data.choices || data.choices.length === 0) {
-    throw new Error('No response from OpenRouter API');
-  }
-
-  return data.choices[0].message.content;
+  const data = await res.json();
+  return data?.choices?.[0]?.message?.content ?? '';
 }
 
-export function parseJSON(text: string): any {
-  const clean = text
-    .replace(/```json\n?/gi, '')
-    .replace(/```\n?/g, '')
-    .trim();
-  try {
-    return JSON.parse(clean);
-  } catch {
-    const match = clean.match(/[\[{][\s\S]*[\]}]/);
-    if (match) return JSON.parse(match[0]);
-    throw new Error('Could not parse AI JSON response');
-  }
+export function parseJSON<T>(text: string): T {
+  const clean = text.replace(/```json\n?/gi,'').replace(/```\n?/gi,'').trim();
+  const start = clean.search(/[\[{]/);
+  const end = Math.max(clean.lastIndexOf('}'), clean.lastIndexOf(']'));
+  if (start === -1 || end === -1) throw new Error('No JSON in response');
+  return JSON.parse(clean.slice(start, end+1)) as T;
 }

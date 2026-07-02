@@ -3,6 +3,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import Scholarship3DCard from '@/components/3D/Scholarship3DCard';
 import PageTransition from '@/components/3D/PageTransition';
+import { SelectField } from '@/components/SelectField';
 
 type Scholarship = {
   id: number;
@@ -270,72 +271,44 @@ export default function ScholarshipsPage() {
             <div>
               <label className="text-xs text-gray-400 uppercase 
                 tracking-wider mb-2 block">Stream</label>
-              <select
+              <SelectField
                 value={stream}
-                onChange={e => setStream(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl text-sm
-                  bg-white border border-purple-200 text-gray-900
-                  focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 focus:outline-none transition"
-              >
-                {STREAMS.map(s => (
-                  <option key={s} value={s}
-                    className="bg-white text-gray-800">{s}</option>
-                ))}
-              </select>
+                onChange={val => setStream(val)}
+                options={STREAMS.map(s => ({ value: s, label: s }))}
+              />
             </div>
 
             {/* Category */}
             <div>
               <label className="text-xs text-gray-400 uppercase
                 tracking-wider mb-2 block">Category</label>
-              <select
+              <SelectField
                 value={category}
-                onChange={e => setCategory(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl text-sm
-                  bg-white border border-purple-200 text-gray-900
-                  focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 focus:outline-none transition"
-              >
-                {CATEGORIES.map(c => (
-                  <option key={c} value={c}
-                    className="bg-white text-gray-800">{c}</option>
-                ))}
-              </select>
+                onChange={val => setCategory(val)}
+                options={CATEGORIES.map(c => ({ value: c, label: c }))}
+              />
             </div>
 
             {/* Level */}
             <div>
               <label className="text-xs text-gray-400 uppercase
                 tracking-wider mb-2 block">Level</label>
-              <select
+              <SelectField
                 value={level}
-                onChange={e => setLevel(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl text-sm
-                  bg-white border border-purple-200 text-gray-900
-                  focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 focus:outline-none transition"
-              >
-                {LEVELS.map(l => (
-                  <option key={l} value={l}
-                    className="bg-white text-gray-800">{l}</option>
-                ))}
-              </select>
+                onChange={val => setLevel(val)}
+                options={LEVELS.map(l => ({ value: l, label: l }))}
+              />
             </div>
 
             {/* State */}
             <div>
               <label className="text-xs text-gray-400 uppercase
                 tracking-wider mb-2 block">State</label>
-              <select
+              <SelectField
                 value={state}
-                onChange={e => setState(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl text-sm
-                  bg-white border border-purple-200 text-gray-900
-                  focus:ring-2 focus:ring-purple-250/20 focus:border-purple-400 focus:outline-none transition"
-              >
-                {STATES.map(s => (
-                  <option key={s} value={s}
-                    className="bg-white text-gray-800">{s}</option>
-                ))}
-              </select>
+                onChange={val => setState(val)}
+                options={STATES.map(s => ({ value: s, label: s }))}
+              />
             </div>
           </div>
 

@@ -7,21 +7,16 @@ import { Button } from "./ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { 
-  GraduationCap, LayoutDashboard, History, User, 
-  Phone, LogOut, Menu, X, Zap, Sparkles, 
-  ArrowLeftRight, TrendingUp, Settings, ChevronDown,
-  Search, Award, MessageSquare, Briefcase, MapPin,
-  Sun, Moon
+  Menu, X, ChevronDown, LogOut, Sun, Moon, Bell, Globe
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import Logo from "./Logo";
 import { isAdminEmail } from "@/lib/admin";
 import { useTheme } from "next-themes";
+import { t, setLanguage } from "@/lib/i18n";
 
 export function Navbar() {
   const { user, profile } = useAuth();
@@ -29,12 +24,15 @@ export function Navbar() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [pendingLeads, setPendingLeads] = useState(0);
-  const [scrolled, setScrolled] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(2);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [currentLang, setCurrentLang] = useState<'en'|'ta'>('en');
 
   useEffect(() => {
     setMounted(true);
+    const savedLang = (localStorage.getItem('lang') as 'en'|'ta') || 'en';
+    setCurrentLang(savedLang);
   }, []);
 
   const toggleTheme = () => {
@@ -43,17 +41,14 @@ export function Navbar() {
     setTheme(next);
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const toggleLanguage = () => {
+    const nextLang = currentLang === 'en' ? 'ta' : 'en';
+    if (typeof setLanguage === 'function') {
+        setLanguage(nextLang);
+    }
+    setCurrentLang(nextLang);
+    window.location.reload();
+  };
 
   useEffect(() => {
     if (isAdminEmail(user?.email)) {
@@ -71,31 +66,48 @@ export function Navbar() {
     router.push("/");
   };
 
-  const handleNavClick = (sectionId: string) => {
-    if (pathname !== "/") {
-      router.push(`/#${sectionId}`);
-    } else {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-    setIsOpen(false);
-  };
-
-  const tools = [
-    { name: "Find Colleges", href: "/interview", icon: Search },
-    { name: "Compare Colleges", href: "/dashboard/compare", icon: ArrowLeftRight },
-    { name: "Cutoff Predictor", href: "/dashboard/predictor", icon: TrendingUp },
-    { name: "College Map", href: "/colleges/map", icon: MapPin },
-    { name: "Scholarship Finder", href: "/dashboard/scholarships", icon: Award },
-    { name: "Entrance Exam Guide", href: "/exams", icon: Briefcase },
-    { name: "Submit Review", href: "/testimonial", icon: MessageSquare },
-  ];
-
   const isAdmin = isAdminEmail(user?.email);
 
+  // BUG 1 fix: All navbar colors must use isDark conditional
   const isDark = mounted && resolvedTheme === "dark";
+
+  const tools = [
+    { name: "Find colleges", href: "/interview" },
+    { name: "Scholarship finder", href: "/scholarships" },
+    { name: "Exam guide", href: "/exams" },
+    { name: "Cutoff calculator", href: "/cutoff-calculator" },
+    { name: "Study planner", href: "/study-planner" },
+    { name: "Mock interview", href: "/mock-interview" },
+    { name: "Resume builder", href: "/resume" },
+    { name: "SOP generator", href: "/sop" },
+    { name: "Doubt solver", href: "/doubt-solver" },
+    { name: "Career explorer", href: "/career-explorer" },
+    { name: "Fee calculator", href: "/fee-calculator" },
+    { name: "Cutoff trends", href: "/cutoff-trends" },
+    { name: "Document checklist", href: "/documents" }
+  ];
+
+  const resources = [
+    { name: "NEP 2026 guide", href: "/nep-guide" },
+    { name: "Placements explorer", href: "/placements" },
+    { name: "College map", href: "/colleges/map" },
+    { name: "First gen guide", href: "/first-gen" },
+    { name: "Parent guide", href: "/parent-guide" },
+    { name: "2026 exam calendar", href: "/exam-calendar" }
+  ];
+
+  const mainLinks = user ? [
+    { name: "Dashboard", href: "/dashboard" },
+    { name: "Colleges", href: "/interview" },
+    { name: "Compare", href: "/compare" },
+    { name: "Predictor", href: "/predict" },
+    { name: "Community", href: "/community" },
+    { name: "Contact", href: "/contact" }
+  ] : [
+    { name: "How it works", href: "/#how-it-works" },
+    { name: "Features", href: "/#features" },
+    { name: "Contact", href: "/contact" }
+  ];
 
   return (
     <nav style={{
@@ -110,9 +122,7 @@ export function Navbar() {
       backdropFilter: 'blur(24px)',
       WebkitBackdropFilter: 'blur(24px)',
       borderBottom: isDark ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.08)',
-      background: isDark
-        ? 'rgba(5,7,26,0.92)'
-        : 'rgba(255,255,255,0.92)',
+      background: isDark ? 'rgba(5,7,26,0.92)' : 'rgba(255,255,255,0.92)',
       gap: '0',
     }}>
       {/* LEFT — Logo */}
@@ -131,62 +141,59 @@ export function Navbar() {
       </Link>
 
       {/* CENTER — Nav links */}
-      <div style={{ display:'flex', alignItems:'center', gap:'4px', flex:1, justifyContent:'center', flexWrap:'nowrap', overflow:'hidden' }} className="hidden lg:flex">
-        {!user ? (
+      <div className="hidden lg:flex" style={{ display:'flex', alignItems:'center', gap:'16px', flex:1, justifyContent:'center' }}>
+        {mainLinks.map(link => {
+          if (link.name === "Community" || link.name === "Contact") return null; // We'll put them after dropdowns
+          return (
+            <Link key={link.name} href={link.href} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === link.href ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === link.href ? 600 : 400, borderBottom: pathname === link.href ? '2px solid #7F77DD' : 'none' }}>
+              {link.name}
+            </Link>
+          );
+        })}
+
+        {user && (
           <>
-            <button onClick={() => handleNavClick("how-it-works")} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 400, background: 'none', border: 'none', cursor: 'pointer' }}>How it works</button>
-            <button onClick={() => handleNavClick("features")} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 400, background: 'none', border: 'none', cursor: 'pointer' }}>Features</button>
-            <Link href="/cutoff-calculator" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === '/cutoff-calculator' ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === '/cutoff-calculator' ? 600 : 400, borderBottom: pathname === '/cutoff-calculator' ? '2px solid #7F77DD' : 'none' }}>Cutoff</Link>
             <DropdownMenu>
-              <DropdownMenuTrigger style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                2026 Resources <ChevronDown size={14} />
+              <DropdownMenuTrigger style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 400, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Tools <ChevronDown size={14} />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white dark:bg-[#0a0d14] border-gray-200 dark:border-white/10 mt-2 z-[200]">
-                <DropdownMenuItem asChild><Link href="/nep-guide" className="cursor-pointer">NEP 2026 Guide</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/placements" className="cursor-pointer">Placement Explorer</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/loan-calculator" className="cursor-pointer">Loan Calculator</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/first-gen" className="cursor-pointer">First-Gen Student</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/parent-guide" className="cursor-pointer">Parent Guide</Link></DropdownMenuItem>
+              <DropdownMenuContent className="bg-white dark:bg-[#0a0d14] border-gray-200 dark:border-white/10 mt-2 z-[200] max-h-96 overflow-y-auto">
+                {tools.map(tool => (
+                  <DropdownMenuItem key={tool.name} asChild>
+                    <Link href={tool.href} className="cursor-pointer w-full">{tool.name}</Link>
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link href="/contact" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === '/contact' ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === '/contact' ? 600 : 400, borderBottom: pathname === '/contact' ? '2px solid #7F77DD' : 'none' }}>Contact</Link>
-          </>
-        ) : (
-          <>
-            {[
-              { label: 'Dashboard', href: '/dashboard' },
-              { label: 'Colleges', href: '/interview' },
-              { label: 'Compare', href: '/dashboard/compare' },
-              { label: 'Predictor', href: '/dashboard/predictor' },
-              { label: 'Map', href: '/colleges/map' },
-              { label: 'Scholarships', href: '/dashboard/scholarships' },
-              { label: 'Exams', href: '/exams' },
-              { label: 'Review', href: '/testimonial' },
-              { label: 'History', href: '/history' }
-            ].map(link => (
-              <Link key={link.href} href={link.href} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === link.href ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === link.href ? 600 : 400, borderBottom: pathname === link.href ? '2px solid #7F77DD' : 'none' }}>
-                {link.label}
-              </Link>
-            ))}
+
             <DropdownMenu>
-              <DropdownMenuTrigger style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                2026 <ChevronDown size={14} />
+              <DropdownMenuTrigger style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 400, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Resources <ChevronDown size={14} />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white dark:bg-[#0a0d14] border-gray-200 dark:border-white/10 mt-2 z-[200]">
-                <DropdownMenuItem asChild><Link href="/nep-guide" className="cursor-pointer w-full">NEP 2026 Guide</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/placements" className="cursor-pointer w-full">Placement Explorer</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/loan-calculator" className="cursor-pointer w-full">Loan Calculator</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/first-gen" className="cursor-pointer w-full">First-Gen Student</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link href="/parent-guide" className="cursor-pointer w-full">Parent Guide</Link></DropdownMenuItem>
+                {resources.map(res => (
+                  <DropdownMenuItem key={res.name} asChild>
+                    <Link href={res.href} className="cursor-pointer w-full">{res.name}</Link>
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Link href="/contact" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === '/contact' ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === '/contact' ? 600 : 400, borderBottom: pathname === '/contact' ? '2px solid #7F77DD' : 'none' }}>Contact</Link>
-          </>
+
+            <Link href="/community" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname.startsWith('/community') ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname.startsWith('/community') ? 600 : 400 }}>Community</Link>
+          </  >
         )}
+        <Link href="/contact" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === '/contact' ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === '/contact' ? 600 : 400 }}>Contact</Link>
       </div>
 
       {/* RIGHT — Actions */}
       <div style={{ display:'flex', alignItems:'center', gap:'12px', flexShrink:0 }}>
+        {mounted && (
+          <button onClick={toggleLanguage} style={{ fontSize:'12px', fontWeight:600, color: isDark ? 'rgba(255,255,255,0.7)' : '#4a4370', background: 'none', border: 'none', cursor: 'pointer', display:'flex', alignItems:'center', gap:'4px' }} aria-label="Toggle language">
+            <Globe size={14} />
+            {currentLang === 'en' ? 'EN' : 'தமிழ்'}
+          </button>
+        )}
+        
         {mounted && (
           <button onClick={toggleTheme} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', color: isDark ? 'rgba(255,255,255,0.7)' : '#4a4370', background: 'none', border: 'none', cursor: 'pointer' }} aria-label="Toggle theme">
             {isDark ? <Moon size={16} /> : <Sun size={16} />}
@@ -195,6 +202,27 @@ export function Navbar() {
 
         {user ? (
           <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+            <DropdownMenu>
+              <DropdownMenuTrigger style={{ position:'relative', color: isDark ? 'rgba(255,255,255,0.7)' : '#4a4370', background: 'none', border: 'none', cursor: 'pointer', display:'flex', alignItems:'center', justifyContent:'center', width:32, height:32 }}>
+                <Bell size={18} />
+                {notificationCount > 0 && (
+                  <span style={{ position:'absolute', top:2, right:4, width:8, height:8, backgroundColor:'#ef4444', borderRadius:'50%' }}></span>
+                )}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white dark:bg-[#0a0d14] border-gray-200 dark:border-white/10 mt-2 z-[200] w-64 p-2">
+                <div className="px-2 py-1 text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 border-b dark:border-white/10 pb-2">Notifications</div>
+                <div className="space-y-2">
+                  <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-sm border border-indigo-100 dark:border-indigo-900/30">
+                    <span className="font-bold text-indigo-600 dark:text-indigo-400">Anna Univ Counseling</span>
+                    <p className="text-gray-600 dark:text-gray-300 mt-1">TNEA Rank List published.</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-sm border border-emerald-100 dark:border-emerald-900/30">
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">AI Predictor</span>
+                    <p className="text-gray-600 dark:text-gray-300 mt-1">Your profile matches 5 new colleges.</p>
+                  </div>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
             {isAdmin && (
               <Link href="/admin" style={{ padding: '4px 10px', borderRadius: 9999, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', position: 'relative', textDecoration: 'none' }}>
                 Admin
@@ -208,7 +236,6 @@ export function Navbar() {
             <Link href="/profile" style={{ display:'flex', alignItems:'center', gap:'8px', textDecoration: 'none' }}>
               <div className="hidden sm:flex" style={{ flexDirection:'column', alignItems:'flex-end' }}>
                 <span style={{ fontSize: '12px', fontWeight: 700, color: isDark ? '#e2e8f0' : '#1f2937', lineHeight: 1 }}>{profile?.fullName?.split(' ')[0] || user.email?.split('@')[0]}</span>
-                <span style={{ fontSize: '10px', color: '#9ca3af', lineHeight: 1.2, marginTop: '2px' }}>Student Profile</span>
               </div>
               <Avatar style={{ width: 32, height: 32, flexShrink: 0, border: '1px solid rgba(127,119,221,0.3)' }}>
                 <AvatarImage src={profile?.avatarUrl} />
@@ -251,26 +278,29 @@ export function Navbar() {
                          onClick={() => setIsOpen(false)} 
                          className="flex items-center gap-3 text-slate-400 hover:text-white py-3 px-3 rounded-lg hover:bg-white/5 transition-all"
                        >
-                         <div className="h-8 w-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 flex-shrink-0">
-                           <tool.icon size={16} />
-                         </div>
                          <span className="font-medium">{tool.name}</span>
                        </Link>
                      ))}
                    </div>
                  </div>
                  
-                 <Link href="/history" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">History</Link>
                  <div className="py-4 border-b border-white/5">
-                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">2026 Resources</p>
+                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Resources</p>
                    <div className="space-y-1">
-                     <Link href="/nep-guide" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">NEP 2026 Guide</Link>
-                     <Link href="/placements" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Placement Explorer</Link>
-                     <Link href="/loan-calculator" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Loan Calculator</Link>
-                     <Link href="/first-gen" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">First-Gen Student</Link>
-                     <Link href="/parent-guide" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Parent Guide</Link>
+                     {resources.map(res => (
+                       <Link 
+                         key={res.href} 
+                         href={res.href} 
+                         onClick={() => setIsOpen(false)} 
+                         className="flex items-center gap-3 text-slate-400 hover:text-white py-3 px-3 rounded-lg hover:bg-white/5 transition-all"
+                       >
+                         <span className="font-medium">{res.name}</span>
+                       </Link>
+                     ))}
                    </div>
                  </div>
+                 
+                 <Link href="/community" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Community</Link>
                  <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Contact</Link>
                  {isAdmin && (
                    <Link href="/admin" onClick={() => setIsOpen(false)} className="text-lg font-bold text-red-400 py-3 border-b border-white/5 flex items-center justify-between">
@@ -290,20 +320,11 @@ export function Navbar() {
                </>
              ) : (
                <>
-                 <button onClick={() => handleNavClick("how-it-works")} className="text-left text-lg font-bold text-slate-300 py-3 border-b border-white/5">How it works</button>
-                 <button onClick={() => handleNavClick("features")} className="text-left text-lg font-bold text-slate-300 py-3 border-b border-white/5">Features</button>
-                 <Link href="/cutoff-calculator" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Cutoff Calculator</Link>
-                 <div className="py-4 border-b border-white/5">
-                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">2026 Resources</p>
-                   <div className="space-y-1">
-                     <Link href="/nep-guide" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">NEP 2026 Guide</Link>
-                     <Link href="/placements" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Placement Explorer</Link>
-                     <Link href="/loan-calculator" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Loan Calculator</Link>
-                     <Link href="/first-gen" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">First-Gen Student</Link>
-                     <Link href="/parent-guide" onClick={() => setIsOpen(false)} className="block py-2 text-slate-400 hover:text-white">Parent Guide</Link>
-                   </div>
-                 </div>
-                 <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Contact</Link>
+                 {mainLinks.map(link => (
+                   <Link key={link.name} href={link.href} onClick={() => setIsOpen(false)} className="block text-lg font-bold text-slate-300 py-3 border-b border-white/5">
+                     {link.name}
+                   </Link>
+                 ))}
                  <div className="flex flex-col gap-3 pt-6">
                     <Link href="/login" onClick={() => setIsOpen(false)} className="w-full"><Button variant="outline" className="w-full h-12">Login</Button></Link>
                     <Link href="/register" onClick={() => setIsOpen(false)} className="w-full"><Button className="w-full h-12 bg-primary">Sign Up</Button></Link>

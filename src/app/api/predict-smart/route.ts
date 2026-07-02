@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { callOpenRouter, parseJSON } from '@/lib/openrouter';
 
 export async function POST(req: NextRequest) {
   const {
     cutoff, percentage, category, state,
     stream, level, topColleges
   } = await req.json();
-
-  const key = process.env.OPENROUTER_API_KEY;
-  if (!key) return NextResponse.json(
-    { error: 'API key missing' }, { status: 500 }
-  );
 
   const prompt = `You are an Indian college admission expert.
 
@@ -38,37 +34,11 @@ Order from best fit to lowest fit for THIS student.
 Return only valid JSON array. No markdown.`;
 
   try {
-    const res = await fetch(
-      'https://openrouter.ai/api/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${key}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://collegematch-ai.vercel.app',
-          'X-Title': 'CollegeMatch-AI',
-        },
-        body: JSON.stringify({
-          model: 'meta-llama/llama-3.3-70b-instruct:free',
-          messages: [{ role: 'user', content: prompt }],
-          max_tokens: 1200,
-          temperature: 0.6,
-        }),
-      }
-    );
-
-    const data = await res.json();
-    const raw = data?.choices?.[0]?.message?.content ?? '';
-    const clean = raw
-      .replace(/```json\n?/gi, '')
-      .replace(/```\n?/gi, '')
-      .trim();
-    const start = clean.indexOf('[');
-    const end = clean.lastIndexOf(']');
-    const parsed = JSON.parse(clean.slice(start, end + 1));
+    const rawContent = await callOpenRouter(prompt, 'Provide insights for the above profile and colleges.', 1200);
+    const parsed = parseJSON(rawContent);
     return NextResponse.json(parsed);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching AI insight:', error);
-    return NextResponse.json({ error: 'Failed to fetch AI insight' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to fetch AI insight' }, { status: 500 });
   }
 }

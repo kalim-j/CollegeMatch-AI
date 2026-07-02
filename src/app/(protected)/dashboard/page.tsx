@@ -15,6 +15,8 @@ import { collection, query, orderBy, limit, getDocs, doc, getDoc, getCountFromSe
 import WelcomeModal from "@/components/WelcomeModal";
 import PageTransition from "@/components/3D/PageTransition";
 import DashboardBackground from "@/components/3D/DashboardBackground";
+import ExamCountdown from "@/components/ExamCountdown";
+import DailyMotivation from "@/components/DailyMotivation";
 
 export default function Dashboard() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -311,8 +313,10 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* Sidebar — 1/3 width */}
           <div className="space-y-5 md:space-y-6">
+            <ExamCountdown />
+            <DailyMotivation />
+
             {/* Counseling CTA */}
             <div>
               <div className="rounded-[2.5rem] p-7 bg-gradient-to-br from-purple-600 to-blue-600 dark:from-purple-800 dark:to-blue-900 text-white shadow-lg relative overflow-hidden group">
