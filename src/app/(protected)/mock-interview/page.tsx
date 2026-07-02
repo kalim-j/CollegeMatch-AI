@@ -186,7 +186,7 @@ export default function MockInterviewPage() {
               </div>
             </div>
           ) : (
-            <div className={`rounded-3xl border shadow-xl flex flex-col flex-1 min-h-[500px] mb-8 overflow-hidden ${
+            <div className={`rounded-3xl border shadow-xl flex flex-col h-[70vh] md:h-[calc(100vh-320px)] overflow-hidden ${
               isDark ? 'bg-slate-900/80 border-indigo-900/20' : 'bg-white border-indigo-100'
             }`}>
               {/* Header */}

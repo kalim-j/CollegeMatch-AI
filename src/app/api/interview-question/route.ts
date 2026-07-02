@@ -11,8 +11,9 @@ export async function POST(req: NextRequest) {
 
     const prompt = `You are a strict admissions interviewer at ${university} for the ${course} program.
     
-We are in round ${round}. Generate ONE highly relevant, challenging interview question for the candidate.
-DO NOT include any pleasantries, greetings, or other text. ONLY return the exact question text.`;
+We are in round ${round}. Generate ONE highly relevant multiple-choice interview question for the candidate.
+You MUST provide 4 options (A, B, C, D) for the user to choose from.
+DO NOT include any pleasantries, greetings, or other text. ONLY return the exact question text followed by the 4 options.`;
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [
