@@ -81,8 +81,6 @@ export default function Footer() {
             </div>
           </div>
 
-          </div>
-
           {/* Links Columns */}
           <div className="space-y-8">
             <h4 className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">Platform</h4>
