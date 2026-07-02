@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useApplicationTracker, ApplicationItem } from '@/hooks/useApplicationTracker';
-import { ClipboardList, Plus, Search, CheckCircle2, Clock, XCircle, AlertCircle, Trash2, Edit2, Loader2 } from 'lucide-react';
+import { ClipboardList, Plus, Search, CheckCircle2, Clock, XCircle, AlertCircle, Trash2, Edit2, Loader2, Calendar } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import PageTransition from '@/components/3D/PageTransition';
 import SelectField from '@/components/SelectField';
