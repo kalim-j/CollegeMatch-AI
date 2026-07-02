@@ -16,7 +16,7 @@ export default function WhatsAppWidget() {
       href="https://wa.me/919876543210?text=Hello%20CollegeMatch-AI!%20I%20need%20help%20with%20admissions."
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-24 right-6 lg:bottom-6 lg:right-6 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-xl z-50 transition-transform hover:scale-110 flex items-center justify-center group"
+      className="fixed bottom-24 left-6 lg:bottom-6 lg:left-6 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-[0_0_20px_rgba(34,197,94,0.6)] z-50 transition-transform hover:scale-110 flex items-center justify-center group animate-bounce"
       aria-label="Contact us on WhatsApp"
     >
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">

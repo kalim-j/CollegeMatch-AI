@@ -99,8 +99,8 @@ export function Navbar() {
   const mainLinks = user ? [
     { name: "Dashboard", href: "/dashboard" },
     { name: "Colleges", href: "/interview" },
-    { name: "Compare", href: "/compare" },
-    { name: "Predictor", href: "/predict" },
+    { name: "Compare", href: "/dashboard/compare" },
+    { name: "Predictor", href: "/dashboard/predictor" },
     { name: "Community", href: "/community" },
     { name: "Contact", href: "/contact" }
   ] : [

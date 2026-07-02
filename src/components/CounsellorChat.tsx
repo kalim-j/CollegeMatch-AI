@@ -245,7 +245,8 @@ export default function CounsellorChat({ studentProfile, uid }: CounsellorChatPr
 
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="h-14 w-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl shadow-indigo-500/30 flex items-center justify-center text-white hover:scale-105 transition-transform relative"
+        className="h-14 w-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-[0_0_20px_rgba(99,102,241,0.6)] flex items-center justify-center text-white hover:scale-105 transition-transform relative animate-bounce"
+        style={{ animationDuration: '2s' }}
       >
         {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
         {!isOpen && unreadCount > 0 && (
