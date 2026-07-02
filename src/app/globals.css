@@ -841,3 +841,91 @@ canvas {
     background: rgba(127,119,221,0.2);
     border-radius: 2px;
   }
+
+  /* Question slide transitions */
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes slideOutLeft {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(-40px); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes correctFlash {
+    0% { background: rgba(29,158,117,0); }
+    30% { background: rgba(29,158,117,0.3); }
+    100% { background: rgba(29,158,117,0.18); }
+  }
+
+  @keyframes wrongFlash {
+    0% { background: rgba(226,75,74,0); }
+    30% { background: rgba(226,75,74,0.3); }
+    100% { background: rgba(226,75,74,0.18); }
+  }
+
+  @keyframes scoreCount {
+    from { transform: scale(1.3); color: #5DCAA5; }
+    to { transform: scale(1); }
+  }
+
+  .question-enter {
+    animation: slideInRight 0.35s cubic-bezier(0.22,1,0.36,1) forwards;
+  }
+
+  .explanation-enter {
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .correct-answer {
+    animation: correctFlash 0.5s ease forwards;
+  }
+
+  .wrong-answer {
+    animation: wrongFlash 0.5s ease forwards;
+  }
+
+  .score-update {
+    animation: scoreCount 0.4s ease;
+  }
+
+  /* Progress bar fill animation */
+  .progress-fill {
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Step indicator pulse for active step */
+  @keyframes stepPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(127,119,221,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(127,119,221,0); }
+  }
+
+  .step-active {
+    animation: stepPulse 2s ease-in-out infinite;
+  }
+
+  @media (max-width: 640px) {
+    .mock-interview-card {
+      border-radius: 14px !important;
+      padding: 14px !important;
+    }
+    .mock-option-btn {
+      padding: 11px 14px !important;
+      font-size: 13px !important;
+    }
+    .mock-explanation {
+      padding: 12px 14px !important;
+      font-size: 13px !important;
+    }
+    .mock-header {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 6px !important;
+    }
+  }
