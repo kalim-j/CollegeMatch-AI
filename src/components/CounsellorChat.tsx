@@ -154,7 +154,7 @@ export default function CounsellorChat({ studentProfile, uid }: CounsellorChatPr
   };
 
   return (
-    <div className="fixed z-[100] bottom-20 right-4 sm:bottom-6 sm:right-6 flex flex-col items-end">
+    <div className="fixed z-[100] top-1/2 -translate-y-1/2 right-4 sm:right-6 flex flex-col items-end">
       <AnimatePresence>
         {isOpen && (
           <motion.div 
