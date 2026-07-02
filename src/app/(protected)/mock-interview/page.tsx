@@ -333,7 +333,6 @@ export default function MockInterviewPage() {
                       { label: 'Management', value: 'Management' },
                       { label: 'Other', value: 'Other' }
                     ]}
-                    icon={<BookOpen size={16} />}
                   />
                 </div>
 
