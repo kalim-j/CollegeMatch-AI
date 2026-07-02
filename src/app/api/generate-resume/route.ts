@@ -34,7 +34,9 @@ Provide the response strictly as a JSON object with this structure:
   "education": [{ "institution": "...", "degree": "...", "duration": "...", "details": "..." }],
   "experience": [{ "company": "...", "role": "...", "duration": "...", "description": ["bullet1", "bullet2"] }],
   "projects": [{ "name": "...", "description": ["bullet1", "bullet2"] }],
-  "skills": ["skill1", "skill2"]
+  "skills": ["skill1", "skill2"],
+  "ats_score": 85,
+  "ats_feedback": ["Use stronger action verbs", "Quantify your achievements"]
 }
 
 Ensure the response is ONLY valid JSON without markdown wrapping.`;

@@ -155,17 +155,59 @@ export default function ResumeBuilderPage() {
             <div className="space-y-4">
               {resumeData ? (
                 <>
-                  <div className="flex justify-between items-center bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800">
                     <div className="text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-2">
                       <CheckCircle2 size={18} /> Resume Generated
                     </div>
                     <button 
                       onClick={downloadPDF}
-                      className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm"
+                      className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-emerald-500/20 hover:scale-105"
                     >
-                      <Download size={16} /> Download PDF
+                      <Download size={18} /> Download PDF
                     </button>
                   </div>
+                  
+                  {resumeData.ats_score && (
+                    <div className={`p-6 rounded-2xl border shadow-sm space-y-4 ${
+                      isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-white border-slate-200'
+                    }`}>
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-bold flex items-center gap-2">
+                          <Sparkles size={20} className="text-emerald-500" /> ATS Analysis Score
+                        </h3>
+                        <div className={`text-3xl font-black ${
+                          resumeData.ats_score >= 80 ? 'text-emerald-500' : 
+                          resumeData.ats_score >= 60 ? 'text-yellow-500' : 'text-red-500'
+                        }`}>
+                          {resumeData.ats_score}<span className="text-lg text-gray-400">/100</span>
+                        </div>
+                      </div>
+                      
+                      {/* Progress Bar */}
+                      <div className="h-3 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full ${
+                            resumeData.ats_score >= 80 ? 'bg-emerald-500' : 
+                            resumeData.ats_score >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                          }`}
+                          style={{ width: `${resumeData.ats_score}%` }}
+                        />
+                      </div>
+
+                      {resumeData.ats_feedback && resumeData.ats_feedback.length > 0 && (
+                        <div className="pt-4 space-y-2 border-t border-slate-200 dark:border-slate-700">
+                          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">AI Suggestions for Improvement:</p>
+                          <ul className="text-sm space-y-2">
+                            {resumeData.ats_feedback.map((feedback: string, idx: number) => (
+                              <li key={idx} className="flex gap-3 text-gray-600 dark:text-gray-300">
+                                <span className="text-emerald-500 font-bold mt-0.5">•</span> {feedback}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   
                   {/* Actual Resume Container - always white background for standard resume look */}
                   <div className="bg-slate-100 p-4 rounded-xl overflow-hidden border border-slate-300">
@@ -175,9 +217,9 @@ export default function ResumeBuilderPage() {
                       style={{ width: '100%', minHeight: '800px' }}
                     >
                       {/* Header */}
-                      <div className="text-center mb-8 border-b-2 border-gray-800 pb-6">
-                        <h1 className="text-3xl font-serif font-bold uppercase tracking-wider mb-2">{resumeData.personal_info?.name}</h1>
-                        <div className="text-sm text-gray-600 flex justify-center gap-4 flex-wrap">
+                      <div className="mb-8 border-b-4 border-slate-800 pb-6">
+                        <h1 className="text-4xl font-black text-slate-900 tracking-tight uppercase mb-2">{resumeData.personal_info?.name}</h1>
+                        <div className="text-sm font-semibold text-emerald-700 flex gap-4 flex-wrap">
                           <span>{resumeData.personal_info?.email}</span>
                           <span>•</span>
                           <span>{resumeData.personal_info?.phone}</span>
@@ -187,7 +229,7 @@ export default function ResumeBuilderPage() {
                       {/* Objective */}
                       {resumeData.objective && (
                         <div className="mb-6">
-                          <p className="text-gray-800 leading-relaxed text-sm">{resumeData.objective}</p>
+                          <p className="text-slate-700 leading-relaxed text-sm font-medium">{resumeData.objective}</p>
                         </div>
                       )}
 

@@ -25,11 +25,52 @@ export default function MockInterviewPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentInput, setCurrentInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const toggleRecording = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("Your browser doesn't support speech recognition. Please use Chrome/Edge.");
+      return;
+    }
+
+    if (isRecording) return; // Wait for it to end
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => setIsRecording(true);
+
+    recognition.onresult = (event: any) => {
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        }
+      }
+      if (finalTranscript) {
+         setCurrentInput(prev => prev + (prev ? ' ' : '') + finalTranscript);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      setIsRecording(false);
+      if (event.error !== 'no-speech') {
+         toast.error("Microphone error. Please check permissions.");
+      }
+    };
+
+    recognition.onend = () => setIsRecording(false);
+
+    recognition.start();
   };
 
   useEffect(() => {
@@ -111,8 +152,8 @@ export default function MockInterviewPage() {
 
   return (
     <PageTransition>
-      <div className={`min-h-screen p-6 pb-24 ${isDark ? 'bg-[#05071a] text-white' : 'bg-[#f8f7ff] text-gray-900'}`}>
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className={`flex flex-col min-h-[calc(100vh-80px)] p-4 md:p-6 pb-20 ${isDark ? 'bg-[#05071a] text-white' : 'bg-[#f8f7ff] text-gray-900'}`}>
+        <div className="max-w-4xl w-full mx-auto flex-1 flex flex-col space-y-6 md:space-y-8">
           
           <div className="text-center space-y-4">
             <h1 className="text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-cyan-500">
@@ -145,7 +186,7 @@ export default function MockInterviewPage() {
               </div>
             </div>
           ) : (
-            <div className={`rounded-3xl border shadow-xl flex flex-col h-[600px] overflow-hidden ${
+            <div className={`rounded-3xl border shadow-xl flex flex-col flex-1 min-h-[500px] mb-8 overflow-hidden ${
               isDark ? 'bg-slate-900/80 border-indigo-900/20' : 'bg-white border-indigo-100'
             }`}>
               {/* Header */}
@@ -213,6 +254,18 @@ export default function MockInterviewPage() {
                         isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'
                       }`}
                     />
+                    <button
+                      type="button"
+                      onClick={toggleRecording}
+                      title="Speak your answer"
+                      className={`p-4 rounded-xl flex items-center justify-center transition-colors ${
+                        isRecording 
+                          ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/40' 
+                          : 'bg-slate-200 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-slate-300 dark:hover:bg-slate-700'
+                      }`}
+                    >
+                      {isRecording ? <MicOff size={24} /> : <Mic size={24} />}
+                    </button>
                     <button
                       type="submit"
                       disabled={loading || !currentInput.trim()}
