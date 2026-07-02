@@ -1,9 +1,7 @@
-export const PRIMARY_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
-export const FALLBACK_MODELS = [
-  'meta-llama/llama-3.1-8b-instruct:free',
-  'mistralai/mistral-7b-instruct:free',
-  'google/gemma-2-9b-it:free',
-];
+import { groq } from '@/lib/groq';
+
+export const PRIMARY_MODEL = 'llama3-70b-8192';
+export const FALLBACK_MODELS = ['llama3-8b-8192'];
 
 export async function callOpenRouter(
   systemPrompt: string,
@@ -12,40 +10,23 @@ export async function callOpenRouter(
   model = PRIMARY_MODEL,
   history: { role: string; content: string }[] = []
 ): Promise<string> {
-  const key = process.env.OPENROUTER_API_KEY;
-  if (!key) throw new Error('OPENROUTER_API_KEY not set');
-
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${key}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://collegematch-ai.vercel.app',
-      'X-Title': 'CollegeMatch-AI',
-    },
-    body: JSON.stringify({
-      model,
+  try {
+    const chatCompletion = await groq.chat.completions.create({
       messages: [
         { role: 'system', content: systemPrompt },
-        ...history,
+        ...history.map(m => ({ role: m.role as "user" | "assistant" | "system", content: m.content })),
         { role: 'user', content: userMessage },
       ],
-      max_tokens: maxTokens,
+      model: PRIMARY_MODEL,
       temperature: 0.7,
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    if (res.status === 404 && model !== FALLBACK_MODELS[FALLBACK_MODELS.length-1]) {
-      const next = FALLBACK_MODELS[FALLBACK_MODELS.indexOf(model)+1] || FALLBACK_MODELS[0];
-      return callOpenRouter(systemPrompt, userMessage, maxTokens, next);
-    }
-    throw new Error(`OpenRouter ${res.status}: ${err}`);
+      max_tokens: maxTokens,
+    });
+    
+    return chatCompletion.choices[0]?.message?.content || "";
+  } catch (error: any) {
+    console.error('AI API Error:', error);
+    throw new Error(error.message || 'Failed to connect to AI');
   }
-
-  const data = await res.json();
-  return data?.choices?.[0]?.message?.content ?? '';
 }
 
 export function parseJSON<T>(text: string): T {
