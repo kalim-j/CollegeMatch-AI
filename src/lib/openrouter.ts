@@ -20,6 +20,7 @@ export async function callOpenRouter(
       model: PRIMARY_MODEL,
       temperature: 0.7,
       max_tokens: maxTokens,
+      response_format: { type: 'json_object' },
     });
     
     return chatCompletion.choices[0]?.message?.content || "";

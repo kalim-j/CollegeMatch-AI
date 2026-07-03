@@ -40,7 +40,7 @@ Return ONLY valid JSON:
   "job_match_notes": string or null (how well resume matches job)
 }`;
 
-    const raw = await callOpenRouter(systemPrompt, userMessage, 4000);
+    const raw = await callOpenRouter(systemPrompt, userMessage, 8000);
     const result = parseJSON(raw);
     
     return NextResponse.json(result);

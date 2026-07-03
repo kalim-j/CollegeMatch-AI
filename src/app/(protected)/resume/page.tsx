@@ -182,7 +182,10 @@ export default function ResumeBuilderPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resumeText: text }),
       });
-      if (!res.ok) throw new Error('Analysis failed');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.error || 'Analysis failed with status ' + res.status);
+      }
       const data = await res.json();
       setAnalysisResult(data);
       // We can preview the improved text if it's basic HTML, but the API returns text.
@@ -190,8 +193,9 @@ export default function ResumeBuilderPage() {
       const formatted = `<div style="font-family:Arial,sans-serif;padding:40px;line-height:1.6;white-space:pre-wrap;">${data.improved_resume}</div>`;
       setPreviewHtml(formatted);
       toast.success('Analysis complete');
-    } catch (err) {
-      toast.error('Failed to analyze resume');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to analyze resume');
+      console.error(err);
     } finally {
       setIsAnalyzing(false);
     }

@@ -35,7 +35,7 @@ Return ONLY valid JSON:
   "application_tips": string (2 sentences of advice for applying to this role)
 }`;
 
-    const raw = await callOpenRouter(systemPrompt, userMessage, 4000);
+    const raw = await callOpenRouter(systemPrompt, userMessage, 8000);
     const result = parseJSON(raw);
     
     return NextResponse.json(result);
