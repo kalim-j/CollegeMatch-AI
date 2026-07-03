@@ -35,10 +35,11 @@ Return ONLY valid JSON:
   "keywords_found": string[] (good keywords present),
   "keywords_missing": string[] (important keywords to add),
   "ats_tips": string[] (specific ATS optimization tips),
-  "improved_resume": "Complete rewritten resume text with all fixes applied. Professional, ATS-friendly, well-structured.",
+  "improved_resume": "Complete rewritten resume text with all fixes applied. Professional, ATS-friendly, well-structured. YOU MUST WRITE THE FULL RESUME HERE. DO NOT SKIP DUE TO CHARACTER LIMITS.",
   "job_match_score": number or null (0-100, only if job desc provided),
   "job_match_notes": string or null (how well resume matches job)
-}`;
+}
+CRITICAL INSTRUCTION: You MUST provide the fully rewritten resume text in the 'improved_resume' field. Do not put placeholders like 'To be provided upon request' or 'Due to character limitations'. You have 8000 tokens available.`;
 
     const raw = await callOpenRouter(systemPrompt, userMessage, 8000);
     const result = parseJSON(raw);

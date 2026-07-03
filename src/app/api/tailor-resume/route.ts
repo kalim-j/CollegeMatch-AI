@@ -29,11 +29,12 @@ Return ONLY valid JSON:
   "gap_requirements": string[] (requirements candidate may lack),
   "changes_made": string[] (list of specific changes made),
   "keywords_added": string[] (job-specific keywords inserted),
-  "tailored_resume": "Complete tailored resume text optimized for this specific job. Include all relevant keywords from JD. Reframe experiences to match role requirements. Keep authentic.",
+  "tailored_resume": "Complete tailored resume text optimized for this specific job. Include all relevant keywords from JD. YOU MUST WRITE THE FULL RESUME HERE. DO NOT SKIP DUE TO CHARACTER LIMITS.",
   "cover_letter_points": string[] (5 key points to mention in cover letter),
   "interview_prep": string[] (3 likely interview questions based on JD),
   "application_tips": string (2 sentences of advice for applying to this role)
-}`;
+}
+CRITICAL INSTRUCTION: You MUST provide the fully rewritten and tailored resume text in the 'tailored_resume' field. Do not put placeholders like 'To be provided upon request' or 'Due to character limitations'. You have 8000 tokens available.`;
 
     const raw = await callOpenRouter(systemPrompt, userMessage, 8000);
     const result = parseJSON(raw);
