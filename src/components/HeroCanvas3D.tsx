@@ -377,14 +377,21 @@ export default function HeroCanvas3D() {
   return (
     <canvas
       ref={canvasRef}
+      aria-hidden="true"
       style={{
         position: 'fixed',
-        top: 0, left: 0,
+        top: 0,
+        left: 0,
         width: '100vw',
         height: '100vh',
         zIndex: 0,
         pointerEvents: 'none',
-        willChange: 'transform'
+        display: 'block',
+        margin: 0,
+        padding: 0,
+        border: 'none',
+        outline: 'none',
+        backgroundColor: 'transparent',
       }}
     />
   );

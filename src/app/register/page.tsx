@@ -127,59 +127,148 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center p-6 overflow-hidden bg-[var(--bg-primary)]">
-      <LoginBackground />
-      
-      <div className="w-full max-w-[1100px] grid lg:grid-cols-2 gap-16 items-center relative z-10">
-        
-        {/* Left Side — Branding */}
-        <div className="hidden lg:flex flex-col space-y-10">
-          <Logo />
-          
-          <div className="space-y-6">
-            <h1 className="text-6xl font-black text-white leading-[1.1] tracking-tighter">
-              Start your <br />
-              <span className="text-gradient">journey today.</span>
-            </h1>
-            <p className="text-xl text-white/40 font-medium leading-relaxed max-w-md">
-              Discover over 500+ top colleges and find the one that fits your dreams and budget.
-            </p>
-          </div>
+    /* Root: dark background, flex row, no gaps */
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'row',
+      margin: 0,
+      padding: 0,
+      backgroundColor: '#05071a',
+      position: 'relative',
+      overflow: 'hidden',
+    }} className="auth-layout">
 
-          <div className="flex items-center gap-4 px-6 py-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 w-fit">
-             <ShieldCheck className="text-indigo-400" size={24} />
-             <div>
-                <p className="text-white font-bold text-sm">Verified Security</p>
-                <p className="text-white/40 text-[11px] font-medium uppercase tracking-wider">Your data is encrypted</p>
-             </div>
-          </div>
+      {/* Canvas background — covers entire page */}
+      <LoginBackground />
+
+      {/* LEFT panel — hero content */}
+      <div style={{
+        flex: '0 0 50%',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: 'clamp(2rem,5vw,4rem)',
+        position: 'relative',
+        zIndex: 1,
+        /* NO background — canvas shows through */
+        background: 'transparent',
+        /* NO border */
+        borderRight: 'none',
+      }} className="auth-left hidden lg:flex">
+        {/* Logo */}
+        <Logo size="lg" theme="dark" showTagline />
+
+        {/* Hero text */}
+        <div style={{ marginTop: '3rem' }}>
+          <h1 style={{
+            fontSize: 'clamp(32px,4vw,52px)',
+            fontWeight: 800,
+            color: 'white',
+            lineHeight: 1.2,
+            margin: '0 0 8px',
+          }}>
+            Start your
+          </h1>
+          <h1 style={{
+            fontSize: 'clamp(32px,4vw,52px)',
+            fontWeight: 800,
+            background: 'linear-gradient(90deg,#a89ef8,#5DCAA5)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            color: '#a89ef8', /* fallback */
+            lineHeight: 1.2,
+            margin: '0 0 16px',
+          }}>
+            journey today.
+          </h1>
+          <p style={{
+            fontSize: 'clamp(14px,1.5vw,17px)',
+            color: 'rgba(255,255,255,0.6)',
+            lineHeight: 1.7,
+            maxWidth: '400px',
+          }}>
+            Discover over 500+ top colleges and find the
+            one that fits your dreams and budget.
+          </p>
         </div>
 
-        {/* Right Side — Card */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="w-full max-w-[480px] mx-auto"
-        >
-          <div className="bg-white dark:bg-[rgba(13,18,48,0.95)] border border-[rgba(127,119,221,0.15)] dark:border-[rgba(127,119,221,0.25)] backdrop-blur-xl shadow-2xl p-10 md:p-12 space-y-10 rounded-3xl w-full mx-auto">
+        {/* Trust badge */}
+        <div style={{
+          marginTop: '3rem',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '12px',
+          background: 'rgba(255,255,255,0.06)',
+          border: '1px solid rgba(255,255,255,0.10)',
+          borderRadius: '14px',
+          padding: '14px 18px',
+          maxWidth: 'fit-content',
+        }}>
+          <span style={{ fontSize: '24px' }}>🔒</span>
+          <div>
+            <p style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              color: 'white',
+              margin: 0,
+            }}>
+              Verified Security
+            </p>
+            <p style={{
+              fontSize: '11px',
+              color: 'rgba(255,255,255,0.5)',
+              margin: '2px 0 0',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+            }}>
+              Your data is encrypted
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT panel — register form */}
+      {/* Uses a vertical separator — NOT a border */}
+      <div style={{
+        flex: '1',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 'clamp(1.5rem,3vw,3rem)',
+        position: 'relative',
+        zIndex: 1,
+        /* White background ONLY on the right half */
+        background: 'white',
+        /* NO border-left */
+        borderLeft: 'none',
+        margin: 0,
+      }} className="auth-right">
+        {/* Form card */}
+        <div style={{
+          width: '100%',
+          maxWidth: '420px',
+        }}>
             <div className="space-y-2 text-center lg:text-left">
               <div className="mb-6 lg:hidden flex justify-center">
-                <Logo size="md" showTagline={false} theme="dark" />
+                <Logo size="md" showTagline={false} theme="light" />
               </div>
-              <h2 className="text-[#1a1340] dark:text-white font-bold text-3xl tracking-tight">
+              <h2 className="text-[#1a1340] font-bold text-3xl tracking-tight">
                 {showOTP ? "Verify Email" : "Create Account"}
               </h2>
-              <p className="text-[#5a5380] dark:text-[rgba(255,255,255,0.6)] font-medium text-sm">
+              <p className="text-[#5a5380] font-medium text-sm">
                 {showOTP ? `We sent a code to ${email}` : "Join India's smartest admission engine"}
               </p>
             </div>
 
             {!showOTP ? (
-              <div className="space-y-8">
+              <div className="space-y-8 mt-8">
                 <button
                   onClick={handleGoogleLogin}
-                  className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.08)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.12)] text-[#1a1340] dark:text-white rounded-xl h-14 w-full font-medium flex items-center justify-center gap-3 hover:bg-[rgba(127,119,221,0.1)] dark:hover:bg-[rgba(255,255,255,0.12)] transition-all duration-200 text-sm active:scale-[0.98]"
+                  className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] rounded-xl h-14 w-full font-medium flex items-center justify-center gap-3 hover:bg-[rgba(127,119,221,0.1)] transition-all duration-200 text-sm active:scale-[0.98]"
                 >
                   <svg className="h-5 w-5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -187,55 +276,55 @@ export default function RegisterPage() {
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                   </svg>
-                  <span className="text-white font-bold text-sm">Sign up with Google</span>
+                  <span className="text-[#1a1340] font-bold text-sm">Sign up with Google</span>
                 </button>
 
                 <div className="relative flex items-center py-2">
-                  <div className="flex-grow border-t border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.1)]"></div>
-                  <span className="flex-shrink mx-4 text-xs text-[#7a7399] dark:text-[rgba(255,255,255,0.35)] font-semibold tracking-widest uppercase">or email</span>
-                  <div className="flex-grow border-t border-[rgba(127,119,221,0.2)] dark:border-[rgba(255,255,255,0.1)]"></div>
+                  <div className="flex-grow border-t border-[rgba(127,119,221,0.2)]"></div>
+                  <span className="flex-shrink mx-4 text-xs text-[#7a7399] font-semibold tracking-widest uppercase">or email</span>
+                  <div className="flex-grow border-t border-[rgba(127,119,221,0.2)]"></div>
                 </div>
 
                 <form onSubmit={handleSendOTP} className="space-y-5">
                   <div className="space-y-2">
-                    <label className="text-[#534AB7] dark:text-[#a89ef8] text-xs font-semibold tracking-widest uppercase mb-2 block">Full Name</label>
+                    <label className="text-[#534AB7] text-xs font-semibold tracking-widest uppercase mb-2 block">Full Name</label>
                     <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399] dark:text-[rgba(255,255,255,0.35)]" size={18} />
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399]" size={18} />
                       <input
                         type="text"
                         required
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Your name"
-                        className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(127,119,221,0.25)] text-[#1a1340] dark:text-white placeholder:text-[#7a7399] dark:placeholder:text-[rgba(255,255,255,0.35)] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] dark:focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
+                        className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] placeholder:text-[#7a7399] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[#534AB7] dark:text-[#a89ef8] text-xs font-semibold tracking-widest uppercase mb-2 block">Email Address</label>
+                    <label className="text-[#534AB7] text-xs font-semibold tracking-widest uppercase mb-2 block">Email Address</label>
                     <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399] dark:text-[rgba(255,255,255,0.35)]" size={18} />
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399]" size={18} />
                       <input
                         type="email"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="email@example.com"
-                        className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(127,119,221,0.25)] text-[#1a1340] dark:text-white placeholder:text-[#7a7399] dark:placeholder:text-[rgba(255,255,255,0.35)] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] dark:focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
+                        className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] placeholder:text-[#7a7399] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[#534AB7] dark:text-[#a89ef8] text-xs font-semibold tracking-widest uppercase mb-2 block">Password</label>
+                    <label className="text-[#534AB7] text-xs font-semibold tracking-widest uppercase mb-2 block">Password</label>
                     <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399] dark:text-[rgba(255,255,255,0.35)]" size={18} />
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399]" size={18} />
                       <input
                         type="password"
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(127,119,221,0.25)] text-[#1a1340] dark:text-white placeholder:text-[#7a7399] dark:placeholder:text-[rgba(255,255,255,0.35)] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] dark:focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
+                        className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] placeholder:text-[#7a7399] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
                       />
                     </div>
                   </div>
@@ -251,17 +340,17 @@ export default function RegisterPage() {
                 </form>
               </div>
             ) : (
-              <div className="space-y-8">
-                <div className="p-4 bg-[#f0eeff] dark:bg-indigo-500/10 border border-[rgba(127,119,221,0.2)] dark:border-indigo-500/20 rounded-2xl text-center">
-                  <p className="text-[#1a1340] dark:text-white font-bold text-sm">Enter 6-digit code</p>
-                  <p className="text-[#7a7399] dark:text-white/40 text-[11px] mt-1 uppercase tracking-widest font-medium">Sent to your inbox</p>
+              <div className="space-y-8 mt-8">
+                <div className="p-4 bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] rounded-2xl text-center">
+                  <p className="text-[#1a1340] font-bold text-sm">Enter 6-digit code</p>
+                  <p className="text-[#7a7399] text-[11px] mt-1 uppercase tracking-widest font-medium">Sent to your inbox</p>
                 </div>
                 <input
                   type="text"
                   maxLength={6}
                   value={otpInput}
                   onChange={(e) => setOtpInput(e.target.value)}
-                  className="bg-[#f0eeff] dark:bg-[rgba(255,255,255,0.06)] border border-[rgba(127,119,221,0.2)] dark:border-[rgba(127,119,221,0.25)] text-[#1a1340] dark:text-white placeholder:text-[#7a7399] dark:placeholder:text-[rgba(255,255,255,0.35)] w-full h-20 focus:border-[rgba(127,119,221,0.6)] dark:focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] rounded-2xl text-center text-3xl font-black tracking-[12px] outline-none transition-all"
+                  className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] placeholder:text-[#7a7399] w-full h-20 focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] rounded-2xl text-center text-3xl font-black tracking-[12px] outline-none transition-all"
                 />
                 <button
                   onClick={handleVerifyAndRegister}
@@ -272,22 +361,39 @@ export default function RegisterPage() {
                 </button>
                 <button 
                   onClick={() => setShowOTP(false)}
-                  className="w-full text-center text-sm font-bold text-[#5a5380] dark:text-white/30 hover:text-[#1a1340] dark:hover:text-white transition-colors"
+                  className="w-full text-center text-sm font-bold text-[#5a5380] hover:text-[#1a1340] transition-colors"
                 >
                   Edit information
                 </button>
               </div>
             )}
 
-            <p className="text-center text-sm font-medium text-[#5a5380] dark:text-[rgba(255,255,255,0.55)]">
+            <p className="text-center text-sm font-medium text-[#5a5380] mt-8">
               Already have an account?{" "}
-              <Link href="/login" className="text-[#534AB7] dark:text-[#a89ef8] hover:opacity-80 transition-colors font-bold ml-1">
+              <Link href="/login" className="text-[#534AB7] hover:opacity-80 transition-colors font-bold ml-1">
                 Sign in
               </Link>
             </p>
-          </div>
-        </motion.div>
+        </div>
       </div>
+
+      {/* Mobile: stack vertically */}
+      <style>{`
+        @media (max-width: 1024px) {
+          .auth-layout {
+            flex-direction: column !important;
+          }
+          .auth-left {
+            display: none !important;
+          }
+          .auth-right {
+            flex: none !important;
+            min-height: 100vh !important;
+            padding: 2rem !important;
+            background: transparent !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -152,10 +152,20 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="bg-[#05071a] min-h-screen text-white overflow-x-hidden font-sans">
+    <div className="bg-transparent min-h-screen text-white overflow-x-hidden font-sans">
       
       {/* SECTION 1 - HERO */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-12 z-10 parallax-section overflow-hidden page-entrance">
+      <section style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        zIndex: 1,
+        background: 'transparent',
+        padding: '0 1rem',
+      }} className="page-entrance">
         <HeroCanvas3D />
         
         <div ref={heroParallax} className="relative z-10 flex flex-col items-center text-center max-w-5xl px-4 w-full">

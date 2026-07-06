@@ -2,6 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── CRITICAL: prevent white flash between sections ─── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #05071a;
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+html.dark {
+  background-color: #05071a !important;
+  color-scheme: dark;
+}
+
+html:not(.dark) {
+  background-color: #f8f7ff;
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: inherit;
+  overflow-x: hidden;
+}
+
+html.dark body {
+  background-color: #05071a !important;
+}
+
+/* Remove any accidental borders */
+section,
+main,
+article,
+aside,
+div {
+  border: none; /* reset — add back where needed */
+}
+
+/* Fix Next.js root div */
+#__next,
+[data-nextjs-scroll-focus-boundary] {
+  background: transparent !important;
+  min-height: 100vh;
+}
+
 :root {
   /* Light mode defaults */
   --color-bg-primary: #ffffff;

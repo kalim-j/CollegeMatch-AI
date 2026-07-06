@@ -68,7 +68,22 @@ export default function PageCanvas3D() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none -z-10 opacity-50"
+      aria-hidden="true"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 0,
+        pointerEvents: 'none',
+        display: 'block',
+        margin: 0,
+        padding: 0,
+        border: 'none',
+        outline: 'none',
+        backgroundColor: 'transparent',
+      }}
     />
   );
 }

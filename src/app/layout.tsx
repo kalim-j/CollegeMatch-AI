@@ -102,7 +102,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning style={{ backgroundColor: '#05071a' }}>
       <head>
         <meta name="application-name" content="CollegeMatch AI" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -119,7 +119,15 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/icons/icon-96x96.svg" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/themify-icons@1.0.1/css/themify-icons.css" />
       </head>
-      <body className={cn(jakarta.variable, syne.variable, dmSans.variable, "min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased")}>
+      <body 
+        className={cn(jakarta.variable, syne.variable, dmSans.variable, "text-[var(--text-primary)] font-sans antialiased")}
+        style={{
+          margin: 0,
+          padding: 0,
+          backgroundColor: 'transparent',
+          minHeight: '100vh',
+        }}
+      >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
