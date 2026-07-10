@@ -49,7 +49,7 @@ export default function StudyPlannerPage() {
 
   return (
     <PageTransition>
-      <div className={`min-h-screen p-6 pb-24 ${isDark ? 'bg-[#05071a] text-white' : 'bg-[#f8f7ff] text-gray-900'}`}>
+      <div className={`min-h-screen p-6 pb-24 bg-transparent ${isDark ? 'text-white' : 'text-gray-900'}`}>
         <div className="max-w-4xl mx-auto space-y-8">
           
           <div className="text-center space-y-4">
@@ -62,9 +62,7 @@ export default function StudyPlannerPage() {
           </div>
 
           {!plan ? (
-            <div className={`p-8 rounded-3xl border shadow-xl ${
-              isDark ? 'bg-slate-900/60 border-purple-900/20 backdrop-blur-xl' : 'bg-white border-purple-100'
-            }`}>
+            <div className="glass-card p-8 shadow-xl">
               <form onSubmit={handleGenerate} className="space-y-6">
                 {error && (
                   <div className="p-4 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 rounded-xl text-sm font-semibold border border-red-200 dark:border-red-800">
@@ -160,9 +158,7 @@ export default function StudyPlannerPage() {
                 ← Create Another Plan
               </button>
 
-              <div className={`p-8 rounded-3xl border shadow-xl ${
-                isDark ? 'bg-slate-900/60 border-purple-900/20 backdrop-blur-xl' : 'bg-white border-purple-100'
-              }`}>
+              <div className="glass-card p-8 shadow-xl">
                 <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
                   <CheckCircle2 className="text-green-500" />
                   Your Custom Strategy

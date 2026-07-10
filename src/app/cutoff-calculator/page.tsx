@@ -44,7 +44,7 @@ export default function CutoffCalculatorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] dark:from-[#05071a] dark:to-[#0a0d24] text-[#1e1b4b] dark:text-white pt-32 pb-20 px-4">
+    <div className="min-h-screen bg-transparent text-[#1e1b4b] dark:text-white pt-32 pb-20 px-4">
       <div className="max-w-4xl mx-auto space-y-16">
         
         {/* Header */}
@@ -60,9 +60,9 @@ export default function CutoffCalculatorPage() {
         </div>
 
         {/* Calculator Tool */}
-        <div className="bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-purple-100 dark:border-[rgba(255,255,255,0.10)] rounded-3xl p-8 md:p-12 shadow-sm relative overflow-hidden">
+        <div className="glass-card rounded-3xl p-8 md:p-12 shadow-sm relative overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 mb-12">
-            <div className="rounded-3xl bg-white/60 dark:bg-[rgba(255,255,255,0.02)] border border-purple-100/50 dark:border-[rgba(255,255,255,0.05)] p-6 space-y-4 shadow-sm">
+            <div className="glass-card rounded-3xl p-6 space-y-4 shadow-sm">
               <div>
                 <h4 className="font-bold text-gray-900 dark:text-white text-lg flex items-center gap-2"><Sparkles size={16} className="text-purple-600" /> Mathematics</h4>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Out of 100</p>
@@ -74,7 +74,7 @@ export default function CutoffCalculatorPage() {
               </div>
             </div>
             
-            <div className="rounded-3xl bg-white/60 dark:bg-[rgba(255,255,255,0.02)] border border-purple-100/50 dark:border-[rgba(255,255,255,0.05)] p-6 space-y-4 shadow-sm">
+            <div className="glass-card rounded-3xl p-6 space-y-4 shadow-sm">
               <div>
                 <h4 className="font-bold text-gray-900 dark:text-white text-lg flex items-center gap-2"><BookOpen size={16} className="text-teal-600" /> Physics</h4>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Out of 100</p>
@@ -86,7 +86,7 @@ export default function CutoffCalculatorPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl bg-white/60 dark:bg-[rgba(255,255,255,0.02)] border border-purple-100/50 dark:border-[rgba(255,255,255,0.05)] p-6 space-y-4 shadow-sm">
+            <div className="glass-card rounded-3xl p-6 space-y-4 shadow-sm">
               <div>
                 <h4 className="font-bold text-gray-900 dark:text-white text-lg flex items-center gap-2"><BookOpen size={16} className="text-amber-600" /> Chemistry</h4>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Out of 100</p>
@@ -120,7 +120,7 @@ export default function CutoffCalculatorPage() {
 
         {/* Action / Next Steps */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-purple-100 dark:border-[rgba(255,255,255,0.10)] rounded-3xl p-8 shadow-sm">
+          <div className="glass-card rounded-3xl p-8 shadow-sm">
             <h3 className="text-xl font-bold text-gray-950 dark:text-white mb-6 flex items-center gap-3">
               <GraduationCap className="text-purple-600" /> Potential Colleges
             </h3>

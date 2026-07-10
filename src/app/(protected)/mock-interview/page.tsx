@@ -271,7 +271,7 @@ export default function MockInterviewPage() {
 
   return (
     <PageTransition>
-      <div className={`min-h-screen pb-24 ${isDark ? 'bg-[#05071a]' : 'bg-[#f8f7ff]'}`} style={{ boxSizing: 'border-box' }}>
+      <div className={`min-h-screen pb-24 bg-transparent`} style={{ boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '760px', margin: '0 auto', padding: 'clamp(1rem, 4vw, 2rem)', width: '100%', boxSizing: 'border-box' }}>
           
           {/* Step Indicator */}
@@ -313,7 +313,7 @@ export default function MockInterviewPage() {
           </div>
 
           {currentPhase === 0 && (
-            <div id="setup-section" className={`p-6 md:p-8 rounded-3xl border shadow-xl question-enter ${isDark ? 'bg-slate-900/60 border-indigo-900/20 backdrop-blur-xl' : 'bg-white border-indigo-100'}`}>
+            <div id="setup-section" className="glass-card p-6 md:p-8 shadow-xl question-enter">
               <h2 className={`text-2xl font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Set up your interview</h2>
               <p className={`text-sm font-medium mb-8 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Choose your stream and interview type</p>
 
@@ -418,9 +418,7 @@ export default function MockInterviewPage() {
             <div ref={interviewRef} id="interview-section" style={{ scrollMarginTop: '80px' }} className="space-y-6">
               
               {/* Sticky Progress Header */}
-              <div className={`sticky top-20 z-50 p-4 rounded-2xl backdrop-blur-xl border shadow-sm flex items-center justify-between ${
-                isDark ? 'bg-[#05071a]/95 border-white/10' : 'bg-white/95 border-slate-200'
-              }`}>
+              <div className="glass-card sticky top-20 z-50 p-4 shadow-sm flex items-center justify-between">
                 <div className="font-bold text-sm text-indigo-500">Question {currentQ + 1} <span className="text-gray-400 font-medium">of {totalQ}</span></div>
                 <div className="flex-1 max-w-[200px] mx-4 h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden hidden sm:block">
                   <div className="h-full bg-indigo-500 progress-fill rounded-full" style={{ width: `${((currentQ) / totalQ) * 100}%` }} />
@@ -429,9 +427,7 @@ export default function MockInterviewPage() {
               </div>
 
               {/* Question Card */}
-              <div className={`mock-interview-card p-6 md:p-8 rounded-[20px] border shadow-xl question-enter overflow-x-hidden box-border w-full ${
-                isDark ? 'bg-slate-900/80 border-indigo-900/20' : 'bg-white border-indigo-100'
-              }`}>
+              <div className="mock-interview-card glass-card p-6 md:p-8 shadow-xl question-enter overflow-x-hidden box-border w-full">
                 {currentQuestion ? (
                   <>
                     <div className="mock-header flex items-center justify-between flex-wrap gap-2 mb-6">
@@ -563,9 +559,7 @@ export default function MockInterviewPage() {
               <div ref={messagesEndRef} />
             </div>
           ) : currentPhase === 3 ? (
-            <div className={`p-8 md:p-12 rounded-3xl border shadow-xl question-enter text-center ${
-              isDark ? 'bg-slate-900/60 border-indigo-900/20 backdrop-blur-xl' : 'bg-white border-indigo-100'
-            }`}>
+            <div className="glass-card p-8 md:p-12 shadow-xl question-enter text-center">
               <Award size={64} className="mx-auto mb-6 text-emerald-500" />
               <h2 className={`text-3xl font-black mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Interview Complete</h2>
               

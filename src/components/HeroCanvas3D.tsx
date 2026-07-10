@@ -2,10 +2,10 @@
 import { useEffect, useRef } from 'react';
 
 export default function HeroCanvas3D() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas = ref.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -17,381 +17,299 @@ export default function HeroCanvas3D() {
     let mouseX = W / 2;
     let mouseY = H / 2;
 
-    canvas.width = W;
-    canvas.height = H;
-
-    // Responsive particle count for mobile
-    const isMobile = W < 768;
-    const numParticles = isMobile ? 40 : 120;
-
-    // 3D floating particles
-    const particles = Array.from({ length: numParticles }, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      z: Math.random() * 1000,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      vz: (Math.random() - 0.5) * 1.5,
-      r: 1 + Math.random() * 2,
-      hue: Math.random() > 0.5 ? 250 : 165,
-      alpha: 0.3 + Math.random() * 0.5,
-    }));
-
-    // 3D geometric shapes (floating books, graduation caps, stars)
-    const shapes = Array.from({ length: 8 }, (_, i) => ({
-      x: (Math.random() * 0.8 + 0.1) * W,
-      y: (Math.random() * 0.8 + 0.1) * H,
-      z: 200 + Math.random() * 400,
-      rotX: Math.random() * Math.PI * 2,
-      rotY: Math.random() * Math.PI * 2,
-      rotZ: Math.random() * Math.PI * 2,
-      rotSpeedX: (Math.random() - 0.5) * 0.008,
-      rotSpeedY: (Math.random() - 0.5) * 0.01,
-      rotSpeedZ: (Math.random() - 0.5) * 0.006,
-      size: 20 + Math.random() * 30,
-      type: i % 4,
-      hue: [250, 165, 210, 45][i % 4],
-      floatOffset: Math.random() * Math.PI * 2,
-    }));
-
-    // Neural network nodes (representing AI)
-    const nodes = Array.from({ length: 20 }, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      r: 3 + Math.random() * 4,
-      alpha: 0.4 + Math.random() * 0.4,
-    }));
-
-    // Orbiting rings (3D perspective)
-    const rings = Array.from({ length: 3 }, (_, i) => ({
-      cx: W * [0.2, 0.8, 0.5][i],
-      cy: H * [0.3, 0.7, 0.5][i],
-      rx: 80 + i * 40,
-      ry: 30 + i * 15,
-      rotation: (i * Math.PI * 2) / 3,
-      speed: 0.003 + i * 0.002,
-      hue: [250, 165, 45][i],
-    }));
-
-    const project3D = (x: number, y: number, z: number) => {
-      const fov = 500;
-      const scale = fov / (fov + z);
-      const cx = W / 2;
-      const cy = H / 2;
-      // Mouse parallax effect
-      const mx = (mouseX - cx) * 0.05;
-      const my = (mouseY - cy) * 0.05;
-      return {
-        sx: (x - cx + mx) * scale + cx,
-        sy: (y - cy + my) * scale + cy,
-        scale,
-      };
-    };
-
-    const draw3DShape = (
-      ctx: CanvasRenderingContext2D,
-      shape: typeof shapes[0]
-    ) => {
-      shape.rotX += shape.rotSpeedX;
-      shape.rotY += shape.rotSpeedY;
-      shape.rotZ += shape.rotSpeedZ;
-
-      const floatY = Math.sin(t * 0.005 + shape.floatOffset) * 15;
-      const { sx, sy, scale } = project3D(
-        shape.x, shape.y + floatY, shape.z
-      );
-      const s = shape.size * scale;
-      const alpha = 0.15 + scale * 0.25;
-
-      ctx.save();
-      ctx.translate(sx, sy);
-      ctx.rotate(shape.rotZ);
-
-      if (shape.type === 0) {
-        // 3D Cube (college building)
-        const cos = Math.cos(shape.rotY) * s * 0.5;
-        const sin = Math.sin(shape.rotY) * s * 0.3;
-        // Front face
-        ctx.fillStyle = `hsla(${shape.hue},70%,65%,${alpha})`;
-        ctx.strokeStyle = `hsla(${shape.hue},70%,80%,${alpha * 1.5})`;
-        ctx.lineWidth = 0.5;
-        ctx.beginPath();
-        ctx.rect(-s/2, -s/2, s, s);
-        ctx.fill();
-        ctx.stroke();
-        // Top face (3D effect)
-        ctx.fillStyle = `hsla(${shape.hue},70%,75%,${alpha * 0.8})`;
-        ctx.beginPath();
-        ctx.moveTo(-s/2, -s/2);
-        ctx.lineTo(-s/2 + cos, -s/2 - sin);
-        ctx.lineTo(s/2 + cos, -s/2 - sin);
-        ctx.lineTo(s/2, -s/2);
-        ctx.fill();
-        ctx.stroke();
-        // Right face
-        ctx.fillStyle = `hsla(${shape.hue},70%,55%,${alpha * 0.9})`;
-        ctx.beginPath();
-        ctx.moveTo(s/2, -s/2);
-        ctx.lineTo(s/2 + cos, -s/2 - sin);
-        ctx.lineTo(s/2 + cos, s/2 - sin);
-        ctx.lineTo(s/2, s/2);
-        ctx.fill();
-        ctx.stroke();
-      } else if (shape.type === 1) {
-        // Graduation cap (flat with 3D tilt)
-        const tilt = Math.sin(shape.rotX) * 0.3;
-        ctx.transform(1, tilt, 0, 1 - Math.abs(tilt) * 0.2, 0, 0);
-        // Board
-        ctx.fillStyle = `hsla(${shape.hue},70%,65%,${alpha})`;
-        ctx.fillRect(-s/2, -s/4, s, s/2);
-        // Top tassel
-        ctx.beginPath();
-        ctx.arc(0, -s/4, s/6, 0, Math.PI * 2);
-        ctx.fill();
-        // Tassel line
-        ctx.strokeStyle = `hsla(45,90%,65%,${alpha * 1.5})`;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(s/3, -s/4);
-        ctx.lineTo(s/3, s/4);
-        ctx.stroke();
-      } else if (shape.type === 2) {
-        // DNA helix (representing science/research)
-        for (let i = 0; i < 8; i++) {
-          const angle1 = (i / 8) * Math.PI * 2 + shape.rotY;
-          const angle2 = angle1 + Math.PI;
-          const yOff = (i / 8 - 0.5) * s * 1.5;
-          const r1 = s * 0.3 * Math.cos(angle1);
-          const r2 = s * 0.3 * Math.cos(angle2);
-          ctx.beginPath();
-          ctx.arc(r1, yOff, 3 * scale, 0, Math.PI * 2);
-          ctx.fillStyle = `hsla(${shape.hue},80%,70%,${alpha})`;
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(r2, yOff, 3 * scale, 0, Math.PI * 2);
-          ctx.fillStyle = `hsla(${shape.hue + 30},80%,70%,${alpha})`;
-          ctx.fill();
-          if (i < 7) {
-            ctx.strokeStyle = `hsla(${shape.hue},60%,65%,${alpha * 0.5})`;
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(r1, yOff);
-            ctx.lineTo(r2, yOff);
-            ctx.stroke();
-          }
-        }
-      } else {
-        // Star / spark (scholarship)
-        const spikes = 6;
-        const outerR = s * 0.5;
-        const innerR = s * 0.25;
-        ctx.beginPath();
-        for (let i = 0; i < spikes * 2; i++) {
-          const angle = (i * Math.PI) / spikes;
-          const r = i % 2 === 0 ? outerR : innerR;
-          const px = Math.cos(angle + shape.rotZ) * r;
-          const py = Math.sin(angle + shape.rotZ) * r;
-          i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-        }
-        ctx.closePath();
-        ctx.fillStyle = `hsla(${shape.hue},90%,70%,${alpha})`;
-        ctx.fill();
-        // Glow
-        const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, outerR);
-        grd.addColorStop(0, `hsla(${shape.hue},90%,80%,${alpha})`);
-        grd.addColorStop(1, `hsla(${shape.hue},90%,80%,0)`);
-        ctx.fillStyle = grd;
-        ctx.fill();
-      }
-
-      ctx.restore();
-    };
-
-    const drawNeuralConnections = () => {
-      nodes.forEach(n => {
-        n.x += n.vx;
-        n.y += n.vy;
-        if (n.x < 0 || n.x > W) n.vx *= -1;
-        if (n.y < 0 || n.y > H) n.vy *= -1;
-      });
-
-      // Draw connections
-      nodes.forEach((n1, i) => {
-        nodes.forEach((n2, j) => {
-          if (j <= i) return;
-          const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
-          if (dist < 180) {
-            const alpha = (1 - dist / 180) * 0.12;
-            ctx.beginPath();
-            ctx.moveTo(n1.x, n1.y);
-            ctx.lineTo(n2.x, n2.y);
-            ctx.strokeStyle = `rgba(127,119,221,${alpha})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        });
-        // Draw node
-        ctx.beginPath();
-        ctx.arc(n1.x, n1.y, n1.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(127,119,221,${n1.alpha * 0.4})`;
-        ctx.fill();
-      });
-    };
-
-    const drawOrbitalRings = () => {
-      rings.forEach(ring => {
-        ring.rotation += ring.speed;
-        ctx.save();
-        ctx.translate(ring.cx, ring.cy);
-
-        // Elliptical ring (3D orbital effect)
-        ctx.beginPath();
-        ctx.ellipse(0, 0, ring.rx, ring.ry, ring.rotation, 0, Math.PI * 2);
-        ctx.strokeStyle = `hsla(${ring.hue},70%,65%,0.08)`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // Orbiting dot on the ring
-        const dotAngle = ring.rotation * 3;
-        const dotX = Math.cos(dotAngle) * ring.rx;
-        const dotY = Math.sin(dotAngle) * ring.ry;
-        const dotGrd = ctx.createRadialGradient(dotX, dotY, 0, dotX, dotY, 6);
-        dotGrd.addColorStop(0, `hsla(${ring.hue},80%,70%,0.6)`);
-        dotGrd.addColorStop(1, `hsla(${ring.hue},80%,70%,0)`);
-        ctx.beginPath();
-        ctx.arc(dotX, dotY, 6, 0, Math.PI * 2);
-        ctx.fillStyle = dotGrd;
-        ctx.fill();
-
-        ctx.restore();
-      });
-    };
-
-    const drawParticles = () => {
-      particles.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.z += p.vz;
-        if (p.x < 0) p.x = W;
-        if (p.x > W) p.x = 0;
-        if (p.y < 0) p.y = H;
-        if (p.y > H) p.y = 0;
-        if (p.z < 0) p.z = 1000;
-        if (p.z > 1000) p.z = 0;
-
-        const { sx, sy, scale } = project3D(p.x, p.y, p.z);
-        const r = p.r * scale;
-        const alpha = p.alpha * scale;
-
-        ctx.beginPath();
-        ctx.arc(sx, sy, Math.max(r, 0.3), 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${p.hue},70%,70%,${alpha})`;
-        ctx.fill();
-      });
-    };
-
-    // Scrolling text ribbons (India education stats)
-    const stats = [
-      '14L+ TNEA Students 2026',
-      '13L+ JEE Registrations',
-      '500+ Colleges Matched',
-      'Free AI Counselling',
-      'Scholarship Finder',
-      'Stream Discovery AI',
-    ];
-    let ribbonOffset = 0;
-
-    const drawRibbon = () => {
-      ribbonOffset -= 0.5;
-      const ribbonText = stats.join('   ✦   ');
-      ctx.font = '11px "Plus Jakarta Sans", sans-serif';
-      const textW = ctx.measureText(ribbonText).width;
-      if (ribbonOffset < -textW) ribbonOffset = 0;
-
-      ctx.save();
-      ctx.globalAlpha = 0.06;
-      ctx.fillStyle = '#7F77DD';
-      ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText(ribbonText, ribbonOffset, H - 20);
-      ctx.fillText(ribbonText, ribbonOffset + textW + 100, H - 20);
-      ctx.restore();
-    };
-
-    const frame = () => {
-      t++;
-
-      // Dark background gradient
-      const bg = ctx.createLinearGradient(0, 0, W, H);
-      bg.addColorStop(0, '#05071a');
-      bg.addColorStop(0.4, '#080d24');
-      bg.addColorStop(1, '#050a1e');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, W, H);
-
-      drawNeuralConnections();
-      drawOrbitalRings();
-      drawParticles();
-      shapes.forEach(s => draw3DShape(ctx, s));
-      drawRibbon();
-
-      animId = requestAnimationFrame(frame);
-    };
-
-    frame();
-
-    const onMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-
-    const onResize = () => {
+    const setSize = () => {
       W = window.innerWidth;
       H = window.innerHeight;
       canvas.width = W;
       canvas.height = H;
     };
+    setSize();
+    canvas.style.display = 'block';
 
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('resize', onResize);
+    /* ── 3D particles ── */
+    const isMobile = W < 768;
+    const count = isMobile ? 50 : 120;
 
-    // Pause when hidden
-    const handleVisibility = () => {
-      if (document.hidden) cancelAnimationFrame(animId);
-      else {
-          cancelAnimationFrame(animId);
-          frame();
+    const particles = Array.from({ length: count }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      z: Math.random() * 800,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      vz: (Math.random() - 0.5) * 1.2,
+      r: 1 + Math.random() * 2,
+      hue: Math.random() > 0.5 ? 250 : 165,
+      alpha: 0.3 + Math.random() * 0.5,
+    }));
+
+    /* ── Floating 3D shapes ── */
+    const shapes = Array.from({ length: isMobile ? 4 : 8 }, (_, i) => ({
+      x: (0.1 + Math.random() * 0.8) * W,
+      y: (0.1 + Math.random() * 0.8) * H,
+      z: 200 + Math.random() * 400,
+      rotX: Math.random() * Math.PI * 2,
+      rotY: Math.random() * Math.PI * 2,
+      rotZ: Math.random() * Math.PI * 2,
+      rsx: (Math.random() - 0.5) * 0.008,
+      rsy: (Math.random() - 0.5) * 0.010,
+      rsz: (Math.random() - 0.5) * 0.006,
+      size: 20 + Math.random() * 30,
+      type: i % 4,
+      hue: [250, 165, 210, 45][i % 4],
+      fo: Math.random() * Math.PI * 2,
+    }));
+
+    /* ── Neural network nodes ── */
+    const nodes = Array.from({ length: isMobile ? 10 : 20 }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: 3 + Math.random() * 4,
+    }));
+
+    /* ── Orbital rings ── */
+    const rings = [
+      { cx: W*0.2, cy: H*0.3, rx:90, ry:32, rot:0, spd:0.003, hue:250 },
+      { cx: W*0.8, cy: H*0.7, rx:70, ry:25, rot:2, spd:0.005, hue:165 },
+      { cx: W*0.5, cy: H*0.5, rx:110,ry:40, rot:4, spd:0.004, hue:45  },
+    ];
+
+    const project = (x: number, y: number, z: number) => {
+      const fov = 500;
+      const scale = fov / (fov + z);
+      const mx = (mouseX - W/2) * 0.05;
+      const my = (mouseY - H/2) * 0.05;
+      return {
+        sx: (x - W/2 + mx) * scale + W/2,
+        sy: (y - H/2 + my) * scale + H/2,
+        scale,
+      };
+    };
+
+    const drawShape = (s: typeof shapes[0]) => {
+      s.rotX += s.rsx; s.rotY += s.rsy; s.rotZ += s.rsz;
+      const fy = Math.sin(t * 0.005 + s.fo) * 15;
+      const { sx, sy, scale } = project(s.x, s.y + fy, s.z);
+      const sz = s.size * scale;
+      const alpha = 0.1 + scale * 0.2;
+
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate(s.rotZ);
+
+      if (s.type === 0) {
+        /* cube */
+        const cs = Math.cos(s.rotY) * sz * 0.5;
+        const sn = Math.sin(s.rotY) * sz * 0.3;
+        ctx.fillStyle = `hsla(${s.hue},70%,65%,${alpha})`;
+        ctx.strokeStyle = `hsla(${s.hue},70%,80%,${alpha*1.5})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.rect(-sz/2,-sz/2,sz,sz);
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle = `hsla(${s.hue},70%,75%,${alpha*0.8})`;
+        ctx.beginPath();
+        ctx.moveTo(-sz/2,-sz/2);
+        ctx.lineTo(-sz/2+cs,-sz/2-sn);
+        ctx.lineTo( sz/2+cs,-sz/2-sn);
+        ctx.lineTo( sz/2,-sz/2);
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle = `hsla(${s.hue},70%,55%,${alpha*0.9})`;
+        ctx.beginPath();
+        ctx.moveTo(sz/2,-sz/2);
+        ctx.lineTo(sz/2+cs,-sz/2-sn);
+        ctx.lineTo(sz/2+cs, sz/2-sn);
+        ctx.lineTo(sz/2, sz/2);
+        ctx.fill(); ctx.stroke();
+      } else if (s.type === 1) {
+        /* graduation cap */
+        const tilt = Math.sin(s.rotX) * 0.3;
+        ctx.transform(1,tilt,0,1-Math.abs(tilt)*0.2,0,0);
+        ctx.fillStyle = `hsla(${s.hue},70%,65%,${alpha})`;
+        ctx.fillRect(-sz/2,-sz/4,sz,sz/2);
+        ctx.beginPath();
+        ctx.arc(0,-sz/4,sz/6,0,Math.PI*2);
+        ctx.fill();
+        ctx.strokeStyle = `hsla(45,90%,65%,${alpha*1.5})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(sz/3,-sz/4);
+        ctx.lineTo(sz/3, sz/4);
+        ctx.stroke();
+      } else if (s.type === 2) {
+        /* DNA helix */
+        for (let i = 0; i < 8; i++) {
+          const a1 = (i/8)*Math.PI*2 + s.rotY;
+          const yOff = (i/8 - 0.5) * sz * 1.5;
+          ctx.beginPath();
+          ctx.arc(Math.cos(a1)*sz*0.3, yOff, 3*scale, 0, Math.PI*2);
+          ctx.fillStyle = `hsla(${s.hue},80%,70%,${alpha})`;
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(Math.cos(a1+Math.PI)*sz*0.3, yOff, 3*scale,0,Math.PI*2);
+          ctx.fillStyle = `hsla(${s.hue+30},80%,70%,${alpha})`;
+          ctx.fill();
+        }
+      } else {
+        /* star */
+        const spikes = 6;
+        const or = sz*0.5; const ir = sz*0.25;
+        ctx.beginPath();
+        for (let i = 0; i < spikes*2; i++) {
+          const ang = (i*Math.PI)/spikes;
+          const r = i%2===0?or:ir;
+          const px = Math.cos(ang+s.rotZ)*r;
+          const py = Math.sin(ang+s.rotZ)*r;
+          i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+        }
+        ctx.closePath();
+        ctx.fillStyle = `hsla(${s.hue},90%,70%,${alpha})`;
+        ctx.fill();
+      }
+      ctx.restore();
+    };
+
+    const drawNeural = () => {
+      nodes.forEach(n => {
+        n.x += n.vx; n.y += n.vy;
+        if (n.x<0||n.x>W) n.vx*=-1;
+        if (n.y<0||n.y>H) n.vy*=-1;
+      });
+      for (let i=0;i<nodes.length;i++) {
+        for (let j=i+1;j<nodes.length;j++) {
+          const d = Math.hypot(nodes[i].x-nodes[j].x,
+                               nodes[i].y-nodes[j].y);
+          if (d<180) {
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x,nodes[i].y);
+            ctx.lineTo(nodes[j].x,nodes[j].y);
+            ctx.strokeStyle=`rgba(127,119,221,${(1-d/180)*0.10})`;
+            ctx.lineWidth=0.5;
+            ctx.stroke();
+          }
+        }
+        ctx.beginPath();
+        ctx.arc(nodes[i].x,nodes[i].y,nodes[i].r,0,Math.PI*2);
+        ctx.fillStyle='rgba(127,119,221,0.18)';
+        ctx.fill();
       }
     };
-    document.addEventListener('visibilitychange', handleVisibility);
 
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('resize', onResize);
-      document.removeEventListener('visibilitychange', handleVisibility);
+    const drawRings = () => {
+      rings.forEach(ring => {
+        ring.rot += ring.spd;
+        ctx.save();
+        ctx.translate(ring.cx, ring.cy);
+        ctx.beginPath();
+        ctx.ellipse(0,0,ring.rx,ring.ry,ring.rot,0,Math.PI*2);
+        ctx.strokeStyle=`hsla(${ring.hue},70%,65%,0.07)`;
+        ctx.lineWidth=1;
+        ctx.stroke();
+        const da = ring.rot*3;
+        const dx = Math.cos(da)*ring.rx;
+        const dy = Math.sin(da)*ring.ry;
+        const g = ctx.createRadialGradient(dx,dy,0,dx,dy,7);
+        g.addColorStop(0,`hsla(${ring.hue},80%,70%,0.6)`);
+        g.addColorStop(1,`hsla(${ring.hue},80%,70%,0)`);
+        ctx.beginPath();
+        ctx.arc(dx,dy,7,0,Math.PI*2);
+        ctx.fillStyle=g;
+        ctx.fill();
+        ctx.restore();
+      });
     };
-  }, []);
+
+    const draw = () => {
+      t++;
+      const bg = ctx.createLinearGradient(0,0,W,H);
+      bg.addColorStop(0,'#05071a');
+      bg.addColorStop(0.5,'#080d24');
+      bg.addColorStop(1,'#050a1e');
+      ctx.fillStyle=bg;
+      ctx.fillRect(0,0,W,H);
+
+      /* Dot grid */
+      ctx.fillStyle='rgba(127,119,221,0.04)';
+      for(let x=0;x<W;x+=60)
+        for(let y=0;y<H;y+=60){
+          ctx.beginPath();
+          ctx.arc(x,y,1,0,Math.PI*2);
+          ctx.fill();
+        }
+
+      drawNeural();
+      drawRings();
+
+      /* Particles */
+      particles.forEach(p => {
+        p.x+=p.vx; p.y+=p.vy; p.z+=p.vz;
+        if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+        if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+        if(p.z<0)p.z=800; if(p.z>800)p.z=0;
+        const {sx,sy,scale}=project(p.x,p.y,p.z);
+        const r=p.r*scale;
+        ctx.beginPath();
+        ctx.arc(sx,sy,Math.max(r,0.3),0,Math.PI*2);
+        ctx.fillStyle=`hsla(${p.hue},70%,70%,${p.alpha*scale})`;
+        ctx.fill();
+      });
+
+      shapes.forEach(s=>drawShape(s));
+
+      /* Glowing orbs */
+      [[W*0.1,H*0.2,250],[W*0.85,H*0.15,165],[W*0.5,H*0.8,210]]
+        .forEach(([ox,oy,hue],i)=>{
+          const bx=ox+Math.sin(t*0.004+i)*60;
+          const by=oy+Math.cos(t*0.003+i)*40;
+          const g=ctx.createRadialGradient(bx,by,0,bx,by,200);
+          g.addColorStop(0,`hsla(${hue},70%,65%,0.12)`);
+          g.addColorStop(1,`hsla(${hue},70%,65%,0)`);
+          ctx.beginPath();
+          ctx.arc(bx,by,200,0,Math.PI*2);
+          ctx.fillStyle=g;
+          ctx.fill();
+        });
+
+      animId=requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    const onMM=(e:MouseEvent)=>{mouseX=e.clientX;mouseY=e.clientY;};
+    const onResize=()=>{
+      setSize();
+      rings[0].cx=W*0.2; rings[0].cy=H*0.3;
+      rings[1].cx=W*0.8; rings[1].cy=H*0.7;
+      rings[2].cx=W*0.5; rings[2].cy=H*0.5;
+    };
+
+    window.addEventListener('mousemove',onMM);
+    window.addEventListener('resize',onResize);
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden) cancelAnimationFrame(animId);
+      else draw();
+    });
+
+    return ()=>{
+      cancelAnimationFrame(animId);
+      window.removeEventListener('mousemove',onMM);
+      window.removeEventListener('resize',onResize);
+    };
+  },[]);
 
   return (
     <canvas
-      ref={canvasRef}
+      ref={ref}
       aria-hidden="true"
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        zIndex: 0,
-        pointerEvents: 'none',
-        display: 'block',
-        margin: 0,
-        padding: 0,
-        border: 'none',
-        outline: 'none',
-        backgroundColor: 'transparent',
+        position:'fixed',
+        top:0, left:0,
+        width:'100vw',
+        height:'100vh',
+        zIndex:0,
+        pointerEvents:'none',
+        display:'block',
       }}
     />
   );

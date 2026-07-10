@@ -130,7 +130,7 @@ export default function ScholarshipFinder() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/[0.02] border border-white/5 rounded-[4rem] p-10 md:p-16 shadow-[0_50px_100px_rgba(0,0,0,0.6)] backdrop-blur-3xl mb-16 relative overflow-hidden group"
+          className="glass-card rounded-[4rem] p-10 md:p-16 mb-16 relative overflow-hidden group"
         >
           <div className="absolute top-0 right-0 p-16 opacity-[0.02] pointer-events-none group-hover:scale-110 transition-transform duration-700">
              <Banknote size={300} className="text-indigo-500" />
@@ -165,7 +165,7 @@ export default function ScholarshipFinder() {
                 placeholder="e.g. 85"
                 value={formData.percentage}
                 onChange={(e) => setFormData({ ...formData, percentage: e.target.value })}
-                className="w-full h-16 bg-white/70 dark:bg-white/[0.05] border border-purple-250/20 dark:border-white/10 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-gray-400 dark:placeholder:text-white/10"
+                className="glass-input w-full h-16 rounded-2xl px-6 text-gray-900 dark:text-white font-bold outline-none focus:border-indigo-500/50 transition-all placeholder:text-gray-400 dark:placeholder:text-white/10"
               />
             </div>
 
@@ -191,7 +191,7 @@ export default function ScholarshipFinder() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-white dark:bg-[rgba(255,255,255,0.04)] border border-gray-200 dark:border-white/5 rounded-[3rem] p-10 space-y-8 hover:border-indigo-500/30 transition-all group backdrop-blur-md relative overflow-hidden"
+                className="glass-card rounded-[3rem] p-10 space-y-8 hover:border-indigo-500/30 transition-all group relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 p-10 opacity-[0.02] pointer-events-none group-hover:scale-110 transition-transform duration-700">
                     <Award size={150} className="text-indigo-500" />

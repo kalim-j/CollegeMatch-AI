@@ -216,7 +216,7 @@ export default function PredictPage() {
   // ── Loading / auth spinner ──────────────────────────────────────────────────
   if (loading || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
       </div>
     );
@@ -287,7 +287,7 @@ export default function PredictPage() {
 
   // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] text-gray-900 relative overflow-hidden selection:bg-purple-200">
+    <div className="min-h-screen bg-transparent text-gray-900 relative overflow-hidden selection:bg-purple-200">
       <div className="container mx-auto px-4 sm:px-6 py-12 max-w-4xl relative z-10">
         {/* ── Header ── */}
         <motion.header
@@ -320,7 +320,7 @@ export default function PredictPage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-3xl p-8 sm:p-10 relative overflow-hidden mb-8 shadow-sm"
+          className="glass-card rounded-3xl p-8 sm:p-10 relative overflow-hidden mb-8 shadow-sm"
         >
           {/* Top gradient bar */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-teal-500" />
@@ -460,7 +460,7 @@ export default function PredictPage() {
               {/* Verdict Card */}
               <div
                 className={cn(
-                  "backdrop-blur-2xl border rounded-3xl p-8 sm:p-10 relative overflow-hidden shadow-sm bg-white/70",
+                  "glass-card rounded-3xl p-8 sm:p-10 relative overflow-hidden shadow-sm",
                   verdictCfg.card
                 )}
               >
@@ -468,7 +468,7 @@ export default function PredictPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-6 mb-8 relative z-10">
                   <div
                     className={cn(
-                      "h-16 w-16 rounded-2xl border flex items-center justify-center flex-shrink-0 bg-white"
+                      "h-16 w-16 rounded-2xl border border-white/20 flex items-center justify-center flex-shrink-0 bg-transparent"
                     )}
                   >
                     <VerdictIcon size={28} className={verdictCfg.iconColor} />
@@ -483,7 +483,7 @@ export default function PredictPage() {
                       </h2>
                       <span
                         className={cn(
-                          "px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest bg-white/80",
+                          "px-4 py-1.5 rounded-full border border-white/20 text-[10px] font-black uppercase tracking-widest bg-transparent",
                           verdictCfg.badge
                         )}
                       >
@@ -514,7 +514,7 @@ export default function PredictPage() {
                 </div>
 
                 {/* Reasoning */}
-                <div className="bg-white/50 border border-purple-100/50 rounded-2xl p-6 mb-6 relative z-10 shadow-sm">
+                <div className="glass-card rounded-2xl p-6 mb-6 relative z-10 shadow-sm">
                   <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <BarChart3 size={12} className="text-purple-600" />
                     AI Reasoning
@@ -526,7 +526,7 @@ export default function PredictPage() {
 
                 {/* Cutoff Trend Bar Chart */}
                 {result.cutoff_trend && result.cutoff_trend.length > 0 && (
-                  <div className="bg-white/50 border border-purple-100/50 rounded-2xl p-6 mb-6 relative z-10 shadow-sm">
+                  <div className="glass-card rounded-2xl p-6 mb-6 relative z-10 shadow-sm">
                     <CutoffBarChart
                       data={result.cutoff_trend}
                       verdictBar={verdictCfg.bar}
@@ -557,7 +557,7 @@ export default function PredictPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
-                      className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-3xl p-8 sm:p-10 shadow-sm"
+                      className="glass-card rounded-3xl p-8 sm:p-10 shadow-sm"
                     >
                       <div className="flex items-center gap-4 mb-6">
                         <div className="h-12 w-12 bg-purple-50 border border-purple-100 rounded-2xl flex items-center justify-center flex-shrink-0">

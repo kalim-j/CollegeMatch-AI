@@ -153,6 +153,7 @@ export default function LandingPage() {
 
   return (
     <div className="bg-transparent min-h-screen text-white overflow-x-hidden font-sans">
+      <HeroCanvas3D />
       
       {/* SECTION 1 - HERO */}
       <section style={{
@@ -166,7 +167,6 @@ export default function LandingPage() {
         background: 'transparent',
         padding: '0 1rem',
       }} className="page-entrance">
-        <HeroCanvas3D />
         
         <div ref={heroParallax} className="relative z-10 flex flex-col items-center text-center max-w-5xl px-4 w-full">
           

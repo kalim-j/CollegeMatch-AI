@@ -157,7 +157,7 @@ export default function HistoryPage() {
               "px-6 py-3 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-2 text-sm",
               activeTab === 'colleges' 
                 ? "bg-purple-600 text-white shadow-md shadow-purple-200" 
-                : "bg-white text-gray-500 border border-purple-100 hover:bg-purple-50"
+                : "bg-white/5 text-gray-500 border border-purple-100 hover:bg-white/10"
             )}
           >
             <SchoolIcon className="h-4.5 w-4.5" />
@@ -169,7 +169,7 @@ export default function HistoryPage() {
               "px-6 py-3 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-2 text-sm",
               activeTab === 'streams' 
                 ? "bg-purple-600 text-white shadow-md shadow-purple-200" 
-                : "bg-white text-gray-500 border border-purple-100 hover:bg-purple-50"
+                : "bg-white/5 text-gray-500 border border-purple-100 hover:bg-white/10"
             )}
           >
             <Lightbulb className="h-4.5 w-4.5" />
@@ -180,7 +180,7 @@ export default function HistoryPage() {
         {activeTab === 'colleges' && (
           <div className="space-y-6 pb-24">
             {sessions.length === 0 ? (
-              <div className="text-center py-12 bg-white/70 backdrop-blur-xl border border-purple-100 rounded-3xl p-8 shadow-sm">
+              <div className="text-center py-12 glass-card border border-purple-100/50 rounded-3xl p-8 shadow-sm">
                 <div className="h-20 w-20 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-100">
                   <HistoryIcon className="text-purple-600" size={32} />
                 </div>
@@ -197,7 +197,7 @@ export default function HistoryPage() {
                   key={session.id}
                 >
                   <div className={cn(
-                    "rounded-[2.5rem] border transition-all overflow-hidden bg-white/70 backdrop-blur-xl group shadow-sm",
+                    "rounded-[2.5rem] border transition-all overflow-hidden glass-card group shadow-sm",
                     expandedId === session.id ? "border-purple-300" : "border-purple-100 hover:border-purple-250"
                   )}>
                     <div className="p-8 md:p-10">
@@ -257,7 +257,7 @@ export default function HistoryPage() {
                             <div className="pt-10 space-y-6">
                               <div className="grid grid-cols-1 gap-4">
                                 {session.results.map((college, idx) => (
-                                  <div key={idx} onClick={() => handleCollegeClick(college)} className="group p-5 rounded-2xl bg-white border border-purple-100 hover:border-purple-300 cursor-pointer flex justify-between items-center gap-4 shadow-sm transition-all">
+                                  <div key={idx} onClick={() => handleCollegeClick(college)} className="group p-5 rounded-2xl bg-white/5 border border-purple-100/50 hover:border-purple-300 cursor-pointer flex justify-between items-center gap-4 shadow-sm transition-all">
                                     <div>
                                       <h4 className="text-base font-bold text-gray-900 group-hover:text-purple-700">{college.name}</h4>
                                       <p className="text-xs text-gray-400 font-bold">{college.location}</p>
@@ -283,7 +283,7 @@ export default function HistoryPage() {
         {activeTab === 'streams' && (
           <div className="space-y-6 pb-24">
             {discoveries.length === 0 ? (
-              <div className="text-center py-12 bg-white/70 backdrop-blur-xl border border-purple-100 rounded-3xl p-8 shadow-sm">
+              <div className="text-center py-12 glass-card border border-purple-100/50 rounded-3xl p-8 shadow-sm">
                 <div className="h-20 w-20 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-100">
                   <Lightbulb className="text-purple-650" size={32} />
                 </div>
@@ -300,7 +300,7 @@ export default function HistoryPage() {
                   key={discovery.id}
                 >
                   <div className={cn(
-                    "rounded-[2.5rem] border transition-all overflow-hidden bg-white/70 backdrop-blur-xl group shadow-sm",
+                    "rounded-[2.5rem] border transition-all overflow-hidden glass-card group shadow-sm",
                     expandedId === discovery.id ? "border-purple-300" : "border-purple-100 hover:border-purple-250"
                   )}>
                     <div className="p-8 md:p-10">
@@ -316,7 +316,7 @@ export default function HistoryPage() {
                             {discovery.results.streams[0].stream}
                           </h3>
                           <div className="flex items-center gap-3">
-                            <span className="px-3 py-1 bg-white border border-purple-100 rounded-full text-xs font-bold text-gray-700 shadow-sm">
+                            <span className="px-3 py-1 bg-white/5 border border-purple-100/50 rounded-full text-xs font-bold text-purple-700 dark:text-purple-300 shadow-sm">
                               Score: {discovery.results.streams[0].match_score}%
                             </span>
                             {discovery.selectedStream && (

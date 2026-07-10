@@ -1,4 +1,5 @@
 'use client';
+import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -7,7 +8,10 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, OrbitControls, Text } from '@react-three/drei';
 import { useRef } from 'react';
 import * as THREE from 'three';
-import HomepageBackground from '@/components/3D/HomepageBackground';
+const LoginBackground = dynamic(
+  () => import('@/components/LoginBackground'),
+  { ssr: false }
+);
 import PageTransition from '@/components/3D/PageTransition';
 import { 
   signInWithEmailAndPassword, 
@@ -153,7 +157,7 @@ export default function LoginPage() {
       }} className="auth-layout">
         
         {/* Canvas background — covers entire page */}
-        <HomepageBackground />
+        <LoginBackground />
 
         {/* LEFT panel — hero content */}
         <div style={{
@@ -214,8 +218,10 @@ export default function LoginPage() {
           padding: 'clamp(1.5rem,3vw,3rem)',
           position: 'relative',
           zIndex: 1,
-          background: 'white',
-          borderLeft: 'none',
+          background: 'rgba(255,255,255,0.95)',
+          backdropFilter: 'blur(20px)',
+          borderLeft: '1px solid rgba(127,119,221,0.15)',
+          boxShadow: '-8px 0 48px rgba(83,74,183,0.15)',
           margin: 0,
         }} className="auth-right">
           

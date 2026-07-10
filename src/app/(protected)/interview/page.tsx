@@ -362,7 +362,7 @@ export default function InterviewPage() {
                     "cursor-pointer transition-all border-2 rounded-[3rem] p-12 text-center relative overflow-hidden backdrop-blur-xl group",
                     (selectingItem?.step === 1 && selectingItem?.value === level.id) ? "card-selecting" : formData.courseLevel === level.id 
                         ? "border-indigo-500 bg-indigo-500/10 shadow-2xl shadow-indigo-500/10" 
-                        : "border-purple-250/20 dark:border-purple-900/20 bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 hover:border-purple-250/40 dark:border-purple-900/40"
+                        : "glass-card hover:border-purple-250/40 dark:border-purple-900/40"
                   )}
                   onClick={() => autoAdvance('courseLevel', level.id)}
                 >
@@ -408,7 +408,7 @@ export default function InterviewPage() {
                     "h-20 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all px-6 border backdrop-blur-sm",
                     (selectingItem?.step === 2 && selectingItem?.value === stream) ? "card-selecting" : formData.stream === stream 
                         ? "bg-teal-500/20 text-teal-400 border-teal-500/40 shadow-lg shadow-teal-500/10" 
-                        : "bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/40 dark:border-purple-900/40"
+                        : "glass-card text-gray-900 dark:text-gray-500 dark:text-slate-400 hover:border-purple-250/40 dark:border-purple-900/40"
                   )}
                   onClick={() => autoAdvance('stream', stream)}
                 >
@@ -434,7 +434,7 @@ export default function InterviewPage() {
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Where to Study?</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">STEP 3: CHOOSE YOUR COLLEGE REGION</p>
             </div>
-            <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl relative overflow-hidden">
+            <div className="glass-card rounded-[3rem] p-12 space-y-8 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-12 opacity-[0.02] pointer-events-none">
                   <MapPin size={240} className="text-amber-500" />
                 </div>
@@ -496,7 +496,7 @@ export default function InterviewPage() {
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">{levelKey} Standards</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step {step}: Academic performance verification</p>
             </div>
-            <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl">
+            <div className="glass-card rounded-[3rem] p-12 space-y-8 shadow-2xl">
                 <div className="space-y-4">
                     <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Board of Education</label>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -636,7 +636,7 @@ export default function InterviewPage() {
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Your Subject Marks</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 6: We'll calculate your cutoff automatically</p>
             </div>
-            <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl">
+            <div className="glass-card rounded-[3rem] p-12 space-y-8 shadow-2xl">
                 
                 {formData.courseLevel === "PG" ? (
                     <div className="space-y-4 max-w-xl mx-auto">
@@ -738,7 +738,7 @@ export default function InterviewPage() {
                                     "h-16 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all border",
                                     (selectingItem?.step === 6 && selectingItem?.value === r.val) ? "card-selecting border-indigo-500" : formData.cutoffRange === r.val 
                                       ? `${r.bg} ${r.color} ${r.border} shadow-lg` 
-                                      : "bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/30 dark:border-purple-900/30"
+                                      : "glass-card text-gray-900 dark:text-gray-500 dark:text-slate-400 hover:border-purple-250/30 dark:border-purple-900/30"
                                 )}
                                 onClick={() => autoAdvance('cutoffRange', r.val)}
                             >
@@ -767,7 +767,7 @@ export default function InterviewPage() {
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Social Profile</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 7: Category and background</p>
             </div>
-            <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-8 shadow-2xl">
+            <div className="glass-card rounded-[3rem] p-12 space-y-8 shadow-2xl">
                 <div className="space-y-4">
                     <label className="text-[10px] font-black text-gray-900 dark:text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-1">Admission Category (Quota)</label>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -866,7 +866,7 @@ export default function InterviewPage() {
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white tracking-tighter">Budget Policy</h2>
               <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px]">Step 8: Institutional type preference</p>
             </div>
-            <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-12 space-y-4 shadow-2xl">
+            <div className="glass-card rounded-[3rem] p-12 space-y-4 shadow-2xl">
                 {["Government", "Private", "Both"].map((b) => (
                     <button
                       key={b}
@@ -874,7 +874,7 @@ export default function InterviewPage() {
                           "h-20 w-full rounded-[2rem] text-xl font-black uppercase tracking-widest transition-all border",
                           (selectingItem?.step === 8 && selectingItem?.value === b) ? "card-selecting border-emerald-500" : formData.budget === b 
                             ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 shadow-lg" 
-                            : "bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 text-gray-900 dark:text-gray-500 dark:text-slate-400 border-purple-250/20 dark:border-purple-900/20 hover:border-purple-250/30 dark:border-purple-900/30"
+                            : "glass-card text-gray-900 dark:text-gray-500 dark:text-slate-400 hover:border-purple-250/30 dark:border-purple-900/30"
                       )}
                       onClick={() => autoAdvance('budget', b)}
                     >
@@ -937,7 +937,7 @@ export default function InterviewPage() {
                 </div>
               </div>
             ) : (
-              <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3.5rem] p-14 text-center space-y-8 relative overflow-hidden shadow-2xl">
+              <div className="glass-card rounded-[3.5rem] p-14 text-center space-y-8 relative overflow-hidden shadow-2xl">
                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 to-teal-500" />
                 <div className="relative">
                   <div className="absolute inset-0 bg-indigo-500/20 blur-[60px] rounded-full pointer-events-none" />
@@ -1037,7 +1037,7 @@ export default function InterviewPage() {
                       isSelected
                         ? "bg-indigo-500 border-indigo-400 text-gray-900 dark:text-white shadow-indigo-500/30"
                         : isDisabled
-                        ? "bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 border-purple-250/30 dark:border-purple-900/30 text-gray-900 dark:text-gray-400 dark:text-slate-500 cursor-not-allowed"
+                        ? "glass-card border-purple-250/30 dark:border-purple-900/30 text-gray-900 dark:text-gray-400 dark:text-slate-500 cursor-not-allowed"
                         : "bg-white/50 dark:bg-white/[0.05] border-purple-250/40 dark:border-purple-900/40 text-gray-900 dark:text-gray-500 dark:text-slate-400 hover:border-indigo-400 hover:bg-indigo-500/20 hover:text-indigo-300"
                     )}
                   >
@@ -1045,7 +1045,7 @@ export default function InterviewPage() {
                   </button>
 
                   <div className={cn(
-                    "h-full bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border rounded-[3rem] p-10 transition-all relative overflow-hidden flex flex-col shadow-2xl",
+                    "h-full glass-card rounded-[3rem] p-10 transition-all relative overflow-hidden flex flex-col shadow-2xl",
                     isSelected
                       ? "border-indigo-500/50 shadow-indigo-500/10"
                       : "border-purple-250/20 dark:border-purple-900/20 hover:border-indigo-500/30"
@@ -1127,7 +1127,7 @@ export default function InterviewPage() {
             {/* Rating Section */}
             {colleges.length > 0 && currentSessionId && (
               <div className="max-w-2xl mx-auto mb-8">
-                <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-10 text-center space-y-6">
+                <div className="glass-card rounded-[3rem] p-10 text-center space-y-6">
                   <div className="space-y-2">
                     <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Are you happy with these results?</h3>
                     <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest">
@@ -1166,7 +1166,7 @@ export default function InterviewPage() {
             {/* Share Card Section */}
             {colleges.length > 0 && (
               <div className="max-w-2xl mx-auto">
-                <div className="bg-white/70 dark:bg-slate-900/60 border border-purple-200/50 dark:border-purple-900/30 backdrop-blur-2xl border border-purple-250/20 dark:border-purple-900/20 rounded-[3rem] p-10 space-y-6">
+                <div className="glass-card rounded-[3rem] p-10 space-y-6">
                   <div className="text-center space-y-2">
                     <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Share Your Results</h3>
                     <p className="text-gray-900 dark:text-gray-500 dark:text-slate-400 font-bold text-[10px] uppercase tracking-widest">

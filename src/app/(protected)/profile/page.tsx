@@ -99,13 +99,13 @@ export default function ProfilePage() {
   };
 
   if (loading || !user) return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] flex items-center justify-center">
+    <div className="min-h-screen bg-transparent flex items-center justify-center">
       <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] text-gray-900 relative overflow-hidden selection:bg-purple-250/20 pt-24">
+    <div className="min-h-screen bg-transparent text-gray-900 relative overflow-hidden selection:bg-purple-250/20 pt-24">
       <div className="container mx-auto px-4 md:px-6 py-12 md:py-16 max-w-6xl relative z-10">
         <header className="mb-12 md:mb-16 space-y-3 md:space-y-4">
           <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-purple-50 border border-purple-100 shadow-sm">
@@ -123,7 +123,7 @@ export default function ProfilePage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="rounded-3xl border border-purple-100 bg-white/70 backdrop-blur-xl overflow-hidden shadow-sm relative"
+              className="glass-card rounded-3xl overflow-hidden shadow-sm relative"
             >
               <div className="h-24 lg:h-32 bg-gradient-to-r from-purple-600/10 to-indigo-650/10 border-b border-purple-100" />
               <div className="px-6 lg:px-8 pb-8 lg:pb-10 -mt-12 lg:-mt-16 flex flex-col items-center text-center">
@@ -145,11 +145,11 @@ export default function ProfilePage() {
                 <div className="w-full h-px bg-purple-100 my-6 lg:my-8" />
                 
                 <div className="space-y-3 lg:space-y-4 w-full">
-                  <div className="flex items-center gap-3 lg:gap-4 text-sm p-4 lg:p-5 rounded-2xl bg-white border border-purple-100 text-gray-500 shadow-sm">
+                  <div className="flex items-center gap-3 lg:gap-4 text-sm p-4 lg:p-5 rounded-2xl bg-transparent border border-white/20 text-gray-500 shadow-sm">
                     <Mail size={16} className="text-purple-650 flex-shrink-0" />
                     <span className="font-bold truncate text-xs lg:text-sm">{user?.email}</span>
                   </div>
-                  <div className="flex items-center gap-3 lg:gap-4 text-sm p-4 lg:p-5 rounded-2xl bg-white border border-purple-100 text-gray-500 shadow-sm">
+                  <div className="flex items-center gap-3 lg:gap-4 text-sm p-4 lg:p-5 rounded-2xl bg-transparent border border-white/20 text-gray-500 shadow-sm">
                     <MapPin size={16} className="text-purple-650 flex-shrink-0" />
                     <span className="font-bold text-left text-xs lg:text-sm">{profile?.state ? `${profile.district}, ${profile.state}` : "Location not set"}</span>
                   </div>
@@ -164,7 +164,7 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="rounded-3xl border border-purple-100 bg-white/70 backdrop-blur-xl overflow-hidden shadow-sm"
+              className="glass-card rounded-3xl overflow-hidden shadow-sm"
             >
               <div className="p-6 md:p-10 lg:p-14">
                 <form onSubmit={handleUpdateProfile} className="space-y-6 md:space-y-8 lg:space-y-10">

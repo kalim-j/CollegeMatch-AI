@@ -9,7 +9,11 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { toast } from "sonner";
 import { Mail, Lock, User, Loader2, ArrowRight, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
-import LoginBackground from "@/components/LoginBackground";
+import dynamic from 'next/dynamic';
+const LoginBackground = dynamic(
+  () => import('@/components/LoginBackground'),
+  { ssr: false }
+);
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabase";
 
@@ -241,10 +245,11 @@ export default function RegisterPage() {
         padding: 'clamp(1.5rem,3vw,3rem)',
         position: 'relative',
         zIndex: 1,
-        /* White background ONLY on the right half */
-        background: 'white',
-        /* NO border-left */
-        borderLeft: 'none',
+        /* White glass background ONLY on the right half */
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(20px)',
+        borderLeft: '1px solid rgba(127,119,221,0.15)',
+        boxShadow: '-8px 0 48px rgba(83,74,183,0.15)',
         margin: 0,
       }} className="auth-right">
         {/* Form card */}

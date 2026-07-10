@@ -162,7 +162,8 @@ export default function DiscoverPage() {
           initial={{ opacity: 0, y: 40, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          style={{ maxWidth: 580, width: '100%', background: bgCard, backdropFilter: 'blur(24px)', border: `1px solid ${border}`, borderRadius: 28, padding: '52px 44px', textAlign: 'center', boxShadow: '0 24px 64px rgba(0,0,0,0.08)', position: 'relative', zIndex: 10 }}
+          className="glass-card"
+          style={{ maxWidth: 580, width: '100%', borderRadius: 28, padding: '52px 44px', textAlign: 'center', boxShadow: '0 24px 64px rgba(0,0,0,0.08)', position: 'relative', zIndex: 10 }}
         >
           <motion.div animate={{ y: [0, -10, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }} style={{ marginBottom: 28, display: 'flex', justifyContent: 'center' }}>
             <Logo size="lg" showTagline={true} />
@@ -222,7 +223,8 @@ export default function DiscoverPage() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            style={{ background: bgCard, backdropFilter: 'blur(20px)', border: `1px solid ${border}`, borderTop: '4px solid #5DCAA5', borderRadius: 20, padding: '28px 32px', marginBottom: 32 }}
+            className="glass-card"
+            style={{ borderTop: '4px solid #5DCAA5', borderRadius: 20, padding: '28px 32px', marginBottom: 32 }}
           >
             <p style={{ color: txtMuted, fontStyle: 'italic', marginBottom: 10, fontSize: 14 }}>{results.overall_personality}</p>
             <p style={{ color: txtPri, marginBottom: 16, lineHeight: 1.7 }}>{results.strength_summary}</p>
@@ -343,7 +345,7 @@ export default function DiscoverPage() {
             transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
             style={{ perspective: '1200px' }}
           >
-            <div className={selectedOption ? 'card-selected' : ''} style={{ background: bgCard, backdropFilter: 'blur(24px)', border: `1px solid ${border}`, borderRadius: 24, padding: '36px 32px 32px', boxShadow: '0 8px 32px rgba(0,0,0,0.06)' }}>
+            <div className={selectedOption ? 'glass-card card-selected' : 'glass-card'} style={{ borderRadius: 24, padding: '36px 32px 32px', boxShadow: '0 8px 32px rgba(0,0,0,0.06)' }}>
 
               {/* Category badge + question */}
               <div style={{ textAlign: 'center', marginBottom: 28 }}>

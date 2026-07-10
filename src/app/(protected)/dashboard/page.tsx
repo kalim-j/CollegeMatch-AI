@@ -146,7 +146,7 @@ export default function Dashboard() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12 space-y-12 pb-24">
         
         {/* Welcome Card */}
-        <div className="mb-8 p-8 rounded-3xl glass border border-purple-200/50 dark:border-purple-900/30 shadow-2xl shadow-purple-200/30 dark:shadow-purple-950/20 animate-in fade-in slide-in-from-top-6 duration-700">
+        <div className="mb-8 p-8 rounded-3xl glass-card border border-purple-200/50 dark:border-purple-900/30 shadow-2xl shadow-purple-200/30 dark:shadow-purple-950/20 animate-in fade-in slide-in-from-top-6 duration-700">
           <h1 className="text-4xl sm:text-5xl font-black text-transparent
             bg-clip-text bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600 dark:from-purple-400 dark:via-violet-400 dark:to-blue-400 mb-3">
             Welcome back, {profile?.fullName?.split(" ")[0] || "Student"}! 👋
@@ -162,9 +162,9 @@ export default function Dashboard() {
               ⚡ New Prediction
             </Link>
             <Link href="/dashboard/scholarships"
-              className="px-6 py-3 rounded-xl bg-white/70 dark:bg-slate-800/80 backdrop-blur
+              className="px-6 py-3 rounded-xl bg-white/10 dark:bg-slate-800/80 backdrop-blur
                 border border-purple-200 dark:border-purple-900/30 text-purple-700 dark:text-purple-300 font-bold
-                hover:bg-white/90 dark:hover:bg-slate-800 transition-all duration-300 flex items-center gap-2">
+                hover:bg-white/20 dark:hover:bg-slate-800 transition-all duration-300 flex items-center gap-2">
               🎓 Find Scholarships
             </Link>
           </div>
@@ -177,7 +177,7 @@ export default function Dashboard() {
             <div
               key={stat.label}
               onClick={() => router.push(stat.href)}
-              className="bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-purple-100 dark:border-purple-900/20 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-6 space-y-3 cursor-pointer"
+              className="glass-card rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-6 space-y-3 cursor-pointer"
             >
               <div className={`h-10 w-10 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 flex items-center justify-center`}>
                 <stat.icon className={`${stat.color}`} size={20} />
@@ -194,7 +194,7 @@ export default function Dashboard() {
         {latestDiscovery ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
             <div
-              className="relative rounded-[2.5rem] overflow-hidden border border-purple-200 dark:border-purple-900/20 bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-8 md:p-10"
+              className="relative rounded-[2.5rem] overflow-hidden glass-card p-8 md:p-10"
             >
               <div className="relative z-10 space-y-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40">
@@ -229,7 +229,7 @@ export default function Dashboard() {
             </div>
             
             <div
-              className="relative rounded-[2.5rem] overflow-hidden border border-purple-200 dark:border-purple-900/20 bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 flex flex-col justify-center"
+              className="relative rounded-[2.5rem] overflow-hidden glass-card p-8 md:p-10 flex flex-col justify-center"
             >
               <div className="relative z-10 space-y-4">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Know another stream?</h2>
@@ -249,7 +249,7 @@ export default function Dashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
             <div
-              className="relative rounded-[2.5rem] overflow-hidden border border-purple-200 dark:border-purple-900/20 bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 shadow-sm hover:shadow-md transition-all cursor-pointer"
+              className="relative rounded-[2.5rem] overflow-hidden glass-card p-8 md:p-10 shadow-sm hover:shadow-md transition-all cursor-pointer"
               onClick={() => router.push('/discover')}
             >
               <div className="relative z-10 space-y-4">
@@ -271,7 +271,7 @@ export default function Dashboard() {
             </div>
 
             <div
-              className="relative rounded-[2.5rem] overflow-hidden border border-purple-200 dark:border-purple-900/20 bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 shadow-sm hover:shadow-md transition-all cursor-pointer"
+              className="relative rounded-[2.5rem] overflow-hidden glass-card p-8 md:p-10 shadow-sm hover:shadow-md transition-all cursor-pointer"
               onClick={() => router.push('/interview')}
             >
               <div className="relative z-10 space-y-4">
@@ -297,7 +297,7 @@ export default function Dashboard() {
           <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
             {navCards.map((card, i) => (
               <Link key={card.label} href={card.href} className="group block h-full">
-                <div className="bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-purple-100 dark:border-purple-900/20 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-7 space-y-5 h-full">
+                <div className="glass-card rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-7 space-y-5 h-full">
                   <div className="h-12 w-12 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <card.icon className={card.color} size={22} />
                   </div>
@@ -329,7 +329,7 @@ export default function Dashboard() {
                     Need expert help for direct admission or counseling support?
                   </p>
                   <Link href="/contact">
-                    <button className="w-full h-12 bg-white dark:bg-slate-100 text-purple-700 dark:text-purple-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-white/90 dark:hover:bg-slate-200 transition-colors shadow-lg">
+                    <button className="w-full h-12 bg-white/10 dark:bg-slate-100 text-purple-700 dark:text-purple-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-white/20 dark:hover:bg-slate-200 transition-colors shadow-lg">
                       Get Expert Help
                     </button>
                   </Link>

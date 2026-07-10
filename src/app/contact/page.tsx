@@ -102,7 +102,7 @@ I need help with college admission. Please guide me.`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] text-gray-900 py-20 px-4 pt-28">
+    <div className="min-h-screen bg-transparent text-gray-900 py-20 px-4 pt-28">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16">
         {/* Left Side - Contact Info */}
         <div className="space-y-12">
@@ -157,7 +157,7 @@ I need help with college admission. Please guide me.`;
           </div>
 
           {/* WhatsApp Preview Box */}
-          <div className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-[2rem] p-8 space-y-6 shadow-sm">
+          <div className="glass-card rounded-[2rem] p-8 space-y-6 shadow-sm">
             <h3 className="text-xl font-bold text-gray-950">Instant Admission Help</h3>
             {!user ? (
                <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
@@ -187,7 +187,7 @@ I need help with college admission. Please guide me.`;
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/70 backdrop-blur-xl border border-purple-100 rounded-[3rem] p-10 md:p-14 shadow-sm relative"
+          className="glass-card rounded-[3rem] p-10 md:p-14 shadow-sm relative"
         >
           <AnimatePresence mode="wait">
             {!success ? (

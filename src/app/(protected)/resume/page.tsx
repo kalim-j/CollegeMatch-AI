@@ -594,10 +594,10 @@ export default function ResumeBuilderPage() {
 
   return (
     <PageTransition>
-      <div className={`h-screen flex flex-col overflow-hidden ${isDark ? 'bg-slate-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      <div className={`h-screen flex flex-col overflow-hidden bg-transparent ${isDark ? 'text-white' : 'text-gray-900'}`}>
         
         {/* Header */}
-        <header className={`shrink-0 flex items-center justify-between px-6 py-4 border-b ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'}`}>
+        <header className={`shrink-0 flex items-center justify-between px-6 py-4 border-b bg-transparent ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
           <div>
             <h1 className="text-xl md:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-teal-500">
               AI Resume Builder
@@ -613,7 +613,7 @@ export default function ResumeBuilderPage() {
         </header>
 
         {/* Mobile Tab Switcher */}
-        <div className="md:hidden flex bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4">
+        <div className="md:hidden flex bg-transparent border-b border-gray-200 dark:border-slate-800 px-4">
           <button onClick={() => setActiveTab('edit')} className={`flex-1 py-3 text-sm font-bold border-b-2 ${activeTab === 'edit' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500'}`}>Edit</button>
           <button onClick={() => setActiveTab('preview')} className={`flex-1 py-3 text-sm font-bold border-b-2 ${activeTab === 'preview' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500'}`}>Preview</button>
         </div>
@@ -622,7 +622,7 @@ export default function ResumeBuilderPage() {
         <div className="flex-1 flex overflow-hidden">
           
           {/* Left Panel */}
-          <div className={`${activeTab === 'edit' ? 'flex' : 'hidden'} md:flex w-full md:w-[40%] flex-col border-r ${isDark ? 'border-slate-800 bg-slate-900' : 'border-gray-200 bg-white'}`}>
+          <div className={`${activeTab === 'edit' ? 'flex' : 'hidden'} md:flex w-full md:w-[40%] flex-col border-r bg-transparent ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
             
             {/* Panel Header */}
             <div className={`p-6 border-b shrink-0 ${isDark ? 'border-slate-800' : 'border-gray-100'}`}>
@@ -781,7 +781,7 @@ export default function ResumeBuilderPage() {
             </div>
 
             {/* Panel Footer (Sticky) */}
-            <div className={`p-4 border-t shrink-0 flex items-center justify-between gap-3 ${isDark ? 'border-slate-800 bg-slate-900/95' : 'border-gray-200 bg-white/95'} backdrop-blur-md`}>
+            <div className={`p-4 border-t shrink-0 flex items-center justify-between gap-3 bg-transparent backdrop-blur-md ${isDark ? 'border-slate-800' : 'border-gray-200'}`}>
               {mode === 'build' && (
                 <>
                   <button 
@@ -833,7 +833,7 @@ export default function ResumeBuilderPage() {
           </div>
 
           {/* Right Panel - Preview */}
-          <div className={`${activeTab === 'preview' ? 'flex' : 'hidden'} md:flex w-full md:w-[60%] bg-[#f8f8f8] dark:bg-slate-950 flex-col`}>
+          <div className={`${activeTab === 'preview' ? 'flex' : 'hidden'} md:flex w-full md:w-[60%] bg-transparent flex-col`}>
              <ResumePreview htmlContent={previewHtml} />
           </div>
         </div>

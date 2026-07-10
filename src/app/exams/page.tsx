@@ -120,7 +120,7 @@ export default function EntranceExamGuide() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-purple-100 dark:border-[rgba(255,255,255,0.10)] rounded-3xl p-8 md:p-12 shadow-sm mb-16 relative overflow-hidden group"
+          className="glass-card rounded-3xl p-8 md:p-12 shadow-sm mb-16 relative overflow-hidden group"
         >
           <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-2 gap-10 items-end relative z-10">
             <div className="space-y-3">
@@ -160,7 +160,7 @@ export default function EntranceExamGuide() {
 
         {/* Intelligence Filters */}
         {results.length > 0 && (
-          <div className="flex flex-col xl:flex-row justify-between items-center gap-8 bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-purple-100 dark:border-[rgba(255,255,255,0.10)] p-6 rounded-3xl mb-12 shadow-sm">
+          <div className="flex flex-col xl:flex-row justify-between items-center gap-8 glass-card p-6 rounded-3xl mb-12 shadow-sm">
             <div className="flex flex-col md:flex-row items-center gap-6">
               <div className="flex items-center gap-2 text-gray-400 dark:text-gray-300 text-[10px] font-black uppercase tracking-widest">
                 <Filter size={14} className="text-purple-600" /> Geographic Scope:
@@ -174,7 +174,7 @@ export default function EntranceExamGuide() {
                       "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
                       filterLevel === lvl 
                         ? "bg-purple-600 border-purple-500 text-white shadow-md shadow-purple-200" 
-                        : "bg-white dark:bg-transparent border-purple-100 dark:border-[rgba(255,255,255,0.2)] text-gray-500 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-white/10 hover:text-purple-700 dark:hover:text-white"
+                        : "bg-white/5 border-purple-100/50 dark:border-[rgba(255,255,255,0.2)] text-gray-500 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-white/10 hover:text-purple-700 dark:hover:text-white"
                     )}
                   >
                     {lvl}
@@ -210,7 +210,7 @@ export default function EntranceExamGuide() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-purple-100 dark:border-[rgba(255,255,255,0.10)] rounded-3xl p-8 space-y-8 hover:border-purple-300 transition-all group relative overflow-hidden shadow-sm"
+                className="glass-card rounded-3xl p-8 space-y-8 hover:border-purple-300/50 transition-all group relative overflow-hidden shadow-sm"
               >
                 <div className="space-y-3 relative z-10">
                   <div className="flex flex-col md:flex-row justify-between items-start gap-4">
@@ -231,15 +231,15 @@ export default function EntranceExamGuide() {
                   <span className={cn("px-4 py-1.5 border text-[9px] font-black uppercase tracking-widest rounded-lg", levelColor(exam.level))}>
                     {exam.level} Scope
                   </span>
-                  <span className="px-4 py-1.5 bg-white dark:bg-transparent border border-purple-100 dark:border-[rgba(255,255,255,0.2)] text-gray-500 dark:text-[rgba(255,255,255,0.72)] text-[9px] font-black uppercase tracking-widest rounded-lg">
+                  <span className="px-4 py-1.5 bg-white/5 border border-purple-100/50 dark:border-[rgba(255,255,255,0.2)] text-gray-500 dark:text-[rgba(255,255,255,0.72)] text-[9px] font-black uppercase tracking-widest rounded-lg">
                     {exam.mode}
                   </span>
-                  <span className="px-4 py-1.5 bg-white dark:bg-transparent border border-purple-100 dark:border-[rgba(255,255,255,0.2)] text-gray-500 dark:text-[rgba(255,255,255,0.72)] text-[9px] font-black uppercase tracking-widest rounded-lg">
+                  <span className="px-4 py-1.5 bg-white/5 border border-purple-100/50 dark:border-[rgba(255,255,255,0.2)] text-gray-500 dark:text-[rgba(255,255,255,0.72)] text-[9px] font-black uppercase tracking-widest rounded-lg">
                     {exam.frequency}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6 p-6 rounded-2xl bg-white/60 dark:bg-[rgba(255,255,255,0.02)] border border-purple-100/50 dark:border-[rgba(255,255,255,0.05)] relative z-10 shadow-sm">
+                <div className="grid grid-cols-2 gap-6 p-6 rounded-2xl bg-white/5 border border-purple-100/50 dark:border-[rgba(255,255,255,0.05)] relative z-10 shadow-sm">
                   <div className="space-y-2">
                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                       <Calendar size={12} className="text-purple-600" /> Examination Window
@@ -300,7 +300,7 @@ export default function EntranceExamGuide() {
         {results.length === 0 && !loading && (
           <div className="text-center py-32 space-y-8">
             <div className="relative inline-block">
-              <div className="h-32 w-32 bg-white/70 dark:bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-[3rem] flex items-center justify-center mx-auto border border-purple-100 dark:border-[rgba(255,255,255,0.10)] text-purple-600 dark:text-purple-400 relative z-10 shadow-sm animate-pulse">
+              <div className="h-32 w-32 glass-card rounded-[3rem] flex items-center justify-center mx-auto text-purple-600 dark:text-purple-400 relative z-10 shadow-sm animate-pulse">
                 <Target size={56} />
               </div>
             </div>
