@@ -148,9 +148,11 @@ export default function LoginPage() {
       <div style={{
         minHeight: '100vh',
         display: 'flex',
-        flexDirection: 'row',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
         margin: 0,
-        padding: 0,
+        padding: '2rem',
         backgroundColor: '#05071a',
         position: 'relative',
         overflow: 'hidden',
@@ -159,76 +161,14 @@ export default function LoginPage() {
         {/* Canvas background — covers entire page */}
         <LoginBackground />
 
-        {/* LEFT panel — hero content */}
+        {/* CENTERED form */}
         <div style={{
-          flex: '0 0 50%',
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          padding: 'clamp(2rem,5vw,4rem)',
-          position: 'relative',
+          width: '100%',
+          maxWidth: '420px',
           zIndex: 1,
-          background: 'transparent',
-          borderRight: 'none',
-        }} className="auth-left hidden lg:flex">
-          <Logo size="lg" theme="dark" showTagline />
-
-          <div style={{ marginTop: '3rem' }}>
-            <h1 style={{
-              fontSize: 'clamp(32px,4vw,52px)',
-              fontWeight: 800,
-              color: 'white',
-              lineHeight: 1.2,
-              margin: '0 0 8px',
-            }}>
-              Welcome back to
-            </h1>
-            <h1 style={{
-              fontSize: 'clamp(32px,4vw,52px)',
-              fontWeight: 800,
-              background: 'linear-gradient(90deg,#a89ef8,#5DCAA5)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              color: '#a89ef8',
-              lineHeight: 1.2,
-              margin: '0 0 16px',
-            }}>
-              CollegeMatch AI.
-            </h1>
-            <p style={{
-              fontSize: 'clamp(14px,1.5vw,17px)',
-              color: 'rgba(255,255,255,0.6)',
-              lineHeight: 1.7,
-              maxWidth: '400px',
-            }}>
-              Sign in to pick up right where you left off.
-            </p>
-          </div>
-        </div>
-
-        {/* RIGHT panel — login form */}
-        <div style={{
-          flex: '1',
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 'clamp(1.5rem,3vw,3rem)',
-          position: 'relative',
-          zIndex: 1,
-          background: 'rgba(255,255,255,0.95)',
-          backdropFilter: 'blur(20px)',
-          borderLeft: '1px solid rgba(127,119,221,0.15)',
-          boxShadow: '-8px 0 48px rgba(83,74,183,0.15)',
-          margin: 0,
-        }} className="auth-right">
-          
-          <div style={{
-            width: '100%',
-            maxWidth: '420px',
-          }}>
+          padding: '2rem',
+          borderRadius: '1.5rem',
+        }} className="glass-card">
             <motion.div
               className="w-full"
               variants={containerVariants}
@@ -245,8 +185,8 @@ export default function LoginPage() {
                   <Logo size="md" showTagline={false} theme="light" />
                 </div>
 
-                <h2 className="text-[#1a1340] font-bold text-3xl mb-2">Welcome Back</h2>
-                <p className="text-[#5a5380] text-sm font-semibold">Sign in to continue your college journey</p>
+                <h2 className="text-white font-bold text-3xl mb-2">Welcome Back</h2>
+                <p className="text-slate-300 text-sm font-semibold">Sign in to continue your college journey</p>
               </motion.div>
 
               {/* Login Form */}
@@ -261,7 +201,7 @@ export default function LoginPage() {
                   variants={itemVariants}
                   transition={{ delay: 0.3 }}
                 >
-                  <label className="text-[#534AB7] text-xs font-semibold tracking-widest uppercase mb-2 block">
+                  <label className="text-indigo-300 text-xs font-semibold tracking-widest uppercase mb-2 block">
                     Email Address
                   </label>
                   <motion.input
@@ -270,7 +210,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] placeholder:text-[#7a7399] rounded-xl px-4 py-3 w-full outline-none focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
+                    className="bg-white/5 border border-white/10 text-white placeholder:text-white/40 rounded-xl px-4 py-3 w-full outline-none focus:border-indigo-400/50 focus:shadow-[0_0_0_3px_rgba(129,140,248,0.2)] transition-all duration-200 text-sm font-medium"
                     whileFocus={{ scale: 1.02 }}
                   />
                 </motion.div>
@@ -280,7 +220,7 @@ export default function LoginPage() {
                   variants={itemVariants}
                   transition={{ delay: 0.4 }}
                 >
-                  <label className="text-[#534AB7] text-xs font-semibold tracking-widest uppercase mb-2 block">
+                  <label className="text-indigo-300 text-xs font-semibold tracking-widest uppercase mb-2 block">
                     Password
                   </label>
                   <div className="relative">
@@ -290,13 +230,13 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] placeholder:text-[#7a7399] rounded-xl px-4 py-3 w-full outline-none focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
+                      className="bg-white/5 border border-white/10 text-white placeholder:text-white/40 rounded-xl px-4 py-3 w-full outline-none focus:border-indigo-400/50 focus:shadow-[0_0_0_3px_rgba(129,140,248,0.2)] transition-all duration-200 text-sm font-medium"
                       whileFocus={{ scale: 1.02 }}
                     />
                     <motion.button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#7a7399] hover:text-[#1a1340] transition"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                     >
@@ -354,16 +294,16 @@ export default function LoginPage() {
                   variants={itemVariants}
                   transition={{ delay: 0.5 }}
                 >
-                  <div className="flex-grow border-t border-[rgba(127,119,221,0.2)]"></div>
-                  <span className="flex-shrink mx-4 text-xs text-[#7a7399] font-semibold tracking-widest uppercase">or</span>
-                  <div className="flex-grow border-t border-[rgba(127,119,221,0.2)]"></div>
+                  <div className="flex-grow border-t border-white/10"></div>
+                  <span className="flex-shrink mx-4 text-xs text-slate-400 font-semibold tracking-widest uppercase">or</span>
+                  <div className="flex-grow border-t border-white/10"></div>
                 </motion.div>
 
                 {/* Google Login */}
                 <motion.button
                   type="button"
                   onClick={handleGoogleLogin}
-                  className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] rounded-xl h-14 w-full font-medium flex items-center justify-center gap-3 hover:bg-[rgba(127,119,221,0.1)] transition-all duration-200 text-sm"
+                  className="bg-white/5 border border-white/10 text-white rounded-xl h-14 w-full font-medium flex items-center justify-center gap-3 hover:bg-[rgba(127,119,221,0.1)] transition-all duration-200 text-sm"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   variants={itemVariants}
@@ -381,12 +321,12 @@ export default function LoginPage() {
 
               {/* Sign Up Link */}
               <motion.p
-                className="text-center mt-8 text-[#5a5380] text-sm"
+                className="text-center mt-8 text-slate-300 text-sm"
                 variants={itemVariants}
                 transition={{ delay: 0.7 }}
               >
                 Don't have an account?{' '}
-                <Link href="/register" className="text-[#534AB7] font-medium hover:opacity-80 transition ml-1">
+                <Link href="/register" className="text-indigo-300 font-medium hover:opacity-80 transition ml-1">
                   Sign up now
                 </Link>
               </motion.p>
@@ -397,13 +337,12 @@ export default function LoginPage() {
                 variants={itemVariants}
                 transition={{ delay: 0.8 }}
               >
-                <Link href="/" className="text-[#7a7399] text-sm hover:text-[#1a1340] transition flex items-center justify-center gap-1">
+                <Link href="/" className="text-slate-400 text-sm hover:text-white transition flex items-center justify-center gap-1">
                   ← Back to Home
                 </Link>
               </motion.div>
             </motion.div>
           </div>
-        </div>
 
         {/* Mobile: stack vertically */}
         <style>{`

@@ -245,11 +245,11 @@ export default function RegisterPage() {
         padding: 'clamp(1.5rem,3vw,3rem)',
         position: 'relative',
         zIndex: 1,
-        /* White glass background ONLY on the right half */
-        background: 'rgba(255,255,255,0.95)',
-        backdropFilter: 'blur(20px)',
-        borderLeft: '1px solid rgba(127,119,221,0.15)',
-        boxShadow: '-8px 0 48px rgba(83,74,183,0.15)',
+        /* Premium dark glass background ONLY on the right half */
+        background: 'rgba(255, 255, 255, 0.03)',
+        backdropFilter: 'blur(24px)',
+        borderLeft: '1px solid rgba(255, 255, 255, 0.05)',
+        boxShadow: '-8px 0 48px rgba(0, 0, 0, 0.2)',
         margin: 0,
       }} className="auth-right">
         {/* Form card */}
@@ -259,12 +259,12 @@ export default function RegisterPage() {
         }}>
             <div className="space-y-2 text-center lg:text-left">
               <div className="mb-6 lg:hidden flex justify-center">
-                <Logo size="md" showTagline={false} theme="light" />
+                <Logo size="md" showTagline={false} theme="dark" />
               </div>
-              <h2 className="text-[#1a1340] font-bold text-3xl tracking-tight">
+              <h2 className="text-white font-bold text-3xl tracking-tight">
                 {showOTP ? "Verify Email" : "Create Account"}
               </h2>
-              <p className="text-[#5a5380] font-medium text-sm">
+              <p className="text-slate-300 font-medium text-sm">
                 {showOTP ? `We sent a code to ${email}` : "Join India's smartest admission engine"}
               </p>
             </div>
@@ -273,7 +273,7 @@ export default function RegisterPage() {
               <div className="space-y-8 mt-8">
                 <button
                   onClick={handleGoogleLogin}
-                  className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] rounded-xl h-14 w-full font-medium flex items-center justify-center gap-3 hover:bg-[rgba(127,119,221,0.1)] transition-all duration-200 text-sm active:scale-[0.98]"
+                  className="bg-white/5 border border-white/10 text-white rounded-xl h-14 w-full font-medium flex items-center justify-center gap-3 hover:bg-[rgba(127,119,221,0.1)] transition-all duration-200 text-sm active:scale-[0.98]"
                 >
                   <svg className="h-5 w-5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -281,55 +281,55 @@ export default function RegisterPage() {
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                   </svg>
-                  <span className="text-[#1a1340] font-bold text-sm">Sign up with Google</span>
+                  <span className="text-white font-bold text-sm">Sign up with Google</span>
                 </button>
 
                 <div className="relative flex items-center py-2">
-                  <div className="flex-grow border-t border-[rgba(127,119,221,0.2)]"></div>
-                  <span className="flex-shrink mx-4 text-xs text-[#7a7399] font-semibold tracking-widest uppercase">or email</span>
-                  <div className="flex-grow border-t border-[rgba(127,119,221,0.2)]"></div>
+                  <div className="flex-grow border-t border-white/10"></div>
+                  <span className="flex-shrink mx-4 text-xs text-slate-400 font-semibold tracking-widest uppercase">or email</span>
+                  <div className="flex-grow border-t border-white/10"></div>
                 </div>
 
                 <form onSubmit={handleSendOTP} className="space-y-5">
                   <div className="space-y-2">
-                    <label className="text-[#534AB7] text-xs font-semibold tracking-widest uppercase mb-2 block">Full Name</label>
+                    <label className="text-indigo-300 text-xs font-semibold tracking-widest uppercase mb-2 block">Full Name</label>
                     <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399]" size={18} />
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                       <input
                         type="text"
                         required
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Your name"
-                        className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] placeholder:text-[#7a7399] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
+                        className="bg-white/5 border border-white/10 text-white placeholder:text-white/40 rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-indigo-400/50 focus:shadow-[0_0_0_3px_rgba(129,140,248,0.2)] transition-all duration-200 text-sm font-medium"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[#534AB7] text-xs font-semibold tracking-widest uppercase mb-2 block">Email Address</label>
+                    <label className="text-indigo-300 text-xs font-semibold tracking-widest uppercase mb-2 block">Email Address</label>
                     <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399]" size={18} />
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                       <input
                         type="email"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="email@example.com"
-                        className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] placeholder:text-[#7a7399] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
+                        className="bg-white/5 border border-white/10 text-white placeholder:text-white/40 rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-indigo-400/50 focus:shadow-[0_0_0_3px_rgba(129,140,248,0.2)] transition-all duration-200 text-sm font-medium"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[#534AB7] text-xs font-semibold tracking-widest uppercase mb-2 block">Password</label>
+                    <label className="text-indigo-300 text-xs font-semibold tracking-widest uppercase mb-2 block">Password</label>
                     <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a7399]" size={18} />
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                       <input
                         type="password"
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] placeholder:text-[#7a7399] rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] transition-all duration-200 text-sm font-medium"
+                        className="bg-white/5 border border-white/10 text-white placeholder:text-white/40 rounded-xl pl-12 pr-4 py-3 h-14 w-full outline-none focus:border-indigo-400/50 focus:shadow-[0_0_0_3px_rgba(129,140,248,0.2)] transition-all duration-200 text-sm font-medium"
                       />
                     </div>
                   </div>
@@ -346,16 +346,16 @@ export default function RegisterPage() {
               </div>
             ) : (
               <div className="space-y-8 mt-8">
-                <div className="p-4 bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] rounded-2xl text-center">
-                  <p className="text-[#1a1340] font-bold text-sm">Enter 6-digit code</p>
-                  <p className="text-[#7a7399] text-[11px] mt-1 uppercase tracking-widest font-medium">Sent to your inbox</p>
+                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+                  <p className="text-white font-bold text-sm">Enter 6-digit code</p>
+                  <p className="text-slate-400 text-[11px] mt-1 uppercase tracking-widest font-medium">Sent to your inbox</p>
                 </div>
                 <input
                   type="text"
                   maxLength={6}
                   value={otpInput}
                   onChange={(e) => setOtpInput(e.target.value)}
-                  className="bg-[#f0eeff] border border-[rgba(127,119,221,0.2)] text-[#1a1340] placeholder:text-[#7a7399] w-full h-20 focus:border-[rgba(127,119,221,0.6)] focus:shadow-[0_0_0_3px_rgba(127,119,221,0.15)] rounded-2xl text-center text-3xl font-black tracking-[12px] outline-none transition-all"
+                  className="bg-white/5 border border-white/10 text-white placeholder:text-white/40 w-full h-20 focus:border-indigo-400/50 focus:shadow-[0_0_0_3px_rgba(129,140,248,0.2)] rounded-2xl text-center text-3xl font-black tracking-[12px] outline-none transition-all"
                 />
                 <button
                   onClick={handleVerifyAndRegister}
@@ -366,16 +366,16 @@ export default function RegisterPage() {
                 </button>
                 <button 
                   onClick={() => setShowOTP(false)}
-                  className="w-full text-center text-sm font-bold text-[#5a5380] hover:text-[#1a1340] transition-colors"
+                  className="w-full text-center text-sm font-bold text-slate-300 hover:text-white transition-colors"
                 >
                   Edit information
                 </button>
               </div>
             )}
 
-            <p className="text-center text-sm font-medium text-[#5a5380] mt-8">
+            <p className="text-center text-sm font-medium text-slate-300 mt-8">
               Already have an account?{" "}
-              <Link href="/login" className="text-[#534AB7] hover:opacity-80 transition-colors font-bold ml-1">
+              <Link href="/login" className="text-indigo-300 hover:opacity-80 transition-colors font-bold ml-1">
                 Sign in
               </Link>
             </p>

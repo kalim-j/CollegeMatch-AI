@@ -11,8 +11,9 @@ import Logo from "./Logo";
 export default function Footer() {
   const pathname = usePathname();
   const isPageHidden = pathname === "/admin" || pathname?.startsWith("/admin/");
+  const isAuthPage = pathname === "/login" || pathname === "/register";
 
-  if (isPageHidden) return null;
+  if (isPageHidden || isAuthPage) return null;
 
   const footerLinks = {
     platform: [

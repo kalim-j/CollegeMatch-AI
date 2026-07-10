@@ -29,6 +29,11 @@ export function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [currentLang, setCurrentLang] = useState<'en'|'ta'>('en');
 
+  // Hide Navbar on login and register pages
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
+
   useEffect(() => {
     setMounted(true);
     const savedLang = (localStorage.getItem('lang') as 'en'|'ta') || 'en';
