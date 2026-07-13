@@ -138,36 +138,22 @@ export default function VerifyEmailPage() {
     }}>
       <LoginBackground />
 
-      <div style={{
-        position: 'relative', zIndex: 10,
-        width: '100%', maxWidth: 420,
-        padding: '2.5rem',
-        background: 'rgba(255, 255, 255, 0.05)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        borderRadius: 24,
-        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-        margin: '1.5rem'
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: 16, margin: '0 auto 1.5rem',
-            background: 'linear-gradient(135deg,#7F77DD,#1D9E75)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 28, boxShadow: '0 8px 24px rgba(127,119,221,0.4)',
-          }}>✉️</div>
-          <h2 style={{ fontSize: 28, fontWeight: 700, color: 'white', marginBottom: 8 }}>
+      <div className="relative z-10 w-full max-w-[420px] p-10 bg-white/70 dark:bg-[#0f122b]/40 backdrop-blur-2xl border border-white/50 dark:border-white/5 rounded-[24px] shadow-2xl m-6">
+        <div className="text-center mb-8">
+          <div className="w-[56px] h-[56px] rounded-2xl mx-auto mb-6 bg-gradient-to-br from-[#7F77DD] to-[#1D9E75] flex items-center justify-center text-3xl shadow-[0_8px_24px_rgba(127,119,221,0.4)]">
+            ✉️
+          </div>
+          <h2 className="text-[28px] font-bold text-slate-900 dark:text-white mb-2">
             Verify your email
           </h2>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+          <p className="text-[14px] text-slate-500 dark:text-white/70 leading-[1.5]">
             We've sent a 6-digit code to <br/>
-            <strong style={{ color: 'white' }}>{user.email}</strong>
+            <strong className="text-slate-800 dark:text-white">{user.email}</strong>
           </p>
         </div>
 
         <form onSubmit={handleVerify}>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 24 }}>
+          <div className="flex gap-2 justify-center mb-6">
             {code.map((c, i) => (
               <input
                 key={i}
@@ -177,53 +163,25 @@ export default function VerifyEmailPage() {
                 maxLength={1}
                 onChange={e => handleChange(e, i)}
                 onKeyDown={e => handleKeyDown(e, i)}
-                style={{
-                  width: 45, height: 55,
-                  borderRadius: 12,
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  background: 'rgba(255,255,255,0.05)',
-                  color: 'white', fontSize: 24,
-                  fontWeight: 600, textAlign: 'center',
-                  outline: 'none',
-                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)',
-                }}
+                className="w-[45px] h-[55px] rounded-xl border border-slate-200 dark:border-white/20 bg-white/60 dark:bg-white/5 text-slate-900 dark:text-white text-[24px] font-semibold text-center outline-none transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 focus:bg-white dark:focus:bg-white/10"
               />
             ))}
           </div>
 
           {error && (
-            <div style={{
-              background: 'rgba(226,75,74,0.1)',
-              border: '1px solid rgba(226,75,74,0.3)',
-              borderRadius: 12, padding: '12px',
-              marginBottom: 20, fontSize: 13,
-              color: '#ff8a8a', textAlign: 'center'
-            }}>
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-3 mb-5 text-[13px] text-red-600 dark:text-red-400 text-center">
               {error}
             </div>
           )}
 
-          <button type="submit" disabled={busy} style={{
-            width: '100%', padding: '16px', borderRadius: 14,
-            border: 'none',
-            background: busy ? 'rgba(127,119,221,0.5)' : 'linear-gradient(135deg,#7F77DD,#534AB7)',
-            color: 'white', fontSize: 16, fontWeight: 600,
-            cursor: busy ? 'not-allowed' : 'pointer',
-            transition: 'all 0.2s ease',
-            boxShadow: '0 4px 20px rgba(127,119,221,0.4)',
-          }}>
+          <button type="submit" disabled={busy} className="w-full p-4 rounded-2xl border-none bg-gradient-to-br from-indigo-500 to-indigo-700 text-white text-[16px] font-bold flex items-center justify-center gap-2.5 transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_20px_rgba(127,119,221,0.4)] hover-lift">
             {busy ? 'Verifying...' : 'Verify Email'}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', fontSize: 14, color: 'rgba(255,255,255,0.6)', marginTop: 24 }}>
+        <p className="text-center text-[14px] text-slate-500 dark:text-white/60 mt-6">
           Didn't receive the code?{' '}
-          <button onClick={handleResend} disabled={resendBusy || timeLeft > 0} style={{
-            background: 'none', border: 'none',
-            color: (resendBusy || timeLeft > 0) ? 'rgba(255,255,255,0.4)' : '#a89ef8',
-            fontWeight: 600, cursor: (resendBusy || timeLeft > 0) ? 'not-allowed' : 'pointer',
-            textDecoration: (resendBusy || timeLeft > 0) ? 'none' : 'underline'
-          }}>
+          <button onClick={handleResend} disabled={resendBusy || timeLeft > 0} className={`bg-none border-none font-semibold cursor-pointer ${resendBusy || timeLeft > 0 ? 'text-slate-400 dark:text-white/40 cursor-not-allowed no-underline' : 'text-indigo-600 dark:text-indigo-400 underline hover:text-indigo-700 dark:hover:text-indigo-300'}`}>
             {timeLeft > 0 ? `Resend in ${timeLeft}s` : 'Resend OTP'}
           </button>
         </p>
