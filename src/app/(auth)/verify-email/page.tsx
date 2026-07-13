@@ -224,7 +224,7 @@ export default function VerifyEmailPage() {
             fontWeight: 600, cursor: (resendBusy || timeLeft > 0) ? 'not-allowed' : 'pointer',
             textDecoration: (resendBusy || timeLeft > 0) ? 'none' : 'underline'
           }}>
-            {timeLeft > 0 ? \`Resend in \${timeLeft}s\` : 'Resend OTP'}
+            {timeLeft > 0 ? `Resend in ${timeLeft}s` : 'Resend OTP'}
           </button>
         </p>
       </div>
