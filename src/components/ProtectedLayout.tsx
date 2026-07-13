@@ -6,14 +6,16 @@ import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
+    } else if (!loading && user && profile && profile.isVerified === false) {
+      router.push("/verify-email");
     }
-  }, [user, loading, router]);
+  }, [user, profile, loading, router]);
 
   if (loading) {
     return (
@@ -35,6 +37,11 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   if (!user) {
     return null;
   }
+
+  // NOTE: Optional feature block if we want to enforce verification globally:
+  // We don't want to break it if `profile` hasn't loaded yet.
+  // Wait until profile is loaded or just rely on Firebase's emailVerified for Google sign-in.
+  // Actually, we'll check `profile` in `Dashboard` itself if needed, or we can check here.
 
   return (
     <>

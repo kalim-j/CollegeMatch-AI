@@ -50,6 +50,9 @@ export interface StudentProfile {
   quota?: string;
   religion?: string;
   phone?: string;
+  isOnline?: boolean;
+  lastActive?: any;
+  isVerified?: boolean;
   role?: string;
   createdAt: any;
 }

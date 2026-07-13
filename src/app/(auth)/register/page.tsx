@@ -11,9 +11,10 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 
-const LoginBackground = dynamic(
-  () => import('@/components/LoginBackground'),
+const DashboardBackground = dynamic(
+  () => import('@/components/3D/DashboardBackground'),
   { ssr: false }
 );
 
@@ -33,7 +34,7 @@ export default function RegisterPage() {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    if (!loading && user) router.push('/discover');
+    if (!loading && user) router.push('/dashboard');
   }, [user, loading, router]);
 
   if (!mounted) return null;
@@ -62,16 +63,24 @@ export default function RegisterPage() {
     uid: string,
     displayName: string,
     userEmail: string,
-    photoURL: string | null
+    photoURL: string | null,
+    isGoogle = false
   ) => {
-    await setDoc(doc(db, 'users', uid), {
+    const userData: any = {
       name: displayName,
       email: userEmail,
       photoURL: photoURL || null,
       createdAt: serverTimestamp(),
       isNewUser: true,
       shownWelcome: false,
-    }, { merge: true });
+    };
+    
+    // For Google auth, we implicitly trust the email
+    if (isGoogle) {
+      userData.isVerified = true;
+    }
+
+    await setDoc(doc(db, 'users', uid), userData, { merge: true });
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -94,10 +103,32 @@ export default function RegisterPage() {
         auth, email, password
       );
       await updateProfile(cred.user, { displayName: name });
-      await saveUserToFirestore(
-        cred.user.uid, name, email, null
-      );
-      router.push('/discover');
+      
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Save user with OTP
+      await setDoc(doc(db, 'users', cred.user.uid), {
+        name,
+        email,
+        photoURL: null,
+        createdAt: serverTimestamp(),
+        isNewUser: true,
+        shownWelcome: false,
+        isVerified: false,
+        otp: {
+          code: otpCode,
+          expiresAt: Date.now() + 10 * 60 * 1000 // 10 minutes
+        }
+      }, { merge: true });
+
+      // Send OTP Email
+      await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp: otpCode })
+      });
+
+      router.push('/verify-email');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '';
       if (msg.includes('email-already-in-use'))
@@ -124,8 +155,9 @@ export default function RegisterPage() {
         cred.user.displayName || 'Student',
         cred.user.email || '',
         cred.user.photoURL,
+        true // isGoogle
       );
-      router.push('/discover');
+      router.push('/dashboard');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '';
       if (!msg.includes('popup-closed'))
@@ -138,173 +170,156 @@ export default function RegisterPage() {
   /* Shared input style */
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: '13px 16px',
-    borderRadius: 12,
-    border: '1px solid rgba(127,119,221,0.2)',
-    background: '#f0eeff',
-    color: '#1a1340',
+    padding: '14px 18px',
+    borderRadius: 16,
+    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'rgba(255,255,255,0.05)',
+    color: 'white',
     fontSize: 14,
     outline: 'none',
     boxSizing: 'border-box',
     fontFamily: 'inherit',
+    transition: 'all 0.3s ease',
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: 600,
-    color: '#534AB7',
-    letterSpacing: '0.07em',
+    color: 'rgba(255,255,255,0.8)',
+    letterSpacing: '0.05em',
     textTransform: 'uppercase',
     display: 'block',
-    marginBottom: 6,
+    marginBottom: 8,
   };
 
   return (
     <div style={{
       minHeight: '100vh',
       display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       margin: 0,
-      padding: 0,
+      padding: '2rem',
       backgroundColor: '#05071a',
       position: 'relative',
       overflow: 'hidden',
     }}>
-      <LoginBackground />
+      <DashboardBackground />
 
-      {/* LEFT */}
       <div style={{
-        flex: '0 0 50%',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        padding: 'clamp(2rem,5vw,4rem)',
         position: 'relative',
-        zIndex: 1,
-        background: 'transparent',
-      }}>
-        {/* Logo */}
+        zIndex: 10,
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        maxWidth: 1000,
+        background: 'rgba(15, 18, 43, 0.4)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderRadius: 32,
+        border: '1px solid rgba(255,255,255,0.05)',
+        boxShadow: '0 30px 60px rgba(0,0,0,0.4)',
+        overflow: 'hidden',
+      }} className="auth-card-container">
+        
+        {/* LEFT / TOP - Branding */}
         <div style={{
-          display: 'flex', alignItems: 'center',
-          gap: 12, marginBottom: '2.5rem',
-        }}>
+          flex: '1',
+          padding: '4rem 3rem',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          background: 'linear-gradient(135deg, rgba(127,119,221,0.1), rgba(29,158,117,0.05))',
+        }} className="auth-branding-section">
           <div style={{
-            width: 48, height: 48, borderRadius: 14,
-            background: 'linear-gradient(135deg,#7F77DD,#1D9E75)',
             display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: 24,
-            boxShadow: '0 0 24px rgba(127,119,221,0.4)',
-          }}>🎓</div>
-          <div>
-            <p style={{
-              fontSize: 18, fontWeight: 700,
-              background: 'linear-gradient(90deg,#a89ef8,#5DCAA5)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text', color: '#a89ef8',
-              margin: 0,
-            }}>CollegeMatch-AI</p>
-            <p style={{
-              fontSize: 11, margin: '2px 0 0',
-              color: 'rgba(255,255,255,0.45)',
-            }}>India's smartest college advisor</p>
+            gap: 12, marginBottom: '2.5rem',
+          }}>
+            <div style={{
+              width: 54, height: 54, borderRadius: 18,
+              background: 'linear-gradient(135deg,#7F77DD,#1D9E75)',
+              display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontSize: 28,
+              boxShadow: '0 8px 32px rgba(127,119,221,0.4)',
+            }}>🎓</div>
+            <div>
+              <p style={{
+                fontSize: 22, fontWeight: 800,
+                color: 'white', margin: 0, letterSpacing: '-0.5px'
+              }}>CollegeMatch-AI</p>
+              <p style={{
+                fontSize: 12, margin: '2px 0 0',
+                color: 'rgba(255,255,255,0.5)',
+              }}>India's smartest college advisor</p>
+            </div>
+          </div>
+
+          <h1 style={{
+            fontSize: 'clamp(32px,4vw,48px)',
+            fontWeight: 800, color: 'white',
+            lineHeight: 1.1, margin: '0 0 12px',
+          }}>Start your <br/><span style={{
+            background: 'linear-gradient(90deg,#a89ef8,#5DCAA5)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}>journey today.</span></h1>
+          <p style={{
+            fontSize: 16,
+            color: 'rgba(255,255,255,0.6)',
+            lineHeight: 1.6, maxWidth: 380, margin: '0 0 40px',
+          }}>
+            Discover 500+ top colleges and find the one
+            that fits your dreams and budget — free.
+          </p>
+
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            {[
+              ['🎓','14L+','Students'],
+              ['🏫','500+','Colleges'],
+              ['💰','Free','Always'],
+            ].map(([icon,val,lbl]) => (
+              <div key={lbl} style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.05)',
+                borderRadius: 16, padding: '12px 16px',
+                textAlign: 'center', backdropFilter: 'blur(10px)',
+              }}>
+                <div style={{ fontSize: 20, marginBottom: 4 }}>{icon}</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>{val}</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{lbl}</div>
+              </div>
+            ))}
           </div>
         </div>
 
-        <h1 style={{
-          fontSize: 'clamp(28px,3.5vw,48px)',
-          fontWeight: 800, color: 'white',
-          lineHeight: 1.2, margin: '0 0 8px',
-        }}>Start your</h1>
-        <h1 style={{
-          fontSize: 'clamp(28px,3.5vw,48px)',
-          fontWeight: 800,
-          background: 'linear-gradient(90deg,#a89ef8,#5DCAA5)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text', color: '#a89ef8',
-          lineHeight: 1.2, margin: '0 0 16px',
-        }}>journey today.</h1>
-        <p style={{
-          fontSize: 'clamp(14px,1.5vw,16px)',
-          color: 'rgba(255,255,255,0.55)',
-          lineHeight: 1.7, maxWidth: 380, margin: 0,
-        }}>
-          Discover 500+ top colleges and find the one
-          that fits your dreams and budget — free.
-        </p>
-
-        {/* Stats */}
+        {/* RIGHT / BOTTOM - Form */}
         <div style={{
-          display: 'flex', gap: 16, marginTop: '2.5rem',
-          flexWrap: 'wrap',
-        }}>
-          {[
-            ['🎓','14L+','Students 2026'],
-            ['🏫','500+','Colleges'],
-            ['💰','Free','Always'],
-          ].map(([icon,val,lbl]) => (
-            <div key={lbl} style={{
-              background: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.09)',
-              borderRadius: 12,
-              padding: '10px 14px',
-              textAlign: 'center',
-            }}>
-              <div style={{ fontSize: 16 }}>{icon}</div>
-              <div style={{
-                fontSize: 16, fontWeight: 700,
-                color: 'white', lineHeight: 1,
-              }}>{val}</div>
-              <div style={{
-                fontSize: 10,
-                color: 'rgba(255,255,255,0.4)',
-              }}>{lbl}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* RIGHT */}
-      <div style={{
-        flex: '0 0 50%',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 'clamp(1.5rem,3vw,2.5rem)',
-        position: 'relative',
-        zIndex: 1,
-        background: 'white',
-        overflowY: 'auto',
-      }}>
-        <div style={{ width: '100%', maxWidth: 420,
-          paddingTop: '2rem', paddingBottom: '2rem' }}>
-          <h2 style={{
-            fontSize: 26, fontWeight: 700,
-            color: '#1a1340', marginBottom: 6,
-          }}>Create free account</h2>
-          <p style={{
-            fontSize: 14, color: '#6b6894', marginBottom: 24,
-          }}>
+          flex: '0 0 440px',
+          padding: '3rem',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          background: 'rgba(5,7,26,0.6)',
+        }} className="auth-form-section">
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: 'white', marginBottom: 8 }}>
+            Create free account
+          </h2>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', marginBottom: 32 }}>
             Join 10,000+ students finding their dream college
           </p>
 
-          {/* Google */}
           <button onClick={handleGoogle} disabled={busy} style={{
-            width: '100%', padding: '13px 16px',
-            borderRadius: 12,
-            border: '1px solid rgba(127,119,221,0.2)',
-            background: '#f0eeff', color: '#534AB7',
-            fontSize: 14, fontWeight: 500,
+            width: '100%', padding: '14px 16px',
+            borderRadius: 16,
+            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.05)', color: 'white',
+            fontSize: 14, fontWeight: 600,
             cursor: busy ? 'not-allowed' : 'pointer',
             display: 'flex', alignItems: 'center',
-            justifyContent: 'center', gap: 10,
-            marginBottom: 18,
-            opacity: busy ? 0.7 : 1,
-            transition: 'all 0.2s ease',
-          }}>
-            <svg width="18" height="18" viewBox="0 0 48 48">
+            justifyContent: 'center', gap: 12,
+            marginBottom: 24, transition: 'all 0.3s ease',
+          }} className="hover:bg-white/10 active:scale-[0.98]">
+            <svg width="20" height="20" viewBox="0 0 48 48">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
               <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
               <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
@@ -313,160 +328,65 @@ export default function RegisterPage() {
             Sign up with Google
           </button>
 
-          {/* Divider */}
-          <div style={{
-            display: 'flex', alignItems: 'center',
-            gap: 12, marginBottom: 18,
-          }}>
-            <div style={{ flex:1, height:1,
-              background:'rgba(127,119,221,0.15)' }}/>
-            <span style={{ fontSize:12, color:'#7a7399' }}>
-              or email
-            </span>
-            <div style={{ flex:1, height:1,
-              background:'rgba(127,119,221,0.15)' }}/>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+            <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.1)' }}/>
+            <span style={{ fontSize:12, color:'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '2px' }}>or</span>
+            <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.1)' }}/>
           </div>
 
           <form onSubmit={handleRegister}>
-            {/* Name */}
-            <div style={{ marginBottom: 12 }}>
+            <div style={{ marginBottom: 16 }}>
               <label style={labelStyle}>Full name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="Your name"
-                required
-                style={inputStyle}
-              />
+              <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Your name" required style={inputStyle} className="focus:border-purple-400 focus:bg-white/10" />
             </div>
 
-            {/* Email */}
-            <div style={{ marginBottom: 12 }}>
+            <div style={{ marginBottom: 16 }}>
               <label style={labelStyle}>Email address</label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                style={inputStyle}
-              />
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required style={inputStyle} className="focus:border-purple-400 focus:bg-white/10" />
             </div>
 
-            {/* Password */}
-            <div style={{ marginBottom: 12 }}>
+            <div style={{ marginBottom: 16 }}>
               <label style={labelStyle}>Password</label>
               <div style={{ position: 'relative' }}>
-                <input
-                  type={showPwd ? 'text' : 'password'}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="Min 6 characters"
-                  required
-                  style={{ ...inputStyle, paddingRight: 44 }}
-                />
-                <button type="button"
-                  onClick={() => setShowPwd(p=>!p)}
-                  style={{
-                    position: 'absolute', right: 14,
-                    top: '50%', transform: 'translateY(-50%)',
-                    background: 'none', border: 'none',
-                    cursor: 'pointer', fontSize: 15,
-                    color: '#7a7399', padding: 0,
-                  }}>
+                <input type={showPwd ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Min 6 characters" required style={{ ...inputStyle, paddingRight: 44 }} className="focus:border-purple-400 focus:bg-white/10" />
+                <button type="button" onClick={() => setShowPwd(p=>!p)} style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'rgba(255,255,255,0.4)' }}>
                   {showPwd ? '🙈' : '👁'}
                 </button>
               </div>
             </div>
 
-            {/* Confirm */}
-            <div style={{ marginBottom: 18 }}>
+            <div style={{ marginBottom: 24 }}>
               <label style={labelStyle}>Confirm password</label>
-              <input
-                type="password"
-                value={confirm}
-                onChange={e => setConfirm(e.target.value)}
-                placeholder="Repeat password"
-                required
-                style={{
-                  ...inputStyle,
-                  border: confirm && password !== confirm
-                    ? '1px solid #E24B4A'
-                    : '1px solid rgba(127,119,221,0.2)',
-                }}
-              />
+              <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} placeholder="Repeat password" required style={{ ...inputStyle, border: confirm && password !== confirm ? '1px solid #E24B4A' : '1px solid rgba(255,255,255,0.1)' }} className="focus:border-purple-400 focus:bg-white/10" />
               {confirm && password !== confirm && (
-                <p style={{
-                  fontSize: 12, color: '#A32D2D',
-                  margin: '4px 0 0',
-                }}>
-                  Passwords do not match
-                </p>
+                <p style={{ fontSize: 12, color: '#ff8a8a', margin: '6px 0 0' }}>Passwords do not match</p>
               )}
             </div>
 
-            {/* Error */}
             {error && (
-              <div style={{
-                background: 'rgba(226,75,74,0.08)',
-                border: '1px solid rgba(226,75,74,0.25)',
-                borderRadius: 10,
-                padding: '10px 14px',
-                marginBottom: 14,
-                fontSize: 13,
-                color: '#A32D2D',
-              }}>
+              <div style={{ background: 'rgba(226,75,74,0.1)', border: '1px solid rgba(226,75,74,0.3)', borderRadius: 12, padding: '12px', marginBottom: 20, fontSize: 13, color: '#ff8a8a', textAlign: 'center' }}>
                 {error}
               </div>
             )}
 
-            {/* Submit */}
             <button type="submit" disabled={busy} style={{
-              width: '100%', padding: '14px',
-              borderRadius: 12, border: 'none',
-              background: busy
-                ? 'rgba(127,119,221,0.5)'
-                : 'linear-gradient(135deg,#7F77DD,#534AB7)',
-              color: 'white', fontSize: 15, fontWeight: 600,
+              width: '100%', padding: '16px',
+              borderRadius: 16, border: 'none',
+              background: busy ? 'rgba(127,119,221,0.5)' : 'linear-gradient(135deg,#7F77DD,#534AB7)',
+              color: 'white', fontSize: 16, fontWeight: 700,
               cursor: busy ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center',
-              justifyContent: 'center', gap: 8,
-              boxShadow: busy
-                ? 'none'
-                : '0 4px 20px rgba(127,119,221,0.35)',
-              transition: 'all 0.2s ease',
-            }}>
-              {busy ? (
-                <>
-                  <div style={{
-                    width: 16, height: 16,
-                    borderRadius: '50%',
-                    border: '2px solid rgba(255,255,255,0.3)',
-                    borderTop: '2px solid white',
-                    animation: 'spin 0.8s linear infinite',
-                  }}/>
-                  Creating account...
-                </>
-              ) : 'Create free account →'}
+              justifyContent: 'center', gap: 10,
+              boxShadow: busy ? 'none' : '0 8px 24px rgba(127,119,221,0.4)',
+              transition: 'all 0.3s ease',
+            }} className="hover:opacity-90 active:scale-[0.98]">
+              {busy ? 'Creating account...' : 'Create free account →'}
             </button>
           </form>
 
-          <p style={{
-            textAlign: 'center', fontSize: 13,
-            color: '#6b6894', marginTop: 18,
-          }}>
+          <p style={{ textAlign: 'center', fontSize: 14, color: 'rgba(255,255,255,0.5)', marginTop: 24 }}>
             Already have an account?{' '}
-            <a href="/login" style={{
-              color: '#534AB7', fontWeight: 600,
-              textDecoration: 'none',
-            }}>Sign in →</a>
-          </p>
-          <p style={{
-            textAlign: 'center', fontSize: 11,
-            color: '#9ca3af', marginTop: 12,
-          }}>
-            🔒 Free forever · No spam · Your data is private
+            <Link href="/login" style={{ color: '#a89ef8', fontWeight: 600, textDecoration: 'none' }}>Sign in →</Link>
           </p>
         </div>
       </div>
@@ -476,8 +396,10 @@ export default function RegisterPage() {
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
         }
-        @media (max-width: 768px) {
-          .auth-root { flex-direction: column !important; }
+        @media (max-width: 900px) {
+          .auth-card-container { flex-direction: column !important; max-width: 440px !important; }
+          .auth-branding-section { padding: 3rem 2rem !important; }
+          .auth-form-section { padding: 2rem !important; flex: auto !important; }
         }
       `}</style>
     </div>

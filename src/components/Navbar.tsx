@@ -109,10 +109,8 @@ export function Navbar() {
     { name: "Contact", href: "/contact" }
   ];
 
-  // Hide Navbar on login and register pages
-  if (pathname === '/login' || pathname === '/register') {
-    return null;
-  }
+  // ── 2. RENDER THEME ──
+  if (!mounted) return null;
 
   return (
     <nav style={{

@@ -6,19 +6,20 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 
-/* ── Dynamic import prevents SSR hydration crash ── */
-const LoginBackground = dynamic(
-  () => import('@/components/LoginBackground'),
+const DashboardBackground = dynamic(
+  () => import('@/components/3D/DashboardBackground'),
   { ssr: false }
 );
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
 
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
@@ -27,20 +28,16 @@ export default function LoginPage() {
   const [showPwd,  setShowPwd]  = useState(false);
   const [mounted,  setMounted]  = useState(false);
 
-  /* ── Prevent SSR mismatch ── */
   useEffect(() => { setMounted(true); }, []);
 
-  /* ── Redirect if already logged in ── */
   useEffect(() => {
     if (!loading && user) {
       router.push('/dashboard');
     }
   }, [user, loading, router]);
 
-  /* ── Show nothing until mounted (prevents hydration error) ── */
   if (!mounted) return null;
 
-  /* ── Show spinner while auth resolves ── */
   if (loading) {
     return (
       <div style={{
@@ -66,14 +63,17 @@ export default function LoginPage() {
     setError('');
     setBusy(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      
+      // We will let ProtectedLayout handle redirection if they are not verified,
+      // but since they just logged in, we can proactively push them.
       router.push('/dashboard');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '';
       if (msg.includes('user-not-found'))
         setError('No account found with this email.');
-      else if (msg.includes('wrong-password'))
-        setError('Incorrect password. Please try again.');
+      else if (msg.includes('wrong-password') || msg.includes('invalid-credential'))
+        setError('Incorrect password or email. Please try again.');
       else if (msg.includes('too-many-requests'))
         setError('Too many attempts. Please wait a moment.');
       else
@@ -99,179 +99,157 @@ export default function LoginPage() {
     }
   };
 
+  /* Shared input style */
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '14px 18px',
+    borderRadius: 16,
+    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'rgba(255,255,255,0.05)',
+    color: 'white',
+    fontSize: 14,
+    outline: 'none',
+    boxSizing: 'border-box',
+    fontFamily: 'inherit',
+    transition: 'all 0.3s ease',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 12,
+    fontWeight: 600,
+    color: 'rgba(255,255,255,0.8)',
+    letterSpacing: '0.05em',
+    textTransform: 'uppercase',
+    display: 'block',
+    marginBottom: 8,
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
       display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       margin: 0,
-      padding: 0,
+      padding: '2rem',
       backgroundColor: '#05071a',
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* 3D animated background */}
-      <LoginBackground />
+      <DashboardBackground />
 
-      {/* LEFT — hero panel */}
       <div style={{
-        flex: '0 0 50%',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        padding: 'clamp(2rem,5vw,4rem)',
         position: 'relative',
-        zIndex: 1,
-        background: 'transparent',
-      }}>
-        {/* Logo */}
+        zIndex: 10,
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        maxWidth: 1000,
+        background: 'rgba(15, 18, 43, 0.4)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderRadius: 32,
+        border: '1px solid rgba(255,255,255,0.05)',
+        boxShadow: '0 30px 60px rgba(0,0,0,0.4)',
+        overflow: 'hidden',
+      }} className="auth-card-container">
+        
+        {/* LEFT / TOP - Branding */}
         <div style={{
+          flex: '1',
+          padding: '4rem 3rem',
           display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          marginBottom: '3rem',
-        }}>
+          flexDirection: 'column',
+          justifyContent: 'center',
+          background: 'linear-gradient(135deg, rgba(127,119,221,0.1), rgba(29,158,117,0.05))',
+        }} className="auth-branding-section">
           <div style={{
-            width: 48, height: 48,
-            borderRadius: 14,
-            background: 'linear-gradient(135deg,#7F77DD,#1D9E75)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 24,
-            boxShadow: '0 0 24px rgba(127,119,221,0.4)',
+            display: 'flex', alignItems: 'center',
+            gap: 12, marginBottom: '2.5rem',
           }}>
-            🎓
+            <div style={{
+              width: 54, height: 54, borderRadius: 18,
+              background: 'linear-gradient(135deg,#7F77DD,#1D9E75)',
+              display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontSize: 28,
+              boxShadow: '0 8px 32px rgba(127,119,221,0.4)',
+            }}>🎓</div>
+            <div>
+              <p style={{
+                fontSize: 22, fontWeight: 800,
+                color: 'white', margin: 0, letterSpacing: '-0.5px'
+              }}>CollegeMatch-AI</p>
+              <p style={{
+                fontSize: 12, margin: '2px 0 0',
+                color: 'rgba(255,255,255,0.5)',
+              }}>India's smartest college advisor</p>
+            </div>
           </div>
-          <div>
-            <p style={{
-              fontSize: 18, fontWeight: 700,
-              background: 'linear-gradient(90deg,#a89ef8,#5DCAA5)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              color: '#a89ef8',
-              margin: 0,
-            }}>
-              CollegeMatch-AI
-            </p>
-            <p style={{
-              fontSize: 11,
-              color: 'rgba(255,255,255,0.45)',
-              margin: '2px 0 0',
-            }}>
-              India's smartest college advisor
-            </p>
+
+          <h1 style={{
+            fontSize: 'clamp(32px,4vw,48px)',
+            fontWeight: 800, color: 'white',
+            lineHeight: 1.1, margin: '0 0 12px',
+          }}>Welcome <br/><span style={{
+            background: 'linear-gradient(90deg,#a89ef8,#5DCAA5)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}>back.</span></h1>
+          <p style={{
+            fontSize: 16,
+            color: 'rgba(255,255,255,0.6)',
+            lineHeight: 1.6, maxWidth: 380, margin: '0 0 40px',
+          }}>
+            Sign in to continue your college journey. Thousands of students found their match here.
+          </p>
+
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 10,
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.05)',
+            borderRadius: 16, padding: '12px 20px',
+            maxWidth: 'fit-content', backdropFilter: 'blur(10px)',
+          }}>
+            <span style={{ fontSize: 24 }}>🔒</span>
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: 'white', margin: 0 }}>
+                Verified Security
+              </p>
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', margin: '2px 0 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Your data is encrypted
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Hero text */}
-        <h1 style={{
-          fontSize: 'clamp(28px,3.5vw,48px)',
-          fontWeight: 800,
-          color: 'white',
-          lineHeight: 1.2,
-          margin: '0 0 12px',
-        }}>
-          Welcome back.
-        </h1>
-        <p style={{
-          fontSize: 'clamp(14px,1.5vw,17px)',
-          color: 'rgba(255,255,255,0.55)',
-          lineHeight: 1.7,
-          maxWidth: 380,
-          margin: 0,
-        }}>
-          Sign in to continue your college journey.
-          Thousands of students found their match here.
-        </p>
-
-        {/* Trust badge */}
+        {/* RIGHT / BOTTOM - Form */}
         <div style={{
-          marginTop: '2.5rem',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 10,
-          background: 'rgba(255,255,255,0.05)',
-          border: '1px solid rgba(255,255,255,0.09)',
-          borderRadius: 12,
-          padding: '12px 16px',
-          maxWidth: 'fit-content',
-        }}>
-          <span style={{ fontSize: 20 }}>🔒</span>
-          <div>
-            <p style={{
-              fontSize: 13, fontWeight: 600,
-              color: 'white', margin: 0,
-            }}>
-              Verified Security
-            </p>
-            <p style={{
-              fontSize: 10,
-              color: 'rgba(255,255,255,0.4)',
-              margin: '1px 0 0',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}>
-              Your data is encrypted
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT — form panel */}
-      <div style={{
-        flex: '0 0 50%',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 'clamp(1.5rem,3vw,3rem)',
-        position: 'relative',
-        zIndex: 1,
-        background: 'white',
-      }}>
-        <div style={{ width: '100%', maxWidth: 420 }}>
-
-          {/* Form heading */}
-          <h2 style={{
-            fontSize: 28, fontWeight: 700,
-            color: '#1a1340', marginBottom: 6,
-          }}>
+          flex: '0 0 440px',
+          padding: '3rem',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          background: 'rgba(5,7,26,0.6)',
+        }} className="auth-form-section">
+          <h2 style={{ fontSize: 24, fontWeight: 700, color: 'white', marginBottom: 8 }}>
             Sign in
           </h2>
-          <p style={{
-            fontSize: 14,
-            color: '#6b6894',
-            marginBottom: 28,
-          }}>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', marginBottom: 32 }}>
             Continue your college match journey
           </p>
 
-          {/* Google button */}
-          <button
-            onClick={handleGoogleLogin}
-            disabled={busy}
-            style={{
-              width: '100%',
-              padding: '13px 16px',
-              borderRadius: 12,
-              border: '1px solid rgba(127,119,221,0.2)',
-              background: '#f0eeff',
-              color: '#534AB7',
-              fontSize: 14,
-              fontWeight: 500,
-              cursor: busy ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 10,
-              marginBottom: 20,
-              opacity: busy ? 0.7 : 1,
-              transition: 'all 0.2s ease',
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 48 48">
+          <button onClick={handleGoogleLogin} disabled={busy} style={{
+            width: '100%', padding: '14px 16px',
+            borderRadius: 16,
+            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.05)', color: 'white',
+            fontSize: 14, fontWeight: 600,
+            cursor: busy ? 'not-allowed' : 'pointer',
+            display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: 12,
+            marginBottom: 24, transition: 'all 0.3s ease',
+          }} className="hover:bg-white/10 active:scale-[0.98]">
+            <svg width="20" height="20" viewBox="0 0 48 48">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
               <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
               <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
@@ -280,234 +258,70 @@ export default function LoginPage() {
             Continue with Google
           </button>
 
-          {/* Divider */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            marginBottom: 20,
-          }}>
-            <div style={{
-              flex: 1,
-              height: 1,
-              background: 'rgba(127,119,221,0.15)',
-            }} />
-            <span style={{
-              fontSize: 12,
-              color: '#7a7399',
-              whiteSpace: 'nowrap',
-            }}>
-              or email
-            </span>
-            <div style={{
-              flex: 1,
-              height: 1,
-              background: 'rgba(127,119,221,0.15)',
-            }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+            <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.1)' }}/>
+            <span style={{ fontSize:12, color:'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '2px' }}>or</span>
+            <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.1)' }}/>
           </div>
 
-          {/* Email + password form */}
           <form onSubmit={handleEmailLogin}>
-            {/* Email */}
-            <div style={{ marginBottom: 14 }}>
-              <label style={{
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#534AB7',
-                letterSpacing: '0.07em',
-                textTransform: 'uppercase',
-                display: 'block',
-                marginBottom: 6,
-              }}>
-                Email address
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                style={{
-                  width: '100%',
-                  padding: '13px 16px',
-                  borderRadius: 12,
-                  border: '1px solid rgba(127,119,221,0.2)',
-                  background: '#f0eeff',
-                  color: '#1a1340',
-                  fontSize: 14,
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                  fontFamily: 'inherit',
-                }}
-              />
+            <div style={{ marginBottom: 16 }}>
+              <label style={labelStyle}>Email address</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required style={inputStyle} className="focus:border-purple-400 focus:bg-white/10" />
             </div>
 
-            {/* Password */}
-            <div style={{ marginBottom: 20 }}>
-              <label style={{
-                fontSize: 11,
-                fontWeight: 600,
-                color: '#534AB7',
-                letterSpacing: '0.07em',
-                textTransform: 'uppercase',
-                display: 'block',
-                marginBottom: 6,
-              }}>
-                Password
-              </label>
+            <div style={{ marginBottom: 24 }}>
+              <label style={labelStyle}>Password</label>
               <div style={{ position: 'relative' }}>
-                <input
-                  type={showPwd ? 'text' : 'password'}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '13px 44px 13px 16px',
-                    borderRadius: 12,
-                    border: '1px solid rgba(127,119,221,0.2)',
-                    background: '#f0eeff',
-                    color: '#1a1340',
-                    fontSize: 14,
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                    fontFamily: 'inherit',
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPwd(p => !p)}
-                  style={{
-                    position: 'absolute',
-                    right: 14, top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: 16,
-                    color: '#7a7399',
-                    padding: 0,
-                  }}
-                >
+                <input type={showPwd ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required style={{ ...inputStyle, paddingRight: 44 }} className="focus:border-purple-400 focus:bg-white/10" />
+                <button type="button" onClick={() => setShowPwd(p=>!p)} style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'rgba(255,255,255,0.4)' }}>
                   {showPwd ? '🙈' : '👁'}
                 </button>
               </div>
-              <div style={{
-                textAlign: 'right',
-                marginTop: 6,
-              }}>
-                <a
-                  href="/forgot-password"
-                  style={{
-                    fontSize: 12,
-                    color: '#534AB7',
-                    textDecoration: 'none',
-                  }}
-                >
+              <div style={{ textAlign: 'right', marginTop: 8 }}>
+                <Link href="/forgot-password" style={{ fontSize: 13, color: '#a89ef8', textDecoration: 'none' }}>
                   Forgot password?
-                </a>
+                </Link>
               </div>
             </div>
 
-            {/* Error message */}
             {error && (
-              <div style={{
-                background: 'rgba(226,75,74,0.08)',
-                border: '1px solid rgba(226,75,74,0.25)',
-                borderRadius: 10,
-                padding: '10px 14px',
-                marginBottom: 16,
-                fontSize: 13,
-                color: '#A32D2D',
-              }}>
+              <div style={{ background: 'rgba(226,75,74,0.1)', border: '1px solid rgba(226,75,74,0.3)', borderRadius: 12, padding: '12px', marginBottom: 20, fontSize: 13, color: '#ff8a8a', textAlign: 'center' }}>
                 {error}
               </div>
             )}
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={busy}
-              style={{
-                width: '100%',
-                padding: '14px',
-                borderRadius: 12,
-                border: 'none',
-                background: busy
-                  ? 'rgba(127,119,221,0.5)'
-                  : 'linear-gradient(135deg,#7F77DD,#534AB7)',
-                color: 'white',
-                fontSize: 15,
-                fontWeight: 600,
-                cursor: busy ? 'not-allowed' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                boxShadow: busy
-                  ? 'none'
-                  : '0 4px 20px rgba(127,119,221,0.35)',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              {busy ? (
-                <>
-                  <div style={{
-                    width: 16, height: 16,
-                    borderRadius: '50%',
-                    border: '2px solid rgba(255,255,255,0.3)',
-                    borderTop: '2px solid white',
-                    animation: 'spin 0.8s linear infinite',
-                  }} />
-                  Signing in...
-                </>
-              ) : 'Sign in →'}
+            <button type="submit" disabled={busy} style={{
+              width: '100%', padding: '16px',
+              borderRadius: 16, border: 'none',
+              background: busy ? 'rgba(127,119,221,0.5)' : 'linear-gradient(135deg,#7F77DD,#534AB7)',
+              color: 'white', fontSize: 16, fontWeight: 700,
+              cursor: busy ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center',
+              justifyContent: 'center', gap: 10,
+              boxShadow: busy ? 'none' : '0 8px 24px rgba(127,119,221,0.4)',
+              transition: 'all 0.3s ease',
+            }} className="hover:opacity-90 active:scale-[0.98]">
+              {busy ? 'Signing in...' : 'Sign in →'}
             </button>
           </form>
 
-          {/* Sign up link */}
-          <p style={{
-            textAlign: 'center',
-            fontSize: 13,
-            color: '#6b6894',
-            marginTop: 20,
-          }}>
+          <p style={{ textAlign: 'center', fontSize: 14, color: 'rgba(255,255,255,0.5)', marginTop: 24 }}>
             New to CollegeMatch-AI?{' '}
-            <a
-              href="/register"
-              style={{
-                color: '#534AB7',
-                fontWeight: 600,
-                textDecoration: 'none',
-              }}
-            >
-              Create free account →
-            </a>
-          </p>
-
-          {/* Trust note */}
-          <p style={{
-            textAlign: 'center',
-            fontSize: 11,
-            color: '#9ca3af',
-            marginTop: 16,
-          }}>
-            🔒 Free forever · No spam · Your data is private
+            <Link href="/register" style={{ color: '#a89ef8', fontWeight: 600, textDecoration: 'none' }}>Create free account →</Link>
           </p>
         </div>
       </div>
 
-      {/* Mobile: stack vertically */}
       <style>{`
-        @media (max-width: 768px) {
-          .auth-root {
-            flex-direction: column !important;
-          }
-        }
         @keyframes spin {
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
+        }
+        @media (max-width: 900px) {
+          .auth-card-container { flex-direction: column !important; max-width: 440px !important; }
+          .auth-branding-section { padding: 3rem 2rem !important; }
+          .auth-form-section { padding: 2rem !important; flex: auto !important; }
         }
       `}</style>
     </div>
