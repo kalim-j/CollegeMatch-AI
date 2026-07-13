@@ -15,13 +15,13 @@ export async function POST(req: Request) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.SMTP_EMAIL,
-        pass: process.env.SMTP_PASSWORD,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     const mailOptions = {
-      from: `"CollegeMatch-AI" <${process.env.SMTP_EMAIL}>`,
+      from: `"CollegeMatch-AI" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Verify your CollegeMatch-AI account',
       html: `
