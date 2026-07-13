@@ -200,7 +200,7 @@ export default function RegisterPage() {
       justifyContent: 'center',
       margin: 0,
       padding: '2rem',
-      backgroundColor: '#05071a',
+      backgroundColor: 'transparent',
       position: 'relative',
       overflow: 'hidden',
     }}>

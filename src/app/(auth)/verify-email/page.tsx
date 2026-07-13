@@ -132,7 +132,7 @@ export default function VerifyEmailPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#05071a',
+      backgroundColor: 'transparent',
       position: 'relative',
       overflow: 'hidden',
     }}>
