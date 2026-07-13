@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth, db } from '@/lib/firebase';
-import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useAuth } from '@/context/AuthContext';
 import dynamic from 'next/dynamic';
 
@@ -21,18 +22,24 @@ export default function VerifyEmailPage() {
   const [timeLeft, setTimeLeft] = useState(0);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   const [mounted, setMounted] = useState(false);
-
-  useEffect(() => { setMounted(true); }, []);
+  const [regData, setRegData] = useState<any>(null);
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.push('/login');
-      } else if (profile?.isVerified) {
-        router.push('/dashboard');
-      }
+    setMounted(true);
+    const data = sessionStorage.getItem('registrationData');
+    if (data) {
+      setRegData(JSON.parse(data));
     }
-  }, [user, profile, loading, router]);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || loading) return;
+    if (user && profile?.isVerified) {
+      router.push('/dashboard');
+    } else if (!user && !sessionStorage.getItem('registrationData')) {
+      router.push('/login');
+    }
+  }, [user, profile, loading, router, mounted]);
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -63,7 +70,6 @@ export default function VerifyEmailPage() {
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
     const entered = code.join('');
     if (entered.length < 6) {
       setError('Please enter the full 6-digit code.');
@@ -72,59 +78,108 @@ export default function VerifyEmailPage() {
     setBusy(true);
     setError('');
     try {
-      const docRef = doc(db, 'users', user.uid);
-      const snap = await getDoc(docRef);
-      const data = snap.data();
-      if (!data?.otp) {
-        setError('No OTP found. Please request a new one.');
-        setBusy(false);
-        return;
-      }
-      
-      const { code: savedCode, expiresAt } = data.otp;
-      if (Date.now() > expiresAt) {
-        setError('OTP has expired. Please request a new one.');
-      } else if (savedCode === entered) {
-        await updateDoc(docRef, { isVerified: true, otp: null });
-        await refreshProfile();
-        router.push('/dashboard');
+      if (regData) {
+        const { otp, email, password, name } = regData;
+        if (Date.now() > otp.expiresAt) {
+          setError('OTP has expired. Please request a new one.');
+        } else if (otp.code === entered) {
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
+          await updateProfile(cred.user, { displayName: name });
+          
+          await setDoc(doc(db, 'users', cred.user.uid), {
+            name,
+            email,
+            photoURL: null,
+            createdAt: serverTimestamp(),
+            isNewUser: true,
+            shownWelcome: false,
+            isVerified: true,
+            otp: null
+          }, { merge: true });
+          
+          sessionStorage.removeItem('registrationData');
+          await refreshProfile();
+          router.push('/dashboard');
+        } else {
+          setError('Incorrect OTP. Please try again.');
+        }
+      } else if (user) {
+        const docRef = doc(db, 'users', user.uid);
+        const snap = await getDoc(docRef);
+        const data = snap.data();
+        if (!data?.otp) {
+          setError('No OTP found. Please request a new one.');
+          setBusy(false);
+          return;
+        }
+        
+        const { code: savedCode, expiresAt } = data.otp;
+        if (Date.now() > expiresAt) {
+          setError('OTP has expired. Please request a new one.');
+        } else if (savedCode === entered) {
+          await updateDoc(docRef, { isVerified: true, otp: null });
+          await refreshProfile();
+          router.push('/dashboard');
+        } else {
+          setError('Incorrect OTP. Please try again.');
+        }
       } else {
-        setError('Incorrect OTP. Please try again.');
+        setError('No registration data found. Please register again.');
       }
-    } catch (err) {
-      setError('Failed to verify OTP. Try again.');
+    } catch (err: any) {
+      console.error('Verify error:', err);
+      setError(err.message || 'Failed to verify OTP. Try again.');
     } finally {
       setBusy(false);
     }
   };
 
   const handleResend = async () => {
-    if (!user || resendBusy || timeLeft > 0) return;
+    if (resendBusy || timeLeft > 0) return;
+    if (!regData && !user) return;
     setResendBusy(true);
     setError('');
     try {
       const newCode = Math.floor(100000 + Math.random() * 900000).toString();
-      const docRef = doc(db, 'users', user.uid);
-      await updateDoc(docRef, {
-        otp: {
-          code: newCode,
-          expiresAt: Date.now() + 10 * 60 * 1000 // 10 mins
-        }
-      });
-      await fetch('/api/auth/send-otp', {
+      const targetEmail = regData ? regData.email : user?.email;
+
+      if (regData) {
+        const newData = { ...regData, otp: { code: newCode, expiresAt: Date.now() + 10 * 60 * 1000 } };
+        sessionStorage.setItem('registrationData', JSON.stringify(newData));
+        setRegData(newData);
+      } else if (user) {
+        const docRef = doc(db, 'users', user.uid);
+        await updateDoc(docRef, {
+          otp: {
+            code: newCode,
+            expiresAt: Date.now() + 10 * 60 * 1000 // 10 mins
+          }
+        });
+      }
+
+      const res = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email, otp: newCode })
+        body: JSON.stringify({ email: targetEmail, otp: newCode })
       });
+      
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to resend OTP');
+      }
+      
       setTimeLeft(60);
-    } catch (err) {
-      setError('Failed to resend OTP. Try again.');
+    } catch (err: any) {
+      setError(err.message || 'Failed to resend OTP. Try again.');
     } finally {
       setResendBusy(false);
     }
   };
 
-  if (!mounted || loading || !user) return null;
+  if (!mounted || loading) return null;
+  if (!user && !regData) return null;
+
+  const displayEmail = regData ? regData.email : user?.email;
 
   return (
     <div style={{
@@ -148,8 +203,13 @@ export default function VerifyEmailPage() {
           </h2>
           <p className="text-[14px] text-slate-500 dark:text-white/70 leading-[1.5]">
             We've sent a 6-digit code to <br/>
-            <strong className="text-slate-800 dark:text-white">{user.email}</strong>
+            <strong className="text-slate-800 dark:text-white">{displayEmail}</strong>
           </p>
+          <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-xl">
+            <p className="text-[13px] text-amber-700 dark:text-amber-400 m-0">
+              <strong>Note:</strong> Please check your spam or junk folder if you do not see the email in your inbox.
+            </p>
+          </div>
         </div>
 
         <form onSubmit={handleVerify}>

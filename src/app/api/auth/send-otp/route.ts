@@ -45,10 +45,10 @@ export async function POST(req: Request) {
     await transporter.sendMail(mailOptions);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error sending OTP:', error);
     return NextResponse.json(
-      { error: 'Failed to send OTP email' },
+      { error: error.message || 'Failed to send OTP email' },
       { status: 500 }
     );
   }

@@ -99,34 +99,31 @@ export default function RegisterPage() {
 
     setBusy(true);
     try {
-      const cred = await createUserWithEmailAndPassword(
-        auth, email, password
-      );
-      await updateProfile(cred.user, { displayName: name });
-      
+      // Generate OTP but do not create the Firebase user yet
       const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
       
-      // Save user with OTP
-      await setDoc(doc(db, 'users', cred.user.uid), {
+      // Store temporary registration data in sessionStorage
+      sessionStorage.setItem('registrationData', JSON.stringify({
         name,
         email,
-        photoURL: null,
-        createdAt: serverTimestamp(),
-        isNewUser: true,
-        shownWelcome: false,
-        isVerified: false,
+        password,
         otp: {
           code: otpCode,
           expiresAt: Date.now() + 10 * 60 * 1000 // 10 minutes
         }
-      }, { merge: true });
+      }));
 
       // Send OTP Email
-      await fetch('/api/auth/send-otp', {
+      const res = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: otpCode })
       });
+      
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to send OTP email');
+      }
 
       router.push('/verify-email');
     } catch (err: unknown) {
@@ -138,7 +135,7 @@ export default function RegisterPage() {
       else if (msg.includes('invalid-email'))
         setError('Please enter a valid email address.');
       else
-        setError('Registration failed. Please try again.');
+        setError(msg || 'Registration failed. Please try again.');
     } finally {
       setBusy(false);
     }
