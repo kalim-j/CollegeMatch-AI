@@ -102,7 +102,11 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning style={{ backgroundColor: '#05071a' }}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      style={{ backgroundColor: '#05071a' }}
+    >
       <head>
         <meta name="application-name" content="CollegeMatch AI" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -119,8 +123,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/icons/icon-96x96.svg" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/themify-icons@1.0.1/css/themify-icons.css" />
       </head>
-      <body 
-        className={cn(jakarta.variable, syne.variable, dmSans.variable, "text-[var(--text-primary)] font-sans antialiased")}
+      <body
         style={{
           margin: 0,
           padding: 0,
@@ -143,7 +146,6 @@ export default function RootLayout({
 `}} />
 
         <Providers>
-          <PageCanvas3D />
           <div className="relative flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">
