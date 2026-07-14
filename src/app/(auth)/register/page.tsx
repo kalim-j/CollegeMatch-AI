@@ -111,6 +111,9 @@ export default function RegisterPage() {
         cred.user.uid, name, email, null
       );
       
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+
       const otpRes = await fetch('/api/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,7 +121,10 @@ export default function RegisterPage() {
           uid: cred.user.uid,
           email,
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!otpRes.ok) {
         console.warn('OTP send failed — continuing anyway');
@@ -139,6 +145,10 @@ export default function RegisterPage() {
         setError('Please enter a valid email address.');
       else if (msg.includes('network-request-failed'))
         setError('No internet connection. Please check and retry.');
+      else if (err instanceof Error && err.name === 'AbortError') {
+        console.warn('OTP request timed out, but proceeding to verification screen.');
+        router.push(`/verify-otp?uid=${cred.user.uid}&email=${encodeURIComponent(email)}`);
+      }
       else
         setError('Something went wrong. Please try again.');
     } finally {
