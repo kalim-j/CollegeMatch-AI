@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
       service_id: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
       template_id: process.env.EMAILJS_OTP_TEMPLATE_ID,
       user_id: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
+      accessToken: process.env.EMAILJS_PRIVATE_KEY,
       template_params: {
         to_email: email,
         otp_code: otp,
