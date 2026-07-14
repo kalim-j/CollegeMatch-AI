@@ -147,7 +147,7 @@ export default function RegisterPage() {
         setError('No internet connection. Please check and retry.');
       else if (err instanceof Error && err.name === 'AbortError') {
         console.warn('OTP request timed out, but proceeding to verification screen.');
-        router.push(`/verify-otp?uid=${cred.user.uid}&email=${encodeURIComponent(email)}`);
+        router.push(`/verify-otp?uid=${auth.currentUser?.uid}&email=${encodeURIComponent(email)}`);
       }
       else
         setError('Something went wrong. Please try again.');
