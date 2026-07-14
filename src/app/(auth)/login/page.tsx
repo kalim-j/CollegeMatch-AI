@@ -11,6 +11,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useAuth } from '@/context/AuthContext';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
 
 const DashboardBackground = dynamic(
   () => import('@/components/3D/DashboardBackground'),
@@ -20,6 +21,8 @@ const DashboardBackground = dynamic(
 export default function LoginPage() {
   const router = useRouter();
   const { user, profile, loading } = useAuth();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
 
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
@@ -156,11 +159,11 @@ export default function LoginPage() {
         </div>
 
         {/* RIGHT / BOTTOM - Form */}
-        <div className="auth-form-section flex-[0_0_440px] p-12 flex flex-col justify-center bg-white/50 dark:bg-[#05071a]/60">
-          <h2 className="text-[24px] font-bold text-slate-900 dark:text-white mb-2">
+        <div className="auth-form-section flex-[0_0_440px] p-12 flex flex-col justify-center" style={{ background: isDark ? '#0d1230' : 'white' }}>
+          <h2 style={{ color: isDark ? 'white' : '#1a1340', fontSize: '24px', fontWeight: 'bold', marginBottom: '8px' }}>
             Sign in
           </h2>
-          <p className="text-[14px] text-slate-500 dark:text-white/50 mb-8">
+          <p style={{ color: isDark ? 'rgba(255,255,255,0.55)' : '#6b6894', fontSize: '14px', marginBottom: '32px' }}>
             Continue your college match journey
           </p>
 
@@ -182,14 +185,14 @@ export default function LoginPage() {
 
           <form onSubmit={handleEmailLogin}>
             <div className="mb-4">
-              <label className="block text-[12px] font-semibold text-slate-600 dark:text-white/80 uppercase tracking-wider mb-2">Email address</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required className="w-full p-[14px_18px] rounded-2xl border border-slate-200 dark:border-white/10 bg-white/60 dark:bg-white/5 text-slate-900 dark:text-white text-[14px] outline-none transition-all focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 focus:bg-white dark:focus:bg-white/10 placeholder:text-slate-400 dark:placeholder:text-white/30" />
+              <label style={{ color: isDark ? '#a89ef8' : '#534AB7' }} className="block text-[12px] font-semibold uppercase tracking-wider mb-2">Email address</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff', color: isDark ? 'rgba(255,255,255,0.9)' : '#1a1340', border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(127,119,221,0.2)' }} className="w-full p-[14px_18px] rounded-2xl text-[14px] outline-none transition-all focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 placeholder:text-slate-400 dark:placeholder:text-white/30" />
             </div>
 
             <div className="mb-6">
-              <label className="block text-[12px] font-semibold text-slate-600 dark:text-white/80 uppercase tracking-wider mb-2">Password</label>
+              <label style={{ color: isDark ? '#a89ef8' : '#534AB7' }} className="block text-[12px] font-semibold uppercase tracking-wider mb-2">Password</label>
               <div className="relative">
-                <input type={showPwd ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required className="w-full p-[14px_44px_14px_18px] rounded-2xl border border-slate-200 dark:border-white/10 bg-white/60 dark:bg-white/5 text-slate-900 dark:text-white text-[14px] outline-none transition-all focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 focus:bg-white dark:focus:bg-white/10 placeholder:text-slate-400 dark:placeholder:text-white/30" />
+                <input type={showPwd ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff', color: isDark ? 'rgba(255,255,255,0.9)' : '#1a1340', border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(127,119,221,0.2)' }} className="w-full p-[14px_44px_14px_18px] rounded-2xl text-[14px] outline-none transition-all focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 placeholder:text-slate-400 dark:placeholder:text-white/30" />
                 <button type="button" onClick={() => setShowPwd(p=>!p)} className="absolute right-4 top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer text-[16px] text-slate-400 dark:text-white/40 hover:text-slate-600 dark:hover:text-white/60 transition-colors">
                   {showPwd ? '🙈' : '👁'}
                 </button>

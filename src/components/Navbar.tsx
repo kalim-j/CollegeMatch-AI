@@ -98,6 +98,7 @@ export function Navbar() {
 
   const mainLinks = user ? [
     { name: "Dashboard", href: "/dashboard" },
+    { name: "Learning", href: "/learning" },
     { name: "Colleges", href: "/interview" },
     { name: "Compare", href: "/dashboard/compare" },
     { name: "Predictor", href: "/dashboard/predictor" },
