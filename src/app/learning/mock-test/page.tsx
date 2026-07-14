@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
-const PageCanvas3D = dynamic(
-  () => import('@/components/3D/PageCanvas3D').catch(() => {
+const DashboardBackground = dynamic(
+  () => import('@/components/3D/DashboardBackground').catch(() => {
     return function Fallback() { return null; };
   }),
   { ssr: false }
@@ -70,7 +70,7 @@ export default function MockTestPage() {
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
-    return \`\${m.toString().padStart(2, '0')}:\${s.toString().padStart(2, '0')}\`;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
   const handleSelect = (qId: string, optId: string) => {
@@ -88,7 +88,7 @@ export default function MockTestPage() {
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', background: '#05071a', color: 'white' }}>
-      <PageCanvas3D intensity="medium" />
+      <DashboardBackground />
       
       <div style={{ position: 'relative', zIndex: 1, padding: '3rem 2rem', maxWidth: 1000, margin: '0 auto', animation: 'fadeUp 0.6s ease forwards' }}>
         

@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
-const PageCanvas3D = dynamic(
-  () => import('@/components/3D/PageCanvas3D').catch(() => {
+const DashboardBackground = dynamic(
+  () => import('@/components/3D/DashboardBackground').catch(() => {
     return function Fallback() { return null; };
   }),
   { ssr: false }
@@ -146,7 +146,7 @@ export default function SoftSkillsPage() {
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', background: '#05071a', color: 'white' }}>
-      <PageCanvas3D intensity="medium" />
+      <DashboardBackground />
       
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 1100, margin: '0 auto', padding: '3rem 2rem', animation: 'fadeUp 0.6s ease forwards' }}>
         
@@ -192,7 +192,7 @@ export default function SoftSkillsPage() {
                 <div style={{ textAlign: 'left', animation: 'fadeUp 0.4s ease forwards' }}>
                   <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                      <div style={{ width: 100, height: 100, borderRadius: '50%', border: \`6px solid \${feedback.overall_score >= 8 ? '#1D9E75' : feedback.overall_score >= 5 ? '#FAC775' : '#E24B4A'}\`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, fontWeight: 'bold' }}>
+                      <div style={{ width: 100, height: 100, borderRadius: '50%', border: `6px solid ${feedback.overall_score >= 8 ? '#1D9E75' : feedback.overall_score >= 5 ? '#FAC775' : '#E24B4A'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, fontWeight: 'bold' }}>
                         {feedback.overall_score}
                       </div>
                       <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: '0.5rem' }}>Overall Score</span>
@@ -207,7 +207,7 @@ export default function SoftSkillsPage() {
                         <div key={stat.label} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                           <span style={{ width: 80, fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>{stat.label}</span>
                           <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 3, overflow: 'hidden' }}>
-                            <div style={{ height: '100%', width: \`\${stat.score * 10}%\`, background: '#7F77DD' }} />
+                            <div style={{ height: '100%', width: `${stat.score * 10}%`, background: '#7F77DD' }} />
                           </div>
                           <span style={{ fontSize: 13, fontWeight: 'bold' }}>{stat.score}/10</span>
                         </div>

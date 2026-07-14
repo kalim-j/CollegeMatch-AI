@@ -372,7 +372,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-style>
-    </div>
-  );
-}

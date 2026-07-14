@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import dynamic from 'next/dynamic';
 
-const PageCanvas3D = dynamic(
-  () => import('@/components/3D/PageCanvas3D').catch(() => {
+const DashboardBackground = dynamic(
+  () => import('@/components/3D/DashboardBackground').catch(() => {
     return function Fallback() { return null; };
   }),
   { ssr: false }
@@ -123,7 +123,7 @@ export default function AptitudePage() {
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', background: '#05071a', color: 'white' }}>
-      <PageCanvas3D intensity="medium" />
+      <DashboardBackground />
       
       <div style={{ position: 'relative', zIndex: 1, display: 'flex', minHeight: '100vh', padding: '2rem', gap: '2rem', maxWidth: 1400, margin: '0 auto' }}>
         

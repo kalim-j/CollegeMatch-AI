@@ -4,9 +4,9 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import dynamic from 'next/dynamic';
 
-const PageCanvas3D = dynamic(
-  () => import('@/components/3D/PageCanvas3D').catch(() => {
-    // Fallback if PageCanvas3D doesn't exist, though spec says to use it
+const DashboardBackground = dynamic(
+  () => import('@/components/3D/DashboardBackground').catch(() => {
+    // Fallback if DashboardBackground doesn't exist
     return function Fallback() { return null; };
   }),
   { ssr: false }
@@ -129,7 +129,7 @@ export default function LearningHubPage() {
       position: 'relative',
       background: '#05071a', // Fallback background
     }}>
-      <PageCanvas3D intensity="medium" />
+      <DashboardBackground />
       <div style={{
         position: 'relative',
         zIndex: 1,

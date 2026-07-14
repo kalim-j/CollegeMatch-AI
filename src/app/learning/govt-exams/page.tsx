@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import dynamic from 'next/dynamic';
 
-const PageCanvas3D = dynamic(
-  () => import('@/components/3D/PageCanvas3D').catch(() => {
+const DashboardBackground = dynamic(
+  () => import('@/components/3D/DashboardBackground').catch(() => {
     return function Fallback() { return null; };
   }),
   { ssr: false }
@@ -105,7 +105,7 @@ export default function GovtExamsPage() {
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative', background: '#05071a', color: 'white' }}>
-      <PageCanvas3D intensity="medium" />
+      <DashboardBackground />
       
       <div style={{ position: 'relative', zIndex: 1, padding: '2rem', maxWidth: 1200, margin: '0 auto' }}>
         
@@ -126,7 +126,7 @@ export default function GovtExamsPage() {
                 background: activeExam.id === exam.id ? 'rgba(127,119,221,0.15)' : 'rgba(255,255,255,0.04)',
                 border: activeExam.id === exam.id ? '1px solid #7F77DD' : '1px solid rgba(255,255,255,0.1)',
                 animation: 'fadeUp 0.6s ease forwards',
-                animationDelay: \`\${i * 0.05}s\`,
+                animationDelay: `${i * 0.05}s`,
                 opacity: 0,
               }}
             >
@@ -207,7 +207,7 @@ export default function GovtExamsPage() {
                         onClick={() => handleSelect(opt.id)}
                         disabled={!!selectedAns}
                         style={{
-                          padding: '1rem 1.5rem', borderRadius: 12, border: \`1px solid \${border}\`,
+                          padding: '1rem 1.5rem', borderRadius: 12, border: `1px solid ${border}`,
                           background: bg, color: 'white', fontSize: 15, textAlign: 'left',
                           cursor: selectedAns ? 'default' : 'pointer', transition: 'all 0.2s',
                           display: 'flex', alignItems: 'center', gap: '1rem'
@@ -224,7 +224,7 @@ export default function GovtExamsPage() {
                   <div style={{ marginTop: 'auto', animation: 'fadeUp 0.4s ease forwards' }}>
                     <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', marginBottom: '1rem' }}>
                       <h4 style={{ color: selectedAns === question.correct ? '#5DCAA5' : '#E24B4A', marginBottom: '0.5rem', fontSize: 16 }}>
-                        {selectedAns === question.correct ? '✅ Correct!' : \`❌ Incorrect. The correct answer is \${question.correct}.\`}
+                        {selectedAns === question.correct ? '✅ Correct!' : `❌ Incorrect. The correct answer is ${question.correct}.`}
                       </h4>
                       <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, lineHeight: 1.6 }}>
                         {question.explanation}
