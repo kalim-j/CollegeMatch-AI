@@ -12,8 +12,8 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
-    } else if (!loading && user && profile && profile.isVerified === false) {
-      router.push("/verify-email");
+    } else if (!loading && user && profile && profile.emailVerified === false) {
+      router.push("/verify-otp");
     }
   }, [user, profile, loading, router]);
 

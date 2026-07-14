@@ -21,7 +21,7 @@ const DashboardBackground = dynamic(
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 
@@ -37,8 +37,8 @@ export default function RegisterPage() {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    if (!loading && user) router.push('/dashboard');
-  }, [user, loading, router]);
+    if (!loading && user && profile?.emailVerified) router.push('/dashboard');
+  }, [user, profile, loading, router]);
 
   if (!mounted) return null;
 

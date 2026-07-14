@@ -13,6 +13,7 @@ export interface StudentProfile {
   uid: string;
   fullName: string;
   email: string;
+  emailVerified?: boolean;
   bio?: string;
   avatarUrl?: string;
   courseLevel?: CourseLevel;
