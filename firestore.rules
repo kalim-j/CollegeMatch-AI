@@ -11,5 +11,8 @@ service cloud.firestore {
     match /applications/{uid}/{doc} { allow read,write: if request.auth.uid==uid; }
     match /contacts/{doc} { allow create: if request.auth!=null; allow read,update: if request.auth.token.email=='kalim.apoffi@gmail.com'; }
     match /testimonials/{doc} { allow read: if true; allow create: if request.auth!=null; allow update,delete: if request.auth.token.email=='kalim.apoffi@gmail.com'; }
+    
+    // Allow OTP verifications to be read/written
+    match /otp-verifications/{uid} { allow read, write: if true; }
   }
 }
