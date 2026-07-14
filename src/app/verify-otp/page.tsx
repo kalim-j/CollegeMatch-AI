@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { db } from '@/lib/firebase';
+import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import dynamic from 'next/dynamic';
@@ -98,21 +100,42 @@ export default function VerifyOTPPage() {
     setError('');
 
     try {
-      const res = await fetch('/api/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid, otp: code }),
-      });
+      const otpRef = doc(db, 'otp-verifications', uid);
+      const otpSnap = await getDoc(otpRef);
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Verification failed.');
-        /* Shake animation on error */
+      if (!otpSnap.exists()) {
+        setError('OTP not found. Please request a new one.');
         setOtp(['','','','','','']);
         inputRefs.current[0]?.focus();
         return;
       }
+
+      const data = otpSnap.data();
+
+      if (data.attempts >= 5) {
+        setError('Too many attempts. Please request a new OTP.');
+        setOtp(['','','','','','']);
+        return;
+      }
+
+      const expiresAt = data.expiresAt.toDate();
+      if (new Date() > expiresAt) {
+        setError('OTP has expired. Please request a new one.');
+        return;
+      }
+
+      await updateDoc(otpRef, { attempts: data.attempts + 1 });
+
+      if (data.otp !== code) {
+        setError('Incorrect OTP. Please try again.');
+        setOtp(['','','','','','']);
+        inputRefs.current[0]?.focus();
+        return;
+      }
+
+      /* Mark as verified */
+      await updateDoc(otpRef, { verified: true, verifiedAt: serverTimestamp() });
+      await updateDoc(doc(db, 'users', uid), { emailVerified: true, verifiedAt: serverTimestamp() });
 
       setSuccess(true);
       /* Wait 1.5 seconds then go to discover */
