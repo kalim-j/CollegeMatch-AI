@@ -28,6 +28,27 @@ export default function Dashboard() {
   const [analysesCount, setAnalysesCount] = useState(0);
   const [collegesCount, setCollegesCount] = useState(0);
   const [scholarshipsCount, setScholarshipsCount] = useState(0);
+  const [verified, setVerified] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    const checkVerification = async () => {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      if (snap.exists()) {
+        const data = snap.data();
+        if (data.emailVerified === true || data.emailVerified === undefined) {
+          setVerified(true);
+        } else {
+          router.push(
+            `/verify-otp?uid=${user.uid}&email=${encodeURIComponent(user.email || '')}`
+          );
+        }
+      } else {
+        setVerified(true);
+      }
+    };
+    checkVerification();
+  }, [user, router]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -103,7 +124,7 @@ export default function Dashboard() {
     return () => observer.disconnect();
   }, [dataLoading]);
 
-  if (authLoading || dataLoading) {
+  if (authLoading || dataLoading || verified === null) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]"
         style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
@@ -114,6 +135,8 @@ export default function Dashboard() {
       </div>
     );
   }
+
+  if (!verified) return null;
 
   const discoveredStreamName = latestDiscovery ? latestDiscovery.results.streams[0].short_name : "Not yet";
 

@@ -78,10 +78,12 @@ export default function RegisterPage() {
       createdAt: serverTimestamp(),
       isNewUser: true,
       shownWelcome: false,
+      emailVerified: false,
     };
     
     if (isGoogle) {
       userData.isVerified = true;
+      userData.emailVerified = true;
     }
 
     await setDoc(doc(db, 'users', uid), userData, { merge: true });
@@ -110,8 +112,23 @@ export default function RegisterPage() {
       await saveUserToFirestore(
         cred.user.uid, name, email, null
       );
-      await sendEmailVerification(cred.user);
-      setVerificationSent(true);
+      
+      const otpRes = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: cred.user.uid,
+          email,
+        }),
+      });
+
+      if (!otpRes.ok) {
+        console.warn('OTP send failed — continuing anyway');
+      }
+
+      router.push(
+        `/verify-otp?uid=${cred.user.uid}&email=${encodeURIComponent(email)}`
+      );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '';
       console.error('Register error:', msg);

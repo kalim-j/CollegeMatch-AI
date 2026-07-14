@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
-import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { collection, doc, serverTimestamp, setDoc, getDoc } from 'firebase/firestore';
 import StreamResultCard from '@/components/StreamResultCard';
 import DiscoveryLoadingScreen from '@/components/DiscoveryLoadingScreen';
 import { DiscoveryResult, StreamRecommendation } from '@/types/discovery';
@@ -39,11 +39,36 @@ export default function DiscoverPage() {
   const [aiError, setAiError] = useState<string | null>(null);
   const [direction, setDirection] = useState(1);
 
+  const [verified, setVerified] = useState<boolean | null>(null);
+
   useEffect(() => {
-    if (user === null) router.push('/login?redirect=/discover');
+    if (user === null) {
+      router.push('/login?redirect=/discover');
+      return;
+    }
+    
+    if (user) {
+      const checkVerification = async () => {
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.emailVerified === true || data.emailVerified === undefined) {
+            setVerified(true);
+          } else {
+            router.push(
+              `/verify-otp?uid=${user.uid}&email=${encodeURIComponent(user.email || '')}`
+            );
+          }
+        } else {
+          setVerified(true);
+        }
+      };
+      checkVerification();
+    }
   }, [user, router]);
 
-  if (!user) return null;
+  if (!user || verified === null) return null;
+  if (!verified) return null;
 
   const handleStart = () => {
     setDirection(1); 
