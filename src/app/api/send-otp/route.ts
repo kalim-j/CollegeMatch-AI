@@ -58,8 +58,10 @@ export async function POST(req: NextRequest) {
     if (!emailRes.ok) {
       const errText = await emailRes.text();
       console.error('EmailJS OTP send error:', errText);
-      /* Still return success — OTP is saved.
-         User can request resend. */
+      return NextResponse.json(
+        { error: 'Email delivery failed: ' + errText },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json({
