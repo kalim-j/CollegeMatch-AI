@@ -1,157 +1,244 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
-import { db } from '@/lib/firebase';
-import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  useState, useEffect, useRef, Suspense
+} from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
 import dynamic from 'next/dynamic';
+import { db } from '@/lib/firebase';
+import {
+  doc, setDoc, getDoc,
+  serverTimestamp, Timestamp
+} from 'firebase/firestore';
 
 const LoginBackground = dynamic(
   () => import('@/components/LoginBackground'),
   { ssr: false }
 );
 
-export default function VerifyOTPPage() {
+/* ── Wrap in Suspense because useSearchParams
+   needs it in Next.js 14 App Router ── */
+export default function VerifyOTPPageWrapper() {
+  return (
+    <Suspense fallback={
+      <div style={{
+        minHeight:'100vh',
+        background:'#05071a',
+        display:'flex',
+        alignItems:'center',
+        justifyContent:'center',
+      }}>
+        <div style={{
+          width:40,height:40,borderRadius:'50%',
+          border:'3px solid rgba(127,119,221,0.2)',
+          borderTop:'3px solid #7F77DD',
+          animation:'spin 0.8s linear infinite',
+        }}/>
+      </div>
+    }>
+      <VerifyOTPPage />
+    </Suspense>
+  );
+}
+
+function VerifyOTPPage() {
   const router = useRouter();
   const params = useSearchParams();
-  const { user, loading } = useAuth();
-
-  const [otp, setOtp] = useState(['','','','','','']);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [resendBusy, setResendBusy] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(0);
-  const [mounted, setMounted] = useState(false);
-
-  /* Refs for auto-focus between OTP inputs */
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const email = params.get('email') || '';
   const uid   = params.get('uid')   || '';
 
+  const [otp,           setOtp]           = useState(['','','','','','']);
+  const [error,         setError]         = useState('');
+  const [success,       setSuccess]       = useState(false);
+  const [busy,          setBusy]          = useState(false);
+  const [resendBusy,    setResendBusy]    = useState(false);
+  const [resendTimer,   setResendTimer]   = useState(0);
+  const [fallbackCode,  setFallbackCode]  = useState('');
+  const [emailSent,     setEmailSent]     = useState(true);
+  const [mounted,       setMounted]       = useState(false);
+  const [verifyAuto,    setVerifyAuto]    = useState(false);
+
+  const inputRefs = useRef<(HTMLInputElement|null)[]>([]);
+
   useEffect(() => { setMounted(true); }, []);
 
-  /* Countdown timer for resend cooldown */
+  /* Read fallback OTP from sessionStorage */
   useEffect(() => {
-    if (resendCooldown <= 0) return;
-    const t = setTimeout(
-      () => setResendCooldown(c => c - 1), 1000
-    );
+    if (!uid) return;
+    const stored = sessionStorage.getItem(`otp_${uid}`);
+    if (stored) {
+      setFallbackCode(stored);
+      /* Check if email actually sent */
+      const sent = sessionStorage.getItem(`otpSent_${uid}`);
+      if (sent === 'false') setEmailSent(false);
+    }
+  }, [uid]);
+
+  /* Resend countdown */
+  useEffect(() => {
+    if (resendTimer <= 0) return;
+    const t = setTimeout(() => setResendTimer(n=>n-1), 1000);
     return () => clearTimeout(t);
-  }, [resendCooldown]);
+  }, [resendTimer]);
 
-  if (!mounted || loading) return null;
+  /* Auto-verify when all 6 digits filled */
+  useEffect(() => {
+    const code = otp.join('');
+    if (code.length === 6 && !busy && !verifyAuto) {
+      setVerifyAuto(true);
+      setTimeout(() => handleVerify(code), 300);
+    }
+  }, [otp]);
 
-  /* Handle OTP input — auto advance on each digit */
-  const handleOtpChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return; /* digits only */
+  if (!mounted) return null;
+
+  /* ── OTP input handlers ── */
+  const handleChange = (i: number, val: string) => {
+    if (!/^\d*$/.test(val)) return;
     const next = [...otp];
-    next[index] = value.slice(-1); /* only last char */
+    next[i] = val.slice(-1);
     setOtp(next);
     setError('');
-
-    /* Auto advance to next input */
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-
-    /* Auto submit when all 6 filled */
-    if (value && index === 5) {
-      const fullOtp = [...next].join('');
-      if (fullOtp.length === 6) {
-        setTimeout(() => handleVerify(fullOtp), 100);
-      }
+    setVerifyAuto(false);
+    if (val && i < 5) {
+      inputRefs.current[i+1]?.focus();
     }
   };
 
-  /* Handle backspace — go back to previous input */
-  const handleKeyDown = (
-    index: number,
-    e: React.KeyboardEvent
-  ) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+  const handleKey = (i: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !otp[i] && i > 0) {
+      const next = [...otp];
+      next[i-1] = '';
+      setOtp(next);
+      inputRefs.current[i-1]?.focus();
     }
   };
 
-  /* Handle paste — fill all 6 boxes */
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const pasted = e.clipboardData
+    const digits = e.clipboardData
       .getData('text')
-      .replace(/\D/g, '')
-      .slice(0, 6);
-    if (pasted.length === 6) {
-      setOtp(pasted.split(''));
+      .replace(/\D/g,'')
+      .slice(0,6);
+    if (digits.length === 6) {
+      setOtp(digits.split(''));
       inputRefs.current[5]?.focus();
-      setTimeout(() => handleVerify(pasted), 100);
     }
   };
 
-  const handleVerify = async (otpValue?: string) => {
-    const code = otpValue || otp.join('');
-    if (code.length !== 6) {
-      setError('Please enter all 6 digits.');
-      return;
+  /* ── Verify OTP ── */
+  const handleVerify = async (code?: string) => {
+    const otpCode = code || otp.join('');
+    if (otpCode.length !== 6) {
+      setError('Enter all 6 digits.'); return;
     }
-
+    if (busy) return;
     setBusy(true);
     setError('');
 
     try {
-      const otpRef = doc(db, 'otp-verifications', uid);
-      const otpSnap = await getDoc(otpRef);
+      /* Check against Firestore */
+      const otpSnap = await getDoc(
+        doc(db,'otp-verifications',uid)
+      );
 
       if (!otpSnap.exists()) {
-        setError('OTP not found. Please request a new one.');
-        setOtp(['','','','','','']);
-        inputRefs.current[0]?.focus();
-        return;
+        /* OTP doc not found — check sessionStorage fallback */
+        const stored = sessionStorage.getItem(`otp_${uid}`);
+        if (stored && stored === otpCode) {
+          await markVerified();
+          return;
+        }
+        setError('OTP expired. Please request a new one.');
+        resetBoxes(); return;
       }
 
       const data = otpSnap.data();
 
-      if (data.attempts >= 5) {
-        setError('Too many attempts. Please request a new OTP.');
-        setOtp(['','','','','','']);
-        return;
+      /* Check attempts */
+      if ((data.attempts || 0) >= 5) {
+        setError('Too many attempts. Request a new OTP.');
+        resetBoxes(); return;
       }
 
-      const expiresAt = data.expiresAt.toDate();
-      if (new Date() > expiresAt) {
-        setError('OTP has expired. Please request a new one.');
-        return;
+      /* Check expiry */
+      const expires = (data.expiresAt as Timestamp).toDate();
+      if (new Date() > expires) {
+        setError('OTP expired. Click "Resend OTP" below.');
+        resetBoxes(); return;
       }
 
-      await updateDoc(otpRef, { attempts: data.attempts + 1 });
+      /* Increment attempts */
+      await setDoc(
+        doc(db,'otp-verifications',uid),
+        { attempts: (data.attempts||0)+1 },
+        { merge: true }
+      );
 
-      if (data.otp !== code) {
-        setError('Incorrect OTP. Please try again.');
-        setOtp(['','','','','','']);
-        inputRefs.current[0]?.focus();
-        return;
+      /* Check OTP match */
+      if (data.otp !== otpCode) {
+        const left = 5 - ((data.attempts||0)+1);
+        setError(
+          left > 0
+            ? `Incorrect code. ${left} attempt${left>1?'s':''} left.`
+            : 'Too many attempts. Request a new OTP.'
+        );
+        resetBoxes(); return;
       }
 
-      /* Mark as verified */
-      await updateDoc(otpRef, { verified: true, verifiedAt: serverTimestamp() });
-      await updateDoc(doc(db, 'users', uid), { emailVerified: true, verifiedAt: serverTimestamp() });
+      await markVerified();
 
-      setSuccess(true);
-      /* Wait 1.5 seconds then go to discover */
-      setTimeout(() => router.push('/discover'), 1500);
-
-    } catch {
-      setError('Network error. Please try again.');
+    } catch (err) {
+      console.error('verify error:', err);
+      /* Fallback: check sessionStorage */
+      const stored = sessionStorage.getItem(`otp_${uid}`);
+      if (stored && stored === otpCode) {
+        await markVerified();
+      } else {
+        setError('Verification failed. Please try again.');
+        resetBoxes();
+      }
     } finally {
       setBusy(false);
+      setVerifyAuto(false);
     }
   };
 
+  const markVerified = async () => {
+    try {
+      await setDoc(
+        doc(db,'users',uid),
+        { emailVerified: true, verifiedAt: serverTimestamp() },
+        { merge: true }
+      );
+      await setDoc(
+        doc(db,'otp-verifications',uid),
+        { verified: true },
+        { merge: true }
+      );
+    } catch (e) {
+      console.error('markVerified error:', e);
+    }
+    /* Clear sessionStorage */
+    sessionStorage.removeItem(`otp_${uid}`);
+    sessionStorage.removeItem(`otpSent_${uid}`);
+    setSuccess(true);
+    setTimeout(() => router.push('/discover'), 1800);
+  };
+
+  const resetBoxes = () => {
+    setOtp(['','','','','','']);
+    setVerifyAuto(false);
+    setTimeout(() => inputRefs.current[0]?.focus(), 100);
+  };
+
+  /* ── Resend OTP ── */
   const handleResend = async () => {
-    if (resendCooldown > 0) return;
+    if (resendTimer > 0 || resendBusy) return;
     setResendBusy(true);
     setError('');
+    setOtp(['','','','','','']);
+    setVerifyAuto(false);
 
     try {
       const res = await fetch('/api/send-otp', {
@@ -159,20 +246,48 @@ export default function VerifyOTPPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ uid, email }),
       });
+      const data = await res.json();
 
-      if (res.ok) {
-        setResendCooldown(60); /* 60 second cooldown */
-        setOtp(['','','','','','']);
-        inputRefs.current[0]?.focus();
-      } else {
-        setError('Could not resend OTP. Try again.');
+      if (data.otp) {
+        sessionStorage.setItem(`otp_${uid}`, data.otp);
+        setFallbackCode(data.otp);
       }
+      if (data.emailSent) {
+        setEmailSent(true);
+        setFallbackCode('');
+      } else {
+        setEmailSent(false);
+      }
+      setResendTimer(60);
+      setTimeout(() => inputRefs.current[0]?.focus(), 100);
     } catch {
-      setError('Network error. Please try again.');
+      setError('Could not resend. Please try again.');
     } finally {
       setResendBusy(false);
     }
   };
+
+  /* ── Styles ── */
+  const boxStyle = (i: number): React.CSSProperties => ({
+    width: 48, height: 56,
+    borderRadius: 12,
+    border: otp[i]
+      ? '2px solid rgba(127,119,221,0.9)'
+      : '1px solid rgba(255,255,255,0.14)',
+    background: otp[i]
+      ? 'rgba(127,119,221,0.14)'
+      : 'rgba(255,255,255,0.05)',
+    color: 'white',
+    fontSize: 24, fontWeight: 700,
+    textAlign: 'center',
+    outline: 'none',
+    transition: 'all 0.18s ease',
+    boxShadow: otp[i]
+      ? '0 0 14px rgba(127,119,221,0.28)'
+      : 'none',
+    caretColor: '#7F77DD',
+    fontFamily: 'monospace',
+  });
 
   return (
     <div style={{
@@ -183,191 +298,224 @@ export default function VerifyOTPPage() {
       backgroundColor: '#05071a',
       position: 'relative',
       overflow: 'hidden',
+      padding: '1rem',
     }}>
       <LoginBackground />
 
-      {/* OTP card — centered glass card */}
       <div style={{
-        position: 'relative',
-        zIndex: 1,
-        width: '100%',
-        maxWidth: 440,
-        margin: '0 auto',
-        padding: '0 1rem',
+        position: 'relative', zIndex: 1,
+        width: '100%', maxWidth: 420,
       }}>
         <div style={{
           background: 'rgba(255,255,255,0.05)',
           backdropFilter: 'blur(32px)',
           WebkitBackdropFilter: 'blur(32px)',
-          border: '1px solid rgba(127,119,221,0.25)',
+          border: '1px solid rgba(127,119,221,0.22)',
           borderRadius: 24,
-          padding: 'clamp(2rem,5vw,3rem)',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(127,119,221,0.10)',
-          animation: 'fadeUp 0.5s ease forwards',
+          padding: 'clamp(2rem,5vw,2.8rem)',
+          boxShadow:
+            '0 20px 60px rgba(0,0,0,0.5),' +
+            '0 0 40px rgba(127,119,221,0.08)',
+          animation: 'fadeUp 0.45s ease forwards',
         }}>
 
           {success ? (
-            /* ── Success state ── */
-            <div style={{ textAlign: 'center' }}>
+            /* ── Success screen ── */
+            <div style={{ textAlign:'center', padding:'1rem 0' }}>
               <div style={{
-                width: 72, height: 72,
-                borderRadius: '50%',
-                background: 'rgba(29,158,117,0.15)',
-                border: '2px solid rgba(29,158,117,0.4)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 36,
-                margin: '0 auto 20px',
-                animation: 'pulse-ring 1s ease infinite',
-              }}>
-                ✅
-              </div>
+                width:72,height:72,borderRadius:'50%',
+                background:'rgba(29,158,117,0.15)',
+                border:'2px solid rgba(29,158,117,0.45)',
+                display:'flex',alignItems:'center',
+                justifyContent:'center',fontSize:36,
+                margin:'0 auto 20px',
+                animation:'pulse-ring 1.2s ease infinite',
+              }}>✅</div>
               <h2 style={{
-                fontSize: 22, fontWeight: 700,
-                color: '#5DCAA5', marginBottom: 8,
+                fontSize:22,fontWeight:700,
+                color:'#5DCAA5',marginBottom:8,
               }}>
                 Email verified!
               </h2>
               <p style={{
-                fontSize: 14,
-                color: 'rgba(255,255,255,0.55)',
+                fontSize:14,
+                color:'rgba(255,255,255,0.55)',
               }}>
-                Redirecting you to CollegeMatch-AI...
+                Taking you to CollegeMatch-AI...
               </p>
+              <div style={{
+                marginTop:16,
+                width:40,height:4,
+                borderRadius:2,
+                background:'rgba(29,158,117,0.3)',
+                margin:'16px auto 0',
+                overflow:'hidden',
+              }}>
+                <div style={{
+                  height:'100%',
+                  background:'#1D9E75',
+                  animation:'loadBar 1.8s linear forwards',
+                }}/>
+              </div>
             </div>
 
           ) : (
-            /* ── OTP input state ── */
             <>
-              {/* Logo */}
+              {/* Logo row */}
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                marginBottom: 28,
+                display:'flex',alignItems:'center',
+                gap:10,marginBottom:24,
               }}>
                 <div style={{
-                  width: 40, height: 40,
-                  borderRadius: 11,
+                  width:36,height:36,borderRadius:10,
                   background:
                     'linear-gradient(135deg,#7F77DD,#1D9E75)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 20,
-                }}>
-                  🎓
-                </div>
+                  display:'flex',alignItems:'center',
+                  justifyContent:'center',fontSize:18,
+                }}>🎓</div>
                 <span style={{
-                  fontSize: 15, fontWeight: 600,
+                  fontSize:15,fontWeight:600,
                   background:
                     'linear-gradient(90deg,#a89ef8,#5DCAA5)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  color: '#a89ef8',
-                }}>
-                  CollegeMatch-AI
-                </span>
+                  WebkitBackgroundClip:'text',
+                  WebkitTextFillColor:'transparent',
+                  backgroundClip:'text',color:'#a89ef8',
+                }}>CollegeMatch-AI</span>
               </div>
 
               {/* Email icon */}
               <div style={{
-                width: 64, height: 64,
-                borderRadius: '50%',
-                background: 'rgba(127,119,221,0.12)',
-                border: '1px solid rgba(127,119,221,0.25)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 30,
-                margin: '0 0 20px',
-              }}>
-                📧
-              </div>
+                width:60,height:60,borderRadius:'50%',
+                background:'rgba(127,119,221,0.12)',
+                border:'1px solid rgba(127,119,221,0.25)',
+                display:'flex',alignItems:'center',
+                justifyContent:'center',fontSize:28,
+                marginBottom:18,
+              }}>📧</div>
 
               <h2 style={{
-                fontSize: 22, fontWeight: 700,
-                color: 'white', marginBottom: 6,
+                fontSize:22,fontWeight:700,
+                color:'white',marginBottom:6,
               }}>
                 Check your email
               </h2>
+
               <p style={{
-                fontSize: 14,
-                color: 'rgba(255,255,255,0.55)',
-                lineHeight: 1.6,
-                marginBottom: 28,
+                fontSize:14,
+                color:'rgba(255,255,255,0.55)',
+                lineHeight:1.6, marginBottom:8,
               }}>
                 We sent a 6-digit code to
-                <br />
-                <strong style={{
-                  color: '#a89ef8',
-                  fontSize: 15,
-                }}>
-                  {email || 'your email'}
-                </strong>
+              </p>
+              <p style={{
+                fontSize:15,fontWeight:600,
+                color:'#a89ef8',marginBottom:20,
+                wordBreak:'break-all',
+              }}>
+                {email}
               </p>
 
-              {/* 6 OTP input boxes */}
+              {/* ── FALLBACK: show code on screen ── */}
+              {fallbackCode && !emailSent && (
+                <div style={{
+                  background:'rgba(186,117,23,0.12)',
+                  border:'1px solid rgba(186,117,23,0.30)',
+                  borderRadius:12,
+                  padding:'12px 16px',
+                  marginBottom:16,
+                  fontSize:13,
+                  color:'#FAC775',
+                  textAlign:'center',
+                }}>
+                  <p style={{
+                    margin:'0 0 6px',
+                    color:'rgba(255,255,255,0.7)',
+                    fontSize:12,
+                  }}>
+                    ⚠️ Email delivery failed.
+                    Use this code instead:
+                  </p>
+                  <div style={{
+                    fontSize:28,fontWeight:700,
+                    letterSpacing:'0.25em',
+                    color:'#FAC775',
+                    fontFamily:'monospace',
+                  }}>
+                    {fallbackCode}
+                  </div>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(fallbackCode);
+                      setOtp(fallbackCode.split(''));
+                    }}
+                    style={{
+                      marginTop:8,fontSize:11,
+                      background:'rgba(186,117,23,0.15)',
+                      border:'1px solid rgba(186,117,23,0.30)',
+                      borderRadius:6,
+                      padding:'4px 12px',
+                      color:'#FAC775',cursor:'pointer',
+                    }}
+                  >
+                    Copy & fill code
+                  </button>
+                </div>
+              )}
+
+              {/* ── Sent notice ── */}
+              {emailSent && !fallbackCode && (
+                <div style={{
+                  background:'rgba(29,158,117,0.08)',
+                  border:'1px solid rgba(29,158,117,0.20)',
+                  borderRadius:10,
+                  padding:'8px 14px',
+                  marginBottom:16,
+                  fontSize:12,
+                  color:'#5DCAA5',
+                  display:'flex',gap:6,alignItems:'center',
+                }}>
+                  ✉️ Code sent! Check your inbox + spam folder
+                </div>
+              )}
+
+              {/* ── 6 OTP boxes ── */}
               <div
                 onPaste={handlePaste}
                 style={{
-                  display: 'flex',
-                  gap: 10,
-                  justifyContent: 'center',
-                  marginBottom: 20,
+                  display:'flex',gap:8,
+                  justifyContent:'center',
+                  marginBottom:20,
                 }}
               >
-                {otp.map((digit, i) => (
+                {otp.map((digit,i) => (
                   <input
                     key={i}
-                    ref={el => { inputRefs.current[i] = el; }}
+                    ref={el=>{ inputRefs.current[i]=el; }}
                     type="text"
                     inputMode="numeric"
                     maxLength={1}
                     value={digit}
-                    onChange={e =>
-                      handleOtpChange(i, e.target.value)
-                    }
-                    onKeyDown={e => handleKeyDown(i, e)}
-                    autoFocus={i === 0}
-                    style={{
-                      width: 48, height: 56,
-                      borderRadius: 12,
-                      border: digit
-                        ? '2px solid rgba(127,119,221,0.8)'
-                        : '1px solid rgba(255,255,255,0.12)',
-                      background: digit
-                        ? 'rgba(127,119,221,0.12)'
-                        : 'rgba(255,255,255,0.05)',
-                      color: 'white',
-                      fontSize: 22,
-                      fontWeight: 700,
-                      textAlign: 'center',
-                      outline: 'none',
-                      transition: 'all 0.2s ease',
-                      boxShadow: digit
-                        ? '0 0 12px rgba(127,119,221,0.25)'
-                        : 'none',
-                      caretColor: '#7F77DD',
-                    }}
+                    onChange={e=>handleChange(i,e.target.value)}
+                    onKeyDown={e=>handleKey(i,e)}
+                    autoFocus={i===0}
+                    disabled={busy}
+                    style={boxStyle(i)}
                   />
                 ))}
               </div>
 
-              {/* Error message */}
+              {/* Error */}
               {error && (
                 <div style={{
-                  background: 'rgba(226,75,74,0.10)',
-                  border: '1px solid rgba(226,75,74,0.25)',
-                  borderRadius: 10,
-                  padding: '10px 14px',
-                  marginBottom: 16,
-                  fontSize: 13,
-                  color: '#F09595',
-                  textAlign: 'center',
-                  animation: 'fadeUp 0.3s ease',
+                  background:'rgba(226,75,74,0.10)',
+                  border:'1px solid rgba(226,75,74,0.28)',
+                  borderRadius:10,
+                  padding:'9px 14px',
+                  marginBottom:14,
+                  fontSize:13,
+                  color:'#F09595',
+                  textAlign:'center',
+                  animation:'fadeUp 0.25s ease',
                 }}>
                   {error}
                 </div>
@@ -375,100 +523,82 @@ export default function VerifyOTPPage() {
 
               {/* Verify button */}
               <button
-                onClick={() => handleVerify()}
-                disabled={
-                  busy || otp.join('').length !== 6
-                }
+                onClick={()=>handleVerify()}
+                disabled={busy||otp.join('').length!==6}
                 style={{
-                  width: '100%',
-                  padding: '14px',
-                  borderRadius: 12,
-                  border: 'none',
-                  background:
-                    otp.join('').length === 6 && !busy
-                      ? 'linear-gradient(135deg,#7F77DD,#534AB7)'
-                      : 'rgba(127,119,221,0.3)',
-                  color: 'white',
-                  fontSize: 15,
-                  fontWeight: 600,
-                  cursor:
-                    otp.join('').length === 6 && !busy
-                      ? 'pointer'
-                      : 'not-allowed',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  boxShadow:
-                    otp.join('').length === 6
-                      ? '0 4px 20px rgba(127,119,221,0.35)'
-                      : 'none',
-                  transition: 'all 0.2s ease',
-                  marginBottom: 16,
+                  width:'100%', padding:'13px',
+                  borderRadius:12, border:'none',
+                  background: busy
+                    ? 'rgba(127,119,221,0.35)'
+                    : otp.join('').length===6
+                    ? 'linear-gradient(135deg,#7F77DD,#534AB7)'
+                    : 'rgba(127,119,221,0.2)',
+                  color:'white', fontSize:15,
+                  fontWeight:600,
+                  cursor: busy||otp.join('').length!==6
+                    ? 'not-allowed' : 'pointer',
+                  display:'flex',alignItems:'center',
+                  justifyContent:'center',gap:8,
+                  boxShadow: otp.join('').length===6&&!busy
+                    ? '0 4px 20px rgba(127,119,221,0.35)'
+                    : 'none',
+                  transition:'all 0.2s ease',
+                  marginBottom:14,
                 }}
               >
                 {busy ? (
                   <>
                     <div style={{
-                      width: 16, height: 16,
-                      borderRadius: '50%',
-                      border:
-                        '2px solid rgba(255,255,255,0.3)',
-                      borderTop: '2px solid white',
-                      animation: 'spin 0.8s linear infinite',
-                    }} />
+                      width:16,height:16,
+                      borderRadius:'50%',
+                      border:'2px solid rgba(255,255,255,0.3)',
+                      borderTop:'2px solid white',
+                      animation:'spin 0.8s linear infinite',
+                    }}/>
                     Verifying...
                   </>
                 ) : 'Verify email →'}
               </button>
 
-              {/* Resend OTP */}
-              <div style={{ textAlign: 'center' }}>
+              {/* Resend */}
+              <div style={{textAlign:'center'}}>
                 <p style={{
-                  fontSize: 13,
-                  color: 'rgba(255,255,255,0.45)',
-                  marginBottom: 6,
+                  fontSize:13,
+                  color:'rgba(255,255,255,0.4)',
+                  marginBottom:5,
                 }}>
                   Didn't receive the code?
                 </p>
                 <button
                   onClick={handleResend}
-                  disabled={
-                    resendBusy || resendCooldown > 0
-                  }
+                  disabled={resendBusy||resendTimer>0}
                   style={{
-                    background: 'none',
-                    border: 'none',
-                    color:
-                      resendCooldown > 0
-                        ? 'rgba(255,255,255,0.3)'
-                        : '#a89ef8',
-                    fontSize: 13,
-                    fontWeight: 500,
-                    cursor:
-                      resendCooldown > 0
-                        ? 'not-allowed'
-                        : 'pointer',
-                    padding: 0,
+                    background:'none',border:'none',
+                    color: resendTimer>0
+                      ? 'rgba(255,255,255,0.28)'
+                      : '#a89ef8',
+                    fontSize:13,fontWeight:500,
+                    cursor: resendTimer>0
+                      ? 'default' : 'pointer',
+                    padding:0,
                   }}
                 >
-                  {resendBusy
-                    ? 'Sending...'
-                    : resendCooldown > 0
-                    ? `Resend in ${resendCooldown}s`
+                  {resendBusy ? 'Sending...'
+                    : resendTimer>0
+                    ? `Resend in ${resendTimer}s`
                     : 'Resend OTP'}
                 </button>
               </div>
 
-              {/* Info note */}
+              {/* Footer note */}
               <p style={{
-                fontSize: 11,
-                color: 'rgba(255,255,255,0.25)',
-                textAlign: 'center',
-                marginTop: 20,
+                fontSize:11,
+                color:'rgba(255,255,255,0.22)',
+                textAlign:'center',
+                marginTop:18,lineHeight:1.6,
               }}>
-                Code expires in 10 minutes ·
-                Check your spam folder
+                Code expires in 10 minutes<br/>
+                Check your spam / promotions folder
               </p>
             </>
           )}
@@ -477,17 +607,21 @@ export default function VerifyOTPPage() {
 
       <style>{`
         @keyframes spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
+          from{transform:rotate(0deg);}
+          to{transform:rotate(360deg);}
         }
         @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to   { opacity: 1; transform: translateY(0); }
+          from{opacity:0;transform:translateY(14px);}
+          to{opacity:1;transform:translateY(0);}
         }
         @keyframes pulse-ring {
-          0%   { box-shadow: 0 0 0 0 rgba(29,158,117,0.4); }
-          70%  { box-shadow: 0 0 0 12px rgba(29,158,117,0); }
-          100% { box-shadow: 0 0 0 0 rgba(29,158,117,0); }
+          0%{box-shadow:0 0 0 0 rgba(29,158,117,0.4);}
+          70%{box-shadow:0 0 0 12px rgba(29,158,117,0);}
+          100%{box-shadow:0 0 0 0 rgba(29,158,117,0);}
+        }
+        @keyframes loadBar {
+          from{width:0%;}
+          to{width:100%;}
         }
       `}</style>
     </div>

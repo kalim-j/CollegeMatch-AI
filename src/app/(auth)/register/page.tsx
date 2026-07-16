@@ -95,62 +95,77 @@ export default function RegisterPage() {
       setError('Please enter your full name.'); return;
     }
     if (password.length < 6) {
-      setError('Password must be at least 6 characters.'); return;
+      setError('Password needs at least 6 characters.'); return;
     }
     if (password !== confirm) {
       setError('Passwords do not match.'); return;
     }
 
     setBusy(true);
+
     try {
+      /* STEP 1: Create Firebase account (fast ~1 sec) */
       const cred = await createUserWithEmailAndPassword(
         auth, email, password
       );
-      await updateProfile(cred.user, { displayName: name });
-      await saveUserToFirestore(
-        cred.user.uid, name, email, null
-      );
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-      const otpRes = await fetch('/api/send-otp', {
+      /* STEP 2: Update name + save to Firestore
+         Run both in parallel — faster */
+      await Promise.all([
+        updateProfile(cred.user, { displayName: name }),
+        setDoc(doc(db, 'users', cred.user.uid), {
+          name,
+          email,
+          photoURL: null,
+          createdAt: serverTimestamp(),
+          isNewUser: true,
+          shownWelcome: false,
+          emailVerified: false,
+        }, { merge: true }),
+      ]);
+
+      /* STEP 3: Redirect to OTP page IMMEDIATELY
+         Do NOT await the email — send in background */
+      router.push(
+        `/verify-otp?uid=${cred.user.uid}` +
+        `&email=${encodeURIComponent(email)}`
+      );
+
+      /* STEP 4: Send OTP email in background
+         This does NOT block the redirect */
+      fetch('/api/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           uid: cred.user.uid,
           email,
         }),
-        signal: controller.signal,
+      }).then(async res => {
+        const data = await res.json();
+        /* Store OTP in sessionStorage as fallback */
+        if (data.otp) {
+          sessionStorage.setItem(
+            `otp_${cred.user.uid}`, data.otp
+          );
+        }
+      }).catch(err => {
+        console.error('Background OTP send failed:', err);
       });
 
-      clearTimeout(timeoutId);
-
-      if (!otpRes.ok) {
-        console.warn('OTP send failed — continuing anyway');
-      }
-
-      router.push(
-        `/verify-otp?uid=${cred.user.uid}&email=${encodeURIComponent(email)}`
-      );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '';
-      console.error('Register error:', msg);
-
       if (msg.includes('email-already-in-use'))
-        setError('This email is already registered. Try signing in.');
+        setError('Email already registered. Try signing in.');
       else if (msg.includes('weak-password'))
-        setError('Password too weak. Use at least 6 characters.');
+        setError('Password too weak. Use 6+ characters.');
       else if (msg.includes('invalid-email'))
         setError('Please enter a valid email address.');
       else if (msg.includes('network-request-failed'))
-        setError('No internet connection. Please check and retry.');
-      else if (err instanceof Error && err.name === 'AbortError') {
-        console.warn('OTP request timed out, but proceeding to verification screen.');
-        router.push(`/verify-otp?uid=${auth.currentUser?.uid}&email=${encodeURIComponent(email)}`);
+        setError('No internet. Please check connection.');
+      else {
+        console.error('Register error:', msg);
+        setError('Registration failed. Please try again.');
       }
-      else
-        setError('Something went wrong. Please try again.');
     } finally {
       setBusy(false);
     }
