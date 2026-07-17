@@ -113,6 +113,11 @@ export function Navbar() {
   // ── 2. RENDER THEME ──
   if (!mounted) return null;
 
+  // Hide Navbar on auth pages
+  if (['/login', '/register', '/verify-otp'].includes(pathname)) {
+    return null;
+  }
+
   return (
     <nav style={{
       height: '64px',
@@ -239,12 +244,14 @@ export function Navbar() {
             )}
             <Link href="/profile" style={{ display:'flex', alignItems:'center', gap:'8px', textDecoration: 'none' }}>
               <div className="hidden sm:flex" style={{ flexDirection:'column', alignItems:'flex-end' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: isDark ? '#e2e8f0' : '#1f2937', lineHeight: 1 }}>{profile?.fullName?.split(' ')[0] || user.email?.split('@')[0]}</span>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: isDark ? '#e2e8f0' : '#1f2937', lineHeight: 1 }}>
+                  {((profile as any)?.name || profile?.fullName || user.displayName || user.email)?.split(' ')[0].split('@')[0]}
+                </span>
               </div>
               <Avatar style={{ width: 32, height: 32, flexShrink: 0, border: '1px solid rgba(127,119,221,0.3)' }}>
                 <AvatarImage src={profile?.avatarUrl} />
                 <AvatarFallback style={{ background: 'rgba(127,119,221,0.1)', color: '#7F77DD', fontSize: 12, fontWeight: 700 }}>
-                  {profile?.fullName?.charAt(0) || user.email?.charAt(0)}
+                  {((profile as any)?.name || profile?.fullName || user.displayName || user.email)?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
             </Link>
