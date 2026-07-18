@@ -113,10 +113,7 @@ export function Navbar() {
   // ── 2. RENDER THEME ──
   if (!mounted) return null;
 
-  // Hide Navbar on auth pages
-  if (['/login', '/register', '/verify-otp'].includes(pathname)) {
-    return null;
-  }
+
 
   return (
     <nav style={{

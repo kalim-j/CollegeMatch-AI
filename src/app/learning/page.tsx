@@ -36,9 +36,7 @@ export default function LearningHubPage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
-  useEffect(() => {
-    if (!loading && !user) router.push('/login');
-  }, [user, loading, router]);
+
 
   if (!mounted || loading) return <PageLoader />;
 

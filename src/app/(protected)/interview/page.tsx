@@ -186,9 +186,7 @@ export default function InterviewPage() {
   }, [formData.mathsMark, formData.physicsMark, formData.chemistryMark, formData.manualCutoffMode]);
 
 
-  useEffect(() => {
-    if (!loading && !user) router.push("/login");
-  }, [user, loading, router]);
+
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

@@ -34,11 +34,7 @@ export default function EntranceExamGuide() {
     stream: "Engineering & Technology"
   });
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, authLoading, router]);
+
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();

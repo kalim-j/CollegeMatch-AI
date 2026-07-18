@@ -62,9 +62,7 @@ export default function HistoryPage() {
   const [fetching, setFetching] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!loading && !user) router.push('/login');
-  }, [loading, user, router]);
+
 
   useEffect(() => {
     if (!user) return;

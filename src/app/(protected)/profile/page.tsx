@@ -32,10 +32,7 @@ export default function ProfilePage() {
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-      return;
-    }
+
     if (profile) {
       setFormData({
         fullName: profile.fullName || "",

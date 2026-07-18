@@ -51,11 +51,7 @@ export default function ScholarshipFinder() {
     percentage: ""
   });
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, authLoading, router]);
+
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();

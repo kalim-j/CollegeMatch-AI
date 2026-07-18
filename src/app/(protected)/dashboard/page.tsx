@@ -51,11 +51,6 @@ export default function Dashboard() {
   }, [user, router]);
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-      return;
-    }
-
     if (user) {
       const fetchData = async () => {
         try {
