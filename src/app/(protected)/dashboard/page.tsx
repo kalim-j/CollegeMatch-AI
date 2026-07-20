@@ -9,7 +9,8 @@ import {
   School, MapPin
 } from "lucide-react";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
+import { useAuthGuard } from "@/lib/auth-guard";
+import ScrollReveal from "@/components/ScrollReveal";
 import { db } from "@/lib/firebase";
 import { collection, query, orderBy, limit, getDocs, doc, getDoc, getCountFromServer } from "firebase/firestore";
 import WelcomeModal from "@/components/WelcomeModal";
@@ -19,7 +20,7 @@ import ExamCountdown from "@/components/ExamCountdown";
 import DailyMotivation from "@/components/DailyMotivation";
 
 export default function Dashboard() {
-  const { user, profile, loading: authLoading } = useAuth();
+  const { state, user, profile } = useAuthGuard();
   const router = useRouter();
 
   const [latestDiscovery, setLatestDiscovery] = useState<any>(null);
@@ -28,30 +29,9 @@ export default function Dashboard() {
   const [analysesCount, setAnalysesCount] = useState(0);
   const [collegesCount, setCollegesCount] = useState(0);
   const [scholarshipsCount, setScholarshipsCount] = useState(0);
-  const [verified, setVerified] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!user) return;
-    const checkVerification = async () => {
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      if (snap.exists()) {
-        const data = snap.data();
-        if (data.emailVerified === true || data.emailVerified === undefined) {
-          setVerified(true);
-        } else {
-          router.push(
-            `/verify-otp?uid=${user.uid}&email=${encodeURIComponent(user.email || '')}`
-          );
-        }
-      } else {
-        setVerified(true);
-      }
-    };
-    checkVerification();
-  }, [user, router]);
-
-  useEffect(() => {
-    if (user) {
+    if (state === 'verified' && user) {
       const fetchData = async () => {
         try {
           // Check welcome modal
@@ -98,7 +78,7 @@ export default function Dashboard() {
       
       fetchData();
     }
-  }, [user, authLoading, router]);
+  }, [state, user, router]);
 
   useEffect(() => {
     const elements = document.querySelectorAll('[data-animate]');
@@ -119,7 +99,7 @@ export default function Dashboard() {
     return () => observer.disconnect();
   }, [dataLoading]);
 
-  if (authLoading || dataLoading || verified === null) {
+  if (state !== 'verified' || dataLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]"
         style={{ background: 'linear-gradient(135deg, var(--bg-primary), var(--bg-secondary))' }}>
@@ -130,8 +110,6 @@ export default function Dashboard() {
       </div>
     );
   }
-
-  if (!verified) return null;
 
   const discoveredStreamName = latestDiscovery ? latestDiscovery.results.streams[0].short_name : "Not yet";
 
@@ -164,6 +142,7 @@ export default function Dashboard() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-12 space-y-12 pb-24">
         
         {/* Welcome Card */}
+        <ScrollReveal direction="up" delay={0}>
         <div className="mb-8 p-8 rounded-3xl glass-card border border-purple-200/50 dark:border-purple-900/30 shadow-2xl shadow-purple-200/30 dark:shadow-purple-950/20 animate-in fade-in slide-in-from-top-6 duration-700">
           <h1 className="text-4xl sm:text-5xl font-black text-transparent
             bg-clip-text bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600 dark:from-purple-400 dark:via-violet-400 dark:to-blue-400 mb-3">
@@ -190,7 +169,8 @@ export default function Dashboard() {
 
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
+        <ScrollReveal direction="up" delay={100}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {stats.map((stat, i) => (
             <div
               key={stat.label}
@@ -207,10 +187,12 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
+        </ScrollReveal>
 
         {/* Main CTA Section depending on discovery status */}
         {latestDiscovery ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
+          <ScrollReveal direction="up" delay={200}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div
               className="relative rounded-[2.5rem] overflow-hidden glass-card p-8 md:p-10"
             >
@@ -264,8 +246,10 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+          </ScrollReveal>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
+          <ScrollReveal direction="up" delay={200}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div
               className="relative rounded-[2.5rem] overflow-hidden glass-card p-8 md:p-10 shadow-sm hover:shadow-md transition-all cursor-pointer"
               onClick={() => router.push('/discover')}
@@ -307,10 +291,12 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+          </ScrollReveal>
         )}
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mt-4" data-animate style={{ opacity: 0, transform: 'translateY(20px)', transition: 'opacity 0.5s ease, transform 0.5s ease' }}>
+        <ScrollReveal direction="up" delay={300}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mt-4">
           {/* Nav Cards — 2/3 width */}
           <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
             {navCards.map((card, i) => (
@@ -356,6 +342,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
     </PageTransition>

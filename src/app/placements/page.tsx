@@ -1,4 +1,5 @@
 'use client';
+import { useAuthGuard } from '@/lib/auth-guard';
 import Link from 'next/link';
 import ScrollReveal3D from '@/components/ScrollReveal3D';
 
@@ -29,8 +30,13 @@ const SalaryChart = () => (
 );
 
 export default function PlacementsPage() {
+  const { state } = useAuthGuard();
+  if (state !== 'verified') return null;
+
   return (
-    <div className="bg-white dark:bg-[#05071a] min-h-screen text-[#1a1340] dark:text-white pt-24 pb-12 px-4 font-sans overflow-hidden transition-colors duration-300">
+    
+    <ScrollReveal direction="up">
+<div className="bg-white dark:bg-[#05071a] min-h-screen text-[#1a1340] dark:text-white pt-24 pb-12 px-4 font-sans overflow-hidden transition-colors duration-300">
       <div className="max-w-5xl mx-auto">
         <ScrollReveal3D direction="up">
           <Link href="/" className="text-[#534AB7] dark:text-[#a89ef8] text-sm font-bold hover:underline mb-8 inline-block">&larr; Back to Home</Link>
@@ -53,5 +59,6 @@ export default function PlacementsPage() {
         </ScrollReveal3D>
       </div>
     </div>
+    </ScrollReveal>
   );
 }

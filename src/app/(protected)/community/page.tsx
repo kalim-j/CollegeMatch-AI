@@ -1,4 +1,6 @@
 'use client';
+import { useAuthGuard } from '@/lib/auth-guard';
+import ScrollReveal from '@/components/ScrollReveal';
 import { useState } from 'react';
 import { Users, MessageSquare, ThumbsUp, Send, UserCircle, Search, Flame } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -45,6 +47,9 @@ const mockPosts: Post[] = [
 ];
 
 export default function CommunityPage() {
+  const { state } = useAuthGuard();
+  if (state !== 'verified') return null;
+
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
   
@@ -75,6 +80,8 @@ export default function CommunityPage() {
 
   return (
     <PageTransition>
+    <ScrollReveal direction="up">
+
       <div className={`min-h-screen p-6 pb-24 ${isDark ? 'bg-[#05071a] text-white' : 'bg-[#f8f7ff] text-gray-900'}`}>
         <div className="max-w-4xl mx-auto space-y-8">
           
@@ -164,6 +171,7 @@ export default function CommunityPage() {
           </div>
         </div>
       </div>
+      </ScrollReveal>
     </PageTransition>
   );
 }

@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { db } from '@/lib/firebase';
 import { collection, query, where, limit, getDocs } from 'firebase/firestore';
-import ScrollReveal3D from '@/components/ScrollReveal3D';
+import ScrollReveal from '@/components/ScrollReveal';
+import AnimatedCounter from '@/components/AnimatedCounter';
 import { useMouseParallax } from '@/hooks/useMouseParallax';
 
 const HeroCanvas3D = dynamic(
@@ -111,32 +112,7 @@ export default function LandingPage() {
     return () => clearInterval(interval);
   }, [testimonials]);
 
-  // Counters
-  const [statsObj, setStatsObj] = useState({ accuracy: 0, students: 0, colleges: 0, scholarships: 0 });
-  const [hasStartedCounters, setHasStartedCounters] = useState(false);
-  const countersRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !hasStartedCounters) {
-        setHasStartedCounters(true);
-        let current = 0;
-        const interval = setInterval(() => {
-          current += 1;
-          setStatsObj({
-            accuracy: Math.min(98.4, current * 1.5),
-            students: Math.min(14, current * 0.3), // 14 Lakhs
-            colleges: Math.min(500, current * 8),
-            scholarships: Math.min(2.5, current * 0.05) // 2.5 Cr
-          });
-          if (current >= 100) clearInterval(interval);
-        }, 20);
-      }
-    }, { threshold: 0.5 });
-    
-    if (countersRef.current) observer.observe(countersRef.current);
-    return () => observer.disconnect();
-  }, [hasStartedCounters]);
+  // Counters are now handled by AnimatedCounter component
 
   const getCutoffColor = (val: number) => {
     if (val >= 190) return 'text-green-400 drop-shadow-[0_0_15px_rgba(74,222,128,0.5)]';
@@ -267,22 +243,22 @@ export default function LandingPage() {
 
       {/* SECTION 3 - HOW IT WORKS */}
       <section className="relative z-20 py-24 px-4 max-w-6xl mx-auto">
-        <ScrollReveal3D direction="up">
+        <ScrollReveal direction="up">
           <h2 className="text-4xl font-black text-center mb-16 text-3d">How It Works</h2>
-        </ScrollReveal3D>
+        </ScrollReveal>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           <div className="hidden md:block absolute top-1/2 left-[15%] right-[15%] h-0.5 border-t-2 border-dashed border-[#7F77DD]/30 -translate-y-1/2 -z-10" />
           
-          <ScrollReveal3D direction="up" delay={0}>
+          <ScrollReveal direction="up" delay={0}>
             <div className="glass-3d card-3d p-8 text-center h-full flex flex-col items-center">
               <div className="w-20 h-20 rounded-full bg-[#7F77DD]/20 flex items-center justify-center mb-6 text-4xl shadow-[0_0_30px_rgba(127,119,221,0.2)]">📋</div>
               <h3 className="text-xl font-bold mb-3 text-white">Answer 9 Questions</h3>
               <p className="text-[rgba(255,255,255,0.6)]">Tell us your marks, preferences, and goals. It takes less than 2 minutes.</p>
             </div>
-          </ScrollReveal3D>
+          </ScrollReveal>
 
-          <ScrollReveal3D direction="up" delay={150}>
+          <ScrollReveal direction="up" delay={150}>
             <div className="glass-3d card-3d p-8 text-center h-full flex flex-col items-center">
               <div className="w-20 h-20 rounded-full bg-[#5DCAA5]/20 flex items-center justify-center mb-6 text-4xl shadow-[0_0_30px_rgba(93,202,165,0.2)] relative">
                 <span className="absolute w-full h-full border-2 border-[#5DCAA5]/50 rounded-full animate-[spin_4s_linear_infinite]" style={{ borderTopColor: 'transparent' }} />
@@ -291,25 +267,25 @@ export default function LandingPage() {
               <h3 className="text-xl font-bold mb-3 text-white">AI Analyses 500+ Colleges</h3>
               <p className="text-[rgba(255,255,255,0.6)]">Our neural network scans historical data and 2026 trends instantly.</p>
             </div>
-          </ScrollReveal3D>
+          </ScrollReveal>
 
-          <ScrollReveal3D direction="up" delay={300}>
+          <ScrollReveal direction="up" delay={300}>
             <div className="glass-3d card-3d p-8 text-center h-full flex flex-col items-center">
               <div className="w-20 h-20 rounded-full bg-amber-500/20 flex items-center justify-center mb-6 text-4xl shadow-[0_0_30px_rgba(245,158,11,0.2)]">🏆</div>
               <h3 className="text-xl font-bold mb-3 text-white">Get Your Match</h3>
               <p className="text-[rgba(255,255,255,0.6)]">Receive a personalized list of 8 colleges where you have the highest chances.</p>
             </div>
-          </ScrollReveal3D>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* SECTION 4 - FEATURES GRID */}
       <section className="relative z-20 py-24 px-4 bg-[rgba(5,7,26,0.5)] border-y border-white/5">
         <div className="max-w-6xl mx-auto">
-          <ScrollReveal3D direction="up">
+          <ScrollReveal direction="up">
             <h2 className="text-4xl font-black text-center mb-4 text-3d">Everything a 2026 student needs</h2>
             <p className="text-center text-[rgba(255,255,255,0.6)] mb-16 max-w-2xl mx-auto">The admissions landscape is more complex than ever. We've built tools to give you an unfair advantage.</p>
-          </ScrollReveal3D>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -322,14 +298,14 @@ export default function LandingPage() {
               { icon: '⚖️', title: 'Compare Colleges', desc: 'Side-by-side AI analysis of any 2 colleges', badge: 'Smart', color: 'bg-cyan-500/20 text-cyan-300' },
               { icon: '📋', title: 'Track Applications', desc: 'Never miss a deadline — Kanban board', badge: 'Organised', color: 'bg-fuchsia-500/20 text-fuchsia-300' },
             ].map((feat, i) => (
-              <ScrollReveal3D key={i} direction="scale" delay={i * 50}>
+              <ScrollReveal key={i} direction="scale" delay={i * 50}>
                 <div className="glass-3d card-3d p-6 h-full relative overflow-hidden group">
                   <div className={`absolute top-0 right-0 px-3 py-1 text-[10px] font-bold rounded-bl-xl ${feat.color}`}>{feat.badge}</div>
                   <div className="text-4xl mb-4 group-hover:scale-110 transition-transform origin-left">{feat.icon}</div>
                   <h3 className="font-bold text-white mb-2 text-lg">{feat.title}</h3>
                   <p className="text-[rgba(255,255,255,0.6)] text-sm">{feat.desc}</p>
                 </div>
-              </ScrollReveal3D>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -337,10 +313,10 @@ export default function LandingPage() {
 
       {/* SECTION 5 - 2026 EDUCATION TRENDS */}
       <section className="relative z-20 py-24 px-4 max-w-6xl mx-auto">
-        <ScrollReveal3D direction="up">
+        <ScrollReveal direction="up">
           <h2 className="text-4xl font-black text-center mb-4 text-3d">What changed in 2026 — stay ahead</h2>
           <p className="text-center text-[rgba(255,255,255,0.6)] mb-16 max-w-2xl mx-auto">The Indian education landscape is evolving fast. Here's what every student must know this year.</p>
-        </ScrollReveal3D>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {[
@@ -349,7 +325,7 @@ export default function LandingPage() {
             { icon: '💸', title: '₹5000 crore unclaimed every year', desc: 'Most Indian students miss scholarships they qualify for. NSP portal, state schemes, and private scholarships — find yours in 2 minutes.', link: '/dashboard/scholarships', cta: 'Find my scholarships →', glow: 'rgba(45,212,191,0.2)' },
             { icon: '🌱', title: 'First in family to go to college?', desc: 'CollegeMatch-AI was built for you. No senior to ask. No guidance counsellor. Just AI that knows everything.', link: '/first-gen', cta: 'Start for free →', glow: 'rgba(34,197,94,0.2)' }
           ].map((trend, i) => (
-            <ScrollReveal3D key={i} direction={i % 2 === 0 ? 'left' : 'right'}>
+            <ScrollReveal key={i} direction={i % 2 === 0 ? 'left' : 'right'}>
               <div className="glass-3d card-3d p-8 flex gap-6" style={{ boxShadow: `0 8px 32px ${trend.glow}` }}>
                 <div className="text-5xl shrink-0">{trend.icon}</div>
                 <div>
@@ -360,7 +336,7 @@ export default function LandingPage() {
                   </Link>
                 </div>
               </div>
-            </ScrollReveal3D>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -368,12 +344,12 @@ export default function LandingPage() {
       {/* SECTION 6 - LIVE CUTOFF CALCULATOR PREVIEW */}
       <section className="relative z-20 py-24 px-4 bg-gradient-to-b from-transparent to-[#0a0d24]">
         <div className="max-w-4xl mx-auto text-center">
-          <ScrollReveal3D direction="up">
+          <ScrollReveal direction="up">
             <h2 className="text-4xl font-black mb-4 text-3d">Try it right now — no login needed</h2>
             <p className="text-[rgba(255,255,255,0.6)] mb-12">Calculate your Tamil Nadu engineering cutoff mark instantly</p>
-          </ScrollReveal3D>
+          </ScrollReveal>
 
-          <ScrollReveal3D direction="scale">
+          <ScrollReveal direction="scale">
             <div className="glass-3d p-8 sm:p-12 rounded-3xl relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#7F77DD]/10 via-transparent to-transparent pointer-events-none" />
               
@@ -405,15 +381,15 @@ export default function LandingPage() {
               </Link>
               <p className="text-xs text-white/40 mt-4">Full AI matching available after free signup</p>
             </div>
-          </ScrollReveal3D>
+          </ScrollReveal>
         </div>
       </section>
 
       {/* SECTION 7 - TESTIMONIALS */}
       <section className="relative z-20 py-24 px-4 max-w-6xl mx-auto overflow-hidden">
-        <ScrollReveal3D direction="up">
+        <ScrollReveal direction="up">
           <h2 className="text-4xl font-black text-center mb-16 text-3d">Students who found their dream college</h2>
-        </ScrollReveal3D>
+        </ScrollReveal>
 
         <div className="relative h-80 flex items-center justify-center perspective">
           {testimonials.map((t, idx) => {
@@ -468,25 +444,25 @@ export default function LandingPage() {
       </section>
 
       {/* SECTION 8 - STATS COUNTER */}
-      <section ref={countersRef} className="relative z-20 py-20 border-y border-white/10 bg-[rgba(10,13,36,0.5)] backdrop-blur-md">
+      <section className="relative z-20 py-20 border-y border-white/10 bg-[rgba(10,13,36,0.5)] backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-black text-white mb-2">{statsObj.students.toFixed(1)}L+</div>
+            <div className="text-4xl md:text-5xl font-black text-white mb-2"><AnimatedCounter target={14} suffix="L+" /></div>
             <div className="text-[rgba(255,255,255,0.5)] font-bold text-sm uppercase tracking-widest">Students Guided</div>
             <div className="w-12 h-1 bg-[#7F77DD] mx-auto mt-4 rounded" />
           </div>
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-black text-white mb-2">{statsObj.accuracy.toFixed(1)}%</div>
+            <div className="text-4xl md:text-5xl font-black text-white mb-2"><AnimatedCounter target={98} suffix="%" /></div>
             <div className="text-[rgba(255,255,255,0.5)] font-bold text-sm uppercase tracking-widest">Match Accuracy</div>
             <div className="w-12 h-1 bg-[#5DCAA5] mx-auto mt-4 rounded" />
           </div>
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-black text-white mb-2">₹{statsObj.scholarships.toFixed(1)} Cr</div>
+            <div className="text-4xl md:text-5xl font-black text-white mb-2"><AnimatedCounter target={2} prefix="₹" suffix=" Cr+" /></div>
             <div className="text-[rgba(255,255,255,0.5)] font-bold text-sm uppercase tracking-widest">Scholarships Found</div>
             <div className="w-12 h-1 bg-amber-400 mx-auto mt-4 rounded" />
           </div>
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-black text-white mb-2">9</div>
+            <div className="text-4xl md:text-5xl font-black text-white mb-2"><AnimatedCounter target={9} /></div>
             <div className="text-[rgba(255,255,255,0.5)] font-bold text-sm uppercase tracking-widest">Questions to Ask</div>
             <div className="w-12 h-1 bg-rose-400 mx-auto mt-4 rounded" />
           </div>
@@ -495,33 +471,33 @@ export default function LandingPage() {
 
       {/* SECTION 9 - PARENT SECTION */}
       <section className="relative z-20 py-24 px-4 max-w-6xl mx-auto">
-        <ScrollReveal3D direction="up">
+        <ScrollReveal direction="up">
           <h2 className="text-4xl font-black text-center mb-4 text-3d">For parents — because this is your decision too</h2>
           <p className="text-center text-[rgba(255,255,255,0.6)] mb-16 max-w-2xl mx-auto">We know you're worried about their future. We have the data-backed answers you need.</p>
-        </ScrollReveal3D>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <ScrollReveal3D direction="up" delay={0}>
+          <ScrollReveal direction="up" delay={0}>
             <div className="glass-3d p-8 h-full border-t-4 border-t-[#7F77DD]">
               <h3 className="text-xl font-bold text-white mb-4">"Is this college really good?"</h3>
               <p className="text-[rgba(255,255,255,0.6)] text-sm leading-relaxed mb-6">We don't rely on brochures. We show you the NAAC grade, NIRF rank, actual placement percentages, and average salary offered by companies — all verified and in one place.</p>
               <Link href="/placements" className="text-[#a89ef8] text-sm font-bold hover:underline">Check placement records &rarr;</Link>
             </div>
-          </ScrollReveal3D>
-          <ScrollReveal3D direction="up" delay={150}>
+          </ScrollReveal>
+          <ScrollReveal direction="up" delay={150}>
             <div className="glass-3d p-8 h-full border-t-4 border-t-[#5DCAA5]">
               <h3 className="text-xl font-bold text-white mb-4">"Can we afford the fees?"</h3>
               <p className="text-[rgba(255,255,255,0.6)] text-sm leading-relaxed mb-6">No hidden costs. Our fee calculator shows the total 4-year cost (including hostel). We also provide instant EMI options for education loans from both government and private banks.</p>
               <Link href="/loan-calculator" className="text-[#5DCAA5] text-sm font-bold hover:underline">Calculate loan EMI &rarr;</Link>
             </div>
-          </ScrollReveal3D>
-          <ScrollReveal3D direction="up" delay={300}>
+          </ScrollReveal>
+          <ScrollReveal direction="up" delay={300}>
             <div className="glass-3d p-8 h-full border-t-4 border-t-amber-400">
               <h3 className="text-xl font-bold text-white mb-4">"Which stream has job security?"</h3>
               <p className="text-[rgba(255,255,255,0.6)] text-sm leading-relaxed mb-6">Don't follow the herd. Our career salary explorer shows the 10-year earning trajectory for every stream, helping you choose a future-proof path for your child.</p>
               <Link href="/parent-guide" className="text-amber-400 text-sm font-bold hover:underline">Read the Parent Guide &rarr;</Link>
             </div>
-          </ScrollReveal3D>
+          </ScrollReveal>
         </div>
       </section>
 
@@ -530,7 +506,7 @@ export default function LandingPage() {
         {/* Ambient glow behind CTA */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl aspect-square bg-[#7F77DD]/20 blur-[100px] rounded-full -z-10 pointer-events-none" />
         
-        <ScrollReveal3D direction="scale">
+        <ScrollReveal direction="scale">
           <h2 className="text-5xl sm:text-7xl font-black mb-6">
             <span className="text-white block">Your dream college</span>
             <span className="shimmer-text block mt-2">is one AI away.</span>
@@ -541,7 +517,7 @@ export default function LandingPage() {
           <Link href="/register" className="btn-3d inline-flex items-center justify-center w-full sm:w-[320px] h-[60px] rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black text-xl shadow-[0_0_30px_rgba(124,58,237,0.4)] hover:shadow-[0_0_50px_rgba(124,58,237,0.6)]">
             Start your college match &rarr;
           </Link>
-        </ScrollReveal3D>
+        </ScrollReveal>
       </section>
 
       <style jsx global>{`

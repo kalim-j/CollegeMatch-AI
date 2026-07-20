@@ -1,4 +1,6 @@
 'use client';
+import { useAuthGuard } from '@/lib/auth-guard';
+import ScrollReveal from '@/components/ScrollReveal';
 import { useState } from 'react';
 import { BookOpen, Calendar, Clock, Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -6,6 +8,9 @@ import SelectField from '@/components/SelectField';
 import PageTransition from '@/components/3D/PageTransition';
 
 export default function StudyPlannerPage() {
+  const { state } = useAuthGuard();
+  if (state !== 'verified') return null;
+
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
   
@@ -49,6 +54,8 @@ export default function StudyPlannerPage() {
 
   return (
     <PageTransition>
+    <ScrollReveal direction="up">
+
       <div className={`min-h-screen p-6 pb-24 bg-transparent ${isDark ? 'text-white' : 'text-gray-900'}`}>
         <div className="max-w-4xl mx-auto space-y-8">
           
@@ -225,6 +232,7 @@ export default function StudyPlannerPage() {
           )}
         </div>
       </div>
+      </ScrollReveal>
     </PageTransition>
   );
 }

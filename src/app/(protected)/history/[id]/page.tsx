@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { InterviewSession, College } from "@/types";
@@ -14,10 +13,11 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuthGuard } from '@/lib/auth-guard';
 
 export default function SessionDetail() {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { state,  user } = useAuthGuard();
   const [session, setSession] = useState<InterviewSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [visitingId, setVisitingId] = useState<number | null>(null);
@@ -37,7 +37,7 @@ export default function SessionDetail() {
     fetchSession();
   }, [user, id]);
 
-  if (loading) return <div className="p-20 text-center">Loading your personalized match reports...</div>;
+  if (state !== 'verified') return <div className="p-20 text-center">Loading your personalized match reports...</div>;
   if (!session) return <div className="p-20 text-center">Session report not found.</div>;
 
   return (

@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { User, Mail, Phone, MapPin, Award, BookOpen, Save, Loader2 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useAuthGuard } from '@/lib/auth-guard';
 
 export default function ProfilePage() {
-  const { user, profile: authProfile, loading: authLoading, refreshProfile } = useAuth();
+  const { user, profile: authProfile, state: authLoading, refreshProfile } = useAuthGuard();
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<any>({
     fullName: "",

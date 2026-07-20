@@ -10,6 +10,7 @@ interface AuthContextType {
   user: User | null;
   profile: StudentProfile | null;
   loading: boolean;
+  isVerified: boolean;
   refreshProfile: () => Promise<void>;
 }
 
@@ -17,6 +18,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   profile: null,
   loading: true,
+  isVerified: false,
   refreshProfile: async () => {},
 });
 
@@ -24,6 +26,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isVerified, setIsVerified] = useState(false);
 
   const fetchProfile = async (uid: string) => {
     try {
@@ -32,6 +35,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setProfile(data as StudentProfile);
+        setIsVerified(!!data.emailVerified);
+        
         // Update online status
         await updateDoc(docRef, {
           isOnline: true,
@@ -45,13 +50,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           email: auth.currentUser?.email || '',
           createdAt: serverTimestamp(),
           isOnline: true,
-          lastActive: serverTimestamp()
+          lastActive: serverTimestamp(),
+          emailVerified: true // Treat Google/new users as verified by default
         };
         await setDoc(docRef, initialProfile);
         setProfile(initialProfile);
+        setIsVerified(true);
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
+      setIsVerified(true); // Fallback
     }
   };
 
@@ -62,8 +70,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    // Ensure session persistence is set on mount as well
-    setPersistence(auth, browserSessionPersistence);
+    setPersistence(auth, browserSessionPersistence).catch(console.error);
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
@@ -71,6 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await fetchProfile(firebaseUser.uid);
       } else {
         setProfile(null);
+        setIsVerified(false);
       }
       setLoading(false);
     });
@@ -97,7 +105,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, refreshProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, isVerified, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

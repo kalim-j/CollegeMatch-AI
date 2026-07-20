@@ -20,7 +20,7 @@ const DashboardBackground = dynamic(
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user, profile, loading } = useAuth();
+  const { user, loading, isVerified } = useAuth();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 
@@ -34,10 +34,15 @@ export default function LoginPage() {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    if (!loading && user) {
+    if (loading) return;
+    if (user && isVerified) {
       router.push('/dashboard');
+    } else if (user && !isVerified) {
+      router.push(
+        `/verify-otp?uid=${user.uid}&email=${encodeURIComponent(user.email||'')}`
+      );
     }
-  }, [user, loading, router]);
+  }, [user, loading, isVerified, router]);
 
   if (!mounted) return null;
 

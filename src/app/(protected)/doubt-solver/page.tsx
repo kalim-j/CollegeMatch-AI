@@ -1,4 +1,6 @@
 'use client';
+import { useAuthGuard } from '@/lib/auth-guard';
+import ScrollReveal from '@/components/ScrollReveal';
 import { useState, useRef, useEffect } from 'react';
 import { Lightbulb, Send, User, Bot, Loader2, BookOpen } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -11,6 +13,9 @@ interface Message {
 }
 
 export default function DoubtSolverPage() {
+  const { state } = useAuthGuard();
+  if (state !== 'verified') return null;
+
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
   
@@ -58,6 +63,8 @@ export default function DoubtSolverPage() {
 
   return (
     <PageTransition>
+    <ScrollReveal direction="up">
+
       <div className={`min-h-screen p-6 pb-24 ${isDark ? 'bg-[#05071a] text-white' : 'bg-[#f8f7ff] text-gray-900'}`}>
         <div className="max-w-4xl mx-auto space-y-8">
           
@@ -156,6 +163,7 @@ export default function DoubtSolverPage() {
           </div>
         </div>
       </div>
+      </ScrollReveal>
     </PageTransition>
   );
 }

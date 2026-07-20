@@ -9,12 +9,12 @@ import {
   ArrowRight, Phone, Target, ChevronDown
 } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import SelectField from "@/components/SelectField";
+import { useAuthGuard } from '@/lib/auth-guard';
 
 export default function ContactPage() {
-  const { user, profile, loading: authLoading } = useAuth();
+  const { user, profile, state: authLoading } = useAuthGuard();
   const [sending, setSending] = useState(false);
   const [success, setSuccess] = useState(false);
   const [mounted, setMounted] = useState(false);

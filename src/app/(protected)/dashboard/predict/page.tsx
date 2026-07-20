@@ -17,11 +17,11 @@ import {
   ShieldCheck,
   ChevronDown,
 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { stateDistricts } from "@/data/stateDistricts";
 import SelectField from "@/components/SelectField";
+import { useAuthGuard } from '@/lib/auth-guard';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -190,7 +190,7 @@ function CutoffBarChart({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function PredictPage() {
-  const { user, loading } = useAuth();
+  const { user, state } = useAuthGuard();
   const router = useRouter();
 
   const [form, setForm] = useState<PredictFormData>({
@@ -214,7 +214,7 @@ export default function PredictPage() {
   }, [user, loading, router]);
 
   // ── Loading / auth spinner ──────────────────────────────────────────────────
-  if (loading || !user) {
+  if (state !== 'verified' || !user) {
     return (
       <div className="min-h-screen bg-transparent flex items-center justify-center">
         <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />

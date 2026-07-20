@@ -1,4 +1,6 @@
 'use client';
+import { useAuthGuard } from '@/lib/auth-guard';
+import ScrollReveal from '@/components/ScrollReveal';
 import { useState } from 'react';
 import { FileCheck, Loader2, Sparkles, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -6,6 +8,9 @@ import PageTransition from '@/components/3D/PageTransition';
 import SelectField from '@/components/SelectField';
 
 export default function DocumentsPage() {
+  const { state } = useAuthGuard();
+  if (state !== 'verified') return null;
+
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
   
@@ -49,6 +54,8 @@ export default function DocumentsPage() {
 
   return (
     <PageTransition>
+    <ScrollReveal direction="up">
+
       <div className={`min-h-screen p-6 pb-24 ${isDark ? 'bg-[#05071a] text-white' : 'bg-[#f8f7ff] text-gray-900'}`}>
         <div className="max-w-4xl mx-auto space-y-8">
           
@@ -235,6 +242,7 @@ export default function DocumentsPage() {
           )}
         </div>
       </div>
+      </ScrollReveal>
     </PageTransition>
   );
 }

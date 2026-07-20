@@ -1,4 +1,6 @@
 "use client";
+import { useAuthGuard } from '@/lib/auth-guard';
+import ScrollReveal from '@/components/ScrollReveal';
 
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -7,6 +9,9 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export default function CutoffCalculatorPage() {
+  const { state } = useAuthGuard();
+  if (state !== 'verified') return null;
+
   const [maths, setMaths] = useState<number | "">("");
   const [physics, setPhysics] = useState<number | "">("");
   const [chemistry, setChemistry] = useState<number | "">("");
@@ -44,7 +49,9 @@ export default function CutoffCalculatorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-transparent text-[#1e1b4b] dark:text-white pt-32 pb-20 px-4">
+    
+    <ScrollReveal direction="up">
+<div className="min-h-screen bg-transparent text-[#1e1b4b] dark:text-white pt-32 pb-20 px-4">
       <div className="max-w-4xl mx-auto space-y-16">
         
         {/* Header */}
@@ -155,5 +162,6 @@ export default function CutoffCalculatorPage() {
 
       </div>
     </div>
+    </ScrollReveal>
   );
 }

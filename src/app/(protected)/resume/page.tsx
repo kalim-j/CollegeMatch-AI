@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '@/context/AuthContext';
 import { useTheme } from 'next-themes';
 import PageTransition from '@/components/3D/PageTransition';
 import { 
@@ -18,6 +17,7 @@ import { downloadAsPDF, downloadAsWord } from '@/lib/downloadResume';
 import ResumePreview from '@/components/ResumePreview';
 import ResumeUploader from '@/components/ResumeUploader';
 import AtsScoreGauge from '@/components/AtsScoreGauge';
+import { useAuthGuard } from '@/lib/auth-guard';
 
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -51,7 +51,7 @@ const emptyResumeData: ResumeData = {
 };
 
 export default function ResumeBuilderPage() {
-  const { user, profile } = useAuth();
+  const { state,  user, profile } = useAuthGuard();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 

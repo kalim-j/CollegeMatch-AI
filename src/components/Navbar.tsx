@@ -1,347 +1,434 @@
-"use client";
+'use client';
+import { useState, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useAuth } from '@/context/AuthContext';
+import { useTheme } from 'next-themes';
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
-import { Button } from "./ui/button";
-import { auth } from "@/lib/firebase";
-import { signOut } from "firebase/auth";
-import { 
-  Menu, X, ChevronDown, LogOut, Sun, Moon, Bell, Globe
-} from "lucide-react";
-import { useState, useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { db } from "@/lib/firebase";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { isAdminEmail } from "@/lib/admin";
-import { useTheme } from "next-themes";
-import { t, setLanguage } from "@/lib/i18n";
+const NAV_LINKS = [
+  { label:'Dashboard', href:'/dashboard', icon:'🏠', auth:true },
+  { label:'Learning', href:'/learning', icon:'📚', auth:true },
+  { label:'Colleges', href:'/interview', icon:'🏫', auth:true },
+  { label:'Compare', href:'/dashboard/compare', icon:'⚖️', auth:true },
+  { label:'Predictor', href:'/dashboard/predictor', icon:'🎯', auth:true },
+  { label:'Community', href:'/community', icon:'👥', auth:true },
+  { label:'Contact', href:'/contact', icon:'📞', auth:false },
+];
+
+const PUBLIC_LINKS = [
+  { label:'How it works', href:'/#how-it-works' },
+  { label:'Features', href:'/#features' },
+  { label:'Contact', href:'/contact' },
+];
 
 export function Navbar() {
-  const { user, profile } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
-  const [pendingLeads, setPendingLeads] = useState(0);
-  const [notificationCount, setNotificationCount] = useState(2);
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [currentLang, setCurrentLang] = useState<'en'|'ta'>('en');
+  const { user, isVerified } = useAuth();
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
+  /* Navbar shrinks on scroll */
   useEffect(() => {
-    setMounted(true);
-    const savedLang = (localStorage.getItem('lang') as 'en'|'ta') || 'en';
-    setCurrentLang(savedLang);
+    const fn = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', fn, { passive: true });
+    return () => window.removeEventListener('scroll', fn);
   }, []);
 
-  const toggleTheme = () => {
-    const currentTheme = resolvedTheme;
-    const next = currentTheme === "light" ? "dark" : "light";
-    setTheme(next);
-  };
+  /* Hide on auth pages */
+  const authPages = ['/login','/register','/verify-otp'];
+  if (authPages.includes(pathname)) return null;
 
-  const toggleLanguage = () => {
-    const nextLang = currentLang === 'en' ? 'ta' : 'en';
-    if (typeof setLanguage === 'function') {
-        setLanguage(nextLang);
-    }
-    setCurrentLang(nextLang);
-    window.location.reload();
-  };
+  const isLoggedIn = !!user && isVerified;
+  const links = isLoggedIn ? NAV_LINKS : PUBLIC_LINKS;
 
-  useEffect(() => {
-    if (isAdminEmail(user?.email)) {
-      const q = query(collection(db, "contacts"), where("status", "==", "new"));
-      const unsub = onSnapshot(q, (snapshot) => {
-        setPendingLeads(snapshot.size);
-      });
-      return () => unsub();
-    }
-  }, [user]);
-
-  const handleSignOut = async () => {
-    setIsOpen(false);
+  const logout = async () => {
     await signOut(auth);
-    router.push("/");
+    router.push('/');
   };
 
-  const isAdmin = isAdminEmail(user?.email);
-
-  // BUG 1 fix: All navbar colors must use isDark conditional
-  const isDark = mounted && resolvedTheme === "dark";
-
-  const tools = [
-    { name: "Find colleges", href: "/interview" },
-    { name: "Scholarship finder", href: "/scholarships" },
-    { name: "Exam guide", href: "/exams" },
-    { name: "Cutoff calculator", href: "/cutoff-calculator" },
-    { name: "Study planner", href: "/study-planner" },
-    { name: "Mock interview", href: "/mock-interview" },
-    { name: "Resume builder", href: "/resume" },
-    { name: "SOP generator", href: "/sop" },
-    { name: "Doubt solver", href: "/doubt-solver" },
-    { name: "Career explorer", href: "/career-explorer" },
-    { name: "Fee calculator", href: "/fee-calculator" },
-    { name: "Cutoff trends", href: "/cutoff-trends" },
-    { name: "Document checklist", href: "/documents" }
-  ];
-
-  const resources = [
-    { name: "NEP 2026 guide", href: "/nep-guide" },
-    { name: "Placements explorer", href: "/placements" },
-    { name: "College map", href: "/colleges/map" },
-    { name: "First gen guide", href: "/first-gen" },
-    { name: "Parent guide", href: "/parent-guide" },
-    { name: "2026 exam calendar", href: "/exam-calendar" }
-  ];
-
-  const mainLinks = user ? [
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "Learning", href: "/learning" },
-    { name: "Colleges", href: "/interview" },
-    { name: "Compare", href: "/dashboard/compare" },
-    { name: "Predictor", href: "/dashboard/predictor" },
-    { name: "Community", href: "/community" },
-    { name: "Contact", href: "/contact" }
-  ] : [
-    { name: "How it works", href: "/#how-it-works" },
-    { name: "Features", href: "/#features" },
-    { name: "Contact", href: "/contact" }
-  ];
-
-  // ── 2. RENDER THEME ──
-  if (!mounted) return null;
-
-
+  const navBg = isDark
+    ? scrolled
+      ? 'rgba(5,7,26,0.98)'
+      : 'rgba(5,7,26,0.85)'
+    : scrolled
+      ? 'rgba(255,255,255,0.98)'
+      : 'rgba(255,255,255,0.85)';
 
   return (
-    <nav style={{
-      height: '64px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '0 24px',
-      position: 'sticky',
-      top: 0,
-      zIndex: 100,
-      backdropFilter: 'blur(24px)',
-      WebkitBackdropFilter: 'blur(24px)',
-      borderBottom: isDark ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.08)',
-      background: isDark ? 'rgba(5,7,26,0.92)' : 'rgba(255,255,255,0.92)',
-      gap: '0',
-    }}>
-      {/* LEFT — Logo */}
-      <Link href="/" style={{ display:'flex', alignItems:'center', gap:'10px', flexShrink:0, textDecoration: 'none', width: 'auto' }}>
-        <div style={{ width:36, height:36, borderRadius:10, background:'linear-gradient(135deg,#7F77DD,#1D9E75)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'18px', flexShrink:0, boxShadow: '0 4px 12px rgba(127,119,221,0.2)' }}>
-          🎓
+    <>
+      {/* ── Main navbar ── */}
+      <nav style={{
+        position: 'sticky', top: 0, zIndex: 100,
+        height: scrolled ? '56px' : '64px',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 clamp(1rem,3vw,2rem)',
+        background: navBg,
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: isDark
+          ? '1px solid rgba(255,255,255,0.07)'
+          : '1px solid rgba(0,0,0,0.06)',
+        transition: 'all 0.3s ease',
+        boxSizing: 'border-box',
+        width: '100%',
+      }}>
+
+        {/* Left — logo */}
+        <div
+          onClick={() => router.push(
+            isLoggedIn ? '/dashboard' : '/'
+          )}
+          style={{
+            display: 'flex', alignItems: 'center',
+            gap: 10, cursor: 'pointer', flexShrink: 0,
+          }}
+        >
+          <div style={{
+            width: 36, height: 36, borderRadius: 10,
+            background:
+              'linear-gradient(135deg,#7F77DD,#1D9E75)',
+            display: 'flex', alignItems: 'center',
+            justifyContent: 'center', fontSize: 18,
+            flexShrink: 0,
+            boxShadow: '0 0 16px rgba(127,119,221,0.35)',
+          }}>🎓</div>
+          <div className="navbar-logo-text">
+            <p style={{
+              fontSize: 'clamp(13px,2vw,16px)',
+              fontWeight: 700, margin: 0,
+              background:
+                'linear-gradient(90deg,#a89ef8,#5DCAA5)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text', color: '#a89ef8',
+              whiteSpace: 'nowrap',
+            }}>CollegeMatch-AI</p>
+            <p
+              className="navbar-logo-tagline"
+              style={{
+                fontSize: 10, margin: '1px 0 0',
+                color: isDark
+                  ? 'rgba(255,255,255,0.4)'
+                  : '#7a7399',
+                whiteSpace: 'nowrap',
+              }}>
+              India's smartest college advisor
+            </p>
+          </div>
         </div>
-        <div style={{ display:'flex', flexDirection:'column', justifyContent:'center', lineHeight:1.2 }}>
-          <span style={{ fontSize:'15px', fontWeight:600, color: isDark ? 'white' : '#1a1340', whiteSpace:'nowrap' }}>
-            CollegeMatch-AI
-          </span>
-          <span style={{ fontSize:'10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.45)' : '#7a7399', marginTop: 0 }}>
-            India's smartest college advisor
-          </span>
+
+        {/* Center — desktop nav links */}
+        <div className="nav-links">
+          {links.map(link => (
+            <a
+              key={link.href}
+              href={link.href}
+              style={{
+                fontSize: 'clamp(11px,1.3vw,14px)',
+                fontWeight: pathname === link.href ? 600 : 400,
+                color: pathname === link.href
+                  ? '#a89ef8'
+                  : isDark
+                    ? 'rgba(255,255,255,0.65)'
+                    : '#4a4370',
+                textDecoration: 'none',
+                padding: '5px 8px',
+                borderRadius: 8,
+                whiteSpace: 'nowrap',
+                borderBottom: pathname === link.href
+                  ? '2px solid #7F77DD'
+                  : '2px solid transparent',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {link.label}
+            </a>
+          ))}
         </div>
-      </Link>
 
-      {/* CENTER — Nav links */}
-      <div className="hidden lg:flex" style={{ display:'flex', alignItems:'center', gap:'16px', flex:1, justifyContent:'center' }}>
-        {mainLinks.map(link => {
-          if (link.name === "Community" || link.name === "Contact") return null; // We'll put them after dropdowns
-          return (
-            <Link key={link.name} href={link.href} style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === link.href ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === link.href ? 600 : 400, borderBottom: pathname === link.href ? '2px solid #7F77DD' : 'none' }}>
-              {link.name}
-            </Link>
-          );
-        })}
-
-        {user && (
-          <>
-            <DropdownMenu>
-              <DropdownMenuTrigger style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 400, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                Tools <ChevronDown size={14} />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white dark:bg-[#0a0d14] border-gray-200 dark:border-white/10 mt-2 z-[200] max-h-96 overflow-y-auto">
-                {tools.map(tool => (
-                  <DropdownMenuItem key={tool.name} asChild>
-                    <Link href={tool.href} className="cursor-pointer w-full">{tool.name}</Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: isDark ? 'rgba(255,255,255,0.70)' : '#4a4370', fontWeight: 400, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                Resources <ChevronDown size={14} />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white dark:bg-[#0a0d14] border-gray-200 dark:border-white/10 mt-2 z-[200]">
-                {resources.map(res => (
-                  <DropdownMenuItem key={res.name} asChild>
-                    <Link href={res.href} className="cursor-pointer w-full">{res.name}</Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <Link href="/community" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname.startsWith('/community') ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname.startsWith('/community') ? 600 : 400 }}>Community</Link>
-          </  >
-        )}
-        <Link href="/contact" style={{ fontSize:'13px', padding:'6px 10px', whiteSpace:'nowrap', color: pathname === '/contact' ? (isDark ? 'white' : '#534AB7') : (isDark ? 'rgba(255,255,255,0.70)' : '#4a4370'), fontWeight: pathname === '/contact' ? 600 : 400 }}>Contact</Link>
-      </div>
-
-      {/* RIGHT — Actions */}
-      <div style={{ display:'flex', alignItems:'center', gap:'12px', flexShrink:0 }}>
-        {mounted && (
-          <button onClick={toggleLanguage} style={{ fontSize:'12px', fontWeight:600, color: isDark ? 'rgba(255,255,255,0.7)' : '#4a4370', background: 'none', border: 'none', cursor: 'pointer', display:'flex', alignItems:'center', gap:'4px' }} aria-label="Toggle language">
-            <Globe size={14} />
-            {currentLang === 'en' ? 'EN' : 'தமிழ்'}
-          </button>
-        )}
-        
-        {mounted && (
-          <button onClick={toggleTheme} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', color: isDark ? 'rgba(255,255,255,0.7)' : '#4a4370', background: 'none', border: 'none', cursor: 'pointer' }} aria-label="Toggle theme">
-            {isDark ? <Moon size={16} /> : <Sun size={16} />}
-          </button>
-        )}
-
-        {user ? (
-          <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-            <DropdownMenu>
-              <DropdownMenuTrigger style={{ position:'relative', color: isDark ? 'rgba(255,255,255,0.7)' : '#4a4370', background: 'none', border: 'none', cursor: 'pointer', display:'flex', alignItems:'center', justifyContent:'center', width:32, height:32 }}>
-                <Bell size={18} />
-                {notificationCount > 0 && (
-                  <span style={{ position:'absolute', top:2, right:4, width:8, height:8, backgroundColor:'#ef4444', borderRadius:'50%' }}></span>
-                )}
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white dark:bg-[#0a0d14] border-gray-200 dark:border-white/10 mt-2 z-[200] w-64 p-2">
-                <div className="px-2 py-1 text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 border-b dark:border-white/10 pb-2">Notifications</div>
-                <div className="space-y-2">
-                  <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-sm border border-indigo-100 dark:border-indigo-900/30">
-                    <span className="font-bold text-indigo-600 dark:text-indigo-400">Anna Univ Counseling</span>
-                    <p className="text-gray-600 dark:text-gray-300 mt-1">TNEA Rank List published.</p>
-                  </div>
-                  <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-sm border border-emerald-100 dark:border-emerald-900/30">
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400">AI Predictor</span>
-                    <p className="text-gray-600 dark:text-gray-300 mt-1">Your profile matches 5 new colleges.</p>
-                  </div>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {isAdmin && (
-              <Link href="/admin" style={{ padding: '4px 10px', borderRadius: 9999, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', position: 'relative', textDecoration: 'none' }}>
-                Admin
-                {pendingLeads > 0 && (
-                  <span style={{ position: 'absolute', top: -4, right: -4, height: 16, minWidth: 16, padding: '0 4px', background: '#f59e0b', color: 'white', fontSize: 8, fontWeight: 900, borderRadius: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #fbcfe8' }}>
-                    {pendingLeads}
-                  </span>
-                )}
-              </Link>
-            )}
-            <Link href="/profile" style={{ display:'flex', alignItems:'center', gap:'8px', textDecoration: 'none' }}>
-              <div className="hidden sm:flex" style={{ flexDirection:'column', alignItems:'flex-end' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: isDark ? '#e2e8f0' : '#1f2937', lineHeight: 1 }}>
-                  {((profile as any)?.name || profile?.fullName || user.displayName || user.email)?.split(' ')[0].split('@')[0]}
-                </span>
-              </div>
-              <Avatar style={{ width: 32, height: 32, flexShrink: 0, border: '1px solid rgba(127,119,221,0.3)' }}>
-                <AvatarImage src={profile?.avatarUrl} />
-                <AvatarFallback style={{ background: 'rgba(127,119,221,0.1)', color: '#7F77DD', fontSize: 12, fontWeight: 700 }}>
-                  {((profile as any)?.name || profile?.fullName || user.displayName || user.email)?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
-            <button onClick={handleSignOut} className="hidden sm:flex" style={{ width: 20, height: 20, alignItems: 'center', justifyContent: 'center', color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <LogOut size={20} />
+        {/* Right — actions */}
+        <div
+          className="nav-actions"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'clamp(6px,1vw,14px)',
+            flexShrink: 0,
+          }}
+        >
+          {/* Theme toggle */}
+          {mounted && (
+            <button
+              onClick={() => setTheme(
+                isDark ? 'light' : 'dark'
+              )}
+              style={{
+                background: 'none', border: 'none',
+                cursor: 'pointer', fontSize: 18,
+                color: isDark
+                  ? 'rgba(255,255,255,0.6)'
+                  : '#4a4370',
+                padding: 6, borderRadius: 8,
+              }}
+            >
+              {isDark ? '☀️' : '🌙'}
             </button>
-          </div>
-        ) : (
-          <div className="hidden sm:flex" style={{ alignItems:'center', gap:'10px' }}>
-            <Link href="/login" style={{ fontSize: '12px', fontWeight: 600, color: isDark ? 'rgba(255,255,255,0.8)' : '#1a1340', padding: '6px 12px', textDecoration: 'none' }}>Login</Link>
-            <Link href="/register" style={{ fontSize: '12px', fontWeight: 700, color: 'white', background: '#534AB7', padding: '6px 16px', borderRadius: 8, textDecoration: 'none' }}>Sign Up</Link>
-          </div>
-        )}
+          )}
 
-        <button className="lg:hidden" onClick={() => setIsOpen(!isOpen)} style={{ color: isDark ? 'white' : '#1a1340', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px' }}>
-          {isOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+          {isLoggedIn ? (
+            <>
+              {/* Admin badge */}
+              {user?.email === 'kalim.apoffi@gmail.com' && (
+                <span style={{
+                  fontSize: 10, fontWeight: 700,
+                  padding: '3px 8px', borderRadius: 20,
+                  background: 'rgba(226,75,74,0.15)',
+                  color: '#E24B4A',
+                  border: '1px solid rgba(226,75,74,0.3)',
+                  display: 'none',
+                }} className="admin-badge">
+                  ADMIN
+                </span>
+              )}
+
+              {/* Avatar */}
+              <div style={{
+                width: 32, height: 32,
+                borderRadius: '50%',
+                background:
+                  'linear-gradient(135deg,#7F77DD,#1D9E75)',
+                display: 'flex', alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 14, fontWeight: 700,
+                color: 'white', cursor: 'pointer',
+                border: '2px solid rgba(127,119,221,0.4)',
+                flexShrink: 0,
+              }}
+                onClick={() => router.push('/profile')}
+              >
+                {user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+              </div>
+
+              {/* Logout — desktop only */}
+              <button
+                onClick={logout}
+                className="logout-btn"
+                style={{
+                  background: 'none',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  borderRadius: 8,
+                  padding: '5px 10px',
+                  color: isDark
+                    ? 'rgba(255,255,255,0.55)'
+                    : '#4a4370',
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <a href="/login" style={{
+                fontSize: 'clamp(12px,1.3vw,14px)',
+                color: isDark
+                  ? 'rgba(255,255,255,0.75)'
+                  : '#534AB7',
+                textDecoration: 'none',
+                fontWeight: 500,
+                padding: '6px 10px',
+              }}>
+                Login
+              </a>
+              <a href="/register" style={{
+                fontSize: 'clamp(12px,1.3vw,14px)',
+                fontWeight: 600,
+                padding: 'clamp(7px,1vw,9px) clamp(12px,2vw,18px)',
+                borderRadius: 10,
+                background:
+                  'linear-gradient(135deg,#7F77DD,#534AB7)',
+                color: 'white',
+                textDecoration: 'none',
+                whiteSpace: 'nowrap',
+                boxShadow:
+                  '0 4px 14px rgba(127,119,221,0.35)',
+              }}>
+                Sign Up
+              </a>
+            </>
+          )}
+
+          {/* Hamburger */}
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="hamburger"
+            style={{
+              background: 'none', border: 'none',
+              cursor: 'pointer', fontSize: 22,
+              color: isDark ? 'white' : '#1a1340',
+              padding: 4, display: 'none',
+            }}
+          >
+            ☰
+          </button>
+        </div>
+      </nav>
+
+      {/* ── Mobile drawer overlay ── */}
+      {drawerOpen && (
+        <div
+          onClick={() => setDrawerOpen(false)}
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            zIndex: 998,
+          }}
+        />
+      )}
+
+      {/* ── Mobile drawer ── */}
+      <div style={{
+        position: 'fixed', top: 0, left: 0,
+        width: 'min(320px,85vw)', height: '100vh',
+        background: 'rgba(5,7,26,0.98)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        zIndex: 999,
+        padding: '2rem 1.5rem',
+        transform: drawerOpen
+          ? 'translateX(0)' : 'translateX(-100%)',
+        transition:
+          'transform 0.3s cubic-bezier(0.22,1,0.36,1)',
+        borderRight:
+          '1px solid rgba(127,119,221,0.15)',
+        overflowY: 'auto',
+      }}>
+        {/* Drawer header */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center', marginBottom: 32,
+        }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: 10,
+              background:
+                'linear-gradient(135deg,#7F77DD,#1D9E75)',
+              display: 'flex', alignItems: 'center',
+              justifyContent: 'center', fontSize: 18,
+            }}>🎓</div>
+            <span style={{
+              fontSize: 15, fontWeight: 700,
+              background:
+                'linear-gradient(90deg,#a89ef8,#5DCAA5)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text', color: '#a89ef8',
+            }}>CollegeMatch-AI</span>
+          </div>
+          <button
+            onClick={() => setDrawerOpen(false)}
+            style={{
+              background: 'none', border: 'none',
+              color: 'rgba(255,255,255,0.6)',
+              fontSize: 22, cursor: 'pointer', padding: 4,
+            }}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Drawer links */}
+        {links.map(link => (
+          <a
+            key={link.href}
+            href={link.href}
+            onClick={() => setDrawerOpen(false)}
+            style={{
+              display: 'flex', alignItems: 'center',
+              gap: 12, padding: '14px 0',
+              borderBottom:
+                '1px solid rgba(255,255,255,0.06)',
+              color: pathname === link.href
+                ? '#a89ef8'
+                : 'rgba(255,255,255,0.75)',
+              textDecoration: 'none',
+              fontSize: 16, fontWeight: 500,
+            }}
+          >
+            <span style={{ fontSize: 20 }}>
+              {'icon' in link ? link.icon : '→'}
+            </span>
+            {link.label}
+          </a>
+        ))}
+
+        {/* Auth buttons in drawer */}
+        <div style={{ marginTop: 24 }}>
+          {isLoggedIn ? (
+            <button onClick={() => { logout(); setDrawerOpen(false); }}
+              style={{
+                width: '100%', padding: '13px',
+                borderRadius: 12, border: 'none',
+                background: 'rgba(226,75,74,0.12)',
+                color: '#F09595', fontSize: 14,
+                fontWeight: 600, cursor: 'pointer',
+              }}>
+              Logout
+            </button>
+          ) : (
+            <div style={{
+              display: 'flex', flexDirection: 'column',
+              gap: 10,
+            }}>
+              <a href="/login" style={{
+                display: 'block', textAlign: 'center',
+                padding: '12px', borderRadius: 12,
+                border: '1px solid rgba(127,119,221,0.3)',
+                color: '#a89ef8', fontSize: 14,
+                fontWeight: 500, textDecoration: 'none',
+              }}>Login</a>
+              <a href="/register" style={{
+                display: 'block', textAlign: 'center',
+                padding: '12px', borderRadius: 12,
+                background:
+                  'linear-gradient(135deg,#7F77DD,#534AB7)',
+                color: 'white', fontSize: 14,
+                fontWeight: 600, textDecoration: 'none',
+              }}>Sign Up Free</a>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="absolute top-16 left-0 right-0 lg:hidden bg-[#0a0d14]/95 backdrop-blur-2xl border-t border-white/5 shadow-2xl max-h-[calc(100vh-4rem)] overflow-y-auto">
-           <div className="flex flex-col p-6">
-             {user ? (
-               <>
-                 <Link href="/dashboard" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Dashboard</Link>
-                 
-                 <div className="py-4 border-b border-white/5">
-                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Tools</p>
-                   <div className="space-y-1">
-                     {tools.map(tool => (
-                       <Link 
-                         key={tool.href} 
-                         href={tool.href} 
-                         onClick={() => setIsOpen(false)} 
-                         className="flex items-center gap-3 text-slate-400 hover:text-white py-3 px-3 rounded-lg hover:bg-white/5 transition-all"
-                       >
-                         <span className="font-medium">{tool.name}</span>
-                       </Link>
-                     ))}
-                   </div>
-                 </div>
-                 
-                 <div className="py-4 border-b border-white/5">
-                   <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Resources</p>
-                   <div className="space-y-1">
-                     {resources.map(res => (
-                       <Link 
-                         key={res.href} 
-                         href={res.href} 
-                         onClick={() => setIsOpen(false)} 
-                         className="flex items-center gap-3 text-slate-400 hover:text-white py-3 px-3 rounded-lg hover:bg-white/5 transition-all"
-                       >
-                         <span className="font-medium">{res.name}</span>
-                       </Link>
-                     ))}
-                   </div>
-                 </div>
-                 
-                 <Link href="/community" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Community</Link>
-                 <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">Contact</Link>
-                 {isAdmin && (
-                   <Link href="/admin" onClick={() => setIsOpen(false)} className="text-lg font-bold text-red-400 py-3 border-b border-white/5 flex items-center justify-between">
-                     <span>Admin Dashboard</span>
-                     {pendingLeads > 0 && (
-                       <span className="h-6 min-w-[24px] px-2 bg-amber-500 text-white text-xs font-black rounded-full flex items-center justify-center">
-                         {pendingLeads}
-                       </span>
-                     )}
-                   </Link>
-                 )}
-                 <Link href="/profile" onClick={() => setIsOpen(false)} className="text-lg font-bold text-slate-300 py-3 border-b border-white/5">My Profile</Link>
-                 <Button variant="destructive" className="w-full mt-6 h-12" onClick={handleSignOut}>
-                   <LogOut size={18} className="mr-2" />
-                   Logout
-                 </Button>
-               </>
-             ) : (
-               <>
-                 {mainLinks.map(link => (
-                   <Link key={link.name} href={link.href} onClick={() => setIsOpen(false)} className="block text-lg font-bold text-slate-300 py-3 border-b border-white/5">
-                     {link.name}
-                   </Link>
-                 ))}
-                 <div className="flex flex-col gap-3 pt-6">
-                    <Link href="/login" onClick={() => setIsOpen(false)} className="w-full"><Button variant="outline" className="w-full h-12">Login</Button></Link>
-                    <Link href="/register" onClick={() => setIsOpen(false)} className="w-full"><Button className="w-full h-12 bg-primary">Sign Up</Button></Link>
-                 </div>
-               </>
-             )}
-           </div>
-        </div>
-      )}
-    </nav>
+      {/* ── Responsive CSS ── */}
+      <style>{`
+        @media (max-width: 900px) {
+          .nav-links { display: none !important; }
+          .logout-btn { display: none !important; }
+          .admin-badge { display: none !important; }
+          .hamburger { display: block !important; }
+        }
+        @media (max-width: 640px) {
+          .navbar-logo-tagline { display:none !important; }
+        }
+        @media (min-width: 901px) {
+          .hamburger { display: none !important; }
+        }
+      `}</style>
+    </>
   );
 }

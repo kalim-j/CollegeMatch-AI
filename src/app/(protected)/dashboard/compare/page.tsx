@@ -19,10 +19,10 @@ import {
   ShieldCheck,
   Trophy,
 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { College } from "@/types";
+import { useAuthGuard } from '@/lib/auth-guard';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -89,7 +89,7 @@ function StatCell({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ComparePage() {
-  const { user, loading } = useAuth();
+  const { user, state } = useAuthGuard();
   const router = useRouter();
 
   const [colleges, setColleges] = useState<College[]>([]);
@@ -147,7 +147,7 @@ export default function ComparePage() {
   };
 
   // ── Loading / auth spinner ──────────────────────────────────────────────────
-  if (loading || !user) {
+  if (state !== 'verified' || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] flex items-center justify-center">
         <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />

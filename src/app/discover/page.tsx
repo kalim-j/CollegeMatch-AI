@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
+import { useAuthGuard } from '@/lib/auth-guard';
 import { db } from '@/lib/firebase';
 import { collection, doc, serverTimestamp, setDoc, getDoc } from 'firebase/firestore';
 import StreamResultCard from '@/components/StreamResultCard';
@@ -24,7 +24,7 @@ const catColor: Record<string, { from: string; to: string; shadow: string }> = {
 
 export default function DiscoverPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { state, user } = useAuthGuard();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<any[]>([]);
@@ -39,36 +39,7 @@ export default function DiscoverPage() {
   const [aiError, setAiError] = useState<string | null>(null);
   const [direction, setDirection] = useState(1);
 
-  const [verified, setVerified] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    if (user === null) {
-      router.push('/login?redirect=/discover');
-      return;
-    }
-    
-    if (user) {
-      const checkVerification = async () => {
-        const snap = await getDoc(doc(db, 'users', user.uid));
-        if (snap.exists()) {
-          const data = snap.data();
-          if (data.emailVerified === true || data.emailVerified === undefined) {
-            setVerified(true);
-          } else {
-            router.push(
-              `/verify-otp?uid=${user.uid}&email=${encodeURIComponent(user.email || '')}`
-            );
-          }
-        } else {
-          setVerified(true);
-        }
-      };
-      checkVerification();
-    }
-  }, [user, router]);
-
-  if (!user || verified === null) return null;
-  if (!verified) return null;
+  if (state !== 'verified' || !user) return null;
 
   const handleStart = () => {
     setDirection(1); 

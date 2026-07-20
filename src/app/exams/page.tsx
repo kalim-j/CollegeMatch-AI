@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SelectField from "@/components/SelectField";
+import { useAuthGuard } from '@/lib/auth-guard';
 
 const STREAMS = [
   "Engineering & Technology", "Medical & Health Sciences", "Science & Research",
@@ -22,7 +22,7 @@ const STREAMS = [
 const COURSE_LEVELS = ["UG", "PG"];
 
 export default function EntranceExamGuide() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, state: authLoading } = useAuthGuard();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<any[]>([]);

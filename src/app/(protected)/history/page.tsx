@@ -8,7 +8,6 @@ import {
   orderBy,
   query
 } from 'firebase/firestore';
-import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -19,6 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import StreamResultCard from '@/components/StreamResultCard';
+import { useAuthGuard } from '@/lib/auth-guard';
 
 interface CollegeResult {
   name: string;
@@ -53,7 +53,7 @@ interface Session {
 }
 
 export default function HistoryPage() {
-  const { user, loading, profile } = useAuth();
+  const { user, state, profile } = useAuthGuard();
   const router = useRouter();
   
   const [activeTab, setActiveTab] = useState<'colleges' | 'streams'>('colleges');

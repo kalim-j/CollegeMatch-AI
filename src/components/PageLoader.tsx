@@ -1,28 +1,48 @@
-'use client';
-import { Loader2 } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import React, { useEffect, useState } from 'react';
-
 export default function PageLoader() {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-  const isDark = resolvedTheme === 'dark';
-
   return (
     <div style={{
       minHeight: '100vh',
       display: 'flex',
+      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      background: isDark ? '#05071a' : '#f8f7ff'
+      background: '#05071a',
+      gap: 16,
     }}>
-      <Loader2 className="w-12 h-12 text-purple-600 animate-spin" />
+      {/* Animated logo */}
+      <div style={{
+        width: 56, height: 56, borderRadius: 16,
+        background: 'linear-gradient(135deg,#7F77DD,#1D9E75)',
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'center', fontSize: 28,
+        animation: 'loaderPulse 1.5s ease-in-out infinite',
+        boxShadow: '0 0 30px rgba(127,119,221,0.4)',
+      }}>
+        🎓
+      </div>
+      {/* Spinner */}
+      <div style={{
+        width: 28, height: 28, borderRadius: '50%',
+        border: '3px solid rgba(127,119,221,0.2)',
+        borderTop: '3px solid #7F77DD',
+        animation: 'spin 0.8s linear infinite',
+      }}/>
+      <p style={{
+        fontSize: 13,
+        color: 'rgba(255,255,255,0.35)',
+        letterSpacing: '0.04em',
+      }}>
+        CollegeMatch-AI
+      </p>
+      <style>{`
+        @keyframes spin {
+          from{transform:rotate(0)} to{transform:rotate(360deg)}
+        }
+        @keyframes loaderPulse {
+          0%,100%{transform:scale(1);opacity:1}
+          50%{transform:scale(1.08);opacity:0.8}
+        }
+      `}</style>
     </div>
   );
 }

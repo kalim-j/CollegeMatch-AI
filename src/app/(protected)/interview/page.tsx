@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import PageTransition from "@/components/3D/PageTransition";
 import DashboardBackground from "@/components/3D/DashboardBackground";
 import { generatePDFReport } from '@/lib/generateReport';
-import { useAuth } from "@/context/AuthContext";
+import { useAuthGuard } from '@/lib/auth-guard';
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -40,7 +40,7 @@ const QUOTAS = ["GENERAL", "OBC", "SC", "ST", "EWS", "MBC", "BC", "NRI", "MANAGE
 const BOARDS = ["State Board", "CBSE", "ICSE", "IGCSE", "Other"];
 
 export default function InterviewPage() {
-  const { user, profile, loading } = useAuth();
+  const { state, user, profile } = useAuthGuard();
   const router = useRouter();
   const [step, setStep] = useState(1);
   const totalSteps = 9;
@@ -312,7 +312,7 @@ export default function InterviewPage() {
     }
   };
 
-  if (loading || !user) return (
+  if (state !== 'verified' || !user) return (
     <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
       <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
     </div>

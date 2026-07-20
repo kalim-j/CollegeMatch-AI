@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { doc, updateDoc } from "firebase/firestore";
@@ -14,9 +13,10 @@ import {
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
+import { useAuthGuard } from '@/lib/auth-guard';
 
 export default function ProfilePage() {
-  const { user, profile, loading, refreshProfile } = useAuth();
+  const { user, profile, state, refreshProfile } = useAuthGuard();
   const router = useRouter();
   const [formData, setFormData] = useState({
     fullName: "",
@@ -95,7 +95,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading || !user) return (
+  if (state !== 'verified' || !user) return (
     <div className="min-h-screen bg-transparent flex items-center justify-center">
       <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
     </div>

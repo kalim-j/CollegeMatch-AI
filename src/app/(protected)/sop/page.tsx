@@ -1,14 +1,14 @@
 'use client';
 import { useState, useRef } from 'react';
-import { useAuth } from '@/context/AuthContext';
 import { FileEdit, Loader2, Sparkles, Download, CheckCircle2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import PageTransition from '@/components/3D/PageTransition';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { useAuthGuard } from '@/lib/auth-guard';
 
 export default function SOPGeneratorPage() {
-  const { user, profile } = useAuth();
+  const { state,  user, profile } = useAuthGuard();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
   

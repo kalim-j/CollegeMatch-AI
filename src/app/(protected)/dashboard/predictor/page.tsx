@@ -1,11 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import SelectField from '@/components/SelectField';
+import { useAuthGuard } from '@/lib/auth-guard';
 
 interface College {
   id: string;
@@ -58,7 +58,7 @@ function FormField({ label, children }: { label: string, children: React.ReactNo
 }
 
 export default function PredictorPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, state: authLoading } = useAuthGuard();
   const router = useRouter();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
@@ -222,7 +222,7 @@ export default function PredictorPage() {
     }
   };
 
-  if (authLoading || !user) {
+  if (state !== 'verified' || !user) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />

@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
 import { 
   PlayCircle, CheckCircle2, ChevronRight, Share2, Award, 
   BookOpen, Star, RefreshCw, Send, Loader2, Search, ArrowRight,
@@ -10,6 +9,7 @@ import { useTheme } from 'next-themes';
 import PageTransition from '@/components/3D/PageTransition';
 import SelectField from '@/components/SelectField';
 import { toast } from 'sonner';
+import { useAuthGuard } from '@/lib/auth-guard';
 
 interface Option {
   id: string;
@@ -37,7 +37,7 @@ interface Message {
 const steps = ['Setup', 'Interview', 'Feedback', 'Report'];
 
 export default function MockInterviewPage() {
-  const { user, profile } = useAuth();
+  const { state,  user, profile } = useAuthGuard();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 
