@@ -15,8 +15,9 @@ export function useAuthGuard(): {
   state: AuthState;
   user: ReturnType<typeof useAuth>['user'];
   profile: ReturnType<typeof useAuth>['profile'];
+  refreshProfile: ReturnType<typeof useAuth>['refreshProfile'];
 } {
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, refreshProfile } = useAuth();
   const router = useRouter();
   const [state, setState] = useState<AuthState>('loading');
 
@@ -61,5 +62,5 @@ export function useAuthGuard(): {
     check();
   }, [user, loading, router]);
 
-  return { state, user, profile };
+  return { state, user, profile, refreshProfile };
 }

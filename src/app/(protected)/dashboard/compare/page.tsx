@@ -99,10 +99,10 @@ export default function ComparePage() {
 
   // ── Auth guard ──────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!loading && !user) {
+    if (state === 'unauthenticated' && !user) {
       router.push("/login");
     }
-  }, [user, loading, router]);
+  }, [user, state, router]);
 
   // ── Read colleges from sessionStorage ──────────────────────────────────────
   useEffect(() => {

@@ -126,7 +126,6 @@ export default function Dashboard() {
     { href: "/dashboard/scholarships", label: "Scholarship Finder", desc: "Discover scholarships and financial aid tailored to your profile.", icon: Award, color: "text-teal-600 dark:text-teal-400", bg: "bg-teal-50 border border-teal-250", hover: "hover:border-teal-300", cta: "Find Scholarships" },
     { href: "/exams", label: "Entrance Exams", desc: "Track important entrance exam dates, results and cutoffs.", icon: BookOpen, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 border border-amber-250", hover: "hover:border-amber-300", cta: "Track Exams" },
   ];
-
   return (
     <PageTransition>
       <div className="min-h-screen p-4 sm:p-6 pb-24 sm:pb-6 text-[var(--text-primary)] relative">
@@ -166,7 +165,7 @@ export default function Dashboard() {
             </Link>
           </div>
         </div>
-
+        </ScrollReveal>
 
         {/* Stats Row */}
         <ScrollReveal direction="up" delay={100}>

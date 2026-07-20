@@ -370,7 +370,7 @@ export function Navbar() {
             }}
           >
             <span style={{ fontSize: 20 }}>
-              {'icon' in link ? link.icon : '→'}
+              {'icon' in link ? (link as any).icon : '→'}
             </span>
             {link.label}
           </a>

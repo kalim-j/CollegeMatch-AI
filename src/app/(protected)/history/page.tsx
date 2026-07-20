@@ -122,7 +122,7 @@ export default function HistoryPage() {
     router.push(`/stream/${slug}`);
   };
 
-  if (loading || fetching) {
+  if (state === 'loading' || fetching) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">

@@ -2,6 +2,7 @@
 import { useAuthGuard } from '@/lib/auth-guard';
 import Link from 'next/link';
 import ScrollReveal3D from '@/components/ScrollReveal3D';
+import ScrollReveal from '@/components/ScrollReveal';
 
 const SalaryChart = () => (
   <div className="w-full h-64 bg-[#f0eeff] dark:bg-white/5 border border-[rgba(127,119,221,0.2)] rounded-3xl p-6 flex items-end justify-between relative overflow-hidden group mb-12 shadow-xl">

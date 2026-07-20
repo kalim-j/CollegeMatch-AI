@@ -8,8 +8,8 @@ import PageTransition from '@/components/3D/PageTransition';
 import SelectField from '@/components/SelectField';
 
 export default function DocumentsPage() {
-  const { state } = useAuthGuard();
-  if (state !== 'verified') return null;
+  const { state: authState } = useAuthGuard();
+  if (authState !== 'verified') return null;
 
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';

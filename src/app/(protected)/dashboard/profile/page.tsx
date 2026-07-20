@@ -103,7 +103,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (authLoading && loading) {
+  if (authLoading === 'loading' || loading) {
     return (
       <div className="min-h-screen bg-[#0a0d14] flex items-center justify-center">
         <Loader2 className="h-10 w-10 text-purple-500 animate-spin" />

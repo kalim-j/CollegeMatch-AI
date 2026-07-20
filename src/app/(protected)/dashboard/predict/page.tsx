@@ -208,10 +208,10 @@ export default function PredictPage() {
 
   // ── Auth guard ──────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!loading && !user) {
+    if (state === 'unauthenticated' && !user) {
       router.push("/login");
     }
-  }, [user, loading, router]);
+  }, [user, state, router]);
 
   // ── Loading / auth spinner ──────────────────────────────────────────────────
   if (state !== 'verified' || !user) {

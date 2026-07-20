@@ -45,7 +45,7 @@ export default function ProfilePage() {
         phone: profile.phone || "",
       });
     }
-  }, [profile, user, loading, router]);
+  }, [profile, user, state, router]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
