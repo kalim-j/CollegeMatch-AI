@@ -33,7 +33,15 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  const toggleTheme = () => {
+    const next = isDark ? 'light' : 'dark';
+    /* Apply class immediately before next-themes reacts */
+    document.documentElement.classList.remove('dark', 'light');
+    document.documentElement.classList.add(next);
+    document.documentElement.style.backgroundColor =
+      next === 'dark' ? '#05071a' : '#f8f7ff';
+    setTheme(next);
+  };
 
   /* Navbar shrinks on scroll */
   useEffect(() => {
@@ -168,9 +176,7 @@ export function Navbar() {
           {/* Theme toggle */}
           {mounted && (
             <button
-              onClick={() => setTheme(
-                isDark ? 'light' : 'dark'
-              )}
+              onClick={toggleTheme}
               style={{
                 background: 'none', border: 'none',
                 cursor: 'pointer', fontSize: 18,

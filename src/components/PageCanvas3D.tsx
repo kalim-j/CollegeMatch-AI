@@ -64,7 +64,17 @@ export default function PageCanvas3D({ intensity='low' }: Props) {
       phase: i*2,
     }));
 
-    const draw = () => {
+    let lastTime = 0;
+    const draw = (timestamp: number = 0) => {
+      if (document.hidden) {
+        animId = requestAnimationFrame(draw);
+        return;
+      }
+      if (timestamp - lastTime < 16) {
+        animId = requestAnimationFrame(draw);
+        return;
+      }
+      lastTime = timestamp;
       ctx.clearRect(0,0,W,H);
       t++;
 

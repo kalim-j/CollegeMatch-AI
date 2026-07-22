@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 
@@ -30,31 +30,74 @@ export function useAuthGuard(): {
       return;
     }
 
-    /* Check Firestore emailVerified flag */
     const check = async () => {
       try {
-        const snap = await getDoc(
-          doc(db, 'users', user.uid)
-        );
-        if (snap.exists()) {
-          const data = snap.data();
-          if (data.emailVerified === true) {
-            setState('verified');
-          } else {
-            setState('unverified');
-            router.push(
-              `/verify-otp?uid=${user.uid}` +
-              `&email=${encodeURIComponent(user.email||'')}`
-            );
-          }
-        } else {
-          /* No Firestore doc — treat as verified
-             (e.g. old users or Google users) */
+        const snap = await getDoc(doc(db, 'users', user.uid));
+
+        if (!snap.exists()) {
+          /* No Firestore doc = old user = treat as verified */
           setState('verified');
+          return;
+        }
+
+        const data = snap.data();
+
+        /* If emailVerified field does not exist at all (old users) = treat as verified */
+        if (!('emailVerified' in data)) {
+          await updateDoc(doc(db, 'users', user.uid), {
+            emailVerified: true,
+          });
+          if (!data.mobileAdded && !user.providerData.some(p => p.providerId === 'google.com')) {
+            setState('verified');
+            router.push('/add-mobile');
+            return;
+          }
+          setState('verified');
+          return;
+        }
+
+        /* If user signed in with Google = always verified */
+        if (user.providerData.some(p => p.providerId === 'google.com')) {
+          if (!data.emailVerified) {
+            await updateDoc(doc(db, 'users', user.uid), {
+              emailVerified: true,
+            });
+          }
+          setState('verified');
+          return;
+        }
+
+        /* Email/password user — check flag */
+        if (data.emailVerified === true) {
+          /* Check if mobile number added */
+          if (!data.mobileAdded && !user.providerData.some(p => p.providerId === 'google.com')) {
+            setState('verified');
+            router.push('/add-mobile');
+            return;
+          }
+          setState('verified');
+        } else {
+          /* Check if OTP was already verified recently by looking at verifiedAt field */
+          if (data.verifiedAt) {
+            await updateDoc(doc(db, 'users', user.uid), {
+              emailVerified: true,
+            });
+            if (!data.mobileAdded && !user.providerData.some(p => p.providerId === 'google.com')) {
+              setState('verified');
+              router.push('/add-mobile');
+              return;
+            }
+            setState('verified');
+            return;
+          }
+          setState('unverified');
+          router.push(
+            `/verify-otp?uid=${user.uid}` +
+            `&email=${encodeURIComponent(user.email||'')}`
+          );
         }
       } catch {
-        /* Firestore error — let user through
-           to avoid blocking legitimate users */
+        /* Network error — let user through */
         setState('verified');
       }
     };

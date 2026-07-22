@@ -18,6 +18,7 @@ import ResumePreview from '@/components/ResumePreview';
 import ResumeUploader from '@/components/ResumeUploader';
 import AtsScoreGauge from '@/components/AtsScoreGauge';
 import { useAuthGuard } from '@/lib/auth-guard';
+import { saveHistory } from '@/lib/saveHistory';
 
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -148,6 +149,13 @@ export default function ResumeBuilderPage() {
     setResumeGenerated(true);
     updatePreview(resumeData, template);
     setActiveTab('preview');
+    if (user?.uid) {
+      saveHistory(user.uid, 'resume',
+        'Resume Generated',
+        `${resumeData.personal.fullName || 'Student'} — ${template} template`,
+        { resumeData, template }
+      );
+    }
     toast.success('Resume generated successfully');
   };
 

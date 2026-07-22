@@ -35,7 +35,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setProfile(data as StudentProfile);
-        setIsVerified(!!data.emailVerified);
+        const isGoogle = auth.currentUser?.providerData.some(p => p.providerId === 'google.com');
+        const hasNoEmailVerifiedKey = !('emailVerified' in data);
+        const hasVerifiedAt = !!data.verifiedAt;
+        const verifiedVal = !!isGoogle || hasNoEmailVerifiedKey || hasVerifiedAt || !!data.emailVerified;
+        setIsVerified(verifiedVal);
         
         // Update online status
         await updateDoc(docRef, {

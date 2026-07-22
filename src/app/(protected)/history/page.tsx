@@ -1,396 +1,386 @@
 'use client';
-
-import { useEffect, useState } from 'react';
-import { db } from '@/lib/firebase';
+import { useState, useEffect } from 'react';
 import {
-  collection,
-  getDocs,
-  orderBy,
-  query
+  collection, query, where, orderBy,
+  getDocs, deleteDoc, doc, Timestamp,
 } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  History as HistoryIcon, MapPin, Sparkles, 
-  ChevronRight, Calendar, BookOpen, 
-  Search, X, FileDown, Target, Zap, Loader2,
-  Lightbulb
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import StreamResultCard from '@/components/StreamResultCard';
+import { db } from '@/lib/firebase';
 import { useAuthGuard } from '@/lib/auth-guard';
+import PageLoader from '@/components/PageLoader';
+import dynamic from 'next/dynamic';
 
-interface CollegeResult {
-  name: string;
-  location: string;
-  state?: string;
-  type: string;
-  level: string;
-  courses: string[];
-  cutoff_mark: number;
-  match_score: number;
-  why_fit: string;
-  naac_grade: string;
-  nirf_rank: number;
-}
+const PageCanvas3D = dynamic(
+  () => import('@/components/PageCanvas3D'),
+  { ssr: false }
+);
 
-interface Session {
+interface HistoryItem {
   id: string;
-  createdAt: string;
-  topCollege: string;
-  totalResults: number;
-  studentProfile: {
-    level: string;
-    stream: string;
-    state: string;
-    district: string;
-    cutoffMark: number;
-    cutoffRange: string;
-    budget: string;
-    quota: string;
-  };
-  results: CollegeResult[];
+  type: 'college-match' | 'scholarship' |
+        'aptitude' | 'mock-interview' |
+        'study-plan' | 'resume' | 'sop' |
+        'doubt' | 'stream-discovery';
+  title: string;
+  summary: string;
+  data: Record<string, unknown>;
+  createdAt: Timestamp;
+  expiresAt: Timestamp;
 }
 
 export default function HistoryPage() {
-  const { user, state, profile } = useAuthGuard();
-  const router = useRouter();
-  
-  const [activeTab, setActiveTab] = useState<'colleges' | 'streams'>('colleges');
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [discoveries, setDiscoveries] = useState<any[]>([]);
-  const [fetching, setFetching] = useState(true);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { state, user } = useAuthGuard();
+  const [items, setItems] = useState<HistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<string>('all');
+  const [mounted, setMounted] = useState(false);
 
-
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (state !== 'verified' || !user || !mounted) return;
 
-    const fetchHistory = async () => {
-      setFetching(true);
+    const load = async () => {
+      setLoading(true);
       try {
-        // Fetch college searches
-        const qColleges = query(
-          collection(db, 'interviews', user.uid, 'sessions'),
-          orderBy('timestamp', 'desc')
+        /* Auto-delete expired items first */
+        const expiredQ = query(
+          collection(db,'history',user.uid,'items'),
+          where('expiresAt','<',Timestamp.now())
         );
-        const snapColleges = await getDocs(qColleges);
-        const dataColleges: Session[] = snapColleges.docs.map(doc => ({
-          id: doc.id,
-          ...(doc.data() as Omit<Session, 'id'>),
-        }));
-        setSessions(dataColleges);
+        const expiredSnap = await getDocs(expiredQ);
+        await Promise.all(
+          expiredSnap.docs.map(d =>
+            deleteDoc(d.ref)
+          )
+        );
 
-        // Fetch stream discoveries
-        const qDiscoveries = query(
-          collection(db, `discoveries/${user.uid}/sessions`),
-          orderBy('timestamp', 'desc')
+        /* Load remaining history */
+        const q = query(
+          collection(db,'history',user.uid,'items'),
+          orderBy('createdAt','desc')
         );
-        const snapDiscoveries = await getDocs(qDiscoveries);
-        const dataDiscoveries = snapDiscoveries.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setDiscoveries(dataDiscoveries);
-      } catch (err) {
-        console.error('History fetch error:', err);
+        const snap = await getDocs(q);
+        setItems(snap.docs.map(d => ({
+          id: d.id,
+          ...d.data(),
+        } as HistoryItem)));
+      } catch(e) {
+        console.error('History load error:', e);
       } finally {
-        setFetching(false);
+        setLoading(false);
       }
     };
+    load();
+  }, [state, user, mounted]);
 
-    fetchHistory();
-  }, [user]);
+  if (state === 'loading' || !mounted) return <PageLoader />;
+  if (state !== 'verified') return null;
 
-  const handleCollegeClick = (college: CollegeResult) => {
-    const resultsToStore = sessions.find(s => s.results.some(r => r.name === college.name))?.results;
-    if (resultsToStore) {
-        sessionStorage.setItem('eduanalytics_results', JSON.stringify(resultsToStore));
-    }
-    const slug = college.name.toLowerCase().replace(/ /g, "-");
-    router.push(`/colleges/${slug}`);
+  const TYPES = [
+    { id:'all',            label:'All',           icon:'📋' },
+    { id:'college-match',    label:'College Match', icon:'🏫' },
+    { id:'scholarship',      label:'Scholarships',  icon:'💰' },
+    { id:'aptitude',         label:'Aptitude',      icon:'🧮' },
+    { id:'mock-interview',   label:'Interviews',    icon:'🎯' },
+    { id:'study-plan',       label:'Study Plans',   icon:'📅' },
+    { id:'resume',           label:'Resumes',       icon:'📄' },
+    { id:'doubt',            label:'Doubts',        icon:'💡' },
+  ];
+
+  const filtered = filter === 'all'
+    ? items
+    : items.filter(i => i.type === filter);
+
+  const daysLeft = (expires: Timestamp) => {
+    if (!expires || !expires.toDate) return 15;
+    const diff = expires.toDate().getTime() - Date.now();
+    return Math.max(0, Math.ceil(diff / 86400000));
   };
 
-  const handleSelectStream = (stream: any) => {
-    sessionStorage.setItem('selectedStream', stream.stream);
-    router.push(`/interview?stream=${encodeURIComponent(stream.stream)}&fromDiscover=true`);
+  const typeIcon: Record<string,string> = {
+    'college-match': '🏫',
+    'scholarship': '💰',
+    'aptitude': '🧮',
+    'mock-interview': '🎯',
+    'study-plan': '📅',
+    'resume': '📄',
+    'sop': '✍️',
+    'doubt': '💡',
+    'stream-discovery': '🧭',
   };
 
-  const handleExploreStream = (stream: any) => {
-    const slug = stream.stream.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    router.push(`/stream/${slug}`);
+  const downloadHistory = () => {
+    const data = JSON.stringify(filtered.map(i => ({
+      type: i.type,
+      title: i.title,
+      summary: i.summary,
+      date: i.createdAt && i.createdAt.toDate ? i.createdAt.toDate().toLocaleDateString('en-IN') : '',
+      data: i.data,
+    })), null, 2);
+    const blob = new Blob([data], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `collegematch-history-${
+      new Date().toISOString().slice(0,10)
+    }.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
-
-  if (state === 'loading' || fetching) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-10 w-10 text-purple-600 animate-spin" />
-          <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Retrieving analysis history…</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#faf5ff] text-gray-900 relative overflow-hidden selection:bg-purple-250/20 pt-24">
-      <div className="container mx-auto px-6 py-16 max-w-5xl relative z-10">
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-8 border-b border-purple-100 pb-8">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50 border border-purple-100 shadow-sm">
-              <HistoryIcon size={14} className="text-purple-600" />
-              <span className="text-[10px] font-black text-purple-700 uppercase tracking-widest">User Intelligence</span>
+    <div style={{
+      minHeight: '100vh',
+      position: 'relative',
+    }}>
+      <PageCanvas3D intensity="low" />
+      <div style={{
+        position: 'relative', zIndex: 1,
+        maxWidth: 900, margin: '0 auto',
+        padding: 'clamp(1.5rem,4vw,3rem)',
+      }}>
+
+        {/* Header */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap', gap: 12,
+          marginBottom: 24,
+          animation: 'fadeUp 0.5s ease forwards',
+        }}>
+          <div>
+            <h1 style={{
+              fontSize: 'clamp(22px,3.5vw,36px)',
+              fontWeight: 800, color: 'white',
+              margin: '0 0 6px',
+            }}>
+              📋 Your History
+            </h1>
+            <p style={{
+              fontSize: 14,
+              color: 'rgba(255,255,255,0.50)',
+            }}>
+              Activity from the last 15 days.
+              Download before it expires.
+            </p>
+          </div>
+          <button
+            onClick={downloadHistory}
+            style={{
+              padding: '10px 18px', borderRadius: 10,
+              border: '1px solid rgba(127,119,221,0.3)',
+              background: 'rgba(127,119,221,0.10)',
+              color: '#a89ef8', fontSize: 13,
+              fontWeight: 600, cursor: 'pointer',
+              display: 'flex', alignItems: 'center',
+              gap: 6,
+            }}>
+            ⬇ Download History
+          </button>
+        </div>
+
+        {/* Filter tabs — horizontal scroll on mobile */}
+        <div style={{
+          display: 'flex', gap: 8,
+          overflowX: 'auto', paddingBottom: 4,
+          marginBottom: 20,
+          scrollbarWidth: 'none',
+        }}>
+          {TYPES.map(t => (
+            <button key={t.id}
+              onClick={() => setFilter(t.id)}
+              style={{
+                padding: '7px 14px',
+                borderRadius: 20,
+                border: filter === t.id
+                  ? '1px solid rgba(127,119,221,0.7)'
+                  : '1px solid rgba(255,255,255,0.10)',
+                background: filter === t.id
+                  ? 'rgba(127,119,221,0.18)'
+                  : 'transparent',
+                color: filter === t.id
+                  ? '#a89ef8'
+                  : 'rgba(255,255,255,0.55)',
+                fontSize: 12, fontWeight: 500,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+                transition: 'all 0.2s ease',
+              }}>
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* 15-day warning banner */}
+        <div style={{
+          background: 'rgba(186,117,23,0.10)',
+          border: '1px solid rgba(186,117,23,0.25)',
+          borderRadius: 12, padding: '10px 14px',
+          marginBottom: 20,
+          fontSize: 12,
+          color: '#FAC775',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          ⏰ History is automatically deleted after 15 days.
+          Download your data to keep it permanently.
+        </div>
+
+        {/* Loading state */}
+        {loading ? (
+          <div style={{
+            display: 'flex', justifyContent: 'center',
+            alignItems: 'center', minHeight: 200, gap: 12,
+          }}>
+            <div style={{
+              width: 24, height: 24, borderRadius: '50%',
+              border: '2px solid rgba(127,119,221,0.2)',
+              borderTop: '2px solid #7F77DD',
+              animation: 'spin 0.8s linear infinite',
+            }}/>
+            <span style={{
+              color: 'rgba(255,255,255,0.5)', fontSize: 14,
+            }}>
+              Loading history...
+            </span>
+          </div>
+        ) : filtered.length === 0 ? (
+          /* Empty state */
+          <div style={{
+            textAlign: 'center', padding: '4rem 1rem',
+          }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>
+              📭
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-950 tracking-tight leading-tight">Analysis History</h1>
-            <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">Revisit your previous AI recommendations</p>
+            <h3 style={{
+              fontSize: 18, color: 'white',
+              marginBottom: 8,
+            }}>
+              No history yet
+            </h3>
+            <p style={{
+              fontSize: 14,
+              color: 'rgba(255,255,255,0.45)',
+            }}>
+              Your activity will appear here
+            </p>
           </div>
-        </header>
-
-        {/* Tabs */}
-        <div className="flex gap-4 mb-10 border-b border-purple-100 pb-4 overflow-x-auto">
-          <button
-            onClick={() => { setActiveTab('colleges'); setExpandedId(null); }}
-            className={cn(
-              "px-6 py-3 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-2 text-sm",
-              activeTab === 'colleges' 
-                ? "bg-purple-600 text-white shadow-md shadow-purple-200" 
-                : "bg-white/5 text-gray-500 border border-purple-100 hover:bg-white/10"
-            )}
-          >
-            <SchoolIcon className="h-4.5 w-4.5" />
-            College Searches
-          </button>
-          <button
-            onClick={() => { setActiveTab('streams'); setExpandedId(null); }}
-            className={cn(
-              "px-6 py-3 rounded-xl font-bold transition-all whitespace-nowrap flex items-center gap-2 text-sm",
-              activeTab === 'streams' 
-                ? "bg-purple-600 text-white shadow-md shadow-purple-200" 
-                : "bg-white/5 text-gray-500 border border-purple-100 hover:bg-white/10"
-            )}
-          >
-            <Lightbulb className="h-4.5 w-4.5" />
-            Stream Discoveries
-          </button>
-        </div>
-
-        {activeTab === 'colleges' && (
-          <div className="space-y-6 pb-24">
-            {sessions.length === 0 ? (
-              <div className="text-center py-12 glass-card border border-purple-100/50 rounded-3xl p-8 shadow-sm">
-                <div className="h-20 w-20 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-100">
-                  <HistoryIcon className="text-purple-600" size={32} />
+        ) : (
+          /* History list */
+          <div style={{
+            display: 'flex', flexDirection: 'column',
+            gap: 10,
+          }}>
+            {filtered.map((item, i) => (
+              <div
+                key={item.id}
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 16,
+                  padding: '16px 20px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 14,
+                  animation: 'fadeUp 0.5s ease forwards',
+                  animationDelay: `${i*0.04}s`,
+                  opacity: 0,
+                  transition: 'border-color 0.2s ease',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLDivElement)
+                    .style.borderColor =
+                    'rgba(127,119,221,0.3)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLDivElement)
+                    .style.borderColor =
+                    'rgba(255,255,255,0.08)';
+                }}
+              >
+                {/* Icon */}
+                <div style={{
+                  width: 42, height: 42, borderRadius: 12,
+                  background: 'rgba(127,119,221,0.12)',
+                  border: '1px solid rgba(127,119,221,0.20)',
+                  display: 'flex', alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 20, flexShrink: 0,
+                }}>
+                  {typeIcon[item.type] || '📋'}
                 </div>
-                <h3 className="text-xl font-bold text-gray-950 mb-2">No College Searches</h3>
-                <p className="text-gray-500 font-medium text-sm mb-6">You haven't performed any AI college analyses yet.</p>
-                <button onClick={() => router.push('/interview')} className="h-12 px-6 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold text-xs tracking-widest uppercase transition-all shadow-sm">Start Analysis</button>
-              </div>
-            ) : (
-              sessions.map((session, idx) => (
-                <motion.div
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  key={session.id}
-                >
-                  <div className={cn(
-                    "rounded-[2.5rem] border transition-all overflow-hidden glass-card group shadow-sm",
-                    expandedId === session.id ? "border-purple-300" : "border-purple-100 hover:border-purple-250"
-                  )}>
-                    <div className="p-8 md:p-10">
-                      <div className="flex flex-col lg:flex-row justify-between items-start gap-10">
-                        <div className="space-y-6 flex-1">
-                          <div className="flex flex-wrap gap-2">
-                            <span className="px-3 py-1 bg-purple-50 rounded-lg text-[9px] font-black text-purple-700 uppercase tracking-widest border border-purple-100 shadow-sm">
-                              {session.studentProfile?.level || "UG"}
-                            </span>
-                            <span className="px-3 py-1 bg-teal-50 rounded-lg text-[9px] font-black text-teal-700 uppercase tracking-widest border border-teal-100 shadow-sm">
-                              {session.studentProfile?.stream || "Engineering"}
-                            </span>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <h3 className="text-2xl md:text-3xl font-bold text-gray-950 leading-tight tracking-tight group-hover:text-purple-700 transition-colors">
-                              {session.topCollege}
-                            </h3>
-                            <div className="flex flex-wrap gap-x-6 gap-y-2">
-                              <div className="flex items-center gap-2 text-[11px] text-gray-400 font-bold uppercase tracking-widest">
-                                <MapPin className="h-3.5 w-3.5 text-purple-650" />
-                                {session.studentProfile?.district}, {session.studentProfile?.state}
-                              </div>
-                              <div className="flex items-center gap-2 text-[11px] text-gray-400 font-bold uppercase tracking-widest">
-                                <Calendar className="h-3.5 w-3.5 text-purple-650" />
-                                {session.createdAt ? new Date(session.createdAt).toLocaleDateString('en-IN', {
-                                  day: 'numeric', month: 'short', year: 'numeric'
-                                }) : 'N/A'}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
 
-                        <div className="flex flex-col gap-4">
-                          <button
-                            onClick={() => setExpandedId(expandedId === session.id ? null : session.id)}
-                            className={cn(
-                              "h-14 px-8 rounded-xl font-bold text-xs tracking-widest uppercase transition-all flex items-center justify-center gap-2",
-                              expandedId === session.id 
-                                  ? "bg-gray-100 text-gray-700 hover:bg-gray-250 border border-purple-200" 
-                                  : "bg-purple-600 hover:bg-purple-700 text-white shadow-sm"
-                            )}
-                          >
-                            {expandedId === session.id ? <><X size={16} /> Close Results</> : <><Search size={16} /> Reveal Analysis</>}
-                          </button>
-                        </div>
-                      </div>
-
-                      <AnimatePresence>
-                        {expandedId === session.id && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="pt-10 space-y-6">
-                              <div className="grid grid-cols-1 gap-4">
-                                {session.results.map((college, idx) => (
-                                  <div key={idx} onClick={() => handleCollegeClick(college)} className="group p-5 rounded-2xl bg-white/5 border border-purple-100/50 hover:border-purple-300 cursor-pointer flex justify-between items-center gap-4 shadow-sm transition-all">
-                                    <div>
-                                      <h4 className="text-base font-bold text-gray-900 group-hover:text-purple-700">{college.name}</h4>
-                                      <p className="text-xs text-gray-400 font-bold">{college.location}</p>
-                                    </div>
-                                    <div className="text-right">
-                                      <div className="text-lg font-bold text-emerald-600">{Math.round(college.match_score)}% Match</div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+                {/* Content */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    flexWrap: 'wrap', gap: 6,
+                    marginBottom: 4,
+                  }}>
+                    <h3 style={{
+                      fontSize: 14, fontWeight: 600,
+                      color: 'white', margin: 0,
+                    }}>
+                      {item.title}
+                    </h3>
+                    <span style={{
+                      fontSize: 11, fontWeight: 600,
+                      padding: '2px 8px', borderRadius: 20,
+                      background: daysLeft(item.expiresAt) <= 3
+                        ? 'rgba(226,75,74,0.15)'
+                        : 'rgba(127,119,221,0.12)',
+                      color: daysLeft(item.expiresAt) <= 3
+                        ? '#F09595' : '#a89ef8',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {daysLeft(item.expiresAt) === 0
+                        ? 'Expires today'
+                        : `${daysLeft(item.expiresAt)}d left`}
+                    </span>
                   </div>
-                </motion.div>
-              ))
-            )}
-          </div>
-        )}
-
-        {activeTab === 'streams' && (
-          <div className="space-y-6 pb-24">
-            {discoveries.length === 0 ? (
-              <div className="text-center py-12 glass-card border border-purple-100/50 rounded-3xl p-8 shadow-sm">
-                <div className="h-20 w-20 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-100">
-                  <Lightbulb className="text-purple-650" size={32} />
+                  <p style={{
+                    fontSize: 13,
+                    color: 'rgba(255,255,255,0.50)',
+                    margin: '0 0 6px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {item.summary}
+                  </p>
+                  <p style={{
+                    fontSize: 11,
+                    color: 'rgba(255,255,255,0.28)',
+                    margin: 0,
+                  }}>
+                    {item.createdAt && item.createdAt.toDate ? item.createdAt.toDate()
+                      .toLocaleDateString('en-IN', {
+                        day:'numeric', month:'short',
+                        year:'numeric', hour:'2-digit',
+                        minute:'2-digit',
+                      }) : 'Recent'}
+                  </p>
                 </div>
-                <h3 className="text-xl font-bold text-gray-950 mb-2">No Stream Discoveries</h3>
-                <p className="text-gray-500 font-medium text-sm mb-6">You haven't run the Stream Discovery AI yet.</p>
-                <button onClick={() => router.push('/discover')} className="h-12 px-6 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-750 text-xs uppercase tracking-widest shadow-sm">Discover your stream</button>
               </div>
-            ) : (
-              discoveries.map((discovery, idx) => (
-                <motion.div
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.08, duration: 0.5 }}
-                  key={discovery.id}
-                >
-                  <div className={cn(
-                    "rounded-[2.5rem] border transition-all overflow-hidden glass-card group shadow-sm",
-                    expandedId === discovery.id ? "border-purple-300" : "border-purple-100 hover:border-purple-250"
-                  )}>
-                    <div className="p-8 md:p-10">
-                      <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-                        <div>
-                          <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
-                            <Calendar className="h-3.5 w-3.5 text-purple-600" />
-                            {discovery.timestamp ? new Date(discovery.timestamp.toDate()).toLocaleDateString('en-IN', {
-                              day: 'numeric', month: 'short', year: 'numeric'
-                            }) : 'N/A'}
-                          </div>
-                          <h3 className="text-xl md:text-2xl font-bold text-purple-700 mb-2">
-                            {discovery.results.streams[0].stream}
-                          </h3>
-                          <div className="flex items-center gap-3">
-                            <span className="px-3 py-1 bg-white/5 border border-purple-100/50 rounded-full text-xs font-bold text-purple-700 dark:text-purple-300 shadow-sm">
-                              Score: {discovery.results.streams[0].match_score}%
-                            </span>
-                            {discovery.selectedStream && (
-                              <span className="px-3 py-1 bg-indigo-50 border border-indigo-150 text-indigo-750 rounded-full text-xs font-bold shadow-sm">
-                                Selected: {discovery.selectedStream}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => setExpandedId(expandedId === discovery.id ? null : discovery.id)}
-                          className={cn(
-                            "px-8 py-4 rounded-xl font-bold text-xs tracking-widest uppercase transition-all flex items-center justify-center gap-2",
-                            expandedId === discovery.id 
-                                ? "bg-gray-100 text-gray-700 hover:bg-gray-250 border border-purple-200" 
-                                : "bg-purple-600 hover:bg-purple-700 text-white shadow-sm"
-                          )}
-                        >
-                          {expandedId === discovery.id ? "Close Results" : "View Full Result"}
-                        </button>
-                      </div>
-
-                      <AnimatePresence>
-                        {expandedId === discovery.id && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden"
-                          >
-                            <div className="pt-8 mt-8 border-t border-purple-150 space-y-6">
-                              {discovery.results.streams.map((stream: any, i: number) => (
-                                <StreamResultCard 
-                                  key={i} 
-                                  stream={stream} 
-                                  onSelect={() => handleSelectStream(stream)} 
-                                  onExplore={() => handleExploreStream(stream)}
-                                />
-                              ))}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </div>
-                </motion.div>
-              ))
-            )}
+            ))}
           </div>
         )}
       </div>
-    </div>
-  );
-}
 
-// Simple icon for school
-function SchoolIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m4 6 8-4 8 4" />
-      <path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2" />
-      <path d="M14 22v-4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v4" />
-      <path d="M18 5v17" />
-      <path d="M6 5v17" />
-      <circle cx="12" cy="9" r="2" />
-    </svg>
+      <style>{`
+        @keyframes fadeUp{
+          from{opacity:0;transform:translateY(12px)}
+          to{opacity:1;transform:translateY(0)}
+        }
+        @keyframes spin{
+          from{transform:rotate(0)}
+          to{transform:rotate(360deg)}
+        }
+      `}</style>
+    </div>
   );
 }

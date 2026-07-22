@@ -1,4 +1,5 @@
 'use client';
+import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { ThemeProvider } from 'next-themes';
 import { AuthProvider } from '@/context/AuthContext';
@@ -16,6 +17,14 @@ export default function Providers({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+
+  useEffect(() => {
+    document.documentElement.classList.add('no-transition');
+    const t = setTimeout(() => {
+      document.documentElement.classList.remove('no-transition');
+    }, 300);
+    return () => clearTimeout(t);
+  }, []);
 
   const isAuthPage =
     pathname === '/login' || pathname === '/register';

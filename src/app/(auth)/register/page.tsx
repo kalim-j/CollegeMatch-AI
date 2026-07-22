@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   createUserWithEmailAndPassword,
   signInWithPopup,
@@ -22,12 +22,16 @@ const DashboardBackground = dynamic(
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const prefillEmail = searchParams?.get('email') || '';
+
   const { user, loading, isVerified } = useAuth();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(prefillEmail);
+  const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
@@ -77,6 +81,9 @@ export default function RegisterPage() {
     if (!name.trim()) {
       setError('Please enter your full name.'); return;
     }
+    if (mobile.length !== 10) {
+      setError('Please enter a valid 10-digit mobile number.'); return;
+    }
     if (password.length < 6) {
       setError('Password needs at least 6 characters.'); return;
     }
@@ -96,11 +103,13 @@ export default function RegisterPage() {
       await setDoc(doc(db, 'users', cred.user.uid), {
         name,
         email,
+        mobile: '+91' + mobile,
         photoURL: null,
         createdAt: serverTimestamp(),
         isNewUser: true,
         shownWelcome: false,
         emailVerified: false,
+        mobileAdded: true,
       }, { merge: true });
 
       /* Generate OTP + send Firebase email + save to Firestore
@@ -255,6 +264,48 @@ export default function RegisterPage() {
             <div className="mb-3">
               <label style={{ color: isDark ? '#a89ef8' : '#534AB7' }} className="block text-[11px] font-semibold uppercase tracking-wider mb-1.5">Email address</label>
               <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" required style={{ background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff', color: isDark ? 'rgba(255,255,255,0.9)' : '#1a1340', border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(127,119,221,0.2)' }} className="w-full p-[12px_16px] rounded-2xl text-[14px] outline-none transition-all focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 placeholder:text-slate-400 dark:placeholder:text-white/30" />
+            </div>
+
+            <div className="mb-3">
+              <label style={{ color: isDark ? '#a89ef8' : '#534AB7' }} className="block text-[11px] font-semibold uppercase tracking-wider mb-1.5">Mobile number (WhatsApp)</label>
+              <div className="relative">
+                <span style={{
+                  position: 'absolute', left: 14,
+                  top: '50%', transform: 'translateY(-50%)',
+                  fontSize: 14, color: isDark ? '#a89ef8' : '#534AB7',
+                  fontWeight: 600, userSelect: 'none',
+                }}>
+                  +91
+                </span>
+                <input
+                  type="tel"
+                  value={mobile}
+                  onChange={e => {
+                    const v = e.target.value.replace(/\D/g,'').slice(0,10);
+                    setMobile(v);
+                  }}
+                  placeholder="10-digit mobile number"
+                  required
+                  maxLength={10}
+                  style={{
+                    background: isDark ? 'rgba(255,255,255,0.06)' : '#f0eeff',
+                    color: isDark ? 'rgba(255,255,255,0.9)' : '#1a1340',
+                    border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(127,119,221,0.2)',
+                    paddingLeft: 52,
+                  }}
+                  className="w-full p-[12px_16px] rounded-2xl text-[14px] outline-none transition-all focus:border-indigo-400 focus:ring-2 focus:ring-indigo-400/20 placeholder:text-slate-400 dark:placeholder:text-white/30"
+                />
+              </div>
+              {mobile && mobile.length < 10 && (
+                <p style={{ fontSize: 11, color: '#BA7517', margin: '4px 0 0' }}>
+                  Enter 10-digit number (without +91)
+                </p>
+              )}
+              {mobile.length === 10 && (
+                <p style={{ fontSize: 11, color: '#1D9E75', margin: '4px 0 0' }}>
+                  ✓ Valid mobile number
+                </p>
+              )}
             </div>
 
             <div className="mb-3">

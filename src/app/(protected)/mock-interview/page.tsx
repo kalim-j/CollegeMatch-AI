@@ -10,6 +10,7 @@ import PageTransition from '@/components/3D/PageTransition';
 import SelectField from '@/components/SelectField';
 import { toast } from 'sonner';
 import { useAuthGuard } from '@/lib/auth-guard';
+import { saveHistory } from '@/lib/saveHistory';
 
 interface Option {
   id: string;
@@ -206,6 +207,13 @@ export default function MockInterviewPage() {
       fetchNextQuestion(currentQ + 2);
     } else {
       setCurrentPhase(3);
+      if (user?.uid) {
+        saveHistory(user.uid, 'mock-interview',
+          'Mock Interview — ' + (stream || 'General'),
+          `Score: ${score}/${totalQ * 10}`,
+          { stream: stream || 'General', score, total: totalQ, answers: messages }
+        );
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };

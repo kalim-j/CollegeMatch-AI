@@ -9,6 +9,7 @@ import { collection, query, where, limit, getDocs } from 'firebase/firestore';
 import ScrollReveal from '@/components/ScrollReveal';
 import AnimatedCounter from '@/components/AnimatedCounter';
 import { useMouseParallax } from '@/hooks/useMouseParallax';
+import { triggerParticleBurst } from '@/components/ParticleBurst';
 
 const HeroCanvas3D = dynamic(
   () => import('@/components/HeroCanvas3D'),
@@ -193,10 +194,10 @@ export default function LandingPage() {
             <span className="typing-cursor">{subtitleText}</span>
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-5 mb-16 opacity-0 animate-[fadeUpAnim_0.8s_0.5s_forwards]">
-            <Link href="/register" className="btn-3d px-10 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-lg shadow-lg flex items-center justify-center gap-2">
-              Get Started &rarr;
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-5 mb-16 opacity-0 animate-[fadeUpAnim_0.8s_0.5s_forwards]">
+              <Link href="/register" onClick={(e) => triggerParticleBurst(e.clientX, e.clientY)} className="btn-3d px-10 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold text-lg shadow-lg flex items-center justify-center gap-2">
+                Get Started &rarr;
+              </Link>
             <Link href="/dashboard/scholarships" className="btn-3d px-10 py-4 rounded-xl glass-3d text-white font-bold text-lg hover:bg-white/10 transition-colors flex items-center justify-center">
               Find Scholarships
             </Link>

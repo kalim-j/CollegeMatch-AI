@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import ShareCard from "@/components/ShareCard";
 import SelectField from "@/components/SelectField";
+import { saveHistory } from "@/lib/saveHistory";
 
 const UG_STREAMS = ["Engineering", "Medical", "Arts & Science", "Commerce", "Law", "Agriculture", "Architecture", "Pharmacy", "Nursing", "Education", "Hotel Management", "Design", "MBA (Integrated)", "Other"];
 const PG_STREAMS = ["ME/MTech", "MD/MS", "MSc", "MA", "MBA", "MCA", "LLM", "MPharm", "MEd", "Other"];
@@ -303,6 +304,13 @@ export default function InterviewPage() {
 
       setColleges(collegesData);
       setStep(10); 
+      if (user?.uid) {
+        saveHistory(user.uid, 'college-match',
+          'College Match — ' + formData.stream,
+          `Found ${collegesData.length} colleges in ${formData.state}`,
+          { stream: formData.stream, state: formData.state, cutoff: formData.cutoffMark, results: collegesData }
+        );
+      }
       toast.success(`Found ${collegesData.length} matching colleges!`);
     } catch (error: any) {
       console.error("Analysis error:", error);

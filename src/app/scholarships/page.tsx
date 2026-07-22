@@ -16,6 +16,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 import DashboardBackground from "@/components/3D/DashboardBackground";
 import SelectField from "@/components/SelectField";
+import { saveHistory } from "@/lib/saveHistory";
 
 const INDIAN_STATES = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
@@ -79,6 +80,11 @@ export default function ScholarshipFinder() {
           results: data,
           timestamp: serverTimestamp()
         });
+        saveHistory(user.uid, 'scholarship',
+          'Scholarships — ' + formData.community,
+          `Found ${data.length} scholarships`,
+          { category: formData.community, scholarships: data }
+        );
       }
 
       toast.success(`Discovered ${data.length} financial opportunities!`);

@@ -214,13 +214,21 @@ export default function HeroCanvas3D() {
         g.addColorStop(1,`hsla(${ring.hue},80%,70%,0)`);
         ctx.beginPath();
         ctx.arc(dx,dy,7,0,Math.PI*2);
-        ctx.fillStyle=g;
-        ctx.fill();
         ctx.restore();
       });
     };
 
-    const draw = () => {
+    let lastTime = 0;
+    const draw = (timestamp: number = 0) => {
+      if (document.hidden) {
+        animId = requestAnimationFrame(draw);
+        return;
+      }
+      if (timestamp - lastTime < 16) {
+        animId = requestAnimationFrame(draw);
+        return;
+      }
+      lastTime = timestamp;
       t++;
       const bg = ctx.createLinearGradient(0,0,W,H);
       bg.addColorStop(0,'#05071a');

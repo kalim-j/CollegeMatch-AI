@@ -30,6 +30,7 @@ export default function LoginPage() {
   const [busy,     setBusy]     = useState(false);
   const [showPwd,  setShowPwd]  = useState(false);
   const [mounted,  setMounted]  = useState(false);
+  const [newUserHint, setNewUserHint] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -78,14 +79,19 @@ export default function LoginPage() {
       router.push('/dashboard');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : '';
-      if (msg.includes('user-not-found'))
-        setError('No account found with this email.');
-      else if (msg.includes('wrong-password') || msg.includes('invalid-credential'))
-        setError('Incorrect password or email. Please try again.');
-      else if (msg.includes('too-many-requests'))
-        setError('Too many attempts. Please wait a moment.');
-      else
-        setError('Login failed. Please check your details.');
+      if (msg.includes('user-not-found') || msg.includes('invalid-credential')) {
+        setError('');
+        setNewUserHint(true);
+      } else if (msg.includes('wrong-password')) {
+        setError('Incorrect password. Please try again.');
+        setNewUserHint(false);
+      } else if (msg.includes('too-many-requests')) {
+        setError('Too many attempts. Please wait a few minutes.');
+        setNewUserHint(false);
+      } else {
+        setError('Login failed. Please try again.');
+        setNewUserHint(false);
+      }
     } finally {
       setBusy(false);
     }
@@ -208,6 +214,45 @@ export default function LoginPage() {
                 </Link>
               </div>
             </div>
+
+            {newUserHint && (
+              <div style={{
+                background: 'rgba(29,158,117,0.10)',
+                border: '1px solid rgba(29,158,117,0.30)',
+                borderRadius: 12,
+                padding: '14px 16px',
+                marginBottom: 16,
+                animation: 'fadeUp 0.3s ease',
+              }}>
+                <p style={{
+                  fontSize: 14, fontWeight: 600,
+                  color: '#5DCAA5', margin: '0 0 6px',
+                }}>
+                  👋 Looks like you're new here!
+                </p>
+                <p style={{
+                  fontSize: 13,
+                  color: 'rgba(255,255,255,0.65)',
+                  margin: '0 0 12px', lineHeight: 1.6,
+                }}>
+                  No account found for this email.
+                  CollegeMatch-AI is free — create your account
+                  and find your dream college in 9 questions!
+                </p>
+                <a href={`/register?email=${encodeURIComponent(email)}`}
+                  style={{
+                    display: 'inline-block',
+                    padding: '9px 18px',
+                    borderRadius: 10,
+                    background:
+                      'linear-gradient(135deg,#1D9E75,#0F6E56)',
+                    color: 'white', fontSize: 13,
+                    fontWeight: 600, textDecoration: 'none',
+                  }}>
+                  Create free account →
+                </a>
+              </div>
+            )}
 
             {error && (
               <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-3 mb-5 text-[13px] text-red-600 dark:text-red-400 text-center">

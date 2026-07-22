@@ -122,6 +122,25 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <link rel="shortcut icon" href="/icons/icon-96x96.svg" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/themify-icons@1.0.1/css/themify-icons.css" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('collegematch-theme');
+                  if (!theme) theme = 'dark';
+                  document.documentElement.classList.add(theme);
+                  if (theme === 'dark') {
+                    document.documentElement.style.backgroundColor = '#05071a';
+                    document.body && (document.body.style.backgroundColor = 'transparent');
+                  } else {
+                    document.documentElement.style.backgroundColor = '#f8f7ff';
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
       </head>
       <body
         style={{
